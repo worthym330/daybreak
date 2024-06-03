@@ -450,96 +450,95 @@ const Header = () => {
             muted
             className="w-full h-full object-cover"
           ></video>
-          <div>
-            <div className="absolute container top-4 flex items-center justify-between z-10 md:left-10">
-              <span className="text-3xl text-white font-bold tracking-tight">
-                <Link to="/">DayBreak</Link>
-              </span>
-              <span className="flex space-x-2">
-                {userLogined !== null ? (
-                  <>
-                    {userLogined?.role === "customer" ? (
-                      <Link
-                        className="flex bg-transparent items-center text-white px-5 py-2 rounded-full font-bold border-2 hover:bg-gray-100 hover:text-black"
-                        to="/my-bookings"
-                      >
-                        My Bookings
-                      </Link>
-                    ) : (
-                      <Link
-                        className="flex bg-transparent items-center text-white px-5 py-2 rounded-full font-bold border-2 hover:bg-gray-100 hover:text-black"
-                        to="/my-hotels"
-                      >
-                        My Hotels
-                      </Link>
-                    )}
-                    <SignOutButton  classNames='text-white'/>
-                  </>
-                ) : (
-                  <button
-                    className="flex bg-transparent items-center text-white px-5 py-2 rounded-full font-bold border-2 hover:bg-gray-100 hover:text-black"
-                    onClick={handleLoginClick}
-                  >
-                    Login{" "}
-                    {arrowDirection === "down" ? (
-                      <IoIosArrowDown className="ml-3 text-xl" />
-                    ) : (
-                      <IoIosArrowUp className="ml-3 text-xl" />
-                    )}
-                  </button>
-                )}
-                {userLogined?.role === "customer" && (
-                  <Link
-                    className="flex bg-transparent items-center text-white px-5 py-2 rounded-full font-bold border-2 hover:bg-gray-100 hover:text-black"
-                    to="/"
-                  >
-                    <IoCartOutline className="text-2xl" />
-                  </Link>
-                )}
-              </span>
 
-              {/* Dropdown for Login button */}
-              {showDropdown && (
-                <div className="absolute bg-white text-rp-primary-black right-16 top-20 -mt-1 rounded-xl w-72 z-300 flex flex-col items-start shadow-login-card d:right-28 d:top-24">
-                  <button
-                    type="button"
-                    className="pl-5 pb-4 pt-4 cursor-pointer z-10 w-full text-left align-middle rounded-t-xl hover:bg-rp-light-gray-4"
-                    onClick={() =>
-                      setModal((prev) => ({ ...prev, state: true }))
-                    }
-                  >
-                    Login
-                  </button>
-
-                  <button
-                    type="button"
-                    className="pl-5 pb-3 cursor-pointer z-10 w-full text-left align-middle pt-2 border-b border-rp-gray-divider hover:bg-rp-light-gray-4"
-                    onClick={() =>
-                      setSignupModal((prev) => ({ ...prev, state: true }))
-                    }
-                  >
-                    Sign Up
-                  </button>
-
-                  <button
-                    type="button"
-                    className="pl-5 pb-4 cursor-pointer z-10 w-full text-left align-middle pt-3 hover:bg-rp-light-gray-4"
-                    onClick={() => navigate("/partner/sign-in")}
-                  >
-                    Hotel Login
-                  </button>
-
-                  <button
-                    type="button"
-                    className="pl-5 pb-4 cursor-pointer z-10 w-full text-left align-middle pt-2 rounded-b-xl hover:bg-rp-light-gray-4"
-                  >
-                    List My Hotel
-                  </button>
-                </div>
+          {/* ---------- NavBar Starts ---------- */}
+          <div className="w-screen absolute top-8 flex items-center justify-between z-10 px-[10rem] bg-transparent">
+            <span className="text-3xl text-white font-bold tracking-tight">
+              <Link to="/">DayBreak</Link>
+            </span>
+            <span className="flex space-x-2">
+              {userLogined !== null ? (
+                <>
+                  {userLogined?.role === "customer" ? (
+                    <Link
+                      className="flex bg-transparent items-center text-white px-5 py-2 rounded-full font-bold border-2 hover:bg-gray-100 hover:text-black"
+                      to="/my-bookings"
+                    >
+                      My Bookings
+                    </Link>
+                  ) : (
+                    <Link
+                      className="flex bg-transparent items-center text-white px-5 py-2 rounded-full font-bold border-2 hover:bg-gray-100 hover:text-black"
+                      to="/my-hotels"
+                    >
+                      My Hotels
+                    </Link>
+                  )}
+                  <SignOutButton classNames="text-white" />
+                </>
+              ) : (
+                <button
+                  className="flex bg-transparent items-center text-white px-5 py-2 rounded-full font-bold border-2 hover:bg-gray-100 hover:text-black"
+                  onClick={handleLoginClick}
+                >
+                  Login{" "}
+                  {arrowDirection === "down" ? (
+                    <IoIosArrowDown className="ml-3 text-xl" />
+                  ) : (
+                    <IoIosArrowUp className="ml-3 text-xl" />
+                  )}
+                </button>
               )}
-              {/* Dropdown End */}
-            </div>
+              {userLogined?.role === "customer" && (
+                <Link
+                  className="flex bg-transparent items-center text-white px-5 py-2 rounded-full font-bold border-2 hover:bg-gray-100 hover:text-black"
+                  to="/"
+                >
+                  <IoCartOutline className="text-2xl" />
+                </Link>
+              )}
+            </span>
+
+            {/* Dropdown for Login button */}
+            {showDropdown && (
+              <div className="absolute bg-white text-rp-primary-black right-16 top-20 -mt-1 rounded-xl w-72 z-300 flex flex-col items-start shadow-login-card d:right-28 d:top-24">
+                <button
+                  type="button"
+                  className="pl-5 pb-4 pt-4 cursor-pointer z-10 w-full text-left align-middle rounded-t-xl hover:bg-rp-light-gray-4"
+                  onClick={() => setModal((prev) => ({ ...prev, state: true }))}
+                >
+                  Login
+                </button>
+
+                <button
+                  type="button"
+                  className="pl-5 pb-3 cursor-pointer z-10 w-full text-left align-middle pt-2 border-b border-rp-gray-divider hover:bg-rp-light-gray-4"
+                  onClick={() =>
+                    setSignupModal((prev) => ({ ...prev, state: true }))
+                  }
+                >
+                  Sign Up
+                </button>
+
+                <button
+                  type="button"
+                  className="pl-5 pb-4 cursor-pointer z-10 w-full text-left align-middle pt-3 hover:bg-rp-light-gray-4"
+                  onClick={() => navigate("/partner/sign-in")}
+                >
+                  Hotel Login
+                </button>
+
+                <button
+                  type="button"
+                  className="pl-5 pb-4 cursor-pointer z-10 w-full text-left align-middle pt-2 rounded-b-xl hover:bg-rp-light-gray-4"
+                >
+                  List My Hotel
+                </button>
+              </div>
+            )}
+            {/* Dropdown End */}
           </div>
+          {/* ---------- NavBar Ends ---------- */}
         </div>
       ) : (
         <div className="top-4 flex items-center justify-between px-2 py-4 shadow-md ">
@@ -564,7 +563,7 @@ const Header = () => {
                     My Hotels
                   </Link>
                 )}
-                <SignOutButton classNames='text-black border-black' />
+                <SignOutButton classNames="text-black border-black" />
               </>
             ) : (
               <button
