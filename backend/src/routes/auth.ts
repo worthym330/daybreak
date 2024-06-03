@@ -8,8 +8,10 @@ import { env } from "process";
 import axios from "axios";
 const passport = require("passport");
 var GoogleStrategy = require("passport-google-oauth20").Strategy;
+import { OAuth2Client } from 'google-auth-library';
 
 const router = express.Router();
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 passport.use(
   new GoogleStrategy(
@@ -27,29 +29,46 @@ passport.use(
 
 router.post(
   "/login",
-  [
-    check("email", "Email is required").isEmail(),
-    check("password", "Password with 6 or more characters required").isLength({
-      min: 6,
-    }),
-  ],
+  [check("email", "Email is required").isEmail()],
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ message: errors.array() });
     }
 
-    const { email, password } = req.body;
+    const { email, password, loginThrough, googleToken } = req.body;
 
     try {
-      const user = await User.findOne({ email });
-      if (!user) {
-        return res.status(400).json({ message: "Invalid Credentials" });
-      }
+      let user;
 
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
-        return res.status(400).json({ message: "Invalid Credentials" });
+      if (loginThrough === "google" && googleToken) {
+        const ticket = await client.verifyIdToken({
+          idToken: googleToken,
+          audience: process.env.GOOGLE_CLIENT_ID,
+        });
+        const payload = ticket.getPayload();
+        const googleEmail = payload?.email;
+
+        if (!googleEmail) {
+          return res.status(400).json({ message: "Invalid Google token" });
+        }
+
+        user = await User.findOne({ email: googleEmail });
+        if (!user) {
+          return res.status(400).json({ message: "User not found" });
+        }
+      } else if (email && password) {
+        user = await User.findOne({ email });
+        if (!user) {
+          return res.status(400).json({ message: "Invalid Credentials" });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+          return res.status(400).json({ message: "Invalid Credentials" });
+        }
+      } else {
+        return res.status(400).json({ message: "Invalid login request" });
       }
 
       const token = jwt.sign(
@@ -59,18 +78,21 @@ router.post(
           expiresIn: "1d",
         }
       );
-      let payload = {
+
+      const payload = {
         token: token,
-        name: user.firstName + " " + user.lastName,
+        name: `${user.firstName} ${user.lastName}`,
         email: user.email,
         id: user.id,
         role: user.role,
       };
+
       res.cookie("auth_token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         maxAge: 86400000,
       });
+
       res.status(200).json({ user: payload });
     } catch (error) {
       console.log(error);

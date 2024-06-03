@@ -10,7 +10,7 @@ import Modal from "./modal";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import * as Yup from "yup";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode, JwtPayload } from "jwt-decode";
 import { useQueryClient } from "react-query";
 
 const initialModalState = {
@@ -22,6 +22,7 @@ const initialModalState = {
   data: {
     email: "",
     password: "",
+    loginThrough: "password",
   },
 };
 
@@ -41,6 +42,7 @@ const initialSignupModalState = {
 interface login {
   email: string;
   password: string;
+  loginThrough: string;
 }
 
 interface signup {
@@ -50,11 +52,16 @@ interface signup {
   role: string;
 }
 
+interface CustomJwtPayload extends JwtPayload {
+  email?: string;
+}
+
 const loginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required"),
   password: Yup.string()
     .required("Password is required")
     .min(6, "Password must be at least 6 characters"),
+  loginThrough: Yup.string().required("Login Through is required"),
 });
 
 const registerSchema = Yup.object().shape({
@@ -89,20 +96,32 @@ const Header = () => {
     setArrowDirection(showDropdown ? "down" : "up");
   };
 
-  const responseGoogle = async (response: any) => {
+  const responseLoginGoogle = async (response: any) => {
     const token = response.credential;
-    console.log(jwtDecode(token));
-    const user = jwtDecode(token);
+    const user = jwtDecode<CustomJwtPayload>(token);
+    let payload = {
+      email: user.email,
+      loginThrough: "google",
+      googleToken: token,
+    };
     try {
-      // Send the token to your backend
-      const res = await fetch(`${API_BASE_URL}/auth/google`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ token: user }),
+        body: JSON.stringify(payload),
       });
-      console.log("Backend response:", res);
+      const body = await response.json();
+      if (response.ok) {
+        setModal((prev) => ({ ...prev, state: false, loading: false }));
+        showToast({ message: "Sign in Successful!", type: "SUCCESS" });
+        setShowDropdown(false);
+        localStorage.setItem("auth_token", JSON.stringify(body.user));
+      } else {
+        showToast({ message: "Failed to Login!", type: "ERROR" });
+      }
     } catch (error) {
       console.error("Error authenticating with backend:", error);
     }
@@ -252,25 +271,26 @@ const Header = () => {
                     )}
                   </button>
                 </span>
-                <span className="w-full">
-                  <GoogleOAuthProvider
-                    clientId={
-                      "445301932465-dpr3akkbni8aj6b8jm87tpnutiamhull.apps.googleusercontent.com"
-                    }
-                  >
-                    <div className="w-full flex justify-center">
-                      <div className="w-full">
-                        <GoogleLogin
-                          onSuccess={responseGoogle}
-                          onFailure={responseGoogle}
-                          cookiePolicy={"single_host_origin"}
-                          prompt="consent"
-                          // useOneTap
-                        />
-                      </div>
+                <div className="flex w-full my-1 justify-center items-center">
+                  <hr className="border-gray-300 flex-grow" />
+                  <span className="text-gray-400 mx-2">OR</span>
+                  <hr className="border-gray-300 flex-grow" />
+                </div>
+
+                <GoogleOAuthProvider
+                  clientId={
+                    "445301932465-dpr3akkbni8aj6b8jm87tpnutiamhull.apps.googleusercontent.com"
+                  }
+                >
+                  <div className="w-full flex justify-center">
+                    <div className="w-full">
+                      <GoogleLogin
+                        onSuccess={responseLoginGoogle}
+                        onError={() => console.log("failed to login")}
+                      />
                     </div>
-                  </GoogleOAuthProvider>
-                </span>
+                  </div>
+                </GoogleOAuthProvider>
                 <span className="text-sm text-center">
                   Are you a hotel partner?{" "}
                   <Link
@@ -505,7 +525,10 @@ const Header = () => {
                 <button
                   type="button"
                   className="pl-5 pb-4 pt-4 cursor-pointer z-10 w-full text-left align-middle rounded-t-xl hover:bg-rp-light-gray-4"
-                  onClick={() => setModal((prev) => ({ ...prev, state: true }))}
+                  onClick={() => {
+                    setShowDropdown(false);
+                    setModal((prev) => ({ ...prev, state: true }));
+                  }}
                 >
                   Login
                 </button>
@@ -513,9 +536,10 @@ const Header = () => {
                 <button
                   type="button"
                   className="pl-5 pb-3 cursor-pointer z-10 w-full text-left align-middle pt-2 border-b border-rp-gray-divider hover:bg-rp-light-gray-4"
-                  onClick={() =>
-                    setSignupModal((prev) => ({ ...prev, state: true }))
-                  }
+                  onClick={() => {
+                    setShowDropdown(false);
+                    setSignupModal((prev) => ({ ...prev, state: true }));
+                  }}
                 >
                   Sign Up
                 </button>
@@ -523,7 +547,10 @@ const Header = () => {
                 <button
                   type="button"
                   className="pl-5 pb-4 cursor-pointer z-10 w-full text-left align-middle pt-3 hover:bg-rp-light-gray-4"
-                  onClick={() => navigate("/partner/sign-in")}
+                  onClick={() => {
+                    setShowDropdown(false);
+                    navigate("/partner/sign-in");
+                  }}
                 >
                   Hotel Login
                 </button>
@@ -541,7 +568,7 @@ const Header = () => {
           {/* ---------- NavBar Ends ---------- */}
         </div>
       ) : (
-        <div className="top-4 flex items-center justify-between px-2 py-4 shadow-md ">
+        <div className="top-8 flex items-center justify-between px-[10rem] py-4 shadow-md ">
           <span className="text-3xl text-black font-bold tracking-tight">
             <Link to="/">DayBreak</Link>
           </span>
@@ -594,7 +621,10 @@ const Header = () => {
               <button
                 type="button"
                 className="pl-5 pb-4 pt-4 cursor-pointer z-10 w-full text-left align-middle rounded-t-xl hover:bg-rp-light-gray-4"
-                onClick={() => setModal((prev) => ({ ...prev, state: true }))}
+                onClick={() => {
+                  setShowDropdown(false);
+                  setModal((prev) => ({ ...prev, state: true }));
+                }}
               >
                 Login
               </button>
@@ -602,9 +632,10 @@ const Header = () => {
               <button
                 type="button"
                 className="pl-5 pb-3 cursor-pointer z-10 w-full text-left align-middle pt-2 border-b border-rp-gray-divider hover:bg-rp-light-gray-4"
-                onClick={() =>
-                  setSignupModal((prev) => ({ ...prev, state: true }))
-                }
+                onClick={() => {
+                  setShowDropdown(false);
+                  setSignupModal((prev) => ({ ...prev, state: true }));
+                }}
               >
                 Sign Up
               </button>
@@ -612,7 +643,10 @@ const Header = () => {
               <button
                 type="button"
                 className="pl-5 pb-4 cursor-pointer z-10 w-full text-left align-middle pt-3 hover:bg-rp-light-gray-4"
-                onClick={() => navigate("/partner/sign-in")}
+                onClick={() => {
+                  setShowDropdown(false);
+                  navigate("/partner/sign-in");
+                }}
               >
                 Hotel Login
               </button>
