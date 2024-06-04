@@ -13,13 +13,13 @@ const Layout = ({ children }: Props) => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <div className="container mx-auto">
-        <Hero />
-      </div>
       {location?.pathname === "/" && (
-        <div className="container mx-auto">
-          <SearchBar />
-        </div>
+        <>
+          <div className="container mx-auto">
+            <Hero />
+            <SearchBar />
+          </div>
+        </>
       )}
       <Info />
       <div className="container mx-auto py-10 flex-1">{children}</div>

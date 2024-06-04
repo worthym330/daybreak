@@ -1,9 +1,9 @@
 import { useQuery } from "react-query";
 import * as apiClient from "../api-client";
 import LatestDestinationCard from "../components/LastestDestinationCard";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import hotelImg1 from "../assets/taj.jpg";
-import { FaLocationDot } from "react-icons/fa6";
+import Card from "../components/Card";
 
 const Home = () => {
   const { data: hotels } = useQuery("fetchQuery", () =>
@@ -62,31 +62,35 @@ const Home = () => {
   const bottomRowHotels = [
     {
       id: 1,
-      image: hotelImg1,
+      image: [hotelImg1, hotelImg1, hotelImg1, hotelImg1, hotelImg1],
       name: "Taj Hotel",
       location: "Mumbai, India",
       rating: 4.9,
+      price: 1000,
     },
     {
       id: 1,
-      image: hotelImg1,
+      image: [hotelImg1, hotelImg1, hotelImg1, hotelImg1, hotelImg1],
       name: "Taj Hotel",
       location: "Goa, India",
       rating: 4.9,
+      price: 1000,
     },
     {
       id: 1,
-      image: hotelImg1,
+      image: [hotelImg1, hotelImg1, hotelImg1, hotelImg1, hotelImg1],
       name: "Taj Hotel",
       location: "Kannor, India",
       rating: 4.9,
+      price: 1000,
     },
     {
       id: 1,
-      image: hotelImg1,
+      image: [hotelImg1, hotelImg1, hotelImg1, hotelImg1, hotelImg1],
       name: "Taj Hotel",
       location: "Lakshwadweep, India",
       rating: 4.9,
+      price: 1000,
     },
   ];
 
@@ -101,7 +105,7 @@ const Home = () => {
         </p>
         <div className="grid gap-4">
           <div className="grid md:grid-cols-3 gap-4">
-            {topRowHotels.map((a:any) => (
+            {topRowHotels.map((a: any) => (
               <LatestDestinationCard hotel={a} />
             ))}
           </div>
@@ -117,29 +121,10 @@ const Home = () => {
         </p> */}
 
         <div className="grid gap-4">
-          <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
-            {bottomRowHotels.map((hotel:any) => {
-               return (
-                <Link
-                  to={`/detail/${hotel.id}`}
-                  className="relative cursor-pointer overflow-hidden rounded-md"
-                >
-                  <div className="h-[300px]">
-                    <img
-                      src={hotel.image}
-                      className="w-full h-full object-cover object-center"
-                    />
-                  </div>
-            
-                  <div className="absolute bottom-0 p-4 bg-black bg-opacity-50 w-full rounded-b-md">
-                    <span className="text-white font-bold tracking-tight text-3xl">
-                      {hotel.location}
-                    </span>
-                  </div>
-                </Link>
-              );
-            }
-            )}
+          <div className="grid md:grid-cols-3 grid-cols-1 gap-4">
+            {bottomRowHotels.map((hotel: any) => {
+              return <Card hotel={hotel} key={hotel.id} />;
+            })}
           </div>
         </div>
       </div>

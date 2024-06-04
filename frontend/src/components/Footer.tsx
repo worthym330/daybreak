@@ -3,8 +3,8 @@ import { FaFacebook, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 const Footer = () => {
   return (
     <div className="bg-footerColor mt-14">
-      <div className="flex flex-col">
-        <div className="flex flex-col md:flex-row bg-footerColor py-10 justify-between container mx-auto">
+      <div className="flex flex-col container mx-auto">
+        <div className="flex flex-col md:flex-row bg-footerColor py-10 justify-between">
           <div className="flex  flex-col w-1/3">
             <span className="text-3xl text-white font-bold tracking-tight mb-4">
               DayBreak

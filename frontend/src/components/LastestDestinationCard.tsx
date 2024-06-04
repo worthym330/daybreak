@@ -6,7 +6,6 @@ type Props = {
 };
 
 const LatestDestinationCard = ({ hotel }: Props) => {
-   console.log(`Card`, hotel);
   return (
     <Link
       to={`/detail/${hotel.id}`}

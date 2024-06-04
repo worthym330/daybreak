@@ -32,6 +32,8 @@ const initialSignupModalState = {
   index: null,
   id: "",
   data: {
+    firstName:"",
+    lastName:"",
     email: "",
     password: "",
     confirmpassword: "",
@@ -46,6 +48,8 @@ interface login {
 }
 
 interface signup {
+  firstName: string,
+  lastName: string,
   email: string;
   password: string;
   confirmpassword: string;
@@ -54,6 +58,7 @@ interface signup {
 
 interface CustomJwtPayload extends JwtPayload {
   email?: string;
+  name?: string;
 }
 
 const loginSchema = Yup.object().shape({
@@ -121,6 +126,42 @@ const Header = () => {
         localStorage.setItem("auth_token", JSON.stringify(body.user));
       } else {
         showToast({ message: "Failed to Login!", type: "ERROR" });
+      }
+    } catch (error) {
+      console.error("Error authenticating with backend:", error);
+    }
+  };
+
+  const responseSignUpGoogle = async (response: any) => {
+    const token = response.credential;
+    const user = jwtDecode<CustomJwtPayload>(token);
+    let payload = {
+      email: user.email,
+      firstName: user.name?.split(" ")[0],
+      lastName: user.name?.split(" ")[user.name?.split(" ").length-1],
+      loginThrough: "google",
+      googleToken: token,
+      role:'customer'
+    };
+    console.log(payload, user.name);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/users/register`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+      const body = await response.json();
+      if (response.ok) {
+        setSignupModal(initialSignupModalState);
+        showToast({ message: "Registered Successful!", type: "SUCCESS" });
+        setShowDropdown(false);
+        localStorage.setItem("auth_token", JSON.stringify(body.user));
+      } else {
+        showToast({ message: "Failed to register!", type: "ERROR" });
       }
     } catch (error) {
       console.error("Error authenticating with backend:", error);
@@ -277,10 +318,7 @@ const Header = () => {
                   <hr className="border-gray-300 flex-grow" />
                 </div>
 
-                <GoogleOAuthProvider
-                  clientId={
-                    "445301932465-dpr3akkbni8aj6b8jm87tpnutiamhull.apps.googleusercontent.com"
-                  }
+                <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
                 >
                   <div className="w-full flex justify-center">
                     <div className="w-full">
@@ -370,6 +408,46 @@ const Header = () => {
 
               <div className="text-left">
                 <label className="text-gray-700 text-sm font-bold flex-1">
+                  First Name
+                </label>
+                <input
+                  type="firstName"
+                  name="firstName"
+                  value={values.firstName}
+                  placeholder="Enter First Name"
+                  className="border rounded w-full px-2 py-3 font-normal mb-3 mt-3"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                />
+                {touched.firstName && (
+                  <span className="text-red-500 font-semibold">
+                    {errors.firstName}
+                  </span>
+                )}
+              </div>
+
+              <div className="text-left">
+                <label className="text-gray-700 text-sm font-bold flex-1">
+                  Last Name
+                </label>
+                <input
+                  type="lastName"
+                  name="lastName"
+                  value={values.lastName}
+                  placeholder="Enter your Last Name"
+                  className="border rounded w-full px-2 py-3 font-normal mb-3 mt-3"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                />
+                {touched.lastName && (
+                  <span className="text-red-500 font-semibold">
+                    {errors.lastName}
+                  </span>
+                )}
+              </div>
+
+              <div className="text-left">
+                <label className="text-gray-700 text-sm font-bold flex-1">
                   Email
                 </label>
                 <input
@@ -428,7 +506,7 @@ const Header = () => {
                 )}
               </div>
 
-              <div className="flex flex-col justify-center gap-5">
+              <div className="flex flex-col justify-center gap-5 mt-4">
                 <span className="flex items-center justify-between">
                   <button
                     type="submit"
@@ -438,16 +516,23 @@ const Header = () => {
                     {isSubmitting ? "Registering..." : "Register"}
                   </button>
                 </span>
-                {/* <GoogleOAuthProvider clientId={import.meta.env.CLIENT_ID}>
-                  <GoogleLogin
-                    onSuccess={(response:any) => {
-                      console.log(response);
-                    }}
-                    onFailure={(error:any) => {
-                      console.log(error);
-                    }}
-                  />
-                </GoogleOAuthProvider> */}
+                <div className="flex w-full my-1 justify-center items-center">
+                  <hr className="border-gray-300 flex-grow" />
+                  <span className="text-gray-400 mx-2">OR</span>
+                  <hr className="border-gray-300 flex-grow" />
+                </div>
+              <GoogleOAuthProvider
+                  clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
+                >
+                  <div className="w-full flex justify-center">
+                    <div className="w-full">
+                      <GoogleLogin
+                        onSuccess={responseSignUpGoogle}
+                        onError={() => console.log("failed to login")}
+                      />
+                    </div>
+                  </div>
+                </GoogleOAuthProvider>
               </div>
             </form>
           </Modal>
