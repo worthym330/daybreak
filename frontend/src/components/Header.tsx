@@ -472,7 +472,7 @@ const Header = () => {
           ></video>
 
           {/* ---------- NavBar Starts ---------- */}
-          <div className="w-screen absolute top-8 flex items-center justify-between z-10 px-[10rem] bg-transparent">
+          <div className="w-full absolute top-8 flex items-center justify-between z-10 px-[10rem] bg-transparent">
             <span className="text-3xl text-white font-bold tracking-tight">
               <Link to="/">DayBreak</Link>
             </span>
