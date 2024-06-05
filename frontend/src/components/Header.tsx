@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAppContext } from "../contexts/AppContext";
 import SignOutButton from "./SignOutButton";
@@ -363,6 +363,7 @@ const Header = () => {
             body: JSON.stringify(values),
           });
           const responseBody = await response.json();
+          localStorage.setItem("auth_token", JSON.stringify(responseBody.user));
           showToast({ message: "Registered Successful!", type: "SUCCESS" });
           await queryClient.invalidateQueries("validateToken");
           setSignupModal(initialSignupModalState);
@@ -370,7 +371,7 @@ const Header = () => {
             // throw new Error(responseBody.message);
             showToast({
               message: "Failed to create account!",
-              type: "SUCCESS",
+              type: "ERROR",
             });
           }
         }}

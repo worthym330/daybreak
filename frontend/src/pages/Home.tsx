@@ -1,14 +1,14 @@
-import { useQuery } from "react-query";
-import * as apiClient from "../api-client";
+// import { useQuery } from "react-query";
+// import * as apiClient from "../api-client";
 import LatestDestinationCard from "../components/LastestDestinationCard";
 import { useNavigate } from "react-router-dom";
 import hotelImg1 from "../assets/taj.jpg";
 import Card from "../components/Card";
 
 const Home = () => {
-  const { data: hotels } = useQuery("fetchQuery", () =>
-    apiClient.fetchHotels()
-  );
+  // const { data: hotels } = useQuery("fetchQuery", () =>
+  //   apiClient.fetchHotels()
+  // );
 
   // const topRowHotels = hotels?.slice(0, 2) || [];
   // const bottomRowHotels = hotels?.slice(2) || [];

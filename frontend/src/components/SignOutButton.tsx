@@ -1,9 +1,9 @@
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation } from "react-query";
 import * as apiClient from "../api-client";
 import { useAppContext } from "../contexts/AppContext";
 
 const SignOutButton = (props:any) => {
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
   const { showToast } = useAppContext();
   const classNames = props?.classNames? props?.classNames : "";
 

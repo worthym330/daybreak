@@ -1,4 +1,3 @@
-import React from 'react'
 import { CiMap } from "react-icons/ci";
 import { IoCartOutline } from "react-icons/io5";
 import { MdOutlineSupportAgent } from "react-icons/md";

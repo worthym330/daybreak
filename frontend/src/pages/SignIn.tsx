@@ -125,13 +125,10 @@ const SignIn = () => {
           </span>
         </div>
 
-        <GoogleOAuthProvider clientId="929631521564-2uokp6g09vjivavo80crn6lebv8564ac.apps.googleusercontent.com">
+        <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
       <GoogleLogin
-        buttonText="Login with Google"
         onSuccess={responseGoogle}
-        onFailure={responseGoogle}
-        cookiePolicy={'single_host_origin'}
-        prompt='consent'
+        onError={()=>{console.log("Google",errors)}}
       />
     </GoogleOAuthProvider>
       </form>
