@@ -17,7 +17,15 @@ import bookingRoutes from "./routes/my-bookings";
 //   api_secret: process.env.CLOUDINARY_API_SECRET,
 // });
 
-mongoose.connect(process.env.MONGODB_CONNECTION_STRING as string);
+// mongoose.connect(process.env.MONGODB_CONNECTION_STRING as string);
+const options: mongoose.ConnectOptions & { useNewUrlParser: boolean; useUnifiedTopology: boolean } = {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 5000,
+};
+mongoose.connect(process.env.MONGODB_CONNECTION_STRING as string,options)
+.then(() => console.log('Database connected successfully'))
+.catch(err => console.error('Database connection error:', err));
 
 const app = express();
 app.use(cookieParser());
