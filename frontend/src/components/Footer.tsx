@@ -4,7 +4,7 @@ const Footer = () => {
   return (
     <div className="bg-footerColor mt-14">
       <div className="flex flex-col container px-2 md:px-0 md:mx-auto">
-        <div className="flex flex-col md:flex-row bg-footerColor py-10 gap-6 justify-between">
+        <div className="flex flex-col md:flex-row py-10 gap-6 justify-between">
           <div className="flex flex-row w-full justify-between md:flex-col md:w-1/3">
             <span className="flex text-3xl text-white font-bold tracking-tight items-center">
               DayBreak

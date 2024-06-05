@@ -6,23 +6,33 @@ import { BiHotel, BiMoney, BiStar } from "react-icons/bi";
 import { useState } from "react";
 import { Formik } from "formik";
 import HalfGeneralSlideover from "../components/slide-over";
+import { hotelFacilities, hotelTypes } from "../config/hotel-options-config";
+import { FaCircleXmark } from "react-icons/fa6";
+import { MdPhotoLibrary } from "react-icons/md";
 
-const initialModalState={
+const initialModalState = {
   type: "",
   state: false,
   index: null,
   id: "",
   data: {
-    firstName:"",
-    lastName:"",
-    email: "",
-    password: "",
-    confirmpassword: "",
-    role: "customer",
+    name: "",
+    city: "",
+    country: "",
+    description: "",
+    type: "",
+    adultCount: "",
+    childCount: "",
+    facilities: "",
+    hotelType: "",
+    pricePerNight: "",
+    starRating: "",
+    imageUrls: "",
   },
-}
+};
+
 const MyHotels = () => {
-  const [modal, setModal]= useState(initialModalState)
+  const [modal, setModal] = useState(initialModalState);
   const { data: hotelData } = useQuery(
     "fetchMyHotels",
     apiClient.fetchMyHotels,
@@ -32,14 +42,14 @@ const MyHotels = () => {
   );
 
   const renderModal = () => {
-    const { data, id, state } = modal
+    const { data, id, state } = modal;
 
-    return(
+    return (
       <Formik
         initialValues={data}
         validationSchema={null}
         onSubmit={async (values: any) => {
-          console.log(values,id)
+          console.log(values, id);
         }}
       >
         {({
@@ -48,59 +58,310 @@ const MyHotels = () => {
           isSubmitting,
           errors,
           touched,
+          setValues,
           handleBlur,
           handleChange,
         }) => (
           <HalfGeneralSlideover
-            title={id?'Edit Hotel':'Add Hotel'}
+            title={id ? "Edit Hotel" : "Add Hotel"}
             open={state}
             setOpen={() => {
               setModal((prev) => ({ ...prev, state: false }));
             }}
           >
             <form onSubmit={handleSubmit} noValidate>
-
-              <div className="text-left">
-                <label className="text-gray-700 text-sm font-bold flex-1">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={values.email}
-                  placeholder="Enter your email address"
-                  className="border rounded w-full px-2 py-3 font-normal mb-3 mt-3"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-                {/* {touched.email && (
+              <div className="mt-4 text-left grid md:grid-cols-2 grid-cols-1 gap-4 ">
+                <div className="text-left">
+                  <label className="text-gray-700 text-sm flex-1">Name</label>
+                  <input
+                    type="name"
+                    name="name"
+                    value={values.name}
+                    placeholder="Enter Hotel Name"
+                    className="border rounded-md w-full px-2 py-3 font-normal"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  {/* {touched.name && (
                   <span className="text-red-500 font-semibold">
-                    {errors.email}
+                    {errors.name}
                   </span>
                 )} */}
-              </div>
+                </div>
 
-              <div className="text-left">
-                <label className="text-gray-700 text-sm font-bold flex-1">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  name="password"
-                  value={values.password}
-                  placeholder="Enter your password"
-                  className="border rounded w-full px-2 py-3 font-normal mb-3 mt-3"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-                {/* {touched.password && (
+                <div className="text-left">
+                  <label className="text-gray-700 text-sm flex-1">City</label>
+                  <input
+                    type="city"
+                    name="city"
+                    value={values.city}
+                    placeholder="Enter your City"
+                    className="border rounded-md w-full px-2 py-3 font-normal"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  {/* {touched.city && (
                   <span className="text-red-500 font-semibold">
-                    {errors.password}
+                    {errors.city}
                   </span>
                 )} */}
-              </div>
+                </div>
 
-              <div className="flex flex-col justify-center gap-5">
+                <div className="text-left col-span-1 md:col-span-2">
+                  <label className="text-gray-700 text-sm flex-1">
+                    Description
+                  </label>
+                  <textarea
+                    name="description"
+                    value={values.description}
+                    placeholder="Enter your description"
+                    className="border rounded-md w-full px-2 py-3 font-normal"
+                    onChange={(e) => {
+                      setValues({ ...values, description: e.target.value });
+                    }}
+                    onBlur={handleBlur}
+                  />
+                  {/* {touched.description" && (
+                  <span className="text-red-500 font-semibold">
+                    {errors.description"}
+                  </span>
+                )} */}
+                </div>
+
+                <div className="text-left">
+                  <label
+                    htmlFor="price"
+                    className="block text-sm font-medium leading-6 text-gray-900"
+                  >
+                    Price
+                  </label>
+                  <div className="relative rounded-md shadow-sm">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                      <span className="text-gray-500 sm:text-sm">₹</span>
+                    </div>
+                    <input
+                      type="text"
+                      name="price"
+                      id="price"
+                      value={values.price}
+                      className="border rounded-md w-full px-2 py-3 font-normal pl-7"
+                      placeholder="0.00"
+                      aria-describedby="price-currency"
+                    />
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                      <span
+                        className="text-gray-500 sm:text-sm"
+                        id="price-currency"
+                      >
+                        INR
+                      </span>
+                    </div>
+                  </div>
+                  {/* {touched.city && (
+                  <span className="text-red-500 font-semibold">
+                    {errors.city}
+                  </span>
+                )} */}
+                </div>
+                <div className="text-left">
+                  <label className="text-gray-700 text-sm flex-1">Star</label>
+                  <select
+                    name="star"
+                    value={values.star}
+                    className="border rounded-md w-full px-2 py-3 font-normal"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  >
+                    <option value="" disabled>
+                      Select star rating
+                    </option>
+                    <option value="1">1 Star</option>
+                    <option value="2">2 Stars</option>
+                    <option value="3">3 Stars</option>
+                    <option value="4">4 Stars</option>
+                    <option value="5">5 Stars</option>
+                  </select>
+                  {/* {touched.star && (
+                    <span className="text-red-500 font-semibold">
+                      {errors.star}
+                    </span>
+                  )} */}
+                </div>
+
+                <div className="text-left col-span-1 md:col-span-2">
+                  <label className="text-gray-700 font-bold text-sm flex-1">
+                    Facilities
+                  </label>
+                  <div className="flex flex-wrap gap-4">
+                    {hotelFacilities.map((facility) => (
+                      <label
+                        key={facility}
+                        className="text-sm flex gap-1 text-gray-700"
+                      >
+                        <input
+                          type="checkbox"
+                          name="facilities"
+                          value={facility}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          checked={values.facilities.includes(facility)}
+                        />
+                        {facility}
+                      </label>
+                    ))}
+
+                    {/* {touched.facilities && (
+                      <span className="text-red-500 font-semibold">
+                        {errors.facilities}
+                      </span>
+                    )} */}
+                  </div>
+                </div>
+
+                <div className="text-left col-span-1 md:col-span-2">
+                  <label className="text-gray-700 font-bold text-sm flex-1">
+                    Hotel Type
+                  </label>
+                  <div className="flex flex-wrap gap-4">
+                    {hotelTypes.map((hotel) => (
+                      <label
+                        key={hotel}
+                        className="text-sm flex gap-1 text-gray-700"
+                      >
+                        <input
+                          type="checkbox"
+                          name="hotelType"
+                          value={hotel}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          checked={values.hotelType.includes(hotel)}
+                        />
+                        {hotel}
+                      </label>
+                    ))}
+
+                    {/* {touched.facilities && (
+                      <span className="text-red-500 font-semibold">
+                        {errors.facilities}
+                      </span>
+                    )} */}
+                  </div>
+                </div>
+
+                <div className="text-left col-span-1 md:col-span-2">
+                  <label className="text-gray-700 font-bold text-sm flex-1">
+                    Hotel Type
+                  </label>
+                  <div className="flex flex-wrap gap-4">
+                    {hotelTypes.map((hotel) => (
+                      <label
+                        key={hotel}
+                        className="text-sm flex gap-1 text-gray-700"
+                      >
+                        <input
+                          type="checkbox"
+                          name="hotelType"
+                          value={hotel}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          checked={values.hotelType.includes(hotel)}
+                        />
+                        {hotel}
+                      </label>
+                    ))}
+
+                    {/* {touched.facilities && (
+                      <span className="text-red-500 font-semibold">
+                        {errors.facilities}
+                      </span>
+                    )} */}
+                  </div>
+                </div>
+
+                <div className="text-left col-span-1 md:col-span-2">
+                  <div className="w-full bg-gray-50 p-6 rounded-md shadow-md">
+                    <h2 className="text-2xl font-bold text-gray-900 flex justify-center mt-2">
+                      Uploads
+                    </h2>
+                    <div
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={(e:any) => {
+                        e.preventDefault();
+                        const data = e.target.files;
+                        const newData = Array.from(data);
+                        const updatedFiles = [...newData];
+                        setValues({
+                          ...values,
+                          imageUrls: updatedFiles,
+                        });
+                      }}
+                      className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10"
+                    >
+                      <div className="text-center">
+                        <MdPhotoLibrary
+                          className="mx-auto h-12 w-12 text-gray-300"
+                          aria-hidden="true"
+                        />
+                        <div className="mt-4 flex text-sm leading-6 text-primary">
+                          <label
+                            htmlFor="fileName"
+                            className="relative flex cursor-pointer rounded-md bg-white font-semibold text-focus:ring-primary focus-within:outline-none focus-within:ring-2 focus-within:ring-focus:ring-primary focus-within:ring-offset-2 hover:text-primary-300"
+                          >
+                            <span>Upload a file</span>
+                            <input
+                              id="fileName"
+                              name="fileName"
+                              type="file"
+                              className="sr-only"
+                              accept="application/pdf"
+                              onChange={(e:any) => {
+                                const data = e.target.files;
+                                const newData = Array.from(data);
+                                const updatedFiles = [...newData];
+                                setValues({
+                                  ...values,
+                                  imageUrls: updatedFiles,
+                                });
+                              }}
+                              multiple
+                            />
+                            <p className="pl-1">or drag and drop</p>
+                          </label>
+                        </div>
+                        <p className="text-xs leading-5 flex w-full items-center justify-center gap-3 text-gray-600">
+                          {values.imageUrls && values.imageUrls.length > 0 ? (
+                            <p>
+                              {values.imageUrls.map((s:any) => (
+                                <span className="flex gap-2">
+                                  {" "}
+                                  <p>{s.name}</p>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setValues({
+                                        ...values,
+                                        imageUrls: values.files.filter(
+                                          (e:any) => e !== s
+                                        ),
+                                      });
+                                    }}
+                                    className="cursor-pointer text-red-500 px-1 py-1 hover:bg-red-800 hover:rounded-md hover:text-white disabled:text-gray-700 disabled:hover:bg-gray-300 hover:border-slate-300 hover:border-solid"
+                                  >
+                                    <FaCircleXmark className="w-4" />
+                                  </button>
+                                </span>
+                              ))}
+                            </p>
+                          ) : (
+                            "Images"
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col justify-center gap-5 mt-4">
                 <span className="flex items-center justify-between">
                   <button
                     type="submit"
@@ -129,10 +390,10 @@ const MyHotels = () => {
                             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291l2.12-2.122A5 5 0 016 12H2c0 1.795.703 3.432 1.757 4.686L6 17.291z"
                           ></path>
                         </svg>
-                        <span>Logging in...</span>
+                        <span>Adding in...</span>
                       </>
                     ) : (
-                      "Login"
+                      "Add"
                     )}
                   </button>
                 </span>
@@ -141,9 +402,8 @@ const MyHotels = () => {
           </HalfGeneralSlideover>
         )}
       </Formik>
-    )
-  }
-
+    );
+  };
 
   if (!hotelData) {
     return <span>No Hotels found</span>;

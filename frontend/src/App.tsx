@@ -19,9 +19,7 @@ import Home from "./pages/Home";
 const App = () => {
   // const { isLoggedIn } = useAppContext();
   const auth_token = localStorage.getItem("auth_token");
-  console.log(auth_token);
   const isLoggedIn = auth_token!==null ? JSON.parse(auth_token) : null;
-  console.log(isLoggedIn)
   return (
     <Router>
       <Routes>
