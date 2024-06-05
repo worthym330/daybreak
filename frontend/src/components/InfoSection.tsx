@@ -5,8 +5,8 @@ import { MdOutlineSupportAgent } from "react-icons/md";
 
 const InfoSection = () => {
   return (
-    <div className="flex max-w-7xl mx-auto py-14 gap-14 flex-col pl-3 pr-4 md:max-w-8xl md:flex-row md:px-6">
-      <div className="flex items-center gap-2">
+    <div className="flex max-w-7xl mx-auto py-14 gap-14 flex-col pl-3 pr-4 md:max-w-8xl md:flex-row md:px-6 mt-[5rem] containerSpacer">
+      <div className="flex items-center gap-4">
         <div className="bg-green-400 rounded-full p-2">
         <CiMap className="text-4xl text-white"/>
         </div>
@@ -18,7 +18,7 @@ const InfoSection = () => {
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-4">
       <div className="rounded-full p-2 bg-orange-400">
         <IoCartOutline className="text-4xl text-white" />
         </div>
@@ -30,7 +30,7 @@ const InfoSection = () => {
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-4">
       <div className="rounded-full p-2 bg-blue-400">
         <MdOutlineSupportAgent className="text-4xl text-white"/>
         </div>
