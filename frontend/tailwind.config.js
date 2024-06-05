@@ -17,6 +17,9 @@ export default {
       fontFamily: {
         'poetsen-one': ['Poetsen One', 'sans-serif'],
       },
+      width: {
+        '50vw': '50vw',
+      },
     },
     container: {
       padding: {

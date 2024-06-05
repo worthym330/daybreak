@@ -25,7 +25,7 @@ const SignOutButton = (props:any) => {
   return (
     <button
       onClick={handleClick}
-      className={`flex bg-transparent items-center px-5 py-2 rounded-full font-bold border-2 hover:bg-gray-100 hover:text-black ${classNames}`}
+      className={`flex bg-transparent items-center rounded-full font-bold border-2 hover:bg-gray-100 hover:text-black ${classNames}`}
     >
       Sign Out
     </button>

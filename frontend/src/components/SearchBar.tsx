@@ -16,18 +16,12 @@ const SearchBar = () => {
 
   const [destination, setDestination] = useState<string>(search.destination);
   const [checkIn, setCheckIn] = useState<Date>(search.checkIn);
-  const [checkOut] = useState<Date>(search.checkOut);
-  const [adultCount] = useState<number>(search.adultCount);
-  const [childCount] = useState<number>(search.childCount);
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
     search.saveSearchValues(
       destination,
       checkIn,
-      checkOut,
-      adultCount,
-      childCount
     );
     navigate("/search");
   };
@@ -60,7 +54,6 @@ const SearchBar = () => {
             onChange={(date) => setCheckIn(date as Date )}
             selectsStart
             startDate={checkIn}
-            endDate={checkOut}
             minDate={minDate}
             maxDate={maxDate}
             placeholderText="Check-in Date"

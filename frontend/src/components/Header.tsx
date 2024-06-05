@@ -654,7 +654,7 @@ const Header = () => {
           {/* ---------- NavBar Ends ---------- */}
         </div>
       ) : (
-        <div className="top-8 flex items-center justify-between px-[10rem] py-4 shadow-md ">
+        <div className="top-8 flex items-center justify-between px-2 w-full lg:px-[10rem] py-4 shadow-md ">
           <span className="text-3xl text-black font-bold tracking-tight">
             <Link to="/">DayBreak</Link>
           </span>
@@ -663,24 +663,24 @@ const Header = () => {
               <>
                 {userLogined?.role === "customer" ? (
                   <Link
-                    className="flex bg-transparent items-center text-black px-5 py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
+                    className="flex bg-transparent items-center text-black p-2 lg:px-5 lg:py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
                     to="/my-bookings"
                   >
                     My Bookings
                   </Link>
                 ) : (
                   <Link
-                    className="flex bg-transparent items-center text-black px-5 py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
+                    className="flex bg-transparent items-center text-black p-2 lg:px-5 lg:py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
                     to="/my-hotels"
                   >
                     My Hotels
                   </Link>
                 )}
-                <SignOutButton classNames="text-black border-black" />
+                <SignOutButton classNames="text-black border-black p-2 lg:px-5 lg:py-2" />
               </>
             ) : (
               <button
-                className="flex bg-transparent items-center text-black px-5 py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
+                className="flex bg-transparent items-center text-black p-2 lg:px-5 lg:py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
                 onClick={handleLoginClick}
               >
                 Login{" "}

@@ -3,10 +3,10 @@ import { FaFacebook, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 const Footer = () => {
   return (
     <div className="bg-footerColor mt-14">
-      <div className="flex flex-col container mx-auto">
-        <div className="flex flex-col md:flex-row bg-footerColor py-10 justify-between">
-          <div className="flex  flex-col w-1/3">
-            <span className="text-3xl text-white font-bold tracking-tight mb-4">
+      <div className="flex flex-col container px-2 md:px-0 md:mx-auto">
+        <div className="flex flex-col md:flex-row bg-footerColor py-10 gap-6 justify-between">
+          <div className="flex flex-row w-full justify-between md:flex-col md:w-1/3">
+            <span className="flex text-3xl text-white font-bold tracking-tight items-center">
               DayBreak
             </span>
             <div className="flex flex-col gap-3">
@@ -18,7 +18,7 @@ const Footer = () => {
               </div>
             </div>
           </div>
-          <div className="flex justify-between w-1/2 gap-6">
+          <div className="flex justify-between w-full md:w-1/2 gap-6">
             <div className="flex flex-col w-2/3 ">
               <span className="text-gray-400 font-bold text-lg">COMPANY</span>
               <span className="text-white text-nowrap font-medium">
