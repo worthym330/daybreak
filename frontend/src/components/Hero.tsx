@@ -1,17 +1,16 @@
-
-
 const Hero = () => {
   return (
-    <div className="absolute bg-transparent top-[32rem] pb-16">
-      <div className="mx-auto flex flex-col gap-2">
-        <h1 className="text-5xl text-white font-bold">
+    <div className="absolute left-0 right-0 top-[25rem] md:top-[30rem] lg:top-[35rem] flex justify-center bg-transparent">
+      <div className="mx-auto max-w-screen-lg px-4 text-center">
+        <h1 className="md:text-6xl text-[2.7rem] text-white font-bold">
           Find your next DayBreak
         </h1>
-        <p className="text-2xl text-white">
-          Search low prices on hotels for your dream vacation....
+        <p className="md:text-2xl text-1xl text-white md:mt-4 mt-0">
+          Search low prices on hotels for your dream vacation...
         </p>
       </div>
     </div>
   );
 };
+
 export default Hero;
