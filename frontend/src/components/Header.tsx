@@ -32,8 +32,8 @@ const initialSignupModalState = {
   index: null,
   id: "",
   data: {
-    firstName:"",
-    lastName:"",
+    firstName: "",
+    lastName: "",
     email: "",
     password: "",
     confirmpassword: "",
@@ -48,8 +48,8 @@ interface login {
 }
 
 interface signup {
-  firstName: string,
-  lastName: string,
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
   confirmpassword: string;
@@ -138,10 +138,10 @@ const Header = () => {
     let payload = {
       email: user.email,
       firstName: user.name?.split(" ")[0],
-      lastName: user.name?.split(" ")[user.name?.split(" ").length-1],
+      lastName: user.name?.split(" ")[user.name?.split(" ").length - 1],
       loginThrough: "google",
       googleToken: token,
-      role:'customer'
+      role: "customer",
     };
     console.log(payload, user.name);
 
@@ -318,7 +318,8 @@ const Header = () => {
                   <hr className="border-gray-300 flex-grow" />
                 </div>
 
-                <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
+                <GoogleOAuthProvider
+                  clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
                 >
                   <div className="w-full flex justify-center">
                     <div className="w-full">
@@ -522,7 +523,7 @@ const Header = () => {
                   <span className="text-gray-400 mx-2">OR</span>
                   <hr className="border-gray-300 flex-grow" />
                 </div>
-              <GoogleOAuthProvider
+                <GoogleOAuthProvider
                   clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
                 >
                   <div className="w-full flex justify-center">
@@ -547,19 +548,19 @@ const Header = () => {
       {renderLoginModal()}
       {renderSignUpModal()}
       {location.pathname === "/" ? (
-        <div className="relative">
+        <div className="relative w-full h-screen">
           <video
             src={videoBg}
             playsInline
             autoPlay
             loop
             muted
-            className="w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover"
           ></video>
 
           {/* ---------- NavBar Starts ---------- */}
-          <div className="w-full absolute top-8 flex items-center justify-between z-10 px-[10rem] bg-transparent">
-            <span className="text-3xl text-white font-bold tracking-tight">
+          <div className="w-full absolute top-8 flex items-center justify-between z-10 px-4 md:px-[10rem] bg-transparent">
+            <span className="text-2xl md:text-3xl text-white font-bold tracking-tight">
               <Link to="/">DayBreak</Link>
             </span>
             <span className="flex space-x-2">
@@ -567,14 +568,14 @@ const Header = () => {
                 <>
                   {userLogined?.role === "customer" ? (
                     <Link
-                      className="flex bg-transparent items-center text-white px-5 py-2 rounded-full font-bold border-2 hover:bg-gray-100 hover:text-black"
+                      className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-gray-100 hover:text-black"
                       to="/my-bookings"
                     >
                       My Bookings
                     </Link>
                   ) : (
                     <Link
-                      className="flex bg-transparent items-center text-white px-5 py-2 rounded-full font-bold border-2 hover:bg-gray-100 hover:text-black"
+                      className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-gray-100 hover:text-black"
                       to="/my-hotels"
                     >
                       My Hotels
@@ -584,7 +585,7 @@ const Header = () => {
                 </>
               ) : (
                 <button
-                  className="flex bg-transparent items-center text-white px-5 py-2 rounded-full font-bold border-2 hover:bg-gray-100 hover:text-black"
+                  className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-gray-100 hover:text-black"
                   onClick={handleLoginClick}
                 >
                   Login{" "}
@@ -597,7 +598,7 @@ const Header = () => {
               )}
               {userLogined?.role === "customer" && (
                 <Link
-                  className="flex bg-transparent items-center text-white px-5 py-2 rounded-full font-bold border-2 hover:bg-gray-100 hover:text-black"
+                  className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-gray-100 hover:text-black"
                   to="/"
                 >
                   <IoCartOutline className="text-2xl" />
@@ -607,7 +608,7 @@ const Header = () => {
 
             {/* Dropdown for Login button */}
             {showDropdown && (
-              <div className="absolute bg-white text-rp-primary-black right-16 top-20 -mt-1 rounded-xl w-72 z-300 flex flex-col items-start shadow-login-card d:right-28 d:top-24">
+              <div className="absolute bg-white text-rp-primary-black right-4 md:right-16 top-20 -mt-1 rounded-xl w-56 md:w-72 z-300 flex flex-col items-start shadow-login-card md:top-24">
                 <button
                   type="button"
                   className="pl-5 pb-4 pt-4 cursor-pointer z-10 w-full text-left align-middle rounded-t-xl hover:bg-rp-light-gray-4"
@@ -654,8 +655,8 @@ const Header = () => {
           {/* ---------- NavBar Ends ---------- */}
         </div>
       ) : (
-        <div className="top-8 flex items-center justify-between px-2 w-full md:px-[10rem] py-4 shadow-md ">
-          <span className="text-3xl text-black font-bold tracking-tight">
+        <div className="top-8 flex items-center justify-between px-2 w-full md:px-10 py-4 shadow-md">
+          <span className="text-2xl md:text-3xl text-black font-bold tracking-tight">
             <Link to="/">DayBreak</Link>
           </span>
           <span className="flex space-x-2">
@@ -663,24 +664,24 @@ const Header = () => {
               <>
                 {userLogined?.role === "customer" ? (
                   <Link
-                    className="flex bg-transparent items-center text-black p-2 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
+                    className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
                     to="/my-bookings"
                   >
                     My Bookings
                   </Link>
                 ) : (
                   <Link
-                    className="flex bg-transparent items-center text-black p-2 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
+                    className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
                     to="/my-hotels"
                   >
                     My Hotels
                   </Link>
                 )}
-                <SignOutButton classNames="text-black border-black p-2 md:px-5 md:py-2" />
+                <SignOutButton classNames="text-black border-black px-3 py-1 md:px-5 md:py-2" />
               </>
             ) : (
               <button
-                className="flex bg-transparent items-center text-black p-2 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
+                className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
                 onClick={handleLoginClick}
               >
                 Login{" "}
@@ -693,7 +694,7 @@ const Header = () => {
             )}
             {userLogined?.role === "customer" && (
               <Link
-                className="flex bg-transparent items-center text-black px-5 py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
+                className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
                 to="/"
               >
                 <IoCartOutline className="text-2xl" />
@@ -703,7 +704,7 @@ const Header = () => {
 
           {/* Dropdown for Login button */}
           {showDropdown && (
-            <div className="absolute bg-gray-100 text-rp-primary-black right-16 top-20 -mt-1 rounded-xl w-72 z-300 flex flex-col items-start shadow-login-card md:right-4 md:top-20 shadow-md">
+            <div className="absolute bg-gray-100 text-rp-primary-black right-4 top-20 -mt-1 rounded-xl w-56 md:w-72 z-300 flex flex-col items-start shadow-login-card md:top-20 shadow-md">
               <button
                 type="button"
                 className="pl-5 pb-4 pt-4 cursor-pointer z-10 w-full text-left align-middle rounded-t-xl hover:bg-rp-light-gray-4"
