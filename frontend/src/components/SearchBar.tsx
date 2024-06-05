@@ -33,45 +33,48 @@ const SearchBar = () => {
 
   return (
     <form
-      onSubmit={handleSubmit}
-      className="absolute z-100 top-[40rem] mt-8 mr-[10rem] p-5 bg-white rounded-xl shadow-md grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols- items-center gap-4"
-    >
-      <div className="flex flex-row items-center flex-1 bg-white p-2">
-        <FaLocationDot size={25} className="mr-2" />
-        <input
-          placeholder="Where are you going?"
-          className="text-md w-full focus:outline-none"
-          value={destination}
-          onChange={(event) => setDestination(event.target.value)}
+  onSubmit={handleSubmit}
+  className="absolute z-100 top-[52rem] left-1/2 transform -translate-x-1/2 -translate-y-1/2 mt-8 p-3 bg-white rounded-full shadow-md w-[50rem]"
+>
+  <div className="flex justify-between items-center w-full space-x-4">
+    <div className="flex items-center bg-white p-2 flex-1">
+      <FaLocationDot size={25} className="mr-2" />
+      <input
+        placeholder="Where are you going?"
+        className="text-md w-full focus:outline-none"
+        value={destination}
+        onChange={(event) => setDestination(event.target.value)}
+      />
+    </div>
+
+    <div className="flex items-center space-x-2 flex-1">
+      <MdCalendarMonth className="text-xl"/>
+      <div className="w-full">
+        <DatePicker
+          selected={checkIn}
+          onChange={(date) => setCheckIn(date as Date )}
+          selectsStart
+          startDate={checkIn}
+          minDate={minDate}
+          maxDate={maxDate}
+          placeholderText="Check-in Date"
+          className="w-full bg-white p-2 focus:outline-none"
+          wrapperClassName="w-full"
         />
       </div>
+    </div>
 
-      <div className="flex items-center space-x-2">
-        <MdCalendarMonth className="text-xl"/>
-        <div className="flex-1">
-          <DatePicker
-            selected={checkIn}
-            onChange={(date) => setCheckIn(date as Date )}
-            selectsStart
-            startDate={checkIn}
-            minDate={minDate}
-            maxDate={maxDate}
-            placeholderText="Check-in Date"
-            className="w-full bg-white p-2 focus:outline-none"
-            wrapperClassName="w-full"
-          />
-        </div>
-      </div>
+    <div className="flex flex-1 justify-end">
+      <button
+        className="w-2/3 bg-[#57BFCE] text-white h-full p-4 font-semibold text-md rounded-full hover:bg-[#2f8794]"
+        type="submit"
+      >
+        Search
+      </button>
+    </div>
+  </div>
+</form>
 
-      <div className="flex gap-2">
-        <button
-          className="w-2/3 bg-[#57BFCE] text-white h-full p-4 font-semibold text-md rounded-xl hover:bg-[#2f8794]"
-          type="submit"
-        >
-          Search
-        </button>
-      </div>
-    </form>
   );
 };
 
