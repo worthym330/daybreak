@@ -14,6 +14,11 @@ interface login {
   loginThrough: string;
 }
 
+export type SignInFormData ={
+  email: string;
+  password: string;
+}
+
 interface CustomJwtPayload extends JwtPayload {
   email?: string;
   name?: string;
