@@ -21,9 +21,9 @@ const Search = () => {
   const searchParams = {
     destination: search.destination,
     checkIn: search.checkIn.toISOString(),
-    checkOut: search.checkOut.toISOString(),
-    adultCount: search.adultCount.toString(),
-    childCount: search.childCount.toString(),
+    // checkOut: search.checkOut.toISOString(),
+    // adultCount: search.adultCount.toString(),
+    // childCount: search.childCount.toString(),
     page: page.toString(),
     stars: selectedStars,
     types: selectedHotelTypes,

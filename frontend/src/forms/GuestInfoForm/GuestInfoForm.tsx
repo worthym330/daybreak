@@ -31,14 +31,14 @@ const GuestInfoForm = ({ hotelId, pricePerNight }: Props) => {
   } = useForm<GuestInfoFormData>({
     defaultValues: {
       checkIn: search.checkIn,
-      checkOut: search.checkOut,
-      adultCount: search.adultCount,
-      childCount: search.childCount,
+      // checkOut: search.checkOut,
+      // adultCount: search.adultCount,
+      // childCount: search.childCount,
     },
   });
 
   const checkIn = watch("checkIn");
-  const checkOut = watch("checkOut");
+  // const checkOut = watch("checkOut");
 
   const minDate = new Date();
   const maxDate = new Date();
@@ -48,9 +48,9 @@ const GuestInfoForm = ({ hotelId, pricePerNight }: Props) => {
     search.saveSearchValues(
       "",
       data.checkIn,
-      data.checkOut,
-      data.adultCount,
-      data.childCount
+      // data.checkOut,
+      // data.adultCount,
+      // data.childCount
     );
     navigate("/sign-in", { state: { from: location } });
   };
@@ -59,9 +59,9 @@ const GuestInfoForm = ({ hotelId, pricePerNight }: Props) => {
     search.saveSearchValues(
       "",
       data.checkIn,
-      data.checkOut,
-      data.adultCount,
-      data.childCount
+      // data.checkOut,
+      // data.adultCount,
+      // data.childCount
     );
     navigate(`/hotel/${hotelId}/booking`);
   };
@@ -82,7 +82,7 @@ const GuestInfoForm = ({ hotelId, pricePerNight }: Props) => {
               onChange={(date) => setValue("checkIn", date as Date)}
               selectsStart
               startDate={checkIn}
-              endDate={checkOut}
+              // endDate={checkOut}
               minDate={minDate}
               maxDate={maxDate}
               placeholderText="Check-in Date"
@@ -90,7 +90,7 @@ const GuestInfoForm = ({ hotelId, pricePerNight }: Props) => {
               wrapperClassName="min-w-full"
             />
           </div>
-          <div>
+          {/* <div>
             <DatePicker
               required
               selected={checkOut}
@@ -104,7 +104,7 @@ const GuestInfoForm = ({ hotelId, pricePerNight }: Props) => {
               className="min-w-full bg-white p-2 focus:outline-none"
               wrapperClassName="min-w-full"
             />
-          </div>
+          </div> */}
           <div className="flex bg-white px-2 py-1 gap-2">
             <label className="items-center flex">
               Adults:
