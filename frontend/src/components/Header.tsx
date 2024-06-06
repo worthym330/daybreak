@@ -11,7 +11,10 @@ import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import * as Yup from "yup";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 import { jwtDecode, JwtPayload } from "jwt-decode";
-import { useQueryClient } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
+import { GiHamburgerMenu } from "react-icons/gi";
+import { HiXMark } from "react-icons/hi2";
+import * as apiClient from "../api-client";
 
 const initialModalState = {
   type: "add",
@@ -83,6 +86,15 @@ const registerSchema = Yup.object().shape({
   role: Yup.string(),
 });
 
+const tabs = [
+  { name: "Guests", href: "#", current: false },
+  { name: "Hotel", href: "#", current: false },
+];
+
+function classNames(...classes: any[]): string {
+  return classes.filter(Boolean).join(" ");
+}
+
 const Header = () => {
   const { showToast } = useAppContext();
   const [showDropdown, setShowDropdown] = useState(false);
@@ -95,6 +107,8 @@ const Header = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const location = useLocation();
+  const [showNav, setShowNav] = useState(false);
+  const [tab, setTab] = useState("Guests");
 
   const handleLoginClick = () => {
     setShowDropdown(!showDropdown);
@@ -177,6 +191,20 @@ const Header = () => {
     setSignupModal((prev) => ({ ...prev, state: false }));
     setModal((prev) => ({ ...prev, state: true }));
   }
+
+  const mutation = useMutation(apiClient.signOut, {
+    onSuccess: async () => {
+      localStorage.removeItem("auth_token");
+      showToast({ message: "Signed Out!", type: "SUCCESS" });
+    },
+    onError: (error: Error) => {
+      showToast({ message: error.message, type: "ERROR" });
+    },
+  });
+
+  const handleClick = () => {
+    mutation.mutate();
+  };
 
   const renderLoginModal = () => {
     const { state, data } = modal;
@@ -559,125 +587,556 @@ const Header = () => {
           ></video>
 
           {/* ---------- NavBar Starts ---------- */}
-          <div className="w-full absolute top-8 flex items-center justify-between z-10 px-4 md:px-[10rem] bg-transparent">
-            <span className="text-2xl md:text-3xl text-white font-bold tracking-tight">
-              <Link to="/">DayBreak</Link>
-            </span>
-            <span className="flex space-x-2">
-              {userLogined !== null ? (
-                <>
-                  {userLogined?.role === "customer" ? (
-                    <Link
-                      className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-gray-100 hover:text-black"
-                      to="/my-bookings"
-                    >
-                      My Bookings
-                    </Link>
-                  ) : (
-                    <Link
-                      className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-gray-100 hover:text-black"
-                      to="/my-hotels"
-                    >
-                      My Hotels
-                    </Link>
+          {showNav ? (
+            <div className="absolute w-full top-0 bg-white z-10">
+              <div className="hidden md:block flex flex-col gap-2 md:px-[10rem]">
+                <div className="w-full pt-4 flex items-center justify-between py-2">
+                  <span className="text-2xl md:text-3xl font-bold tracking-tight flex gap-2">
+                    <span className="flex items-center text-center cursor-pointer">
+                      <HiXMark
+                        className="w-8 h-8"
+                        onClick={() => setShowNav(!showNav)}
+                      />
+                    </span>
+                    <Link to="/">DayBreak</Link>
+                  </span>
+                  <span className="flex space-x-2">
+                    {userLogined !== null ? (
+                      <>
+                        {userLogined?.role === "customer" ? (
+                          <Link
+                            className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
+                            to="/my-bookings"
+                          >
+                            My Bookings
+                          </Link>
+                        ) : (
+                          <Link
+                            className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
+                            to="/my-hotels"
+                          >
+                            My Hotels
+                          </Link>
+                        )}
+                        <SignOutButton classNames="text-black border-black px-3 py-1 md:px-5 md:py-2" />
+                      </>
+                    ) : (
+                      <button
+                        className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
+                        onClick={handleLoginClick}
+                      >
+                        Login{" "}
+                        {arrowDirection === "down" ? (
+                          <IoIosArrowDown className="ml-3 text-xl" />
+                        ) : (
+                          <IoIosArrowUp className="ml-3 text-xl" />
+                        )}
+                      </button>
+                    )}
+                    {userLogined?.role === "customer" && (
+                      <Link
+                        className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
+                        to="/"
+                      >
+                        <IoCartOutline className="text-2xl" />
+                      </Link>
+                    )}
+                  </span>
+
+                  {/* Dropdown for Login button */}
+                  {showDropdown && (
+                    <div className="absolute bg-gray-100 text-rp-primary-black right-4 top-20 -mt-1 rounded-xl w-56 md:w-72 z-300 flex flex-col items-start shadow-login-card md:top-20 shadow-md">
+                      <button
+                        type="button"
+                        className="pl-5 pb-4 pt-4 cursor-pointer z-10 w-full text-left align-middle rounded-t-xl hover:bg-rp-light-gray-4"
+                        onClick={() => {
+                          setShowDropdown(false);
+                          setModal((prev) => ({ ...prev, state: true }));
+                        }}
+                      >
+                        Login
+                      </button>
+
+                      <button
+                        type="button"
+                        className="pl-5 pb-3 cursor-pointer z-10 w-full text-left align-middle pt-2 border-b border-rp-gray-divider hover:bg-rp-light-gray-4"
+                        onClick={() => {
+                          setShowDropdown(false);
+                          setSignupModal((prev) => ({ ...prev, state: true }));
+                        }}
+                      >
+                        Sign Up
+                      </button>
+
+                      <button
+                        type="button"
+                        className="pl-5 pb-4 cursor-pointer z-10 w-full text-left align-middle pt-3 hover:bg-rp-light-gray-4"
+                        onClick={() => {
+                          setShowDropdown(false);
+                          navigate("/partner/sign-in");
+                        }}
+                      >
+                        Hotel Login
+                      </button>
+
+                      <button
+                        type="button"
+                        className="pl-5 pb-4 cursor-pointer z-10 w-full text-left align-middle pt-2 rounded-b-xl hover:bg-rp-light-gray-4"
+                      >
+                        List My Hotel
+                      </button>
+                    </div>
                   )}
-                  <SignOutButton classNames="text-white" />
-                </>
-              ) : (
-                <button
-                  className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-gray-100 hover:text-black"
-                  onClick={handleLoginClick}
-                >
-                  Login{" "}
-                  {arrowDirection === "down" ? (
-                    <IoIosArrowDown className="ml-3 text-xl" />
-                  ) : (
-                    <IoIosArrowUp className="ml-3 text-xl" />
-                  )}
-                </button>
-              )}
-              {userLogined?.role === "customer" && (
-                <Link
-                  className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-gray-100 hover:text-black"
-                  to="/"
-                >
-                  <IoCartOutline className="text-2xl" />
-                </Link>
-              )}
-            </span>
-
-            {/* Dropdown for Login button */}
-            {showDropdown && (
-              <div className="absolute bg-white text-rp-primary-black right-4 md:right-16 top-20 -mt-1 rounded-xl w-56 md:w-72 z-300 flex flex-col items-start shadow-login-card md:top-24">
-                <button
-                  type="button"
-                  className="pl-5 pb-4 pt-4 cursor-pointer z-10 w-full text-left align-middle rounded-t-xl hover:bg-rp-light-gray-4"
-                  onClick={() => {
-                    setShowDropdown(false);
-                    setModal((prev) => ({ ...prev, state: true }));
-                  }}
-                >
-                  Login
-                </button>
-
-                <button
-                  type="button"
-                  className="pl-5 pb-3 cursor-pointer z-10 w-full text-left align-middle pt-2 border-b border-rp-gray-divider hover:bg-rp-light-gray-4"
-                  onClick={() => {
-                    setShowDropdown(false);
-                    setSignupModal((prev) => ({ ...prev, state: true }));
-                  }}
-                >
-                  Sign Up
-                </button>
-
-                <button
-                  type="button"
-                  className="pl-5 pb-4 cursor-pointer z-10 w-full text-left align-middle pt-3 hover:bg-rp-light-gray-4"
-                  onClick={() => {
-                    setShowDropdown(false);
-                    navigate("/partner/sign-in");
-                  }}
-                >
-                  Hotel Login
-                </button>
-
-                <button
-                  type="button"
-                  className="pl-5 pb-4 cursor-pointer z-10 w-full text-left align-middle pt-2 rounded-b-xl hover:bg-rp-light-gray-4"
-                >
-                  List My Hotel
-                </button>
+                  {/* Dropdown End */}
+                </div>
+                <div className="w-full flex px-16 py-4">
+                  <div className="flex flex-col md:w-1/2 py-3 mr-20">
+                    <span className="pb-3 text-[#193153] tracking-wider text-4xl">
+                      Unforgettable resorts and memories await
+                    </span>
+                    <Link className="py-3" to="/about-us">
+                      About DayBreak
+                    </Link>
+                  </div>
+                  <div className="flex gap-4 md:w-1/2 justify-center">
+                    <div className="text-nowrap flex flex-col gap-2">
+                      <span className="text-nowrap">Guests</span>
+                      <span className="text-nowrap">My Favourite</span>
+                      <span className="text-nowrap">Browse Hotels</span>
+                      <span className="text-nowrap">Help</span>
+                      <span className="text-nowrap"></span>
+                      <span className="text-nowrap"></span>
+                    </div>
+                    <div className="text-nowrap flex flex-col gap-2">
+                      <span className="text-nowrap">Hotels</span>
+                      <span className="text-nowrap">List My Hotels</span>
+                      <span className="text-nowrap">Marketplace</span>
+                      <span className="text-nowrap">Help</span>
+                      <span className="text-nowrap"></span>
+                      <span className="text-nowrap"></span>
+                    </div>
+                  </div>
+                </div>
               </div>
-            )}
-            {/* Dropdown End */}
-          </div>
+              <div className="block md:hidden flex flex-col gap-2">
+                <div className="bg-mobileColor text-white w-full h-screen p-6 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center mb-6 w-full">
+                      <span className="flex items-center text-center cursor-pointer">
+                        <HiXMark
+                          className="w-8 h-8"
+                          onClick={() => setShowNav(!showNav)}
+                        />
+                      </span>
+                      <div className="ml-4 w-full">
+                        {tabs.map((e: any) => (
+                          <button
+                            className={classNames(
+                              e.name === tab
+                                ? "bg-white text-mobileColor  border-mobileColor"
+                                : "text-white hover:text-mobileColor hover:bg-white border-white",
+                              "rounded-md px-3 py-2 text-sm font-medium w-1/2 border"
+                            )}
+                            onClick={() => setTab(e.name)}
+                          >
+                            {e.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="my-6 ml-8">
+                      {tab === "Guests" ? (
+                        <ul className="space-y-6">
+                          <li>My Favorites</li>
+                          <li>Browse Hotels</li>
+                          <li>Help</li>
+                        </ul>
+                      ) : (
+                        <ul className="space-y-6">
+                          <li>List My Hotels</li>
+                          <li>Marketplace</li>
+                          <li>Help</li>
+                        </ul>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    {userLogined !== null ? (
+                      <button
+                        className="bg-red-500 text-white px-3 py-2 mb-4 w-full rounded-md"
+                        onClick={handleClick}
+                      >
+                        Log out
+                      </button>
+                    ) : (
+                      <>
+                        <button
+                          className="bg-teal-500 text-black px-3 py-2 mb-4 w-full rounded-md"
+                          onClick={() => {
+                            setSignupModal((prev) => ({
+                              ...prev,
+                              state: true,
+                            }));
+                          }}
+                        >
+                          Sign Up
+                        </button>
+                        <button
+                          className="bg-blue-400 text-black px-3 py-2 mb-4 w-full rounded-md"
+                          onClick={() => {
+                            setModal((prev) => ({ ...prev, state: true }));
+                          }}
+                        >
+                          Login
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="w-full absolute top-4 flex items-center justify-between z-10 px-4 md:px-[10rem] bg-transparent">
+              <span className="text-2xl md:text-3xl text-white font-bold tracking-tight flex gap-2">
+                <span className="flex items-center text-center cursor-pointer">
+                  <GiHamburgerMenu
+                    className="w-8 h-8"
+                    onClick={() => setShowNav(!showNav)}
+                  />
+                </span>
+                <Link to="/">DayBreak</Link>
+              </span>
+              <span className="flex space-x-2">
+                {userLogined !== null ? (
+                  <>
+                    {userLogined?.role === "customer" ? (
+                      <Link
+                        className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-gray-100 hover:text-black"
+                        to="/my-bookings"
+                      >
+                        My Bookings
+                      </Link>
+                    ) : (
+                      <Link
+                        className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-gray-100 hover:text-black"
+                        to="/my-hotels"
+                      >
+                        My Hotels
+                      </Link>
+                    )}
+                    <SignOutButton classNames="text-white" />
+                  </>
+                ) : (
+                  <button
+                    className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-gray-100 hover:text-black"
+                    onClick={handleLoginClick}
+                  >
+                    Login{" "}
+                    {arrowDirection === "down" ? (
+                      <IoIosArrowDown className="ml-3 text-xl" />
+                    ) : (
+                      <IoIosArrowUp className="ml-3 text-xl" />
+                    )}
+                  </button>
+                )}
+                {userLogined?.role === "customer" && (
+                  <Link
+                    className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-gray-100 hover:text-black"
+                    to="/"
+                  >
+                    <IoCartOutline className="text-2xl" />
+                  </Link>
+                )}
+              </span>
+
+              {/* Dropdown for Login button */}
+              {showDropdown && (
+                <div className="absolute bg-white text-rp-primary-black right-4 md:right-16 top-20 -mt-1 rounded-xl w-56 md:w-72 z-300 flex flex-col items-start shadow-login-card md:top-24">
+                  <button
+                    type="button"
+                    className="pl-5 pb-4 pt-4 cursor-pointer z-10 w-full text-left align-middle rounded-t-xl hover:bg-rp-light-gray-4"
+                    onClick={() => {
+                      setShowDropdown(false);
+                      setModal((prev) => ({ ...prev, state: true }));
+                    }}
+                  >
+                    Login
+                  </button>
+
+                  <button
+                    type="button"
+                    className="pl-5 pb-3 cursor-pointer z-10 w-full text-left align-middle pt-2 border-b border-rp-gray-divider hover:bg-rp-light-gray-4"
+                    onClick={() => {
+                      setShowDropdown(false);
+                      setSignupModal((prev) => ({ ...prev, state: true }));
+                    }}
+                  >
+                    Sign Up
+                  </button>
+
+                  <button
+                    type="button"
+                    className="pl-5 pb-4 cursor-pointer z-10 w-full text-left align-middle pt-3 hover:bg-rp-light-gray-4"
+                    onClick={() => {
+                      setShowDropdown(false);
+                      navigate("/partner/sign-in");
+                    }}
+                  >
+                    Hotel Login
+                  </button>
+
+                  <button
+                    type="button"
+                    className="pl-5 pb-4 cursor-pointer z-10 w-full text-left align-middle pt-2 rounded-b-xl hover:bg-rp-light-gray-4"
+                  >
+                    List My Hotel
+                  </button>
+                </div>
+              )}
+              {/* Dropdown End */}
+            </div>
+          )}
           {/* ---------- NavBar Ends ---------- */}
         </div>
       ) : (
-        <div className="top-8 flex items-center justify-between px-2 w-full md:px-10 py-4 shadow-md">
-          <span className="text-2xl md:text-3xl text-black font-bold tracking-tight">
-            <Link to="/">DayBreak</Link>
-          </span>
+        showNav ? (
+          <div className="absolute w-full top-0 bg-mobileColor text-white z-10">
+            <div className="hidden md:block flex flex-col gap-2 md:px-10">
+              <div className="w-full pt-4 flex items-center justify-between py-2">
+                <span className="text-2xl md:text-3xl font-bold tracking-tight flex gap-2">
+                  <span className="flex items-center text-center cursor-pointer">
+                    <HiXMark
+                      className="w-8 h-8"
+                      onClick={() => setShowNav(!showNav)}
+                    />
+                  </span>
+                  <Link to="/">DayBreak</Link>
+                </span>
+                <span className="flex space-x-2">
+                  {userLogined !== null ? (
+                    <>
+                      {userLogined?.role === "customer" ? (
+                        <Link
+                          className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
+                          to="/my-bookings"
+                        >
+                          My Bookings
+                        </Link>
+                      ) : (
+                        <Link
+                          className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
+                          to="/my-hotels"
+                        >
+                          My Hotels
+                        </Link>
+                      )}
+                      <SignOutButton classNames="text-black border-black px-3 py-1 md:px-5 md:py-2" />
+                    </>
+                  ) : (
+                    <button
+                      className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-white hover:bg-gray-100 hover:text-black"
+                      onClick={handleLoginClick}
+                    >
+                      Login{" "}
+                      {arrowDirection === "down" ? (
+                        <IoIosArrowDown className="ml-3 text-xl" />
+                      ) : (
+                        <IoIosArrowUp className="ml-3 text-xl" />
+                      )}
+                    </button>
+                  )}
+                  {userLogined?.role === "customer" && (
+                    <Link
+                      className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-white hover:bg-gray-100 hover:text-black"
+                      to="/"
+                    >
+                      <IoCartOutline className="text-2xl" />
+                    </Link>
+                  )}
+                </span>
+
+                {/* Dropdown for Login button */}
+                {showDropdown && (
+                  <div className="absolute bg-gray-100 text-rp-primary-black right-4 top-20 -mt-1 rounded-xl w-56 md:w-72 z-300 flex flex-col items-start shadow-login-card md:top-20 shadow-md">
+                    <button
+                      type="button"
+                      className="pl-5 pb-4 pt-4 cursor-pointer text-black z-10 w-full text-left align-middle rounded-t-xl hover:bg-rp-light-gray-4"
+                      onClick={() => {
+                        setShowDropdown(false);
+                        setModal((prev) => ({ ...prev, state: true }));
+                      }}
+                    >
+                      Login
+                    </button>
+
+                    <button
+                      type="button"
+                      className="pl-5 pb-3 cursor-pointer text-black z-10 w-full text-left align-middle pt-2 border-b border-rp-gray-divider hover:bg-rp-light-gray-4"
+                      onClick={() => {
+                        setShowDropdown(false);
+                        setSignupModal((prev) => ({ ...prev, state: true }));
+                      }}
+                    >
+                      Sign Up
+                    </button>
+
+                    <button
+                      type="button"
+                      className="pl-5 pb-4 cursor-pointer text-black z-10 w-full text-left align-middle pt-3 hover:bg-rp-light-gray-4"
+                      onClick={() => {
+                        setShowDropdown(false);
+                        navigate("/partner/sign-in");
+                      }}
+                    >
+                      Hotel Login
+                    </button>
+
+                    <button
+                      type="button"
+                      className="pl-5 pb-4 cursor-pointer text-black z-10 w-full text-left align-middle pt-2 rounded-b-xl hover:bg-rp-light-gray-4"
+                    >
+                      List My Hotel
+                    </button>
+                  </div>
+                )}
+                {/* Dropdown End */}
+              </div>
+              <div className="w-full flex px-16 py-4">
+                <div className="flex flex-col md:w-1/2 py-3 mr-20">
+                  <span className="pb-3 text-white tracking-wider text-4xl">
+                    Unforgettable resorts and memories await
+                  </span>
+                  <Link className="py-3" to="/about-us">
+                    About DayBreak
+                  </Link>
+                </div>
+                <div className="flex gap-4 md:w-1/2 justify-center">
+                  <div className="text-nowrap flex flex-col gap-2">
+                    <span className="text-nowrap text-gray-500">Guests</span>
+                    <span className="text-nowrap text-lg">My Favourite</span>
+                    <span className="text-nowrap text-lg">Browse Hotels</span>
+                    <span className="text-nowrap text-lg">Help</span>
+                    <span className="text-nowrap text-lg"></span>
+                    <span className="text-nowrap text-lg"></span>
+                  </div>
+                  <div className="text-nowrap flex flex-col gap-2">
+                    <span className="text-nowrap text-gray-500">Hotels</span>
+                    <span className="text-nowrap text-lg">List My Hotels</span>
+                    <span className="text-nowrap text-lg">Marketplace</span>
+                    <span className="text-nowrap text-lg">Help</span>
+                    <span className="text-nowrap"></span>
+                    <span className="text-nowrap"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="block md:hidden flex flex-col gap-2">
+              <div className="bg-mobileColor text-white w-full h-screen p-6 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center mb-6 w-full">
+                    <span className="flex items-center text-center cursor-pointer">
+                      <HiXMark
+                        className="w-8 h-8"
+                        onClick={() => setShowNav(!showNav)}
+                      />
+                    </span>
+                    <div className="ml-4 w-full">
+                      {tabs.map((e: any) => (
+                        <button
+                          className={classNames(
+                            e.name === tab
+                              ? "bg-white text-mobileColor  border-mobileColor"
+                              : "text-white hover:text-mobileColor hover:bg-white border-white",
+                            "rounded-md px-3 py-2 text-sm font-medium w-1/2 border"
+                          )}
+                          onClick={() => setTab(e.name)}
+                        >
+                          {e.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="my-6 ml-8">
+                    {tab === "Guests" ? (
+                      <ul className="space-y-6">
+                        <li>My Favorites</li>
+                        <li>Browse Hotels</li>
+                        <li>Help</li>
+                      </ul>
+                    ) : (
+                      <ul className="space-y-6">
+                        <li>List My Hotels</li>
+                        <li>Marketplace</li>
+                        <li>Help</li>
+                      </ul>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  {userLogined !== null ? (
+                    <button
+                      className="bg-red-500 text-white px-3 py-2 mb-4 w-full rounded-md"
+                      onClick={handleClick}
+                    >
+                      Log out
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        className="bg-teal-500 text-black px-3 py-2 mb-4 w-full rounded-md"
+                        onClick={() => {
+                          setSignupModal((prev) => ({
+                            ...prev,
+                            state: true,
+                          }));
+                        }}
+                      >
+                        Sign Up
+                      </button>
+                      <button
+                        className="bg-blue-400 text-black px-3 py-2 mb-4 w-full rounded-md"
+                        onClick={() => {
+                          setModal((prev) => ({ ...prev, state: true }));
+                        }}
+                      >
+                        Login
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : 
+        <div className="top-4 flex items-center justify-between px-2 w-full md:px-10 py-4 shadow-md">
+          <span className="text-2xl md:text-3xl text-black font-bold tracking-tight flex gap-2">
+                <span className="flex items-center text-center cursor-pointer">
+                  <GiHamburgerMenu
+                    className="w-8 h-8"
+                    onClick={() => setShowNav(!showNav)}
+                  />
+                </span>
+                <Link to="/">DayBreak</Link>
+              </span>
           <span className="flex space-x-2">
             {userLogined !== null ? (
               <>
                 {userLogined?.role === "customer" ? (
                   <Link
-                    className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
+                    className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-white hover:bg-gray-100 hover:text-black"
                     to="/my-bookings"
                   >
                     My Bookings
                   </Link>
                 ) : (
                   <Link
-                    className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
+                    className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-white hover:bg-gray-100 hover:text-black"
                     to="/my-hotels"
                   >
                     My Hotels
                   </Link>
                 )}
-                <SignOutButton classNames="text-black border-black px-3 py-1 md:px-5 md:py-2" />
+                <SignOutButton classNames="text-black border-white px-3 py-1 md:px-5 md:py-2" />
               </>
             ) : (
               <button
