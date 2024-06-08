@@ -214,21 +214,34 @@ const Header = () => {
         validationSchema={loginSchema}
         onSubmit={async (values: login) => {
           setModal((prev) => ({ ...prev, state: false, loading: true }));
-          const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
-            method: "POST",
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(values),
-          });
-          const body = await response.json();
-          setModal((prev) => ({ ...prev, state: false, loading: false }));
-          showToast({ message: "Sign in Successful!", type: "SUCCESS" });
-          setShowDropdown(false);
-          localStorage.setItem("auth_token", JSON.stringify(body.user));
-          if (!response.ok) {
-            throw new Error(body.message);
+          try {
+            const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+              method: "POST",
+              credentials: "include",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(values),
+            });
+
+            const body = await response.json();
+            setModal((prev) => ({ ...prev, state: false, loading: false }));
+
+            if (!response.ok) {
+              showToast({ message: body.message, type: "ERROR" });
+              throw new Error(body.message);
+            }
+
+            showToast({ message: "Sign in Successful!", type: "SUCCESS" });
+            setShowDropdown(false);
+            localStorage.setItem("auth_token", JSON.stringify(body.user));
+          } catch (error:any) {
+            console.error("Error during sign in:", error);
+            setModal((prev) => ({ ...prev, state: false, loading: false }));
+            showToast({
+              message: error.message || "An error occurred during sign in",
+              type: "ERROR",
+            });
           }
         }}
       >

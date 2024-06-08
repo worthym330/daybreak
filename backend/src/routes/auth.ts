@@ -71,6 +71,11 @@ router.post(
         return res.status(400).json({ message: "Invalid login request" });
       }
 
+      // Check if the user's status is true
+      if (!user.status) {
+        return res.status(403).json({ message: 'Please contact the admin to activate your account' });
+      }
+
       const token = jwt.sign(
         { userId: user.id },
         process.env.JWT_SECRET_KEY as string,
