@@ -13,6 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/mongoose": "^5.11.97",
+    "aws-sdk": "^2.1637.0",
     "axios": "^1.7.2",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.2.0",

@@ -5,6 +5,7 @@ import Hotel from "../models/hotel";
 import verifyToken from "../middleware/auth";
 import { body } from "express-validator";
 import { HotelType } from "../shared/types";
+import AWS from 'aws-sdk';
 
 const router = express.Router();
 
@@ -15,6 +16,14 @@ const upload = multer({
     fileSize: 5 * 1024 * 1024, // 5MB
   },
 });
+
+AWS.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION
+});
+
+export const s3 = new AWS.S3();
 
 router.post(
   "/",
@@ -119,10 +128,16 @@ router.put(
 
 async function uploadImages(imageFiles: Express.Multer.File[]) {
   const uploadPromises = imageFiles.map(async (image) => {
-    const b64 = Buffer.from(image.buffer).toString("base64");
-    let dataURI = "data:" + image.mimetype + ";base64," + b64;
-    const res = await cloudinary.v2.uploader.upload(dataURI);
-    return res.url;
+    const params = {
+      Bucket:'daybreakimages',
+      Key: `images/${Date.now()}_${image.originalname}`,
+      Body: image.buffer,
+      ContentType: image.mimetype,
+      // ACL: 'public-read',
+    };
+
+    const res = await s3.upload(params).promise();
+    return res.Location;
   });
 
   const imageUrls = await Promise.all(uploadPromises);
