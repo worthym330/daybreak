@@ -1,98 +1,98 @@
-// import { useQuery } from "react-query";
-// import * as apiClient from "../api-client";
+import { useQuery } from "react-query";
+import * as apiClient from "../api-client";
 import LatestDestinationCard from "../components/LastestDestinationCard";
 import { useNavigate } from "react-router-dom";
-import hotelImg1 from "../assets/taj.jpg";
+// import hotelImg1 from "../assets/taj.jpg";
 import Card from "../components/Card";
 
 const Home = () => {
-  // const { data: hotels } = useQuery("fetchQuery", () =>
-  //   apiClient.fetchHotels()
-  // );
+  const { data: hotels } = useQuery("fetchQuery", () =>
+    apiClient.fetchHotels()
+  );
 
-  // const topRowHotels = hotels?.slice(0, 2) || [];
+  const topRowHotels = hotels?.slice(0, 2) || [];
   // const bottomRowHotels = hotels?.slice(2) || [];
   const navigate = useNavigate();
 
-  const topRowHotels = [
-    {
-      id: 1,
-      image: hotelImg1,
-      name: "Taj Hotel",
-      location: "Mumbai, India",
-      rating: 4.9,
-    },
-    {
-      id: 2,
-      image: hotelImg1,
-      name: "Taj Hotel",
-      location: "Mumbai, India",
-      rating: 4.9,
-    },
-    {
-      id: 3,
-      image: hotelImg1,
-      name: "Taj Hotel",
-      location: "Mumbai, India",
-      rating: 4.9,
-    },
-    {
-      id: 4,
-      image: hotelImg1,
-      name: "Taj Hotel",
-      location: "Mumbai, India",
-      rating: 4.9,
-    },
-    {
-      id: 5,
-      image: hotelImg1,
-      name: "Taj Hotel",
-      location: "Mumbai, India",
-      rating: 4.9,
-    },
-    {
-      id: 6,
-      image: hotelImg1,
-      name: "Taj Hotel",
-      location: "Mumbai, India",
-      rating: 4.9,
-    },
-  ];
+  // const topRowHotels = [
+  //   {
+  //     id: 1,
+  //     image: hotelImg1,
+  //     name: "Taj Hotel",
+  //     location: "Mumbai, India",
+  //     rating: 4.9,
+  //   },
+  //   {
+  //     id: 2,
+  //     image: hotelImg1,
+  //     name: "Taj Hotel",
+  //     location: "Mumbai, India",
+  //     rating: 4.9,
+  //   },
+  //   {
+  //     id: 3,
+  //     image: hotelImg1,
+  //     name: "Taj Hotel",
+  //     location: "Mumbai, India",
+  //     rating: 4.9,
+  //   },
+  //   {
+  //     id: 4,
+  //     image: hotelImg1,
+  //     name: "Taj Hotel",
+  //     location: "Mumbai, India",
+  //     rating: 4.9,
+  //   },
+  //   {
+  //     id: 5,
+  //     image: hotelImg1,
+  //     name: "Taj Hotel",
+  //     location: "Mumbai, India",
+  //     rating: 4.9,
+  //   },
+  //   {
+  //     id: 6,
+  //     image: hotelImg1,
+  //     name: "Taj Hotel",
+  //     location: "Mumbai, India",
+  //     rating: 4.9,
+  //   },
+  // ];
 
-  const bottomRowHotels = [
-    {
-      id: 1,
-      image: [hotelImg1, hotelImg1, hotelImg1, hotelImg1, hotelImg1],
-      name: "Taj Hotel",
-      location: "Mumbai, India",
-      rating: 4.9,
-      price: 1000,
-    },
-    {
-      id: 2,
-      image: [hotelImg1, hotelImg1, hotelImg1, hotelImg1, hotelImg1],
-      name: "Taj Hotel",
-      location: "Goa, India",
-      rating: 4.9,
-      price: 1000,
-    },
-    {
-      id: 3,
-      image: [hotelImg1, hotelImg1, hotelImg1, hotelImg1, hotelImg1],
-      name: "Taj Hotel",
-      location: "Kannor, India",
-      rating: 4.9,
-      price: 1000,
-    },
-    {
-      id: 4,
-      image: [hotelImg1, hotelImg1, hotelImg1, hotelImg1, hotelImg1],
-      name: "Taj Hotel",
-      location: "Lakshwadweep, India",
-      rating: 4.9,
-      price: 1000,
-    },
-  ];
+  // const bottomRowHotels = [
+  //   {
+  //     id: 1,
+  //     image: [hotelImg1, hotelImg1, hotelImg1, hotelImg1, hotelImg1],
+  //     name: "Taj Hotel",
+  //     location: "Mumbai, India",
+  //     rating: 4.9,
+  //     price: 1000,
+  //   },
+  //   {
+  //     id: 2,
+  //     image: [hotelImg1, hotelImg1, hotelImg1, hotelImg1, hotelImg1],
+  //     name: "Taj Hotel",
+  //     location: "Goa, India",
+  //     rating: 4.9,
+  //     price: 1000,
+  //   },
+  //   {
+  //     id: 3,
+  //     image: [hotelImg1, hotelImg1, hotelImg1, hotelImg1, hotelImg1],
+  //     name: "Taj Hotel",
+  //     location: "Kannor, India",
+  //     rating: 4.9,
+  //     price: 1000,
+  //   },
+  //   {
+  //     id: 4,
+  //     image: [hotelImg1, hotelImg1, hotelImg1, hotelImg1, hotelImg1],
+  //     name: "Taj Hotel",
+  //     location: "Lakshwadweep, India",
+  //     rating: 4.9,
+  //     price: 1000,
+  //   },
+  // ];
 
   return (
     <div className="space-y-3">
@@ -122,7 +122,7 @@ const Home = () => {
 
         <div className="grid gap-4">
           <div className="grid md:grid-cols-3 grid-cols-1 gap-4">
-            {bottomRowHotels.map((hotel: any) => {
+            {topRowHotels.map((hotel: any) => {
               return <Card hotel={hotel} key={hotel.id} />;
             })}
           </div>

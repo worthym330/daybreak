@@ -8,13 +8,13 @@ const Card = ({ hotel }: any) => {
   const prevSlide = (event: any) => {
     event.stopPropagation();
     const isFirstSlide = currentIndex === 0;
-    const newIndex = isFirstSlide ? hotel.image.length - 1 : currentIndex - 1;
+    const newIndex = isFirstSlide ? hotel.imageUrls.length - 1 : currentIndex - 1;
     setCurrentIndex(newIndex);
   };
 
   const nextSlide = (event: any) => {
     event.stopPropagation();
-    const isLastSlide = currentIndex === hotel.image.length - 1;
+    const isLastSlide = currentIndex === hotel.imageUrls.length - 1;
     const newIndex = isLastSlide ? 0 : currentIndex + 1;
     setCurrentIndex(newIndex);
   };
@@ -26,10 +26,10 @@ const Card = ({ hotel }: any) => {
   return (
     <div className="w-full cursor-pointer overflow-hidden rounded-md max-w-sm shadow-lg block">
       <div className="relative">
-        <Link to={`/detail/${hotel.id}`}>
+        <Link to={`/detail/${hotel._id}`}>
           <img
             className="w-full"
-            src={hotel.image[currentIndex]}
+            src={hotel.imageUrls[currentIndex]}
             alt={hotel.name}
           />
         </Link>
@@ -53,7 +53,7 @@ const Card = ({ hotel }: any) => {
           </button>
         </div>
         <div className="absolute top-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-          {hotel.image.map((_: any, index: any) => (
+          {hotel.imageUrls.map((_: any, index: any) => (
             <div
               key={index}
               className={`h-2 w-2 rounded-full ${
@@ -65,7 +65,7 @@ const Card = ({ hotel }: any) => {
         </div>
       </div>
       <div className="px-6 py-4 flex gap-2 justify-between">
-        <Link to={`/detail/${hotel.id}`}>
+        <Link to={`/detail/${hotel._id}`}>
           <div className="font-bold text-xl mb-2">{hotel.name}</div>
           <p className="text-gray-700 text-base">Starting at ${hotel.price}</p>
           <p className="text-blue-500">{hotel.description}</p>

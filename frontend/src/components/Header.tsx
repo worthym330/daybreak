@@ -44,7 +44,7 @@ const initialSignupModalState = {
   },
 };
 
-interface login {
+export interface login {
   email: string;
   password: string;
   loginThrough: string;
@@ -59,12 +59,12 @@ interface signup {
   role: string;
 }
 
-interface CustomJwtPayload extends JwtPayload {
+export interface CustomJwtPayload extends JwtPayload {
   email?: string;
   name?: string;
 }
 
-const loginSchema = Yup.object().shape({
+export const loginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required"),
   password: Yup.string()
     .required("Password is required")
@@ -917,20 +917,20 @@ const Header = () => {
                     <>
                       {userLogined?.role === "customer" ? (
                         <Link
-                          className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
+                          className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-white hover:bg-gray-100 hover:text-black hover:border-black"
                           to="/my-bookings"
                         >
                           My Bookings
                         </Link>
                       ) : (
                         <Link
-                          className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
+                          className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-white hover:bg-gray-100 hover:text-black hover:border-black"
                           to="/my-hotels"
                         >
                           My Hotels
                         </Link>
                       )}
-                      <SignOutButton classNames="text-black border-black px-3 py-1 md:px-5 md:py-2" />
+                      <SignOutButton classNames="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-white hover:bg-gray-100 hover:text-black hover:border-black" />
                     </>
                   ) : (
                     <button

@@ -5,15 +5,25 @@ import { AiFillStar } from "react-icons/ai";
 import GuestInfoForm from "../forms/GuestInfoForm/GuestInfoForm";
 
 const Detail = () => {
-  const { hotelId } = useParams();
+  const { hotelId, name } = useParams();
 
-  const { data: hotel } = useQuery(
-    "fetchHotelById",
+  const hotelQuery = useQuery(
+    ["fetchHotelById", hotelId],
     () => apiClient.fetchHotelById(hotelId || ""),
     {
       enabled: !!hotelId,
     }
   );
+
+  const hotelByNameQuery = useQuery(
+    ["fetchHotelByName", name],
+    () => apiClient.fetchHotelByName(name || ""),
+    {
+      enabled: !hotelId && !!name,
+    }
+  );
+
+  const hotel = hotelQuery.data || hotelByNameQuery.data;
 
   if (!hotel) {
     return <></>;
