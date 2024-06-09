@@ -7,10 +7,10 @@ type Props = {
 
 const TopDestinationCard = ({ hotel }: Props) => {
   return (
-    <div className="flex lg:flex-wrap mt-3 pl-5 lg:px-0">
+    <div className="flex flex-wrap justify-center lg:justify-start mt-3 px-2 lg:px-0">
       <Link
         to={`/detail/${hotel._id}`}
-        className="min-w-[300px] lg:min-w-auto lg:w-1/4 pr-5 mb-3"
+        className="flex-1 lg:w-1/4 px-2 mb-4 lg:mb-0"
       >
         <div className="relative group overflow-hidden">
           <img
