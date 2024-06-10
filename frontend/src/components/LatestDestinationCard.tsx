@@ -25,7 +25,7 @@ const LatestDestinationCard = ({ hotel }: any) => {
 
   const shareInfo = (hotel: any) => {
     const url = `${window.location.origin}/detail/${hotel._id}`;
-    navigator.clipboard.writeText(url)
+    navigator.clipboard.writeText(url);
   };
 
   return (
@@ -39,7 +39,9 @@ const LatestDestinationCard = ({ hotel }: any) => {
           />
         </Link>
         <div className="absolute bottom-0 left-0 bg-gradient-to-t from-black via-transparent to-transparent w-full p-4 text-white">
-          <h2 className="text-sm font-semibold">{hotel.city}, {' '} {hotel.country}</h2>
+          <h2 className="text-sm font-semibold">
+            `{hotel.city}, {hotel.country}`
+          </h2>
         </div>
         <div className="absolute top-1/2 transform -translate-y-1/2 left-0 hover:bg-opacity-70">
           <button
@@ -73,18 +75,21 @@ const LatestDestinationCard = ({ hotel }: any) => {
         <Link to={`/detail/${hotel._id}`}>
           <div className="font-bold text-xl mb-2">{hotel.name}</div>
           <p className="text-base">
-            Starting at{" "}
-            <span className="font-bold">${hotel.price}</span>
+            Starting at <span className="font-bold">${hotel.price}</span>
           </p>
           <p className="">{hotel.description}</p>
         </Link>
         <div className="flex justify-between">
           <div className="flex gap-2">
-            <span> {hotel?.starRating && <div className="flex flex-row items-center">
-              <AiFillStar className="w-6 h-6 "/>
-              <span>{hotel.starRating}</span>
-
-            </div> }</span>
+            <span>
+              {" "}
+              {hotel?.starRating && (
+                <div className="flex flex-row items-center">
+                  <AiFillStar className="w-6 h-6 " />
+                  <span>{hotel.starRating}</span>
+                </div>
+              )}
+            </span>
           </div>
           <button
             className="flex items-center text-gray-300"
