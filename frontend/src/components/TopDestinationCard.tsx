@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import { HotelType } from "../../../backend/src/shared/types";
 
 type Props = {
@@ -8,11 +8,12 @@ type Props = {
 const TopDestinationCard = ({ hotel }: Props) => {
   return (
     <div className="flex flex-wrap justify-center lg:justify-start mt-3 px-2 lg:px-0">
-      <Link
+      {/* <Link
         to={`/detail/${hotel._id}`}
         className="flex-1 lg:w-1/4 px-2 mb-4 lg:mb-0"
-      >
-        <div className="relative group overflow-hidden">
+      > */}
+      <div className="flex-1 lg:w-1/4 px-2 mb-4 lg:mb-0">
+        <div className="relative group overflow-hidden ">
           <img
             src={hotel.imageUrls[0]}
             className="w-full h-96 object-cover rounded-lg"
@@ -27,7 +28,8 @@ const TopDestinationCard = ({ hotel }: Props) => {
             </div>
           </div>
         </div>
-      </Link>
+      </div>
+      {/* </Link> */}
     </div>
   );
 };
