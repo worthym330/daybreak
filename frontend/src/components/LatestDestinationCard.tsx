@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { IoShareSocial } from "react-icons/io5";
+import { AiFillStar } from "react-icons/ai";
 
 const LatestDestinationCard = ({ hotel }: any) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -28,16 +29,16 @@ const LatestDestinationCard = ({ hotel }: any) => {
 
   return (
     <div className="w-full cursor-pointer overflow-hidden rounded-md max-w-sm shadow-lg block">
-      <div className="relative">
+      <div className="relative h-[300px]">
         <Link to={`/detail/${hotel._id}`}>
           <img
-            className="w-full"
+            className="rounded-md w-full h-full object-cover object-center"
             src={hotel.imageUrls[currentIndex]}
             alt={hotel.name}
           />
         </Link>
         <div className="absolute bottom-0 left-0 bg-gradient-to-t from-black via-transparent to-transparent w-full p-4 text-white">
-          <h2 className="text-lg font-semibold">{hotel.location}</h2>
+          <h2 className="text-sm font-semibold">{hotel.city}, {' '} {hotel.country}</h2>
         </div>
         <div className="absolute top-1/2 transform -translate-y-1/2 left-0 hover:bg-opacity-70">
           <button
@@ -67,18 +68,25 @@ const LatestDestinationCard = ({ hotel }: any) => {
           ))}
         </div>
       </div>
-      <div className="px-6 py-4 flex gap-2 justify-between">
+      <div className="px-6 py-4 flex flex-col gap-2 justify-between bg-[#00b1cc] text-white">
         <Link to={`/detail/${hotel._id}`}>
           <div className="font-bold text-xl mb-2">{hotel.name}</div>
-          <p className="text-gray-700 text-base">
+          <p className="text-base">
             Starting at{" "}
-            <span className="text text-btnColor font-bold">${hotel.price}</span>
+            <span className="font-bold">${hotel.price}</span>
           </p>
-          <p className="text-blue-500">{hotel.description}</p>
+          <p className="">{hotel.description}</p>
         </Link>
-        <div className="flex items-end">
+        <div className="flex justify-between">
+          <div className="flex gap-2">
+            <span> {hotel?.starRating && <div className="flex flex-row items-center">
+              <AiFillStar className="w-6 h-6 "/>
+              <span>{hotel.starRating}</span>
+
+            </div> }</span>
+          </div>
           <button
-            className="text-blue-500 hover:text-gray-900 flex items-center"
+            className="flex items-center text-gray-300"
             onClick={() => shareInfo(hotel)}
           >
             <IoShareSocial className="mr-1" />

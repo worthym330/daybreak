@@ -10,6 +10,7 @@ interface Props {
 }
 const Layout = ({ children }: Props) => {
   const location = useLocation();
+  console.log("location", location.pathname);
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -20,7 +21,11 @@ const Layout = ({ children }: Props) => {
           <Info />
         </div>
       )}
-      <div className="container mx-auto py-10 flex-1">{children}</div>
+      {location.pathname.includes("/detail/") ? (
+        <div className="py-10 flex-1">{children}</div>
+      ) : (
+        <div className="container mx-auto py-10 flex-1">{children}</div>
+      )}
       <Footer />
     </div>
   );

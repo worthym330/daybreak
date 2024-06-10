@@ -7,25 +7,10 @@ import verifyToken from "../middleware/auth";
 import { env } from "process";
 import axios from "axios";
 const passport = require("passport");
-var GoogleStrategy = require("passport-google-oauth20").Strategy;
 import { OAuth2Client } from 'google-auth-library';
 
 const router = express.Router();
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: env.GOOGLE_CLIENT_ID,
-      clientSecret: env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "http://www.example.com/auth/google/callback",
-    },
-    (accessToken: any, refreshToken: any, profile: any, done: any) => {
-      // Save or process the user profile information
-      return done(null, profile);
-    }
-  )
-);
 
 router.post(
   "/login",
