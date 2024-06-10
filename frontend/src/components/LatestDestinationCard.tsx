@@ -23,12 +23,13 @@ const LatestDestinationCard = ({ hotel }: any) => {
     setCurrentIndex(newIndex);
   };
 
-  function shareInfo(hotel: any) {
-    console.log("Share info", hotel);
-  }
+  const shareInfo = (hotel: any) => {
+    const url = `${window.location.origin}/detail/${hotel._id}`;
+    navigator.clipboard.writeText(url)
+  };
 
   return (
-    <div className="w-full cursor-pointer overflow-hidden rounded-md max-w-sm shadow-lg block">
+    <div className="w-full overflow-hidden rounded-md max-w-sm shadow-lg block">
       <div className="relative h-[300px]">
         <Link to={`/detail/${hotel._id}`}>
           <img
