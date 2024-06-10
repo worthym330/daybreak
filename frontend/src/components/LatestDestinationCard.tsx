@@ -82,10 +82,9 @@ const LatestDestinationCard = ({ hotel }: any) => {
         <div className="flex justify-between">
           <div className="flex gap-2">
             <span>
-              {" "}
               {hotel?.starRating && (
-                <div className="flex flex-row items-center">
-                  <AiFillStar className="w-6 h-6 " />
+                <div className="flex flex-row items-center justify-center">
+                  <AiFillStar className="w-5 h-5 " />
                   <span>{hotel.starRating}</span>
                 </div>
               )}
