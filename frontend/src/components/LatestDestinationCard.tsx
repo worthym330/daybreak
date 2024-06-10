@@ -1,14 +1,17 @@
 import { useState } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { IoShareSocial } from "react-icons/io5";
 
-const Card = ({ hotel }: any) => {
+const LatestDestinationCard = ({ hotel }: any) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const prevSlide = (event: any) => {
     event.stopPropagation();
     const isFirstSlide = currentIndex === 0;
-    const newIndex = isFirstSlide ? hotel.imageUrls.length - 1 : currentIndex - 1;
+    const newIndex = isFirstSlide
+      ? hotel.imageUrls.length - 1
+      : currentIndex - 1;
     setCurrentIndex(newIndex);
   };
 
@@ -20,7 +23,7 @@ const Card = ({ hotel }: any) => {
   };
 
   function shareInfo(hotel: any) {
-    console.log("Share info",hotel)
+    console.log("Share info", hotel);
   }
 
   return (
@@ -67,15 +70,24 @@ const Card = ({ hotel }: any) => {
       <div className="px-6 py-4 flex gap-2 justify-between">
         <Link to={`/detail/${hotel._id}`}>
           <div className="font-bold text-xl mb-2">{hotel.name}</div>
-          <p className="text-gray-700 text-base">Starting at ${hotel.price}</p>
+          <p className="text-gray-700 text-base">
+            Starting at{" "}
+            <span className="text text-btnColor font-bold">${hotel.price}</span>
+          </p>
           <p className="text-blue-500">{hotel.description}</p>
         </Link>
-        <div className="flex items-center">
-          <button className="text-gray-500 hover:text-gray-900" onClick={()=>shareInfo(hotel)}>Share</button>
+        <div className="flex items-end">
+          <button
+            className="text-blue-500 hover:text-gray-900 flex items-center"
+            onClick={() => shareInfo(hotel)}
+          >
+            <IoShareSocial className="mr-1" />
+            <span>Share</span>
+          </button>
         </div>
       </div>
     </div>
   );
 };
 
-export default Card;
+export default LatestDestinationCard;
