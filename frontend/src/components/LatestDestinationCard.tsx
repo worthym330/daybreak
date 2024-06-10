@@ -40,7 +40,7 @@ const LatestDestinationCard = ({ hotel }: any) => {
         </Link>
         <div className="absolute bottom-0 left-0 bg-gradient-to-t from-black via-transparent to-transparent w-full p-4 text-white">
           <h2 className="text-sm font-semibold">
-            `{hotel.city}, {hotel.country}`
+            {hotel.city}, {hotel.country}
           </h2>
         </div>
         <div className="absolute top-1/2 transform -translate-y-1/2 left-0 hover:bg-opacity-70">
