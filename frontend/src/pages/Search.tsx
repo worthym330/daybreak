@@ -8,6 +8,7 @@ import StarRatingFilter from "../components/StarRatingFilter";
 import HotelTypesFilter from "../components/HotelTypesFilter";
 import FacilitiesFilter from "../components/FacilitiesFilter";
 import PriceFilter from "../components/PriceFilter";
+import hotelImg1 from "../assets/taj.jpg";
 
 const Search = () => {
   const search = useSearchContext();
@@ -17,6 +18,7 @@ const Search = () => {
   const [selectedFacilities, setSelectedFacilities] = useState<string[]>([]);
   const [selectedPrice, setSelectedPrice] = useState<number | undefined>();
   const [sortOption, setSortOption] = useState<string>("");
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
 
   const searchParams = {
     destination: search.destination,
@@ -68,54 +70,96 @@ const Search = () => {
     );
   };
 
+  const topRowHotels = [
+    {
+      _id: 1,
+      imageUrls: [hotelImg1, "//r1imghtlak.mmtcdn.com/56d4be4e-3f01-4c60-a5c0-bb28ffd869ae.jpeg?&output-quality=75&downsize=243:162&crop=243:162;0,10&output-format=webp", hotelImg1, "//r1imghtlak.mmtcdn.com/1bd28797-1a31-441e-b3c2-e56bbfd18010.jpg?&output-quality=75&downsize=243:162&crop=243:162;0,10&output-format=webp", hotelImg1],
+      name: "Taj Hotel",
+      location: "Mumbai, India",
+      rating: 4.9,
+      price: 1000,
+      starRating: 4.2,
+      description:
+        "Hotels are available for customers and customers with more than one hotel available for customers and customers with more than one hotel available for customers and customers with more than.",
+      facilities: ["Swimming Pool", "Fitness Center", "Restaurant", "Parking"],
+      pricePerNight: 1000,
+      type: "Hotel",
+    },
+    {
+      _id: 2,
+      imageUrls: [hotelImg1, "//r1imghtlak.mmtcdn.com/56d4be4e-3f01-4c60-a5c0-bb28ffd869ae.jpeg?&output-quality=75&downsize=243:162&crop=243:162;0,10&output-format=webp", hotelImg1, "//r1imghtlak.mmtcdn.com/1bd28797-1a31-441e-b3c2-e56bbfd18010.jpg?&output-quality=75&downsize=243:162&crop=243:162;0,10&output-format=webp", hotelImg1],
+      name: "Taj Hotel",
+      location: "Mumbai, India",
+      rating: 4.9,
+      price: 1000,
+      starRating: 4.2,
+      description:
+        "Hotels are available for customers and customers with more than one hotel",
+      facilities: ["Swimming Pool", "Fitness Center", "Restaurant", "Parking"],
+      pricePerNight: 1000,
+      type: "Hotel",
+    },
+  ];
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-5">
-      <div className="rounded-lg border border-slate-300 p-5 h-fit sticky top-10">
-        <div className="space-y-5">
-          <h3 className="text-lg font-semibold border-b border-slate-300 pb-5">
-            Filter by:
-          </h3>
-          <StarRatingFilter
-            selectedStars={selectedStars}
-            onChange={handleStarsChange}
-          />
-          <HotelTypesFilter
-            selectedHotelTypes={selectedHotelTypes}
-            onChange={handleHotelTypeChange}
-          />
-          <FacilitiesFilter
-            selectedFacilities={selectedFacilities}
-            onChange={handleFacilityChange}
-          />
-          <PriceFilter
-            selectedPrice={selectedPrice}
-            onChange={(value?: number) => setSelectedPrice(value)}
-          />
+    <div className="relative grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-5">
+      <div className={`fixed lg:static top-0 left-0 w-full lg:w-auto h-full lg:h-auto bg-white z-50 lg:z-0 transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 lg:translate-x-0`}>
+        <div className="rounded-lg border border-slate-300 p-5 h-full lg:h-fit lg:sticky lg:top-10 overflow-y-auto">
+          <div className="space-y-5 h-full flex flex-col">
+            <div className="flex justify-between items-center border-b border-slate-300 pb-5">
+              <h3 className="text-lg font-semibold">
+                Filter by:
+              </h3>
+              <button className="lg:hidden text-xl" onClick={() => setIsSidebarOpen(false)}>&times;</button>
+            </div>
+            <StarRatingFilter
+              selectedStars={selectedStars}
+              onChange={handleStarsChange}
+            />
+            <HotelTypesFilter
+              selectedHotelTypes={selectedHotelTypes}
+              onChange={handleHotelTypeChange}
+            />
+            <FacilitiesFilter
+              selectedFacilities={selectedFacilities}
+              onChange={handleFacilityChange}
+            />
+            <PriceFilter
+              selectedPrice={selectedPrice}
+              onChange={(value?: number) => setSelectedPrice(value)}
+            />
+            <div className="flex-grow pb-5">
+              <button className="lg:hidden w-full bg-blue-500 text-white py-2 rounded-md" onClick={() => setIsSidebarOpen(false)}>Apply</button>
+            </div>
+          </div>
         </div>
       </div>
       <div className="flex flex-col gap-5">
-        <div className="flex justify-between items-center">
-          <span className="text-xl font-bold">
+        <div className="flex justify-between items-center mx-auto md:mx-0">
+          <div className="flex items-center gap-2">
+            <button className="lg:hidden bg-blue-500 text-white py-2 px-4 rounded-md" onClick={() => setIsSidebarOpen(true)}>Filters</button>
+            <select
+              value={sortOption}
+              onChange={(event) => setSortOption(event.target.value)}
+              className="p-2 border rounded-md"
+            >
+              <option value="">Sort By</option>
+              <option value="starRating">Star Rating</option>
+              <option value="pricePerNightAsc">
+                Price Per Night (low to high)
+              </option>
+              <option value="pricePerNightDesc">
+                Price Per Night (high to low)
+              </option>
+            </select>
+          </div>
+        </div>
+        <span className="text-xl font-bold text-center md:text-left">
             {hotelData?.pagination.total} Hotels found
             {search.destination ? ` in ${search.destination}` : ""}
           </span>
-          <select
-            value={sortOption}
-            onChange={(event) => setSortOption(event.target.value)}
-            className="p-2 border rounded-md"
-          >
-            <option value="">Sort By</option>
-            <option value="starRating">Star Rating</option>
-            <option value="pricePerNightAsc">
-              Price Per Night (low to high)
-            </option>
-            <option value="pricePerNightDesc">
-              Price Per Night (high to low)
-            </option>
-          </select>
-        </div>
-        {hotelData?.data.map((hotel:any) => (
-          <SearchResultsCard hotel={hotel} />
+        {topRowHotels.map((hotel: any) => (
+          <SearchResultsCard key={hotel.id} hotel={hotel} />
         ))}
         <div>
           <Pagination
