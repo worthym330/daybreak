@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { HotelType } from "../../../backend/src/shared/types";
 import { AiFillStar } from "react-icons/ai";
 
@@ -9,9 +9,20 @@ type Props = {
 
 const SearchResultsCard = ({ hotel }: Props) => {
   const [mainImage, setMainImage] = useState(hotel.imageUrls[0]);
+  const auth_token = localStorage.getItem("auth_token");
+  const isLoggedIn = auth_token !== null ? JSON.parse(auth_token) : null;
+  const navigate = useNavigate();
+
+  const handleButtonClick = (id: string) => {
+    if (isLoggedIn === null) {
+      navigate("/partner/sign-in");
+    } else {
+      navigate(`/detail/${id}`);
+    }
+  };
 
   return (
-    <div className="flex flex-col md:flex-row border border-slate-300 rounded-md p-4 gap-4 lg:gap-8 mx-5 md:mx-0">
+    <div className="flex flex-col md:flex-row border border-slate-300 rounded-md p-4 gap-4 lg:gap-8 mx-5 md:mx-0 justify-between">
       <div className="flex flex-col md:flex-row gap-7">
         {/* Images Section */}
         <div className="w-full mb-[5px] md:w-[239px]">
@@ -22,7 +33,7 @@ const SearchResultsCard = ({ hotel }: Props) => {
             />
           </div>
           <div className="grid gap-1.5 grid-cols-4 w-full md:w-[239px] cursor-pointer">
-            {hotel.imageUrls.slice(1, 5).map((image, index) => (
+            {hotel.imageUrls.map((image, index) => (
               <span
                 key={index}
                 className="relative"
@@ -45,7 +56,7 @@ const SearchResultsCard = ({ hotel }: Props) => {
           <div>
             <div className="flex items-center gap-2">
               <span className="ml-1 text-sm">{hotel.type}</span>
-              <span className="text-sm py-1 px-2 text-white bg-btnColor rounded-md">{hotel.starRating}</span>
+              {/* <span className="text-sm py-1 px-2 text-white bg-btnColor rounded-md">{hotel.starRating}</span> */}
               <span className="flex">
                 {Array.from({ length: hotel.starRating }).map((_, index) => (
                   <AiFillStar key={index} className="fill-yellow-400" />
@@ -85,14 +96,15 @@ const SearchResultsCard = ({ hotel }: Props) => {
       </div>
       <div className="flex flex-col justify-between items-end gap-2">
         <span className="text-btnColor font-bold">
-          £{hotel.pricePerNight} <span className="text-gray-700 font-medium">per night</span>
+          ₹ {hotel.pricePerNight}{" "}
+          <span className="text-gray-700 font-medium">per night</span>
         </span>
-        <Link
-          to={`/detail/${hotel._id}`}
-          className="text-blue-700 py-1 px-2 rounded-lg font-medium text-sm lg:text-sm"
+        <button
+          className="bg-blue-600 text-white rounded-md p-4 font-medium text-sm lg:text-sm hover:bg-blue-500"
+          onClick={() => handleButtonClick(hotel._id)}
         >
-          Login to book now!
-        </Link>
+          {isLoggedIn === null ? "Login to book now!" : "Book Now"}
+        </button>
       </div>
     </div>
   );

@@ -24,6 +24,7 @@ export type UserType = {
     imageUrls: string[];
     lastUpdated: Date;
     bookings: BookingType[];
+    favourites:FavouriteList[]
   };
   
   export type BookingType = {
@@ -39,6 +40,13 @@ export type UserType = {
     totalCost: number;
   };
   
+  export type FavouriteList = {
+    userId: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+
   export type HotelSearchResponse = {
     data: HotelType[];
     pagination: {

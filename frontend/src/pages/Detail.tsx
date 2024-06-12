@@ -1,4 +1,4 @@
-import { useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
 import * as apiClient from "./../api-client";
 import { AiFillStar } from "react-icons/ai";
@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
 import {
   FaDumbbell,
+  FaHeart,
   FaParking,
   FaShuttleVan,
   FaSpa,
@@ -14,6 +15,10 @@ import {
   FaWifi,
 } from "react-icons/fa";
 import { MdFamilyRestroom, MdSmokeFree } from "react-icons/md";
+import { FavouriteList } from "../../../backend/src/shared/types";
+import { useAppContext } from "../contexts/AppContext";
+import ProductCard from "../components/ProductCard";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 type FacilityKey =
   | "Free WiFi"
@@ -35,6 +40,53 @@ const facilityIcons = {
   Spa: <FaSpa />,
   "Fitness Center": <FaDumbbell />,
 };
+
+const products = [
+  {
+    title: "Day Pass",
+    features: [
+      "Kona Pool",
+      "Kohala River Pool with waterslides",
+      "Hot tub",
+      "Saltwater lagoon with white sand beach",
+      "Grab-n-go food and beverages",
+      "Kayaks, paddle-boats, and water bikes",
+      "Complimentary wifi",
+      "Valet parking available for a fee",
+    ],
+    priceAdult: "100",
+    feeAdult: "9",
+    priceChild: "60",
+    feeChild: "5",
+    priceInfant: "FREE",
+    description:
+      "Free admission for children under 5. $50 food and beverage minimum at Kona Pool Bar or Orchid Marketplace required for complimentary self-parking. No coolers or outside food and beverage allowed.",
+  },
+  {
+    title: "Kama'aina Day Pass",
+    features: [
+      "Discounted Day Pass for local Hawaii residents",
+      "All amenities included in the Day Pass",
+    ],
+    priceAdult: "65",
+    feeAdult: "6",
+    priceChild: "40",
+    feeChild: "4",
+    priceInfant: "FREE",
+    description:
+      "Must show a valid Hawaii state ID upon check-in. No coolers or outside food and beverage allowed.",
+  },
+  {
+    title: "HamacLand Experience",
+    features: ["Located on an Island in the saltwater lagoon."],
+    priceAdult: "750",
+    feeAdult: "",
+    priceChild: "",
+    feeChild: "",
+    priceInfant: "",
+    description: "",
+  },
+];
 
 const Tooltip = ({ children, text }: any) => {
   const [visible, setVisible] = useState(false);
@@ -59,6 +111,11 @@ const Detail = () => {
   const { hotelId, name } = useParams();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [slidesToShow, setSlidesToShow] = useState(3);
+  const queryClient = useQueryClient();
+  const { showToast } = useAppContext();
+
+  const auth_token = localStorage.getItem("auth_token");
+  const userLogined = auth_token ? JSON.parse(auth_token) : null;
 
   useEffect(() => {
     const handleResize = () => {
@@ -71,10 +128,10 @@ const Detail = () => {
       }
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
     handleResize();
 
-    return () => window.removeEventListener('resize', handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const hotelQuery = useQuery(
@@ -128,6 +185,52 @@ const Detail = () => {
     return displayedImages;
   };
 
+  const toggleFavourite = async () => {
+    if (userLogined !== null) {
+      const user: FavouriteList = {
+        userId: userLogined.id,
+        firstName: userLogined.name.split(" ")[0],
+        lastName:
+          userLogined.name.split(" ")[userLogined.name.split(" ").length - 1],
+        email: userLogined.email,
+      };
+
+      try {
+        const res = await fetch(
+          `${API_BASE_URL}/api/hotels/${hotelId}/favourite`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(user),
+          }
+        );
+        if (res.ok) {
+          // Handle success if necessary
+        }
+      } catch (error) {
+        // Handle error if necessary
+      }
+    } else {
+      showToast({ message: "Please log in to save", type: "ERROR" });
+    }
+  };
+
+  const toggleFavouriteMutation = useMutation(toggleFavourite, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(["fetchHotelById", hotelId]);
+    },
+  });
+
+  const handleToggleFavourite = () => {
+    toggleFavouriteMutation.mutate();
+  };
+
+  const isFavourite = hotel?.favourites?.some(
+    (fav: FavouriteList) => fav?.userId === userLogined?.id
+  );
+
   if (!hotel) {
     return <></>;
   }
@@ -148,19 +251,19 @@ const Detail = () => {
         </div>
         <button
           onClick={handlePrev}
-          className="absolute top-1/2 left-0 transform -translate-y-1/2 bg-white p-4 rounded-full shadow-md"
+          className="absolute z-10 top-1/2 left-0 transform -translate-y-1/2 bg-white p-4 rounded-full shadow-md"
         >
           <BiChevronLeft className="w-6 h-6" />
         </button>
         <button
           onClick={handleNext}
-          className="absolute top-1/2 right-0 transform -translate-y-1/2 bg-white p-4 rounded-full shadow-md"
+          className="absolute z-10 top-1/2 right-0 transform -translate-y-1/2 bg-white p-4 rounded-full shadow-md"
         >
           <BiChevronRight className="w-6 h-6" />
         </button>
       </div>
       <div className="w-full lg:container px-8 lg:mx-auto space-y-2">
-        <div className="flex md:flex-row flex-col-reverse gap-4 space-y-2 justify-between">
+        <div className="flex lg:flex-row flex-col-reverse gap-4 space-y-2 justify-between">
           <div className="flex flex-col gap-2 w-full lg:w-2/3">
             <div className="flex justify-between">
               <div className="flex flex-col gap-2">
@@ -175,21 +278,44 @@ const Detail = () => {
                 </span>
               </div>
             </div>
-            <div className="flex gap-2 flex-wrap">
-              {hotel.facilities.map((facility, index) => (
-                <Tooltip key={index} text={facility}>
-                  <div className="border border-slate-300 rounded-sm p-3 flex items-center space-x-2 cursor-pointer">
-                    {facilityIcons[facility as FacilityKey] && (
-                      <span>{facilityIcons[facility as FacilityKey]}</span>
-                    )}
-                  </div>
-                </Tooltip>
+            <div className="flex justify-between">
+              <div className="flex gap-2 flex-wrap">
+                {hotel.facilities.map((facility, index) => (
+                  <Tooltip key={index} text={facility}>
+                    <div className="border border-slate-300 rounded-sm p-3 flex items-center space-x-2 cursor-pointer">
+                      {facilityIcons[facility as FacilityKey] && (
+                        <span>{facilityIcons[facility as FacilityKey]}</span>
+                      )}
+                    </div>
+                  </Tooltip>
+                ))}
+              </div>
+              <div className="flex gap-2 flex-wrap">
+                <button onClick={handleToggleFavourite}>
+                  {isFavourite ? (
+                    <span className="flex gap-2">
+                      <FaHeart className="w-6 h-6 text-red-500 fill-current" />
+                      <span>Saved</span>
+                    </span>
+                  ) : (
+                    <span className="flex gap-2">
+                      <FaHeart className="w-6 h-6 text-gray-300 fill-current" />
+                      <span>Save</span>
+                    </span>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <div className="whitespace-pre-line">{hotel.description}</div>
+            <div className="">
+              {products.map((product, index) => (
+                  <ProductCard key={index} product={product} />
               ))}
             </div>
-            <div className="whitespace-pre-line">{hotel.description}</div>
           </div>
 
-          <div className="w-full lg:w-1/3 hidden lg:block">
+          <div className="w-full lg:w-1/3 hidden md:block">
             <div className="h-fit">
               {/* <GuestInfoForm
                 pricePerNight={hotel.pricePerNight}

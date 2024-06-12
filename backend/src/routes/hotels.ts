@@ -231,4 +231,32 @@ const constructSearchQuery = (queryParams: any) => {
   return constructedQuery;
 };
 
+router.post('/:hotelId/favourite', async (req, res) => {
+  const { hotelId } = req.params;
+  const { userId, firstName, lastName, email } = req.body;
+
+  try {
+    const hotel = await Hotel.findById(hotelId);
+
+    if (!hotel) {
+      return res.status(404).json({ message: 'Hotel not found' });
+    }
+
+    const favouriteIndex = hotel.favourites.findIndex(fav => fav.userId === userId);
+
+    if (favouriteIndex === -1) {
+      // Add to favorites
+      hotel.favourites.push({ userId, firstName, lastName, email });
+    } else {
+      // Remove from favorites
+      hotel.favourites.splice(favouriteIndex, 1);
+    }
+
+    await hotel.save();
+    res.status(200).json(hotel);
+  } catch (error) {
+    res.status(500).json({ message: 'An error occurred', error });
+  }
+});
+
 export default router;
