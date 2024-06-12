@@ -75,7 +75,7 @@ const LatestDestinationCard = ({ hotel }: any) => {
         <Link to={`/detail/${hotel._id}`}>
           <div className="font-bold text-xl mb-2">{hotel.name}</div>
           <p className="text-base">
-            Starting at <span className="font-bold">${hotel.price}</span>
+            Starting at <span className="font-bold">₹ {hotel.pricePerNight}</span>
           </p>
           <p className="">{hotel.description}</p>
         </Link>
