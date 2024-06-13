@@ -1,13 +1,13 @@
 import express, { Request, Response } from "express";
-import multer from 'multer';
+import multer from "multer";
 import cloudinary from "cloudinary";
 import Hotel from "../models/hotel";
 import verifyToken from "../middleware/auth";
 import { body } from "express-validator";
 import { HotelType } from "../shared/types";
-import AWS from 'aws-sdk';
-import fs from 'fs';
-import path from 'path';
+// import AWS from "aws-sdk";
+import fs from "fs";
+import path from "path";
 
 const router = express.Router();
 
@@ -19,13 +19,13 @@ const upload = multer({
   },
 });
 
-AWS.config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION
-});
+// AWS.config.update({
+//   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+//   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+//   region: process.env.AWS_REGION,
+// });
 
-export const s3 = new AWS.S3();
+// export const s3 = new AWS.S3();
 
 router.post(
   "/",
@@ -147,32 +147,40 @@ router.put(
 // }
 
 async function uploadImages(imageFiles: Express.Multer.File[]) {
-  const uploadDir = path.resolve(__dirname, '../../uploads/hotel/images');
-  if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-  }
+  const uploadDir = path.resolve(__dirname, "../../uploads/hotel/images");
 
-  const backendUri = process.env.BACKEND_URL;
+  try {
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
 
-  const uploadPromises = imageFiles.map(async (image:any) => {
-    const filename = `${image.originalname}`;
-    const filePath = path.join(uploadDir, filename);
-    await new Promise<void>((resolve, reject) => {
-      fs.writeFile(filePath, image.buffer, (err: any) => {
-        if (err) {
-          return reject(err);
-        }
-        resolve();
+    const backendUri = process.env.BACKEND_URL || "http://localhost:3000"; // Replace with your actual backend URL
+
+    const uploadPromises = imageFiles.map(async (image) => {
+      const filename = `${image.originalname}`;
+      const filePath = path.join(uploadDir, filename);
+
+      await new Promise<void>((resolve, reject) => {
+        fs.writeFile(filePath, image.buffer, (err: any) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve();
+          }
+        });
       });
+
+      // Construct the URL to access the image
+      const imageUrl = `${backendUri}/uploads/hotel/images/${filename}`;
+      return imageUrl;
     });
 
-    // Construct the URL to access the image
-    const imageUrl = `${backendUri}/uploads/hotel/images/${filename}`;
-    return imageUrl;
-  });
-
-  const imageUrls = await Promise.all(uploadPromises);
-  return imageUrls;
+    const imageUrls = await Promise.all(uploadPromises);
+    return imageUrls;
+  } catch (error) {
+    console.error("Error uploading images:", error);
+    throw error; // Propagate the error back to the caller
+  }
 }
 
 export default router;
