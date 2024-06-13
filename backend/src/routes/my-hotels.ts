@@ -50,8 +50,9 @@ router.post(
     try {
       const imageFiles = req.files as Express.Multer.File[];
       const newHotel: HotelType = req.body;
-
+      console.log(imageFiles,newHotel)
       const imageUrls = await uploadImages(imageFiles);
+      console.log('imageUrlsssss',imageUrls)
 
       newHotel.imageUrls = imageUrls;
       newHotel.lastUpdated = new Date();
@@ -154,7 +155,7 @@ async function uploadImages(imageFiles: Express.Multer.File[]) {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
 
-    const backendUri = process.env.BACKEND_URL || "http://localhost:3000"; // Replace with your actual backend URL
+    const backendUri = process.env.BACKEND_URL || "http://localhost:8000"; // Replace with your actual backend URL
 
     const uploadPromises = imageFiles.map(async (image) => {
       const filename = `${image.originalname}`;
@@ -172,6 +173,7 @@ async function uploadImages(imageFiles: Express.Multer.File[]) {
 
       // Construct the URL to access the image
       const imageUrl = `${backendUri}/uploads/hotel/images/${filename}`;
+      console.log('imageUrl',imageUrl)
       return imageUrl;
     });
 
