@@ -6,6 +6,8 @@ import verifyToken from "../middleware/auth";
 import { body } from "express-validator";
 import { HotelType } from "../shared/types";
 import AWS from 'aws-sdk';
+import fs from 'fs';
+import path from 'path';
 
 const router = express.Router();
 
@@ -126,18 +128,47 @@ router.put(
   }
 );
 
-async function uploadImages(imageFiles: Express.Multer.File[]) {
-  const uploadPromises = imageFiles.map(async (image) => {
-    const params = {
-      Bucket:'daybreakimages',
-      Key: `images/${Date.now()}_${image.originalname}`,
-      Body: image.buffer,
-      ContentType: image.mimetype,
-      // ACL: 'public-read',
-    };
+// async function uploadImages(imageFiles: Express.Multer.File[]) {
+//   const uploadPromises = imageFiles.map(async (image) => {
+//     const params = {
+//       Bucket:'daybreakimages',
+//       Key: `images/${Date.now()}_${image.originalname}`,
+//       Body: image.buffer,
+//       ContentType: image.mimetype,
+//       // ACL: 'public-read',
+//     };
 
-    const res = await s3.upload(params).promise();
-    return res.Location;
+//     const res = await s3.upload(params).promise();
+//     return res.Location;
+//   });
+
+//   const imageUrls = await Promise.all(uploadPromises);
+//   return imageUrls;
+// }
+
+async function uploadImages(imageFiles: Express.Multer.File[]) {
+  const uploadDir = path.resolve(__dirname, '../../uploads/hotel/images');
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+
+  const backendUri = process.env.BACKEND_URL;
+
+  const uploadPromises = imageFiles.map(async (image:any) => {
+    const filename = `${image.originalname}`;
+    const filePath = path.join(uploadDir, filename);
+    await new Promise<void>((resolve, reject) => {
+      fs.writeFile(filePath, image.buffer, (err: any) => {
+        if (err) {
+          return reject(err);
+        }
+        resolve();
+      });
+    });
+
+    // Construct the URL to access the image
+    const imageUrl = `${backendUri}/uploads/hotel/images/${filename}`;
+    return imageUrl;
   });
 
   const imageUrls = await Promise.all(uploadPromises);

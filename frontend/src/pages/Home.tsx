@@ -14,41 +14,6 @@ const Home = () => {
   // const bottomRowHotels = hotels?.slice(2) || [];
   const navigate = useNavigate();
 
-  // const latestDestHotels = [
-  //   {
-  //     _id: 1,
-  //     imageUrls: [hotelImg1, hotelImg1, hotelImg1, hotelImg1, hotelImg1],
-  //     name: "Taj Hotel",
-  //     location: "Mumbai, India",
-  //     rating: 4.9,
-  //     price: 1000,
-  //   },
-  //   {
-  //     _id: 2,
-  //     imageUrls: [hotelImg1, hotelImg1, hotelImg1, hotelImg1, hotelImg1],
-  //     name: "Taj Hotel",
-  //     location: "Goa, India",
-  //     rating: 4.9,
-  //     price: 1000,
-  //   },
-  //   {
-  //     _id: 3,
-  //     imageUrls: [hotelImg1, hotelImg1, hotelImg1, hotelImg1, hotelImg1],
-  //     name: "Taj Hotel",
-  //     location: "Kannor, India",
-  //     rating: 4.9,
-  //     price: 1000,
-  //   },
-  //   {
-  //     _id: 4,
-  //     imageUrls: [hotelImg1, hotelImg1, hotelImg1, hotelImg1, hotelImg1],
-  //     name: "Taj Hotel",
-  //     location: "Lakshwadweep, India",
-  //     rating: 4.9,
-  //     price: 1000,
-  //   },
-  // ];
-
   const topDestinations = [
     {
       _id: 1,
@@ -85,12 +50,12 @@ const Home = () => {
       {/* Latest Destinations */}
       <section className="">
         <h2 className="text-center text-gray-700 text-3xl font-bold mb-5">
-          Latest Destinations
+          Popular Destinations
         </h2>
         <p className="text-center mb-5">
           Most recent destinations added by our hosts
         </p>
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {latestDestHotels.map((hotel: any) => (
             <LatestDestinationCard key={hotel.id} hotel={hotel} />
           ))}
@@ -103,7 +68,7 @@ const Home = () => {
       <section className="">
         <div className="flex flex-col">
           <h2 className="text-center text-gray-700 text-3xl font-bold">
-            Top Destinations
+            Explore Destinations
           </h2>
           {/* <p className="text-center mb-10">
           Most recent desinations added by our hosts
