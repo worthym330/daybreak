@@ -136,7 +136,7 @@ const Search = () => {
             />
             <div className="flex-grow pb-5">
               <button
-                className="lg:hidden w-full bg-blue-500 text-white py-2 rounded-md"
+                className="lg:hidden w-full bg-goldColor text-white py-2 rounded-md"
                 onClick={() => setIsSidebarOpen(false)}
               >
                 Apply
@@ -149,7 +149,7 @@ const Search = () => {
         <div className="flex justify-between items-center mx-auto md:mx-0">
           <div className="flex items-center gap-2">
             <button
-              className="lg:hidden bg-blue-500 text-white py-2 px-4 rounded-md"
+              className="lg:hidden bg-goldColor text-white py-2 px-4 rounded-md"
               onClick={() => setIsSidebarOpen(true)}
             >
               Filters

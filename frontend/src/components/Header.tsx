@@ -602,7 +602,7 @@ const Header = () => {
           {/* ---------- NavBar Starts ---------- */}
           {showNav ? (
             <div className="absolute w-full top-0 bg-white z-10">
-              <div className="hidden md:block flex flex-col gap-2 md:px-[10rem]">
+              <div className="hidden md:block md:px-[10rem]">
                 <div className="w-full pt-4 flex items-center justify-between py-2">
                   <span className="text-2xl md:text-3xl font-bold tracking-tight flex gap-2">
                     <span className="flex items-center text-center cursor-pointer">
@@ -939,7 +939,7 @@ const Header = () => {
       ) : // Search Result Page hamburger dropdown Navbar
       showNav ? (
         <div className="absolute w-full top-0 bg-white text-black z-10 border-b-2 border-black">
-          <div className="hidden md:block flex flex-col gap-2 md:px-10">
+          <div className="hidden md:block md:px-10">
             <div className="w-full pt-4 flex items-center justify-between py-2">
               <span className="text-2xl md:text-3xl font-bold tracking-tight flex gap-2">
                 <span className="flex items-center text-center cursor-pointer">
