@@ -1,6 +1,6 @@
-import React from "react";
-// import { useDispatch } from "react-redux";
-// import { openModal } from "../store/modalSlice";
+import { useState } from 'react';
+import CartModal from './CartModal';
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 
 interface Product {
   title: string;
@@ -15,14 +15,27 @@ interface Product {
 
 interface ProductCardProps {
   product: Product;
+  hotelId: string;
+  date?:any;
+  error?:boolean;
+  setError?:any;
+  setCart?:any;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  // const dispatch = useDispatch();
+const ProductCard = ({ product, hotelId,date, error, setError, setCart }: ProductCardProps) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const handleSelect = () => {
+    if(!error && date !== null){
+      setError(true)
+    }else{
+      setError(false)
+      setIsModalOpen(true);
+    }
+  };
 
-  // const handleSelect = () => {
-  //   dispatch(openModal(product));
-  // };
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
 
   return (
     <div className="bg-white rounded-lg shadow-xl p-4 mb-4">
@@ -61,15 +74,25 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             )}
           </div>
           <div className="mt-2">
-          <button
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg w-full"
-              // onClick={handleSelect}
+            <button
+              className="bg-goldColor text-white px-4 py-2 rounded-lg w-full flex gap-2 items-center justify-center"
+              onClick={handleSelect}
             >
-              Select
+              <span>Select</span>
+              <span className="font-thin">{isModalOpen ? <FaChevronUp className='w-5 h-5 text-sm' /> : <FaChevronDown className='w-5 h-5 text-sm' />}</span>
             </button>
           </div>
         </div>
       </div>
+      {isModalOpen && (
+        <CartModal
+          product={product}
+          hotelId={hotelId}
+          onClose={handleCloseModal}
+          date={date}
+          setCart={setCart}
+        />
+      )}
     </div>
   );
 };
