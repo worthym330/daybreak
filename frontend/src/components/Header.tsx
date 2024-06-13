@@ -635,7 +635,7 @@ const Header = () => {
                       </>
                     ) : (
                       <button
-                        className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
+                        className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:border-btnColor hover:bg-btnColor hover:text-white"
                         onClick={handleLoginClick}
                       >
                         Login{" "}
@@ -703,30 +703,49 @@ const Header = () => {
                   {/* Dropdown End */}
                 </div>
 
-                {/* Hamburger */}
+                {/*Home Page Hamburger */}
                 <div className="w-full flex px-16 py-4">
                   <div className="flex flex-col md:w-1/2 py-3 mr-20">
                     <span className="pb-3 text-fontPrimaryColor tracking-wider text-4xl font-LuzuryF1">
                       Unforgettable resorts and memories await
                     </span>
-                    <Link className="py-3 text-fontSecondaryColor" to="/about-us">
+                    <Link
+                      className="py-3 text-fontSecondaryColor"
+                      to="/about-us"
+                    >
                       About DayBreak
                     </Link>
                   </div>
                   <div className="flex gap-20 md:w-1/2 justify-center">
                     <div className="text-nowrap flex flex-col gap-2">
-                      <span className="text-nowrap font-bold text-fontPrimaryColor">Guests</span>
-                      <span className="text-nowrap text-fontSecondaryColor">My Favourite</span>
-                      <span className="text-nowrap text-fontSecondaryColor">Browse Hotels</span>
-                      <span className="text-nowrap text-fontSecondaryColor">Help</span>
+                      <span className="text-nowrap font-bold text-fontPrimaryColor">
+                        Guests
+                      </span>
+                      <span className="text-nowrap text-fontSecondaryColor">
+                        My Favourite
+                      </span>
+                      <span className="text-nowrap text-fontSecondaryColor">
+                        Browse Hotels
+                      </span>
+                      <span className="text-nowrap text-fontSecondaryColor">
+                        Help
+                      </span>
                       <span className="text-nowrap text-fontSecondaryColor"></span>
                       <span className="text-nowrap text-fontSecondaryColor"></span>
                     </div>
                     <div className="text-nowrap flex flex-col gap-2">
-                      <span className="text-nowrap font-bold text-fontPrimaryColor">Hotels</span>
-                      <span className="text-nowrap text-fontSecondaryColor">List My Hotels</span>
-                      <span className="text-nowrap text-fontSecondaryColor">Marketplace</span>
-                      <span className="text-nowrap text-fontSecondaryColor">Help</span>
+                      <span className="text-nowrap font-bold text-fontPrimaryColor">
+                        Hotels
+                      </span>
+                      <span className="text-nowrap text-fontSecondaryColor">
+                        List My Hotels
+                      </span>
+                      <span className="text-nowrap text-fontSecondaryColor">
+                        Marketplace
+                      </span>
+                      <span className="text-nowrap text-fontSecondaryColor">
+                        Help
+                      </span>
                       <span className="text-nowrap text-fontSecondaryColor"></span>
                       <span className="text-nowrap text-fontSecondaryColor"></span>
                     </div>
@@ -749,9 +768,9 @@ const Header = () => {
                             <button
                               className={classNames(
                                 e.name === tab
-                                  ? "bg-black text-white  border-black"
-                                  : "text-black hover:text-mobileColor hover:bg-white border-black",
-                                "rounded-md px-3 py-2 text-sm font-medium w-1/2 border "
+                                  ? "bg-goldColor text-white  border-darkGold"
+                                  : "text-black hover:bg-white border-darkGold",
+                                "rounded-md px-3 py-2 text-sm font-medium w-1/2 border"
                               )}
                               onClick={() => setTab(e.name)}
                             >
@@ -762,13 +781,13 @@ const Header = () => {
                       </div>
                       <div className="my-6 ml-8">
                         {tab === "Guests" ? (
-                          <ul className="space-y-6">
+                          <ul className="space-y-6 text-goldColor">
                             <li>My Favorites</li>
                             <li>Browse Hotels</li>
                             <li>Help</li>
                           </ul>
                         ) : (
-                          <ul className="space-y-6">
+                          <ul className="space-y-6 text-goldColor">
                             <li>List My Hotels</li>
                             <li>Marketplace</li>
                             <li>Help</li>
@@ -814,6 +833,7 @@ const Header = () => {
               </div>
             </div>
           ) : (
+            // Home page NavBar
             <div className="w-full absolute top-4 flex items-center justify-between z-10 px-4 md:px-[10rem] bg-transparent">
               <span className="text-2xl md:text-3xl text-white font-bold tracking-tight flex gap-2">
                 <span className="flex items-center text-center cursor-pointer">
@@ -846,7 +866,7 @@ const Header = () => {
                   </>
                 ) : (
                   <button
-                    className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-gray-100 hover:text-black"
+                    className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:border-btnColor hover:bg-btnColor hover:text-white"
                     onClick={handleLoginClick}
                   >
                     Login{" "}
@@ -916,10 +936,9 @@ const Header = () => {
           )}
           {/* ---------- NavBar Ends ---------- */}
         </div>
-
-        // Search Result Page hamburger NavBar
-      ) : showNav ? (
-        <div className="absolute w-full top-0 bg-mobileColor text-white z-10">
+      ) : // Search Result Page hamburger dropdown Navbar
+      showNav ? (
+        <div className="absolute w-full top-0 bg-white text-black z-10 border-b-2 border-black">
           <div className="hidden md:block flex flex-col gap-2 md:px-10">
             <div className="w-full pt-4 flex items-center justify-between py-2">
               <span className="text-2xl md:text-3xl font-bold tracking-tight flex gap-2">
@@ -953,7 +972,7 @@ const Header = () => {
                   </>
                 ) : (
                   <button
-                    className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-white hover:bg-gray-100 hover:text-black"
+                    className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:border-btnColor hover:bg-btnColor hover:text-white"
                     onClick={handleLoginClick}
                   >
                     Login{" "}
@@ -1020,115 +1039,134 @@ const Header = () => {
               )}
               {/* Dropdown End */}
             </div>
+
+            {/* Hamburger when clciked */}
             <div className="w-full flex px-16 py-4">
               <div className="flex flex-col md:w-1/2 py-3 mr-20">
-                <span className="pb-3 text-white tracking-wider text-4xl">
+                <span className="pb-3 text-fontPrimaryColor tracking-wider text-4xl font-LuzuryF1">
                   Unforgettable resorts and memories await
                 </span>
-                <Link className="py-3" to="/about-us">
+                <Link className="py-3 text-fontSecondaryColor" to="/about-us">
                   About DayBreak
                 </Link>
               </div>
-              <div className="flex gap-4 md:w-1/2 justify-center">
+              <div className="flex gap-20 md:w-1/2 justify-center">
                 <div className="text-nowrap flex flex-col gap-2">
-                  <span className="text-nowrap text-gray-500">Guests</span>
-                  <span className="text-nowrap text-lg">My Favourite</span>
-                  <span className="text-nowrap text-lg">Browse Hotels</span>
-                  <span className="text-nowrap text-lg">Help</span>
-                  <span className="text-nowrap text-lg"></span>
-                  <span className="text-nowrap text-lg"></span>
+                  <span className="text-nowrap font-bold text-fontPrimaryColor">
+                    Guests
+                  </span>
+                  <span className="text-nowrap text-fontSecondaryColor">
+                    My Favourite
+                  </span>
+                  <span className="text-nowrap text-fontSecondaryColor">
+                    Browse Hotels
+                  </span>
+                  <span className="text-nowrap text-fontSecondaryColor">
+                    Help
+                  </span>
+                  <span className="text-nowrap text-fontSecondaryColor"></span>
+                  <span className="text-nowrap text-fontSecondaryColor"></span>
                 </div>
                 <div className="text-nowrap flex flex-col gap-2">
-                  <span className="text-nowrap text-gray-500">Hotels</span>
-                  <span className="text-nowrap text-lg">List My Hotels</span>
-                  <span className="text-nowrap text-lg">Marketplace</span>
-                  <span className="text-nowrap text-lg">Help</span>
-                  <span className="text-nowrap"></span>
-                  <span className="text-nowrap"></span>
+                  <span className="text-nowrap font-bold text-fontPrimaryColor">
+                    Hotels
+                  </span>
+                  <span className="text-nowrap text-fontSecondaryColor">
+                    List My Hotels
+                  </span>
+                  <span className="text-nowrap text-fontSecondaryColor">
+                    Marketplace
+                  </span>
+                  <span className="text-nowrap text-fontSecondaryColor">
+                    Help
+                  </span>
+                  <span className="text-nowrap text-fontSecondaryColor"></span>
+                  <span className="text-nowrap text-fontSecondaryColor"></span>
                 </div>
               </div>
             </div>
           </div>
-          <div className="block md:hidden flex flex-col gap-2">
-            <div className="bg-mobileColor text-white w-full h-screen p-6 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center mb-6 w-full">
-                  <span className="flex items-center text-center cursor-pointer">
-                    <HiXMark
-                      className="w-8 h-8"
-                      onClick={() => setShowNav(!showNav)}
-                    />
-                  </span>
-                  <div className="ml-4 w-full">
-                    {tabs.map((e: any) => (
-                      <button
-                        className={classNames(
-                          e.name === tab
-                            ? "bg-white text-mobileColor  border-mobileColor"
-                            : "text-white hover:text-mobileColor hover:bg-white border-white",
-                          "rounded-md px-3 py-2 text-sm font-medium w-1/2 border"
-                        )}
-                        onClick={() => setTab(e.name)}
-                      >
-                        {e.name}
-                      </button>
-                    ))}
+          <div className="md:hidden flex flex-col gap-2 border-b-2 border-black">
+            <div className="bg-white text-black w-full h-screen p-6 flex flex-col">
+              <span className="flex items-center text-center cursor-pointer">
+                <HiXMark
+                  className="w-8 h-8"
+                  onClick={() => setShowNav(!showNav)}
+                />
+              </span>
+              <div className="flex flex-col h-screen">
+                <div>
+                <div className="flex items-center mb-6 w-full mt-10">
+                        <div className="ml-4 w-full flex gap-5">
+                          {tabs.map((e: any) => (
+                            <button
+                              className={classNames(
+                                e.name === tab
+                                  ? "bg-goldColor text-white  border-darkGold"
+                                  : "text-black hover:bg-white border-darkGold",
+                                "rounded-md px-3 py-2 text-sm font-medium w-1/2 border"
+                          )}
+                          onClick={() => setTab(e.name)}
+                        >
+                          {e.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="my-6 ml-8">
+                    {tab === "Guests" ? (
+                      <ul className="space-y-6 text-goldColor">
+                        <li>My Favorites</li>
+                        <li>Browse Hotels</li>
+                        <li>Help</li>
+                      </ul>
+                    ) : (
+                      <ul className="space-y-6 text-goldColor">
+                        <li>List My Hotels</li>
+                        <li>Marketplace</li>
+                        <li>Help</li>
+                      </ul>
+                    )}
                   </div>
                 </div>
-                <div className="my-6 ml-8">
-                  {tab === "Guests" ? (
-                    <ul className="space-y-6">
-                      <li>My Favorites</li>
-                      <li>Browse Hotels</li>
-                      <li>Help</li>
-                    </ul>
+                <div className="flex flex-col justify-end h-full">
+                  {userLogined !== null ? (
+                    <button
+                      className="bg-red-500 text-white px-3 py-2 mb-4 w-full rounded-md"
+                      onClick={handleClick}
+                    >
+                      Log out
+                    </button>
                   ) : (
-                    <ul className="space-y-6">
-                      <li>List My Hotels</li>
-                      <li>Marketplace</li>
-                      <li>Help</li>
-                    </ul>
+                    <>
+                      <button
+                            className="bg-white text-black px-3 py-2 mb-4 w-full rounded-md border-2 border-black hover:bg-btnColor hover:text-white"
+                        onClick={() => {
+                          setSignupModal((prev) => ({
+                            ...prev,
+                            state: true,
+                          }));
+                        }}
+                      >
+                        Sign Up
+                      </button>
+                      <button
+                            className="bg-black text-white px-3 py-2 mb-4 w-full rounded-md border-2 border-black hover:bg-btnColor hover:text-white"
+                        onClick={() => {
+                          setModal((prev) => ({ ...prev, state: true }));
+                        }}
+                      >
+                        Login
+                      </button>
+                    </>
                   )}
                 </div>
-              </div>
-              <div>
-                {userLogined !== null ? (
-                  <button
-                    className="bg-red-500 text-white px-3 py-2 mb-4 w-full rounded-md"
-                    onClick={handleClick}
-                  >
-                    Log out
-                  </button>
-                ) : (
-                  <>
-                    <button
-                      className="bg-teal-500 text-black px-3 py-2 mb-4 w-full rounded-md"
-                      onClick={() => {
-                        setSignupModal((prev) => ({
-                          ...prev,
-                          state: true,
-                        }));
-                      }}
-                    >
-                      Sign Up
-                    </button>
-                    <button
-                      className="bg-blue-400 text-black px-3 py-2 mb-4 w-full rounded-md"
-                      onClick={() => {
-                        setModal((prev) => ({ ...prev, state: true }));
-                      }}
-                    >
-                      Login
-                    </button>
-                  </>
-                )}
               </div>
             </div>
           </div>
         </div>
       ) : (
-
-        // Search Result NavBar Page 
+        // Search Result NavBar Page
         <div className="top-4 flex items-center justify-between px-2 w-full md:px-10 py-4 shadow-md">
           <span className="text-2xl md:text-3xl text-black font-bold tracking-tight flex gap-2">
             <span className="flex items-center text-center cursor-pointer">
@@ -1137,7 +1175,9 @@ const Header = () => {
                 onClick={() => setShowNav(!showNav)}
               />
             </span>
-            <Link to="/" className="">DayBreak</Link>
+            <Link to="/" className="">
+              DayBreak
+            </Link>
           </span>
           <span className="flex space-x-2">
             {userLogined !== null ? (
@@ -1161,7 +1201,7 @@ const Header = () => {
               </>
             ) : (
               <button
-                className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
+                className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:border-btnColor hover:bg-btnColor hover:text-white"
                 onClick={handleLoginClick}
               >
                 Login{" "}
