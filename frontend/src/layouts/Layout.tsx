@@ -10,7 +10,6 @@ interface Props {
 }
 const Layout = ({ children }: Props) => {
   const location = useLocation();
-  console.log("location", location.pathname);
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
