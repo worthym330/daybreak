@@ -11,11 +11,11 @@ import myHotelRoutes from "./routes/my-hotels";
 import hotelRoutes from "./routes/hotels";
 import bookingRoutes from "./routes/my-bookings";
 
-// cloudinary.config({
-//   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-//   api_key: process.env.CLOUDINARY_API_KEY,
-//   api_secret: process.env.CLOUDINARY_API_SECRET,
-// });
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 // mongoose.connect(process.env.MONGODB_CONNECTION_STRING as string);
 const options: mongoose.ConnectOptions & { useNewUrlParser: boolean; useUnifiedTopology: boolean } = {
@@ -37,7 +37,7 @@ app.use(
     credentials: true,
   })
 );
-
+app.use('/uploads', express.static(path.resolve(__dirname, '../uploads')));
 app.use(express.static(path.join(__dirname, "../../frontend/dist")));
 
 app.use("/api/auth", authRoutes);
@@ -50,6 +50,6 @@ app.get("*", (req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
 });
 
-app.listen(8000, () => {
-  console.log("server running on localhost:8000");
+app.listen(process.env.PORT, () => {
+  console.log(`server running on localhost:${process.env.PORT}`);
 });

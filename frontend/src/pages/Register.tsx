@@ -1,9 +1,8 @@
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import { useMutation, useQueryClient } from "react-query";
-import * as apiClient from "../api-client";
+import { useQueryClient } from "react-query";
 import { useAppContext } from "../contexts/AppContext";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -23,32 +22,16 @@ interface CustomJwtPayload extends JwtPayload {
 
 const Register = () => {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
   const { showToast } = useAppContext();
 
-  const mutation = useMutation(apiClient.register, {
-    onSuccess: async () => {
-      showToast({ message: "Registration Success!", type: "SUCCESS" });
-      await queryClient.invalidateQueries("validateToken");
-      navigate("/");
-    },
-    onError: (error: Error) => {
-      showToast({ message: error.message, type: "ERROR" });
-    },
-  });
-
   const validationSchema = Yup.object().shape({
-    firstName: Yup.string().required("This field is required"),
-    lastName: Yup.string().required("This field is required"),
+    fullName: Yup.string().required("Full Name is required!"),
+    hotelName: Yup.string().required("Hotel Name is required!"),
     email: Yup.string()
       .email("Invalid email address")
-      .required("This field is required"),
-    password: Yup.string()
-      .min(6, "Password must be at least 6 characters")
-      .required("This field is required"),
-    confirmPassword: Yup.string()
-      .oneOf([Yup.ref("password")], "Your passwords do not match")
-      .required("This field is required"),
+      .required("Work Email is required!"),
+    designation: Yup.string().required("Designation is required!"),
+    contactNo:Yup.string().required("Contact Number is required!")
   });
 
   const responseSignUpGoogle = async (response: any) => {
@@ -89,100 +72,137 @@ const Register = () => {
         <div className="mx-auto w-full max-w-sm lg:w-96">
           <Formik
             initialValues={{
-              firstName: "",
-              lastName: "",
+              fullName: "",
+              hotelName: "",
               email: "",
-              password: "",
-              confirmPassword: "",
+              role: "partner",
+              designation:"",
+              contactNo:""
             }}
             validationSchema={validationSchema}
-            onSubmit={(values, { setSubmitting }) => {
-              mutation.mutate(values, {
-                onSuccess: () => {
-                  setSubmitting(false);
-                },
-                onError: () => {
-                  setSubmitting(false);
-                },
-              });
+            onSubmit={async (values, { setSubmitting }) => {
+              try {
+                setSubmitting(false);
+                
+                const response = await fetch(`${API_BASE_URL}/api/users/partner/register`, {
+                  method: "POST",
+                  credentials: "include",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(values),
+                });
+                
+                const responseBody = await response.json();
+                console.log("response data", responseBody);
+            
+                if (!response.ok) {
+                  showToast({
+                    message: "Failed to create account!",
+                    type: "ERROR",
+                  });
+                } else {
+                  showToast({ message: "Our Team will contact you in 3 working days!", type: "SUCCESS" });
+                  await queryClient.invalidateQueries("validateToken");
+                }
+              } catch (error) {
+                console.error("Error creating account:", error);
+                showToast({
+                  message: "An error occurred while creating the account!",
+                  type: "ERROR",
+                });
+              } finally {
+                setSubmitting(false);
+              }
             }}
+            
           >
             {({ isSubmitting, handleChange, handleBlur, touched, errors }) => (
               <Form className="flex flex-col gap-5">
-                <h2 className="text-3xl font-bold">Create an Account</h2>
-                <div className="flex flex-col gap-5">
-                  <label className="text-gray-700 text-sm font-bold flex-1">
-                    First Name
-                    <input
-                      className="border rounded w-full px-2 py-3 mt-3 font-normal"
-                      name="firstName"
-                      type="text"
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                    />
-                    {touched.firstName && (
-                      <p className="text-red-700 error_msg">
-                        {errors.firstName}
-                      </p>
-                    )}
-                  </label>
-                  <label className="text-gray-700 text-sm font-bold flex-1">
-                    Last Name
-                    <div>
-                      <input
-                        className="border rounded w-full px-2 py-3 mt-2 font-normal"
-                        name="lastName"
-                        type="text"
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                      />
-                    </div>
-                    {touched.lastName && (
-                      <p className="text-red-700 error_msg">
-                        {errors.lastName}
-                      </p>
-                    )}
-                  </label>
+                <div className="flex flex-col gap-2">
+                  <h2 className="text-2xl font-bold">
+                    Bring Daycation to your hotel
+                  </h2>
+                  <span className="flex gap-2">
+                    <span>Your hotel is already using DayBreak? </span>
+                    <Link
+                      className="font-bold text-sky-600"
+                      to="/partner/sign-in"
+                    >
+                      Login
+                    </Link>
+                  </span>
                 </div>
                 <label className="text-gray-700 text-sm font-bold flex-1">
-                  Email
+                  Full Name
+                  <input
+                    className="border rounded w-full px-2 py-3 mt-3 font-normal"
+                    name="fullName"
+                    type="text"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    placeholder="Enter your full name"
+                  />
+                  {touched.fullName && (
+                    <p className="text-red-700 error_msg">{errors.fullName}</p>
+                  )}
+                </label>
+                <label className="text-gray-700 text-sm font-bold flex-1">
+                  Work Email
                   <input
                     className="border rounded w-full px-2 py-3 mt-2 font-normal"
                     name="email"
                     type="email"
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    placeholder="Enter your work email"
                   />
                   {touched.email && (
                     <p className="text-red-700 error_msg">{errors.email}</p>
                   )}
                 </label>
                 <label className="text-gray-700 text-sm font-bold flex-1">
-                  Password
+                  Contact Number
                   <input
                     className="border rounded w-full px-2 py-3 mt-2 font-normal"
-                    name="password"
-                    type="password"
+                    name="contactNo"
+                    type="contactNo"
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    placeholder="Enter your Contact Number"
                   />
-                  {touched.password && (
-                    <p className="text-red-700 error_msg">{errors.password}</p>
+                  {touched.contactNo && (
+                    <p className="text-red-700 error_msg">{errors.contactNo}</p>
                   )}
                 </label>
                 <label className="text-gray-700 text-sm font-bold flex-1">
-                  Confirm Password
+                  Hotel Name
+                  <div>
+                    <input
+                      className="border rounded w-full px-2 py-3 mt-2 font-normal"
+                      name="hotelName"
+                      type="text"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      placeholder="Enter your Hotel Name"
+                    />
+                  </div>
+                  {touched.hotelName && (
+                    <p className="text-red-700 error_msg">{errors.hotelName}</p>
+                  )}
+                </label>
+                <label className="text-gray-700 text-sm font-bold flex-1">
+                  Role
                   <input
                     className="border rounded w-full px-2 py-3 mt-2 font-normal"
-                    name="confirmPassword"
-                    type="password"
+                    name="designation"
+                    type="designation"
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    placeholder="Enter your role"
                   />
-                  {touched.confirmPassword && (
-                    <p className="text-red-700 error_msg">
-                      {errors.confirmPassword}
-                    </p>
+                  {touched.designation && (
+                    <p className="text-red-700 error_msg">{errors.designation}</p>
                   )}
                 </label>
                 <div className="flex flex-col justify-center gap-5">
@@ -214,21 +234,12 @@ const Register = () => {
                               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291l2.12-2.122A5 5 0 016 12H2c0 1.795.703 3.432 1.757 4.686L6 17.291z"
                             ></path>
                           </svg>
-                          <span>Logging in...</span>
+                          <span>Registering in...</span>
                         </>
                       ) : (
-                        "Login"
+                        "Sign up for Hotel Partner"
                       )}
                     </button>
-                  </span>
-                  <span className="text-sm text-center flex justify-end gap-2">
-                    <span>Already have an account? </span>
-                    <Link
-                      className="underline text-sky-600"
-                      to="/partner/sign-in"
-                    >
-                      Login
-                    </Link>
                   </span>
                   <div className="flex w-full my-1 justify-center items-center">
                     <hr className="border-gray-300 flex-grow" />

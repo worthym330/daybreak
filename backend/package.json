@@ -13,6 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/mongoose": "^5.11.97",
+    "aws-sdk": "^2.1637.0",
     "axios": "^1.7.2",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.2.0",
@@ -27,9 +28,10 @@
     "mongodb": "^6.5.0",
     "mongoose": "^8.4.1",
     "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.13",
     "passport": "^0.7.0",
-    "passport-google-oauth20": "^2.0.0",
-    "stripe": "^15.4.0"
+    "razorpay": "^2.9.4",
+    "stripe": "^15.10.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
@@ -39,6 +41,7 @@
     "@types/jsonwebtoken": "^9.0.6",
     "@types/multer": "^1.4.11",
     "@types/node": "^20.12.7",
+    "@types/nodemailer": "^6.4.15",
     "nodemon": "^3.1.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5"

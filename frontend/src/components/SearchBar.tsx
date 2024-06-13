@@ -38,13 +38,13 @@ const SearchBar = () => {
           <FaLocationDot className="text-xl mr-2 text-btnColor" />
           <input
             placeholder="Where are you going?"
-            className="text-md w-full focus:outline-none"
+            className="text-md w-full focus:outline-none text-fontSecondaryColor"
             value={destination}
             onChange={(event) => setDestination(event.target.value)}
           />
         </div>
 
-        <div className="flex-1 flex items-center h-full pl-5">
+        <div className="flex-1 flex items-center h-full pl-5 text-fontSecondaryColor">
           <MdCalendarMonth className="text-2xl mr-2 text-btnColor" />
           <div className="w-full">
             <DatePicker
@@ -62,7 +62,7 @@ const SearchBar = () => {
         </div>
         <div className="h-10 w-10 md:w-28 text-white text-sm font-medium rounded-full bg-orange-500 flex items-center justify-center">
           <button
-            className="flex-1 bg-btnColor text-white h-full font-semibold text-md rounded-full hover:bg-[#2f8794] transition-all duration-200 flex items-center justify-center py-5"
+            className="flex-1 bg-btnColor text-white h-full font-semibold text-md rounded-full hover:bg-[#c39b3f] transition-all duration-200 flex items-center justify-center py-5"
             type="submit"
           >
             <FaSearch className="sm:mr-3 mr-0 items-center" />

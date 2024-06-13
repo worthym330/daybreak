@@ -44,7 +44,7 @@ const initialSignupModalState = {
   },
 };
 
-interface login {
+export interface login {
   email: string;
   password: string;
   loginThrough: string;
@@ -59,12 +59,12 @@ interface signup {
   role: string;
 }
 
-interface CustomJwtPayload extends JwtPayload {
+export interface CustomJwtPayload extends JwtPayload {
   email?: string;
   name?: string;
 }
 
-const loginSchema = Yup.object().shape({
+export const loginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required"),
   password: Yup.string()
     .required("Password is required")
@@ -214,21 +214,34 @@ const Header = () => {
         validationSchema={loginSchema}
         onSubmit={async (values: login) => {
           setModal((prev) => ({ ...prev, state: false, loading: true }));
-          const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
-            method: "POST",
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(values),
-          });
-          const body = await response.json();
-          setModal((prev) => ({ ...prev, state: false, loading: false }));
-          showToast({ message: "Sign in Successful!", type: "SUCCESS" });
-          setShowDropdown(false);
-          localStorage.setItem("auth_token", JSON.stringify(body.user));
-          if (!response.ok) {
-            throw new Error(body.message);
+          try {
+            const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+              method: "POST",
+              credentials: "include",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(values),
+            });
+
+            const body = await response.json();
+            setModal((prev) => ({ ...prev, state: false, loading: false }));
+
+            if (!response.ok) {
+              showToast({ message: body.message, type: "ERROR" });
+              throw new Error(body.message);
+            }
+
+            showToast({ message: "Sign in Successful!", type: "SUCCESS" });
+            setShowDropdown(false);
+            localStorage.setItem("auth_token", JSON.stringify(body.user));
+          } catch (error: any) {
+            console.error("Error during sign in:", error);
+            setModal((prev) => ({ ...prev, state: false, loading: false }));
+            showToast({
+              message: error.message || "An error occurred during sign in",
+              type: "ERROR",
+            });
           }
         }}
       >
@@ -622,7 +635,7 @@ const Header = () => {
                       </>
                     ) : (
                       <button
-                        className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
+                        className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:border-btnColor hover:bg-btnColor hover:text-white"
                         onClick={handleLoginClick}
                       >
                         Login{" "}
@@ -689,113 +702,138 @@ const Header = () => {
                   )}
                   {/* Dropdown End */}
                 </div>
+
+                {/*Home Page Hamburger */}
                 <div className="w-full flex px-16 py-4">
                   <div className="flex flex-col md:w-1/2 py-3 mr-20">
-                    <span className="pb-3 text-[#193153] tracking-wider text-4xl">
+                    <span className="pb-3 text-fontPrimaryColor tracking-wider text-4xl font-LuzuryF1">
                       Unforgettable resorts and memories await
                     </span>
-                    <Link className="py-3" to="/about-us">
+                    <Link
+                      className="py-3 text-fontSecondaryColor"
+                      to="/about-us"
+                    >
                       About DayBreak
                     </Link>
                   </div>
-                  <div className="flex gap-4 md:w-1/2 justify-center">
+                  <div className="flex gap-20 md:w-1/2 justify-center">
                     <div className="text-nowrap flex flex-col gap-2">
-                      <span className="text-nowrap">Guests</span>
-                      <span className="text-nowrap">My Favourite</span>
-                      <span className="text-nowrap">Browse Hotels</span>
-                      <span className="text-nowrap">Help</span>
-                      <span className="text-nowrap"></span>
-                      <span className="text-nowrap"></span>
+                      <span className="text-nowrap font-bold text-fontPrimaryColor">
+                        Guests
+                      </span>
+                      <span className="text-nowrap text-fontSecondaryColor">
+                        My Favourite
+                      </span>
+                      <span className="text-nowrap text-fontSecondaryColor">
+                        Browse Hotels
+                      </span>
+                      <span className="text-nowrap text-fontSecondaryColor">
+                        Help
+                      </span>
+                      <span className="text-nowrap text-fontSecondaryColor"></span>
+                      <span className="text-nowrap text-fontSecondaryColor"></span>
                     </div>
                     <div className="text-nowrap flex flex-col gap-2">
-                      <span className="text-nowrap">Hotels</span>
-                      <span className="text-nowrap">List My Hotels</span>
-                      <span className="text-nowrap">Marketplace</span>
-                      <span className="text-nowrap">Help</span>
-                      <span className="text-nowrap"></span>
-                      <span className="text-nowrap"></span>
+                      <span className="text-nowrap font-bold text-fontPrimaryColor">
+                        Hotels
+                      </span>
+                      <span className="text-nowrap text-fontSecondaryColor">
+                        List My Hotels
+                      </span>
+                      <span className="text-nowrap text-fontSecondaryColor">
+                        Marketplace
+                      </span>
+                      <span className="text-nowrap text-fontSecondaryColor">
+                        Help
+                      </span>
+                      <span className="text-nowrap text-fontSecondaryColor"></span>
+                      <span className="text-nowrap text-fontSecondaryColor"></span>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="block md:hidden flex flex-col gap-2">
-                <div className="bg-mobileColor text-white w-full h-screen p-6 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center mb-6 w-full">
-                      <span className="flex items-center text-center cursor-pointer">
-                        <HiXMark
-                          className="w-8 h-8"
-                          onClick={() => setShowNav(!showNav)}
-                        />
-                      </span>
-                      <div className="ml-4 w-full">
-                        {tabs.map((e: any) => (
-                          <button
-                            className={classNames(
-                              e.name === tab
-                                ? "bg-white text-mobileColor  border-mobileColor"
-                                : "text-white hover:text-mobileColor hover:bg-white border-white",
-                              "rounded-md px-3 py-2 text-sm font-medium w-1/2 border"
-                            )}
-                            onClick={() => setTab(e.name)}
-                          >
-                            {e.name}
-                          </button>
-                        ))}
+              <div className="md:hidden flex flex-col gap-2 border-b-2 border-black">
+                <div className="bg-white text-black w-full h-screen p-6 flex flex-col">
+                  <span className="flex items-center text-center cursor-pointer">
+                    <HiXMark
+                      className="w-8 h-8"
+                      onClick={() => setShowNav(!showNav)}
+                    />
+                  </span>
+                  <div className="flex flex-col justify-between h-screen">
+                    <div>
+                      <div className="flex items-center mb-6 w-full mt-10">
+                        <div className="ml-4 w-full flex gap-5">
+                          {tabs.map((e: any) => (
+                            <button
+                              className={classNames(
+                                e.name === tab
+                                  ? "bg-goldColor text-white  border-darkGold"
+                                  : "text-black hover:bg-white border-darkGold",
+                                "rounded-md px-3 py-2 text-sm font-medium w-1/2 border"
+                              )}
+                              onClick={() => setTab(e.name)}
+                            >
+                              {e.name}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="my-6 ml-8">
+                        {tab === "Guests" ? (
+                          <ul className="space-y-6 text-goldColor">
+                            <li>My Favorites</li>
+                            <li>Browse Hotels</li>
+                            <li>Help</li>
+                          </ul>
+                        ) : (
+                          <ul className="space-y-6 text-goldColor">
+                            <li>List My Hotels</li>
+                            <li>Marketplace</li>
+                            <li>Help</li>
+                          </ul>
+                        )}
                       </div>
                     </div>
-                    <div className="my-6 ml-8">
-                      {tab === "Guests" ? (
-                        <ul className="space-y-6">
-                          <li>My Favorites</li>
-                          <li>Browse Hotels</li>
-                          <li>Help</li>
-                        </ul>
+
+                    <div>
+                      {userLogined !== null ? (
+                        <button
+                          className="bg-red-500 text-white px-3 py-2 mb-4 w-full rounded-md"
+                          onClick={handleClick}
+                        >
+                          Log out
+                        </button>
                       ) : (
-                        <ul className="space-y-6">
-                          <li>List My Hotels</li>
-                          <li>Marketplace</li>
-                          <li>Help</li>
-                        </ul>
+                        <>
+                          <button
+                            className="bg-white text-black px-3 py-2 mb-4 w-full rounded-md border-2 border-black hover:bg-btnColor hover:text-white"
+                            onClick={() => {
+                              setSignupModal((prev) => ({
+                                ...prev,
+                                state: true,
+                              }));
+                            }}
+                          >
+                            Sign Up
+                          </button>
+                          <button
+                            className="bg-black text-white px-3 py-2 mb-4 w-full rounded-md border-2 border-black hover:bg-btnColor hover:text-white"
+                            onClick={() => {
+                              setModal((prev) => ({ ...prev, state: true }));
+                            }}
+                          >
+                            Login
+                          </button>
+                        </>
                       )}
                     </div>
-                  </div>
-                  <div>
-                    {userLogined !== null ? (
-                      <button
-                        className="bg-red-500 text-white px-3 py-2 mb-4 w-full rounded-md"
-                        onClick={handleClick}
-                      >
-                        Log out
-                      </button>
-                    ) : (
-                      <>
-                        <button
-                          className="bg-teal-500 text-black px-3 py-2 mb-4 w-full rounded-md"
-                          onClick={() => {
-                            setSignupModal((prev) => ({
-                              ...prev,
-                              state: true,
-                            }));
-                          }}
-                        >
-                          Sign Up
-                        </button>
-                        <button
-                          className="bg-blue-400 text-black px-3 py-2 mb-4 w-full rounded-md"
-                          onClick={() => {
-                            setModal((prev) => ({ ...prev, state: true }));
-                          }}
-                        >
-                          Login
-                        </button>
-                      </>
-                    )}
                   </div>
                 </div>
               </div>
             </div>
           ) : (
+            // Home page NavBar
             <div className="w-full absolute top-4 flex items-center justify-between z-10 px-4 md:px-[10rem] bg-transparent">
               <span className="text-2xl md:text-3xl text-white font-bold tracking-tight flex gap-2">
                 <span className="flex items-center text-center cursor-pointer">
@@ -828,7 +866,7 @@ const Header = () => {
                   </>
                 ) : (
                   <button
-                    className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-gray-100 hover:text-black"
+                    className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:border-btnColor hover:bg-btnColor hover:text-white"
                     onClick={handleLoginClick}
                   >
                     Login{" "}
@@ -898,156 +936,175 @@ const Header = () => {
           )}
           {/* ---------- NavBar Ends ---------- */}
         </div>
-      ) : (
-        showNav ? (
-          <div className="absolute w-full top-0 bg-mobileColor text-white z-10">
-            <div className="hidden md:block flex flex-col gap-2 md:px-10">
-              <div className="w-full pt-4 flex items-center justify-between py-2">
-                <span className="text-2xl md:text-3xl font-bold tracking-tight flex gap-2">
-                  <span className="flex items-center text-center cursor-pointer">
-                    <HiXMark
-                      className="w-8 h-8"
-                      onClick={() => setShowNav(!showNav)}
-                    />
-                  </span>
-                  <Link to="/">DayBreak</Link>
+      ) : // Search Result Page hamburger dropdown Navbar
+      showNav ? (
+        <div className="absolute w-full top-0 bg-white text-black z-10 border-b-2 border-black">
+          <div className="hidden md:block flex flex-col gap-2 md:px-10">
+            <div className="w-full pt-4 flex items-center justify-between py-2">
+              <span className="text-2xl md:text-3xl font-bold tracking-tight flex gap-2">
+                <span className="flex items-center text-center cursor-pointer">
+                  <HiXMark
+                    className="w-8 h-8"
+                    onClick={() => setShowNav(!showNav)}
+                  />
                 </span>
-                <span className="flex space-x-2">
-                  {userLogined !== null ? (
-                    <>
-                      {userLogined?.role === "customer" ? (
-                        <Link
-                          className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
-                          to="/my-bookings"
-                        >
-                          My Bookings
-                        </Link>
-                      ) : (
-                        <Link
-                          className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
-                          to="/my-hotels"
-                        >
-                          My Hotels
-                        </Link>
-                      )}
-                      <SignOutButton classNames="text-black border-black px-3 py-1 md:px-5 md:py-2" />
-                    </>
-                  ) : (
-                    <button
-                      className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-white hover:bg-gray-100 hover:text-black"
-                      onClick={handleLoginClick}
-                    >
-                      Login{" "}
-                      {arrowDirection === "down" ? (
-                        <IoIosArrowDown className="ml-3 text-xl" />
-                      ) : (
-                        <IoIosArrowUp className="ml-3 text-xl" />
-                      )}
-                    </button>
-                  )}
-                  {userLogined?.role === "customer" && (
-                    <Link
-                      className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-white hover:bg-gray-100 hover:text-black"
-                      to="/"
-                    >
-                      <IoCartOutline className="text-2xl" />
-                    </Link>
-                  )}
-                </span>
-
-                {/* Dropdown for Login button */}
-                {showDropdown && (
-                  <div className="absolute bg-gray-100 text-rp-primary-black right-4 top-20 -mt-1 rounded-xl w-56 md:w-72 z-300 flex flex-col items-start shadow-login-card md:top-20 shadow-md">
-                    <button
-                      type="button"
-                      className="pl-5 pb-4 pt-4 cursor-pointer text-black z-10 w-full text-left align-middle rounded-t-xl hover:bg-rp-light-gray-4"
-                      onClick={() => {
-                        setShowDropdown(false);
-                        setModal((prev) => ({ ...prev, state: true }));
-                      }}
-                    >
-                      Login
-                    </button>
-
-                    <button
-                      type="button"
-                      className="pl-5 pb-3 cursor-pointer text-black z-10 w-full text-left align-middle pt-2 border-b border-rp-gray-divider hover:bg-rp-light-gray-4"
-                      onClick={() => {
-                        setShowDropdown(false);
-                        setSignupModal((prev) => ({ ...prev, state: true }));
-                      }}
-                    >
-                      Sign Up
-                    </button>
-
-                    <button
-                      type="button"
-                      className="pl-5 pb-4 cursor-pointer text-black z-10 w-full text-left align-middle pt-3 hover:bg-rp-light-gray-4"
-                      onClick={() => {
-                        setShowDropdown(false);
-                        navigate("/partner/sign-in");
-                      }}
-                    >
-                      Hotel Login
-                    </button>
-
-                    <button
-                      type="button"
-                      className="pl-5 pb-4 cursor-pointer text-black z-10 w-full text-left align-middle pt-2 rounded-b-xl hover:bg-rp-light-gray-4"
-                    >
-                      List My Hotel
-                    </button>
-                  </div>
+                <Link to="/">DayBreak</Link>
+              </span>
+              <span className="flex space-x-2">
+                {userLogined !== null ? (
+                  <>
+                    {userLogined?.role === "customer" ? (
+                      <Link
+                        className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-white hover:bg-gray-100 hover:text-black hover:border-black"
+                        to="/my-bookings"
+                      >
+                        My Bookings
+                      </Link>
+                    ) : (
+                      <Link
+                        className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-white hover:bg-gray-100 hover:text-black hover:border-black"
+                        to="/my-hotels"
+                      >
+                        My Hotels
+                      </Link>
+                    )}
+                    <SignOutButton classNames="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-white hover:bg-gray-100 hover:text-black hover:border-black" />
+                  </>
+                ) : (
+                  <button
+                    className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:border-btnColor hover:bg-btnColor hover:text-white"
+                    onClick={handleLoginClick}
+                  >
+                    Login{" "}
+                    {arrowDirection === "down" ? (
+                      <IoIosArrowDown className="ml-3 text-xl" />
+                    ) : (
+                      <IoIosArrowUp className="ml-3 text-xl" />
+                    )}
+                  </button>
                 )}
-                {/* Dropdown End */}
-              </div>
-              <div className="w-full flex px-16 py-4">
-                <div className="flex flex-col md:w-1/2 py-3 mr-20">
-                  <span className="pb-3 text-white tracking-wider text-4xl">
-                    Unforgettable resorts and memories await
-                  </span>
-                  <Link className="py-3" to="/about-us">
-                    About DayBreak
+                {userLogined?.role === "customer" && (
+                  <Link
+                    className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-white hover:bg-gray-100 hover:text-black"
+                    to="/"
+                  >
+                    <IoCartOutline className="text-2xl" />
                   </Link>
+                )}
+              </span>
+
+              {/* Dropdown for Login button */}
+              {showDropdown && (
+                <div className="absolute bg-gray-100 text-rp-primary-black right-4 top-20 -mt-1 rounded-xl w-56 md:w-72 z-300 flex flex-col items-start shadow-login-card md:top-20 shadow-md">
+                  <button
+                    type="button"
+                    className="pl-5 pb-4 pt-4 cursor-pointer text-black z-10 w-full text-left align-middle rounded-t-xl hover:bg-rp-light-gray-4"
+                    onClick={() => {
+                      setShowDropdown(false);
+                      setModal((prev) => ({ ...prev, state: true }));
+                    }}
+                  >
+                    Login
+                  </button>
+
+                  <button
+                    type="button"
+                    className="pl-5 pb-3 cursor-pointer text-black z-10 w-full text-left align-middle pt-2 border-b border-rp-gray-divider hover:bg-rp-light-gray-4"
+                    onClick={() => {
+                      setShowDropdown(false);
+                      setSignupModal((prev) => ({ ...prev, state: true }));
+                    }}
+                  >
+                    Sign Up
+                  </button>
+
+                  <button
+                    type="button"
+                    className="pl-5 pb-4 cursor-pointer text-black z-10 w-full text-left align-middle pt-3 hover:bg-rp-light-gray-4"
+                    onClick={() => {
+                      setShowDropdown(false);
+                      navigate("/partner/sign-in");
+                    }}
+                  >
+                    Hotel Login
+                  </button>
+
+                  <button
+                    type="button"
+                    className="pl-5 pb-4 cursor-pointer text-black z-10 w-full text-left align-middle pt-2 rounded-b-xl hover:bg-rp-light-gray-4"
+                  >
+                    List My Hotel
+                  </button>
                 </div>
-                <div className="flex gap-4 md:w-1/2 justify-center">
-                  <div className="text-nowrap flex flex-col gap-2">
-                    <span className="text-nowrap text-gray-500">Guests</span>
-                    <span className="text-nowrap text-lg">My Favourite</span>
-                    <span className="text-nowrap text-lg">Browse Hotels</span>
-                    <span className="text-nowrap text-lg">Help</span>
-                    <span className="text-nowrap text-lg"></span>
-                    <span className="text-nowrap text-lg"></span>
-                  </div>
-                  <div className="text-nowrap flex flex-col gap-2">
-                    <span className="text-nowrap text-gray-500">Hotels</span>
-                    <span className="text-nowrap text-lg">List My Hotels</span>
-                    <span className="text-nowrap text-lg">Marketplace</span>
-                    <span className="text-nowrap text-lg">Help</span>
-                    <span className="text-nowrap"></span>
-                    <span className="text-nowrap"></span>
-                  </div>
+              )}
+              {/* Dropdown End */}
+            </div>
+
+            {/* Hamburger when clciked */}
+            <div className="w-full flex px-16 py-4">
+              <div className="flex flex-col md:w-1/2 py-3 mr-20">
+                <span className="pb-3 text-fontPrimaryColor tracking-wider text-4xl font-LuzuryF1">
+                  Unforgettable resorts and memories await
+                </span>
+                <Link className="py-3 text-fontSecondaryColor" to="/about-us">
+                  About DayBreak
+                </Link>
+              </div>
+              <div className="flex gap-20 md:w-1/2 justify-center">
+                <div className="text-nowrap flex flex-col gap-2">
+                  <span className="text-nowrap font-bold text-fontPrimaryColor">
+                    Guests
+                  </span>
+                  <span className="text-nowrap text-fontSecondaryColor">
+                    My Favourite
+                  </span>
+                  <span className="text-nowrap text-fontSecondaryColor">
+                    Browse Hotels
+                  </span>
+                  <span className="text-nowrap text-fontSecondaryColor">
+                    Help
+                  </span>
+                  <span className="text-nowrap text-fontSecondaryColor"></span>
+                  <span className="text-nowrap text-fontSecondaryColor"></span>
+                </div>
+                <div className="text-nowrap flex flex-col gap-2">
+                  <span className="text-nowrap font-bold text-fontPrimaryColor">
+                    Hotels
+                  </span>
+                  <span className="text-nowrap text-fontSecondaryColor">
+                    List My Hotels
+                  </span>
+                  <span className="text-nowrap text-fontSecondaryColor">
+                    Marketplace
+                  </span>
+                  <span className="text-nowrap text-fontSecondaryColor">
+                    Help
+                  </span>
+                  <span className="text-nowrap text-fontSecondaryColor"></span>
+                  <span className="text-nowrap text-fontSecondaryColor"></span>
                 </div>
               </div>
             </div>
-            <div className="block md:hidden flex flex-col gap-2">
-              <div className="bg-mobileColor text-white w-full h-screen p-6 flex flex-col justify-between">
+          </div>
+          <div className="md:hidden flex flex-col gap-2 border-b-2 border-black">
+            <div className="bg-white text-black w-full h-screen p-6 flex flex-col">
+              <span className="flex items-center text-center cursor-pointer">
+                <HiXMark
+                  className="w-8 h-8"
+                  onClick={() => setShowNav(!showNav)}
+                />
+              </span>
+              <div className="flex flex-col h-screen">
                 <div>
-                  <div className="flex items-center mb-6 w-full">
-                    <span className="flex items-center text-center cursor-pointer">
-                      <HiXMark
-                        className="w-8 h-8"
-                        onClick={() => setShowNav(!showNav)}
-                      />
-                    </span>
-                    <div className="ml-4 w-full">
-                      {tabs.map((e: any) => (
-                        <button
-                          className={classNames(
-                            e.name === tab
-                              ? "bg-white text-mobileColor  border-mobileColor"
-                              : "text-white hover:text-mobileColor hover:bg-white border-white",
-                            "rounded-md px-3 py-2 text-sm font-medium w-1/2 border"
+                <div className="flex items-center mb-6 w-full mt-10">
+                        <div className="ml-4 w-full flex gap-5">
+                          {tabs.map((e: any) => (
+                            <button
+                              className={classNames(
+                                e.name === tab
+                                  ? "bg-goldColor text-white  border-darkGold"
+                                  : "text-black hover:bg-white border-darkGold",
+                                "rounded-md px-3 py-2 text-sm font-medium w-1/2 border"
                           )}
                           onClick={() => setTab(e.name)}
                         >
@@ -1058,13 +1115,13 @@ const Header = () => {
                   </div>
                   <div className="my-6 ml-8">
                     {tab === "Guests" ? (
-                      <ul className="space-y-6">
+                      <ul className="space-y-6 text-goldColor">
                         <li>My Favorites</li>
                         <li>Browse Hotels</li>
                         <li>Help</li>
                       </ul>
                     ) : (
-                      <ul className="space-y-6">
+                      <ul className="space-y-6 text-goldColor">
                         <li>List My Hotels</li>
                         <li>Marketplace</li>
                         <li>Help</li>
@@ -1072,7 +1129,7 @@ const Header = () => {
                     )}
                   </div>
                 </div>
-                <div>
+                <div className="flex flex-col justify-end h-full">
                   {userLogined !== null ? (
                     <button
                       className="bg-red-500 text-white px-3 py-2 mb-4 w-full rounded-md"
@@ -1083,7 +1140,7 @@ const Header = () => {
                   ) : (
                     <>
                       <button
-                        className="bg-teal-500 text-black px-3 py-2 mb-4 w-full rounded-md"
+                            className="bg-white text-black px-3 py-2 mb-4 w-full rounded-md border-2 border-black hover:bg-btnColor hover:text-white"
                         onClick={() => {
                           setSignupModal((prev) => ({
                             ...prev,
@@ -1094,7 +1151,7 @@ const Header = () => {
                         Sign Up
                       </button>
                       <button
-                        className="bg-blue-400 text-black px-3 py-2 mb-4 w-full rounded-md"
+                            className="bg-black text-white px-3 py-2 mb-4 w-full rounded-md border-2 border-black hover:bg-btnColor hover:text-white"
                         onClick={() => {
                           setModal((prev) => ({ ...prev, state: true }));
                         }}
@@ -1107,17 +1164,21 @@ const Header = () => {
               </div>
             </div>
           </div>
-        ) : 
+        </div>
+      ) : (
+        // Search Result NavBar Page
         <div className="top-4 flex items-center justify-between px-2 w-full md:px-10 py-4 shadow-md">
           <span className="text-2xl md:text-3xl text-black font-bold tracking-tight flex gap-2">
-                <span className="flex items-center text-center cursor-pointer">
-                  <GiHamburgerMenu
-                    className="w-8 h-8"
-                    onClick={() => setShowNav(!showNav)}
-                  />
-                </span>
-                <Link to="/">DayBreak</Link>
-              </span>
+            <span className="flex items-center text-center cursor-pointer">
+              <GiHamburgerMenu
+                className="w-8 h-8"
+                onClick={() => setShowNav(!showNav)}
+              />
+            </span>
+            <Link to="/" className="">
+              DayBreak
+            </Link>
+          </span>
           <span className="flex space-x-2">
             {userLogined !== null ? (
               <>
@@ -1140,7 +1201,7 @@ const Header = () => {
               </>
             ) : (
               <button
-                className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
+                className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:border-btnColor hover:bg-btnColor hover:text-white"
                 onClick={handleLoginClick}
               >
                 Login{" "}
@@ -1163,7 +1224,7 @@ const Header = () => {
 
           {/* Dropdown for Login button */}
           {showDropdown && (
-            <div className="absolute bg-gray-100 text-rp-primary-black right-4 top-20 -mt-1 rounded-xl w-56 md:w-72 z-300 flex flex-col items-start shadow-login-card md:top-20 shadow-md">
+            <div className="absolute bg-gray-100 text-rp-primary-black right-4 top-20 -mt-1 rounded-xl w-56 md:w-72 z-50 flex flex-col items-start shadow-login-card md:top-20 shadow-md">
               <button
                 type="button"
                 className="pl-5 pb-4 pt-4 cursor-pointer z-10 w-full text-left align-middle rounded-t-xl hover:bg-rp-light-gray-4"

@@ -1,10 +1,13 @@
 import express, { Request, Response } from "express";
-import multer from 'multer';
+import multer from "multer";
 import cloudinary from "cloudinary";
 import Hotel from "../models/hotel";
 import verifyToken from "../middleware/auth";
 import { body } from "express-validator";
 import { HotelType } from "../shared/types";
+// import AWS from "aws-sdk";
+import fs from "fs";
+import path from "path";
 
 const router = express.Router();
 
@@ -15,6 +18,14 @@ const upload = multer({
     fileSize: 5 * 1024 * 1024, // 5MB
   },
 });
+
+// AWS.config.update({
+//   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+//   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+//   region: process.env.AWS_REGION,
+// });
+
+// export const s3 = new AWS.S3();
 
 router.post(
   "/",
@@ -39,8 +50,9 @@ router.post(
     try {
       const imageFiles = req.files as Express.Multer.File[];
       const newHotel: HotelType = req.body;
-
+      console.log(imageFiles,newHotel)
       const imageUrls = await uploadImages(imageFiles);
+      console.log('imageUrlsssss',imageUrls)
 
       newHotel.imageUrls = imageUrls;
       newHotel.lastUpdated = new Date();
@@ -117,16 +129,60 @@ router.put(
   }
 );
 
-async function uploadImages(imageFiles: Express.Multer.File[]) {
-  const uploadPromises = imageFiles.map(async (image) => {
-    const b64 = Buffer.from(image.buffer).toString("base64");
-    let dataURI = "data:" + image.mimetype + ";base64," + b64;
-    const res = await cloudinary.v2.uploader.upload(dataURI);
-    return res.url;
-  });
+// async function uploadImages(imageFiles: Express.Multer.File[]) {
+//   const uploadPromises = imageFiles.map(async (image) => {
+//     const params = {
+//       Bucket:'daybreakimages',
+//       Key: `images/${Date.now()}_${image.originalname}`,
+//       Body: image.buffer,
+//       ContentType: image.mimetype,
+//       // ACL: 'public-read',
+//     };
 
-  const imageUrls = await Promise.all(uploadPromises);
-  return imageUrls;
+//     const res = await s3.upload(params).promise();
+//     return res.Location;
+//   });
+
+//   const imageUrls = await Promise.all(uploadPromises);
+//   return imageUrls;
+// }
+
+async function uploadImages(imageFiles: Express.Multer.File[]) {
+  const uploadDir = path.resolve(__dirname, "../../uploads/hotel/images");
+
+  try {
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    const backendUri = process.env.BACKEND_URL || "http://localhost:8000"; // Replace with your actual backend URL
+
+    const uploadPromises = imageFiles.map(async (image) => {
+      const filename = `${image.originalname}`;
+      const filePath = path.join(uploadDir, filename);
+
+      await new Promise<void>((resolve, reject) => {
+        fs.writeFile(filePath, image.buffer, (err: any) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve();
+          }
+        });
+      });
+
+      // Construct the URL to access the image
+      const imageUrl = `${backendUri}/uploads/hotel/images/${filename}`;
+      console.log('imageUrl',imageUrl)
+      return imageUrl;
+    });
+
+    const imageUrls = await Promise.all(uploadPromises);
+    return imageUrls;
+  } catch (error) {
+    console.error("Error uploading images:", error);
+    throw error; // Propagate the error back to the caller
+  }
 }
 
 export default router;

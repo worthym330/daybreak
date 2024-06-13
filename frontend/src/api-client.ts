@@ -47,6 +47,7 @@ export const signIn = async (formData: SignInFormData) => {
   });
 
   const body = await response.json();
+  localStorage.setItem("auth_token", JSON.stringify(body.user));  
   if (!response.ok) {
     throw new Error(body.message);
   }
@@ -194,6 +195,15 @@ export const fetchHotelById = async (hotelId: string): Promise<HotelType> => {
   return response.json();
 };
 
+export const fetchHotelByName = async (name: string): Promise<HotelType> => {
+  const response = await fetch(`${API_BASE_URL}/api/hotels/name/${name}`);
+  if (!response.ok) {
+    throw new Error("Error fetching Hotels");
+  }
+
+  return response.json();
+};
+
 export const createPaymentIntent = async (
   hotelId: string,
   numberOfNights: string
@@ -213,8 +223,8 @@ export const createPaymentIntent = async (
   if (!response.ok) {
     throw new Error("Error fetching payment intent");
   }
-
-  return response.json();
+  const responseData = await response.json();
+  return responseData;
 };
 
 export const createRoomBooking = async (formData: BookingFormData) => {
@@ -245,4 +255,22 @@ export const fetchMyBookings = async (): Promise<HotelType[]> => {
   }
 
   return response.json();
+};
+
+export const verifyPayment = async (paymentData:any) => {
+  const response = await fetch(`/api/bookings/verify-payment`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(paymentData),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to verify payment');
+  }
+
+  const responseData = await response.json(); // Convert stream to JSON
+
+  return responseData;
 };
