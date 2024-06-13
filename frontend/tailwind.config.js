@@ -13,7 +13,9 @@ export default {
         'fontSecondaryColor': "#828282",
         'footerColor': "#303030",
         'pColor': "#777577",
-        'mobileColor': "#193153"
+        'mobileColor': "#193153",
+        'goldColor':"#B5813F",
+        'darkGold':"#3D270C"
       },
       fontFamily: {
         'poetsen-one': ['Poetsen One', 'sans-serif'],
