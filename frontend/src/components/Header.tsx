@@ -262,66 +262,54 @@ const Header = () => {
             }}
           >
             <form onSubmit={handleSubmit} noValidate>
-              <h1 className="text-center text-3xl font-light text-gray-800">
+              <h1 className="text-center text-2xl font-light text-gray-800 mb-5">
                 Welcome to{" "}
-                <span className="text-gray-800 font-bold">DayBreak</span>
+                <span className="text-goldColor font-bold">DayBreak</span>
               </h1>
-              <span className="text-center text-gray-800 mb-5">
-                Don't have an account yet?{" "}
-                <span
-                  className="cursor-pointer underline text-sky-600"
-                  onClick={() => handleSignInClick()}
-                >
-                  {" "}
-                  Sign Up
-                </span>
-              </span>
 
               <div className="text-left">
                 <label className="text-gray-700 text-sm font-bold flex-1">
-                  Email
+                  {/* Email */}
                 </label>
                 <input
                   type="email"
                   name="email"
                   value={values.email}
-                  placeholder="Enter your email address"
+                  placeholder="Email address"
                   className="border rounded w-full px-2 py-3 font-normal mb-3 mt-3"
                   onChange={handleChange}
                   onBlur={handleBlur}
                 />
                 {touched.email && (
-                  <span className="text-red-500 font-semibold">
-                    {errors.email}
+                  <span className="text-red-500 font-normal">
+                    *{errors.email}
                   </span>
                 )}
               </div>
 
               <div className="text-left">
                 <label className="text-gray-700 text-sm font-bold flex-1">
-                  Password
+                  {/* Password */}
                 </label>
                 <input
                   type="password"
                   name="password"
                   value={values.password}
-                  placeholder="Enter your password"
-                  className="border rounded w-full px-2 py-3 font-normal mb-3 mt-3"
+                  placeholder="Password"
+                  className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
                   onChange={handleChange}
                   onBlur={handleBlur}
                 />
                 {touched.password && (
-                  <span className="text-red-500 font-semibold">
-                    {errors.password}
-                  </span>
+                  <span className="text-red-500">*{errors.password}</span>
                 )}
               </div>
 
               <div className="flex flex-col justify-center gap-5">
-                <span className="flex items-center justify-between">
+                <span className="flex items-center justify-between mt-5">
                   <button
                     type="submit"
-                    className="bg-black mx-auto w-full text-white px-4 py-3 rounded-xl font-bold hover:bg-gray-800"
+                    className="bg-black mx-auto w-full text-white px-4 py-3 rounded-xl font-bold hover:bg-btnColor"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (
@@ -353,6 +341,16 @@ const Header = () => {
                     )}
                   </button>
                 </span>
+                <span className="text-center text-gray-800">
+                  Don't have an account yet?{" "}
+                  <span
+                    className="cursor-pointer underline text-goldColor"
+                    onClick={() => handleSignInClick()}
+                  >
+                    {" "}
+                    Sign Up
+                  </span>
+                </span>
                 <div className="flex w-full my-1 justify-center items-center">
                   <hr className="border-gray-300 flex-grow" />
                   <span className="text-gray-400 mx-2">OR</span>
@@ -362,8 +360,8 @@ const Header = () => {
                 <GoogleOAuthProvider
                   clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
                 >
-                  <div className="w-full flex justify-center">
-                    <div className="w-full">
+                  <div className="w-full flex justify-center mb-3">
+                    <div className="">
                       <GoogleLogin
                         onSuccess={responseLoginGoogle}
                         onError={() => console.log("failed to login")}
@@ -371,10 +369,11 @@ const Header = () => {
                     </div>
                   </div>
                 </GoogleOAuthProvider>
+                <hr className="border-gray-300 flex-grow" />
                 <span className="text-sm text-center">
                   Are you a hotel partner?{" "}
                   <Link
-                    className="underline text-sky-600"
+                    className="underline text-goldColor"
                     to="/partner/sign-in"
                   >
                     Log in here
@@ -435,35 +434,26 @@ const Header = () => {
             }}
           >
             <form onSubmit={handleSubmit} noValidate>
-              <h1 className="text-center text-3xl font-light text-gray-800">
-                Create DayBreak Account
+              <h1 className="text-center text-2xl font-light text-gray-800 mb-3">
+                Create <span className="text-goldColor font-bold">DayBreak</span> Account
               </h1>
-              <span className="text-center text-gray-800 mb-5">
-                Already have an account?
-                <span
-                  className="cursor-pointer underline text-sky-600"
-                  onClick={() => handleLoginSpanClick()}
-                >
-                  {" "}
-                  Login
-                </span>
-              </span>
+              
 
               <div className="text-left">
                 <label className="text-gray-700 text-sm font-bold flex-1">
-                  First Name
+                  {/* First Name */}
                 </label>
                 <input
                   type="firstName"
                   name="firstName"
                   value={values.firstName}
-                  placeholder="Enter First Name"
+                  placeholder="First Name"
                   className="border rounded w-full px-2 py-3 font-normal mb-3 mt-3"
                   onChange={handleChange}
                   onBlur={handleBlur}
                 />
                 {touched.firstName && (
-                  <span className="text-red-500 font-semibold">
+                  <span className="text-red-500">
                     {errors.firstName}
                   </span>
                 )}
@@ -471,14 +461,14 @@ const Header = () => {
 
               <div className="text-left">
                 <label className="text-gray-700 text-sm font-bold flex-1">
-                  Last Name
+                  {/* Last Name */}
                 </label>
                 <input
                   type="lastName"
                   name="lastName"
                   value={values.lastName}
-                  placeholder="Enter your Last Name"
-                  className="border rounded w-full px-2 py-3 font-normal mb-3 mt-3"
+                  placeholder="Last Name"
+                  className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
                   onChange={handleChange}
                   onBlur={handleBlur}
                 />
@@ -491,19 +481,19 @@ const Header = () => {
 
               <div className="text-left">
                 <label className="text-gray-700 text-sm font-bold flex-1">
-                  Email
+                  {/* Email */}
                 </label>
                 <input
                   type="email"
                   name="email"
                   value={values.email}
-                  placeholder="Enter your email address"
-                  className="border rounded w-full px-2 py-3 font-normal mb-3 mt-3"
+                  placeholder="Email address"
+                  className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
                   onChange={handleChange}
                   onBlur={handleBlur}
                 />
                 {touched.email && (
-                  <span className="text-red-500 font-semibold">
+                  <span className="text-red-500">*
                     {errors.email}
                   </span>
                 )}
@@ -511,19 +501,19 @@ const Header = () => {
 
               <div className="text-left">
                 <label className="text-gray-700 text-sm font-bold flex-1">
-                  Password
+                  {/* Password */}
                 </label>
                 <input
                   type="password"
                   name="password"
                   value={values.password}
-                  placeholder="Enter your password"
-                  className="border rounded w-full px-2 py-3 font-normal mb-3 mt-3"
+                  placeholder="Password"
+                  className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
                   onChange={handleChange}
                   onBlur={handleBlur}
                 />
                 {touched.password && (
-                  <span className="text-red-500 font-semibold">
+                  <span className="text-red-500">*
                     {errors.password}
                   </span>
                 )}
@@ -531,34 +521,44 @@ const Header = () => {
 
               <div className="text-left">
                 <label className="text-gray-700 text-sm font-bold flex-1">
-                  Confirm Password
+                  {/* Confirm Password */}
                 </label>
                 <input
                   type="confirmpassword"
                   name="confirmpassword"
                   value={values.confirmpassword}
-                  placeholder="Enter your password"
-                  className="border rounded w-full px-2 py-3 font-normal mb-3 mt-3"
+                  placeholder="Confirm Password"
+                  className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
                   onChange={handleChange}
                   onBlur={handleBlur}
                 />
                 {touched.confirmpassword && (
-                  <span className="text-red-500 font-semibold">
+                  <span className="text-red-500">*
                     {errors.confirmpassword}
                   </span>
                 )}
               </div>
 
-              <div className="flex flex-col justify-center gap-5 mt-4">
+              <div className="flex flex-col justify-center gap-5 mt-5">
                 <span className="flex items-center justify-between">
                   <button
                     type="submit"
-                    className="bg-black mx-auto w-full text-white px-4 py-3 rounded-xl font-bold hover:bg-gray-800"
+                    className="bg-black mx-auto w-full text-white px-4 py-3 rounded-xl font-bold hover:bg-btnColor"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? "Registering..." : "Register"}
                   </button>
                 </span>
+                <span className="text-center text-gray-800">
+                Already have an account?
+                <span
+                  className="cursor-pointer underline text-goldColor"
+                  onClick={() => handleLoginSpanClick()}
+                >
+                  {" "}
+                  Login
+                </span>
+              </span>
                 <div className="flex w-full my-1 justify-center items-center">
                   <hr className="border-gray-300 flex-grow" />
                   <span className="text-gray-400 mx-2">OR</span>
@@ -567,8 +567,8 @@ const Header = () => {
                 <GoogleOAuthProvider
                   clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
                 >
-                  <div className="w-full flex justify-center">
-                    <div className="w-full">
+                  <div className="w-full flex justify-center mb-3">
+                    <div className="">
                       <GoogleLogin
                         onSuccess={responseSignUpGoogle}
                         onError={() => console.log("failed to login")}
@@ -1096,15 +1096,15 @@ const Header = () => {
               </span>
               <div className="flex flex-col h-screen">
                 <div>
-                <div className="flex items-center mb-6 w-full mt-10">
-                        <div className="ml-4 w-full flex gap-5">
-                          {tabs.map((e: any) => (
-                            <button
-                              className={classNames(
-                                e.name === tab
-                                  ? "bg-goldColor text-white  border-darkGold"
-                                  : "text-black hover:bg-white border-darkGold",
-                                "rounded-md px-3 py-2 text-sm font-medium w-1/2 border"
+                  <div className="flex items-center mb-6 w-full mt-10">
+                    <div className="ml-4 w-full flex gap-5">
+                      {tabs.map((e: any) => (
+                        <button
+                          className={classNames(
+                            e.name === tab
+                              ? "bg-goldColor text-white  border-darkGold"
+                              : "text-black hover:bg-white border-darkGold",
+                            "rounded-md px-3 py-2 text-sm font-medium w-1/2 border"
                           )}
                           onClick={() => setTab(e.name)}
                         >
@@ -1140,7 +1140,7 @@ const Header = () => {
                   ) : (
                     <>
                       <button
-                            className="bg-white text-black px-3 py-2 mb-4 w-full rounded-md border-2 border-black hover:bg-btnColor hover:text-white"
+                        className="bg-white text-black px-3 py-2 mb-4 w-full rounded-md border-2 border-black hover:bg-btnColor hover:text-white"
                         onClick={() => {
                           setSignupModal((prev) => ({
                             ...prev,
@@ -1151,7 +1151,7 @@ const Header = () => {
                         Sign Up
                       </button>
                       <button
-                            className="bg-black text-white px-3 py-2 mb-4 w-full rounded-md border-2 border-black hover:bg-btnColor hover:text-white"
+                        className="bg-black text-white px-3 py-2 mb-4 w-full rounded-md border-2 border-black hover:bg-btnColor hover:text-white"
                         onClick={() => {
                           setModal((prev) => ({ ...prev, state: true }));
                         }}
