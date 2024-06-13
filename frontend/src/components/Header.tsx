@@ -524,7 +524,7 @@ const Header = () => {
                   {/* Confirm Password */}
                 </label>
                 <input
-                  type="confirmpassword"
+                  type="password"
                   name="confirmpassword"
                   value={values.confirmpassword}
                   placeholder="Confirm Password"

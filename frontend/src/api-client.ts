@@ -3,7 +3,6 @@ import { SignInFormData } from "./pages/SignIn";
 import {
   HotelSearchResponse,
   HotelType,
-  PaymentIntentResponse,
   UserType,
 } from "../../backend/src/shared/types";
 import { BookingFormData } from "./forms/BookingForm/BookingForm";
@@ -47,7 +46,7 @@ export const signIn = async (formData: SignInFormData) => {
   });
 
   const body = await response.json();
-  localStorage.setItem("auth_token", JSON.stringify(body.user));  
+  localStorage.setItem("auth_token", JSON.stringify(body.user));
   if (!response.ok) {
     throw new Error(body.message);
   }
@@ -204,30 +203,29 @@ export const fetchHotelByName = async (name: string): Promise<HotelType> => {
   return response.json();
 };
 
-export const createPaymentIntent = async (
-  hotelId: string,
-  numberOfNights: string
-): Promise<PaymentIntentResponse> => {
-  const response = await fetch(
-    `${API_BASE_URL}/api/hotels/${hotelId}/bookings/payment-intent`,
-    {
-      credentials: "include",
-      method: "POST",
-      body: JSON.stringify({ numberOfNights }),
-      headers: {
-        "Content-Type": "application/json",
-      },
+export const createPaymentIntent = async (hotelId: string, cartItems: any) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/hotels/${hotelId}/bookings/payment-intent`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json", // Assuming you have a token for authentication
+        },
+        credentials: "include",
+        body: JSON.stringify({ cartItems }),
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
     }
-  );
-
-  if (!response.ok) {
-    throw new Error("Error fetching payment intent");
+    return response.json();
+  } catch (error) {
+    console.log(error);
   }
-  const responseData = await response.json();
-  return responseData;
 };
 
-export const createRoomBooking = async (formData: BookingFormData) => {
+export const createRoomBooking = async (formData: BookingFormData, orderId: string) => {
   const response = await fetch(
     `${API_BASE_URL}/api/hotels/${formData.hotelId}/bookings`,
     {
@@ -236,7 +234,7 @@ export const createRoomBooking = async (formData: BookingFormData) => {
         "Content-Type": "application/json",
       },
       credentials: "include",
-      body: JSON.stringify(formData),
+      body: JSON.stringify({ ...formData, orderId }), // Include orderId in the request body
     }
   );
 
@@ -244,6 +242,7 @@ export const createRoomBooking = async (formData: BookingFormData) => {
     throw new Error("Error booking room");
   }
 };
+
 
 export const fetchMyBookings = async (): Promise<HotelType[]> => {
   const response = await fetch(`${API_BASE_URL}/api/my-bookings`, {
@@ -257,17 +256,17 @@ export const fetchMyBookings = async (): Promise<HotelType[]> => {
   return response.json();
 };
 
-export const verifyPayment = async (paymentData:any) => {
+export const verifyPayment = async (paymentData: any) => {
   const response = await fetch(`/api/bookings/verify-payment`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(paymentData),
   });
 
   if (!response.ok) {
-    throw new Error('Failed to verify payment');
+    throw new Error("Failed to verify payment");
   }
 
   const responseData = await response.json(); // Convert stream to JSON

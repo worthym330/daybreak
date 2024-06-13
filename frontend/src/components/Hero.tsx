@@ -6,7 +6,8 @@ const Hero = () => {
           Find your next Daycation
         </h1>
         <p className="md:text-2xl text-1xl text-white md:mt-4 mt-0 font-LuzuryF2">
-          Search low prices on hotels for your dream vacation...
+          Discover luxury by the day: Book Day Passes, Daybeds, Cabanas &
+          Experiences at premier hotels in your city.
         </p>
       </div>
     </div>

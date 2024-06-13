@@ -5,8 +5,9 @@ import { param, validationResult } from "express-validator";
 import Stripe from "stripe";
 import verifyToken from "../middleware/auth";
 import Razorpay from "razorpay";
+import ServiceRecord from "../models/invoice";
 
-const razorpay = new Razorpay({
+const razorpayInstance = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID as string,
   key_secret: process.env.RAZORPAY_KEY_SECRET as string,
 });
@@ -115,7 +116,7 @@ router.post(
   "/:hotelId/bookings/payment-intent",
   verifyToken,
   async (req: Request, res: Response) => {
-    const { numberOfNights } = req.body;
+    const { cartItems } = req.body;
     const hotelId = req.params.hotelId;
 
     try {
@@ -124,20 +125,27 @@ router.post(
         return res.status(400).json({ message: "Hotel not found" });
       }
 
-      const totalCost = hotel.pricePerNight * numberOfNights * 100; // Razorpay expects the amount in paise
+      // Calculate the total amount from cartItems
+      const totalAmount = cartItems.reduce((sum: number, item: any) => {
+        const itemTotal = item.total * 100; 
+        return sum + itemTotal;
+      }, 0);
+       // Convert to the smallest currency unit (paise)
+
+
       const receipt = `rcpt_${hotelId}_${req.userId}`.slice(0, 40);
       const options = {
-        amount: totalCost, // amount in the smallest currency unit
+        amount: totalAmount, // amount in the smallest currency unit
         currency: "INR",
         receipt: receipt,
-        payment_capture: 1, // 1 for automatic capture, 0 for manual
+        payment_capture: 0, // 1 for automatic capture, 0 for manual
         notes: {
           hotelId,
           userId: req.userId,
         },
       };
 
-      const order = await razorpay.orders.create(options);
+      const order = await razorpayInstance.orders.create(options);
 
       if (!order) {
         return res.status(500).json({ message: "Error creating order" });
@@ -148,7 +156,7 @@ router.post(
         amount: order.amount,
         currency: order.currency,
       };
-      console.log('responce value',response);
+      console.log('response value', response);
 
       res.json(response);
     } catch (error) {
@@ -158,58 +166,67 @@ router.post(
   }
 );
 
-// router.post(
-//   "/:hotelId/bookings",
-//   verifyToken,
-//   async (req: Request, res: Response) => {
-//     try {
-//       const paymentIntentId = req.body.paymentIntentId;
+router.post(
+  "/:hotelId/bookings",
+  verifyToken,
+  async (req: Request, res: Response) => {
+    try {
+      const { paymentIntentId, order_id } = req.body;
 
-//       const paymentIntent = await stripe.paymentIntents.retrieve(
-//         paymentIntentId as string
-//       );
+      // Verify the payment signature
+      const payment = await razorpayInstance.payments.fetch(paymentIntentId);
+      
+      if (!payment) {
+        return res.status(400).json({ message: "Payment not found" });
+      }
 
-//       if (!paymentIntent) {
-//         return res.status(400).json({ message: "payment intent not found" });
-//       }
+      if (payment.order_id !== order_id || payment.notes.hotelId !== req.params.hotelId || payment.notes.userId !== req.userId) {
+        return res.status(400).json({ message: "Payment details mismatch" });
+      }
 
-//       if (
-//         paymentIntent.metadata.hotelId !== req.params.hotelId ||
-//         paymentIntent.metadata.userId !== req.userId
-//       ) {
-//         return res.status(400).json({ message: "payment intent mismatch" });
-//       }
+      if (payment.status !== "captured") {
+        return res.status(400).json({
+          message: `Payment not captured. Status: ${payment.status}`,
+        });
+      }
 
-//       if (paymentIntent.status !== "succeeded") {
-//         return res.status(400).json({
-//           message: `payment intent not succeeded. Status: ${paymentIntent.status}`,
-//         });
-//       }
+      const newBooking: BookingType = {
+        ...req.body,
+        userId: req.userId,
+      };
 
-//       const newBooking: BookingType = {
-//         ...req.body,
-//         userId: req.userId,
-//       };
+      const hotel = await Hotel.findOneAndUpdate(
+        { _id: req.params.hotelId },
+        {
+          $push: { bookings: newBooking },
+        }
+      );
 
-//       const hotel = await Hotel.findOneAndUpdate(
-//         { _id: req.params.hotelId },
-//         {
-//           $push: { bookings: newBooking },
-//         }
-//       );
+      if (!hotel) {
+        return res.status(400).json({ message: "Hotel not found" });
+      }
 
-//       if (!hotel) {
-//         return res.status(400).json({ message: "hotel not found" });
-//       }
+      await hotel.save();
 
-//       await hotel.save();
-//       res.status(200).send();
-//     } catch (error) {
-//       console.log(error);
-//       res.status(500).json({ message: "something went wrong" });
-//     }
-//   }
-// );
+      const serviceRecord = new ServiceRecord({
+        userId: req.userId,
+        hotelId: req.params.hotelId,
+        bookingId: newBooking._id,
+        paymentId: paymentIntentId,
+        invoiceId: payment.invoice_id || '',
+        servicesUsed: req.body.servicesUsed || [],
+        paymentStatus: payment.status,
+      });
+
+      await serviceRecord.save();
+
+      res.status(200).send();
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "Something went wrong" });
+    }
+  }
+);
 
 const constructSearchQuery = (queryParams: any) => {
   let constructedQuery: any = {};

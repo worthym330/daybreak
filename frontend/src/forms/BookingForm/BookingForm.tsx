@@ -1,10 +1,5 @@
 import { useForm } from "react-hook-form";
-import {
-  PaymentIntentResponse,
-  UserType,
-} from "../../../../backend/src/shared/types";
-import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
-import { StripeCardElement } from "@stripe/stripe-js";
+import { PaymentIntentResponse, UserType } from "../../../../backend/src/shared/types";
 import { useSearchContext } from "../../contexts/SearchContext";
 import { useParams } from "react-router-dom";
 import { useMutation } from "react-query";
@@ -23,23 +18,22 @@ export type BookingFormData = {
   adultCount: number;
   childCount: number;
   checkIn: string;
-  checkOut: string;
   hotelId: string;
   paymentIntentId: string;
   totalCost: number;
 };
 
 const BookingForm = ({ currentUser, paymentIntent }: Props) => {
-  const stripe = useStripe();
-  const elements = useElements();
-
   const search = useSearchContext();
   const { hotelId } = useParams();
 
-  const { showToast } = useAppContext();
+  const { showToast, razorpayOptions } = useAppContext();
 
-  const { mutate: bookRoom, isLoading } = useMutation(
-    apiClient.createRoomBooking,
+  const { mutate: bookRoom, isLoading } = useMutation<void, Error, BookingFormData>(
+    "createBooking", // Mutation key
+    async (formData) => {
+      await apiClient.createRoomBooking(formData, formData.paymentIntentId);
+    },
     {
       onSuccess: () => {
         showToast({ message: "Booking Saved!", type: "SUCCESS" });
@@ -47,18 +41,14 @@ const BookingForm = ({ currentUser, paymentIntent }: Props) => {
       onError: () => {
         showToast({ message: "Error saving booking", type: "ERROR" });
       },
-    }
-  );
+    });
 
   const { handleSubmit, register } = useForm<BookingFormData>({
     defaultValues: {
       firstName: currentUser.firstName,
       lastName: currentUser.lastName,
       email: currentUser.email,
-      // adultCount: search.adultCount,
-      // childCount: search.childCount,
       checkIn: search.checkIn.toISOString(),
-      // checkOut: search.checkOut.toISOString(),
       hotelId: hotelId,
       totalCost: paymentIntent.totalCost,
       paymentIntentId: paymentIntent.paymentIntentId,
@@ -66,18 +56,54 @@ const BookingForm = ({ currentUser, paymentIntent }: Props) => {
   });
 
   const onSubmit = async (formData: BookingFormData) => {
-    if (!stripe || !elements) {
-      return;
-    }
-
-    const result = await stripe.confirmCardPayment(paymentIntent.clientSecret, {
-      payment_method: {
-        card: elements.getElement(CardElement) as StripeCardElement,
-      },
-    });
-
-    if (result.paymentIntent?.status === "succeeded") {
-      bookRoom({ ...formData, paymentIntentId: result.paymentIntent.id });
+    try {
+      const options = {
+        key: razorpayOptions.key_id,
+        amount: paymentIntent.amount,
+        currency: paymentIntent.currency,
+        name: `${currentUser.firstName} ${currentUser.lastName}`,
+        description: "Booking payment",
+        order_id: paymentIntent.orderId,
+        handler: async function (response: any) {
+          try {
+            console.log("Razorpay response:", response);
+            if (response.razorpay_payment_id) {
+              // Call backend to complete booking
+              await bookRoom(
+                { ...formData, paymentIntentId: response.razorpay_payment_id },
+                paymentIntent.orderId // Pass orderId to the booking function
+              );
+            } else {
+              console.error("Razorpay payment_id missing in response:", response);
+              alert("Payment failed. Please try again.");
+            }
+          } catch (error) {
+            console.error("Error booking room:", error);
+            alert("Failed to complete booking. Please try again.");
+          }
+        },
+        prefill: {
+          name: `${currentUser.firstName} ${currentUser.lastName}`,
+          email: currentUser.email,
+          contact: currentUser.email, // Replace with user's contact number if available
+        },
+        notes: {
+          address: "Booking Address", // Optionally add any notes
+        },
+        theme: {
+          color: "#F37254",
+        },
+        payment_method: {
+          // Enable UPI payments
+          method: "upi",
+        },
+      };
+  
+      const rzp = new (window as any).Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      console.error("Error initializing Razorpay:", error);
+      alert("Failed to initiate payment. Please try again.");
     }
   };
 
@@ -125,18 +151,10 @@ const BookingForm = ({ currentUser, paymentIntent }: Props) => {
 
         <div className="bg-blue-200 p-4 rounded-md">
           <div className="font-semibold text-lg">
-            Total Cost: £{paymentIntent.totalCost.toFixed(2)}
+            Total Cost: ₹{(paymentIntent.amount / 100).toFixed(2)}
           </div>
           <div className="text-xs">Includes taxes and charges</div>
         </div>
-      </div>
-
-      <div className="space-y-2">
-        <h3 className="text-xl font-semibold"> Payment Details</h3>
-        <CardElement
-          id="payment-element"
-          className="border rounded-md p-2 text-sm"
-        />
       </div>
 
       <div className="flex justify-end">

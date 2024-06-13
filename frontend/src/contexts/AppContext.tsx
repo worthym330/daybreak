@@ -2,9 +2,12 @@ import React, { useContext, useState } from "react";
 import Toast from "../components/Toast";
 import { useQuery } from "react-query";
 import * as apiClient from "../api-client";
-import { loadStripe, Stripe } from "@stripe/stripe-js";
 
-const STRIPE_PUB_KEY = import.meta.env.VITE_STRIPE_PUB_KEY || "";
+const razorpayOptions = {
+  key_id: import.meta.env.REACT_APP_RAZORPAY_KEY_ID, // Replace with your Razorpay Key ID
+  key_secret: import.meta.env.RAZORPAY_KEY_SECRET, // Replace with your Razorpay Key Secret
+  currency: "INR", // Currency code (INR for Indian Rupees, USD for US Dollars, etc.)
+};
 
 type ToastMessage = {
   message: string;
@@ -14,12 +17,10 @@ type ToastMessage = {
 type AppContext = {
   showToast: (toastMessage: ToastMessage) => void;
   isLoggedIn: boolean;
-  stripePromise: Promise<Stripe | null>;
+  razorpayOptions: any;
 };
 
 const AppContext = React.createContext<AppContext | undefined>(undefined);
-
-const stripePromise = loadStripe(STRIPE_PUB_KEY);
 
 export const AppContextProvider = ({
   children,
@@ -39,7 +40,7 @@ export const AppContextProvider = ({
           setToast(toastMessage);
         },
         isLoggedIn: !isError,
-        stripePromise,
+        razorpayOptions,
       }}
     >
       {toast && (
