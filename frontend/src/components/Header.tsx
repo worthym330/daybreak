@@ -706,29 +706,29 @@ const Header = () => {
                 {/* Hamburger */}
                 <div className="w-full flex px-16 py-4">
                   <div className="flex flex-col md:w-1/2 py-3 mr-20">
-                    <span className="pb-3 text-[#193153] tracking-wider text-4xl">
+                    <span className="pb-3 text-fontPrimaryColor tracking-wider text-4xl font-LuzuryF1">
                       Unforgettable resorts and memories await
                     </span>
-                    <Link className="py-3" to="/about-us">
+                    <Link className="py-3 text-fontSecondaryColor" to="/about-us">
                       About DayBreak
                     </Link>
                   </div>
                   <div className="flex gap-20 md:w-1/2 justify-center">
                     <div className="text-nowrap flex flex-col gap-2">
-                      <span className="text-nowrap font-bold">Guests</span>
-                      <span className="text-nowrap">My Favourite</span>
-                      <span className="text-nowrap">Browse Hotels</span>
-                      <span className="text-nowrap">Help</span>
-                      <span className="text-nowrap"></span>
-                      <span className="text-nowrap"></span>
+                      <span className="text-nowrap font-bold text-fontPrimaryColor">Guests</span>
+                      <span className="text-nowrap text-fontSecondaryColor">My Favourite</span>
+                      <span className="text-nowrap text-fontSecondaryColor">Browse Hotels</span>
+                      <span className="text-nowrap text-fontSecondaryColor">Help</span>
+                      <span className="text-nowrap text-fontSecondaryColor"></span>
+                      <span className="text-nowrap text-fontSecondaryColor"></span>
                     </div>
                     <div className="text-nowrap flex flex-col gap-2">
-                      <span className="text-nowrap font-bold">Hotels</span>
-                      <span className="text-nowrap">List My Hotels</span>
-                      <span className="text-nowrap">Marketplace</span>
-                      <span className="text-nowrap">Help</span>
-                      <span className="text-nowrap"></span>
-                      <span className="text-nowrap"></span>
+                      <span className="text-nowrap font-bold text-fontPrimaryColor">Hotels</span>
+                      <span className="text-nowrap text-fontSecondaryColor">List My Hotels</span>
+                      <span className="text-nowrap text-fontSecondaryColor">Marketplace</span>
+                      <span className="text-nowrap text-fontSecondaryColor">Help</span>
+                      <span className="text-nowrap text-fontSecondaryColor"></span>
+                      <span className="text-nowrap text-fontSecondaryColor"></span>
                     </div>
                   </div>
                 </div>
@@ -916,6 +916,8 @@ const Header = () => {
           )}
           {/* ---------- NavBar Ends ---------- */}
         </div>
+
+        // Search Result Page hamburger NavBar
       ) : showNav ? (
         <div className="absolute w-full top-0 bg-mobileColor text-white z-10">
           <div className="hidden md:block flex flex-col gap-2 md:px-10">
@@ -1125,6 +1127,8 @@ const Header = () => {
           </div>
         </div>
       ) : (
+
+        // Search Result NavBar Page 
         <div className="top-4 flex items-center justify-between px-2 w-full md:px-10 py-4 shadow-md">
           <span className="text-2xl md:text-3xl text-black font-bold tracking-tight flex gap-2">
             <span className="flex items-center text-center cursor-pointer">
@@ -1133,7 +1137,7 @@ const Header = () => {
                 onClick={() => setShowNav(!showNav)}
               />
             </span>
-            <Link to="/">DayBreak</Link>
+            <Link to="/" className="">DayBreak</Link>
           </span>
           <span className="flex space-x-2">
             {userLogined !== null ? (

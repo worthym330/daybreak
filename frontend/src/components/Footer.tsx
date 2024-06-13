@@ -20,20 +20,20 @@ const Footer = () => {
           </div>
           <div className="flex flex-col md:flex-row justify-between w-full md:w-2/3 gap-6 text-center md:text-left">
             <div className="flex flex-col w-full md:w-1/3">
-              <span className="text-gray-400 font-bold text-lg mb-2">COMPANY</span>
+              <span className="text-[#81817F] font-bold text-lg mb-2">COMPANY</span>
               <span className="text-white font-medium mb-1">About Us</span>
               <span className="text-white font-medium mb-1">Support</span>
               <span className="text-white font-medium mb-1">Privacy & Policy</span>
               <span className="text-white font-medium mb-1">Terms & Conditions</span>
             </div>
             <div className="flex flex-col w-full md:w-1/3">
-              <span className="text-gray-400 font-bold text-lg mb-2">GUESTS</span>
+              <span className="text-[#81817F] font-bold text-lg mb-2">GUESTS</span>
               <span className="text-white font-medium mb-1">Sign in</span>
               <span className="text-white font-medium mb-1">Sign up</span>
               <span className="text-white font-medium mb-1">Help</span>
             </div>
             <div className="flex flex-col w-full md:w-1/3">
-              <span className="text-gray-400 font-bold text-lg mb-2">HOTELS</span>
+              <span className="text-[#81817F] font-bold text-lg mb-2">HOTELS</span>
               <span className="text-white font-medium mb-1">Become Hotel Partner</span>
               <span className="text-white font-medium mb-1">Support</span>
             </div>
@@ -41,7 +41,7 @@ const Footer = () => {
         </div>
         <hr className="border-gray-500 my-3 w-full" />
         <div className="flex justify-center items-center pb-3">
-          <span className="text-gray-400">2024 © Daybreak</span>
+          <span className="text-white">2024 © Daybreak</span>
         </div>
       </div>
     </div>

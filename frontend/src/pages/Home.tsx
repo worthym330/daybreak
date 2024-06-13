@@ -49,10 +49,10 @@ const Home = () => {
     <div className="space-y-10">
       {/* Latest Destinations */}
       <section className="">
-        <h2 className="text-center text-gray-700 text-3xl font-bold mb-5">
+        <h2 className="text-center text-fontPrimaryColor text-3xl font-bold mb-5 font-LuzuryF1">
           Popular Destinations
         </h2>
-        <p className="text-center mb-5">
+        <p className="text-center mb-5 text-fontSecondaryColor">
           Most recent destinations added by our hosts
         </p>
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
@@ -67,7 +67,7 @@ const Home = () => {
       {/* Top Destinations */}
       <section className="">
         <div className="flex flex-col">
-          <h2 className="text-center text-gray-700 text-3xl font-bold">
+          <h2 className="text-center text-fontPrimaryColor text-3xl font-bold font-LuzuryF1">
             Explore Destinations
           </h2>
           {/* <p className="text-center mb-10">
@@ -84,9 +84,9 @@ const Home = () => {
       {/* Top Destinations End */}
 
       {/* Become Hotelier Section */}
-      <section className="flex flex-col p-8 md:p-16 mx-8 md:mx-0 rounded-3xl gap-4 bg-gray-100">
+      <section className="flex flex-col p-8 md:p-16 mx-8 md:mx-0 rounded-3xl gap-4 bg-[#F6F5F5]">
         <div className="flex flex-col">
-          <span className="flex text-2xl md:text-3xl mb-4 text-red-500 font-bold uppercase text-center justify-center">
+          <span className="flex text-2xl md:text-3xl mb-4 text-goldColor font-bold font-LuzuryF1 uppercase text-center justify-center">
             Are You A Hotelier?
           </span>
           <span className="text-center max-w-xl mx-auto mb-8 md:mb-12 text-sm md:text-base">
@@ -126,7 +126,7 @@ const Home = () => {
         </div> */}
         <div className="flex justify-center mt-8">
           <button
-            className="text-white bg-btnColor h-full py-3 px-7 font-bold text-md md:text-xl hover:bg-[#2f8794] rounded-md"
+            className="text-white bg-btnColor h-full py-3 px-7 font-bold text-md md:text-xl hover:bg-[#c39b3f] rounded-md font-LuzuryF3"
             type="button"
             onClick={() => {
               navigate("/partner/register");

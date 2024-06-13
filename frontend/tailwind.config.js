@@ -4,21 +4,20 @@ export default {
   theme: {
     extend: {
       colors: {
-        'primaryBg': "#f9f9f9",
-        'lightBg': "#dcbb9f",
-        'secondaryBg': "#191919",
-        'btnColor': "#57BFCE",
-        'fontPrimaryColor': "#2e2e2e",
-        'fontPrimaryColor1': "#1c192a",
-        'fontSecondaryColor': "#828282",
-        'footerColor': "#303030",
-        'pColor': "#777577",
+        // 'btnColor': "#57BFCE",
+        'fontPrimaryColor': "#B5813F",
+        'fontSecondaryColor': "#3D270C",
+        // 'footerColor': "#303030",
         'mobileColor': "#193153",
         'goldColor':"#B5813F",
-        'darkGold':"#3D270C"
+        'darkGold':"#3D270C",
+        'footerColor':"#13130F",
+        'btnColor':"#AD8B3A",
       },
       fontFamily: {
-        'poetsen-one': ['Poetsen One', 'sans-serif'],
+        'LuzuryF1': ['"Antic Didone"', 'serif'],
+        'LuzuryF2': ['"Raleway"', 'serif'],
+        'LuzuryF3': ['"Roboto Serif"', 'sans-serif'],
       },
       width: {
         '50vw': '50vw',
