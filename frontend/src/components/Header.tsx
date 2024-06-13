@@ -618,20 +618,20 @@ const Header = () => {
                       <>
                         {userLogined?.role === "customer" ? (
                           <Link
-                            className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
+                            className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-goldColor hover:text-white"
                             to="/my-bookings"
                           >
                             My Bookings
                           </Link>
                         ) : (
                           <Link
-                            className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
+                            className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-goldColor hover:text-white"
                             to="/my-hotels"
                           >
                             My Hotels
                           </Link>
                         )}
-                        <SignOutButton classNames="text-black border-black px-3 py-1 md:px-5 md:py-2" />
+                        <SignOutButton classNames="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-goldColor hover:text-white" />
                       </>
                     ) : (
                       <button
@@ -648,7 +648,7 @@ const Header = () => {
                     )}
                     {userLogined?.role === "customer" && (
                       <Link
-                        className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
+                        className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-goldColor hover:text-white"
                         to="/"
                       >
                         <IoCartOutline className="text-2xl" />
@@ -849,20 +849,20 @@ const Header = () => {
                   <>
                     {userLogined?.role === "customer" ? (
                       <Link
-                        className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-gray-100 hover:text-black"
+                        className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-goldColor hover:text-white"
                         to="/my-bookings"
                       >
                         My Bookings
                       </Link>
                     ) : (
                       <Link
-                        className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-gray-100 hover:text-black"
+                        className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-goldColor hover:text-white"
                         to="/my-hotels"
                       >
                         My Hotels
                       </Link>
                     )}
-                    <SignOutButton classNames="text-white" />
+                    <SignOutButton classNames="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-goldColor hover:text-white" />
                   </>
                 ) : (
                   <button
@@ -879,7 +879,7 @@ const Header = () => {
                 )}
                 {userLogined?.role === "customer" && (
                   <Link
-                    className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-gray-100 hover:text-black"
+                    className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-goldColor hover:text-white"
                     to="/"
                   >
                     <IoCartOutline className="text-2xl" />
@@ -955,20 +955,20 @@ const Header = () => {
                   <>
                     {userLogined?.role === "customer" ? (
                       <Link
-                        className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-white hover:bg-gray-100 hover:text-black hover:border-black"
+                        className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-darkGold hover:bg-goldColor hover:text-white hover:border-black"
                         to="/my-bookings"
                       >
                         My Bookings
                       </Link>
                     ) : (
                       <Link
-                        className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-white hover:bg-gray-100 hover:text-black hover:border-black"
+                        className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-darkGold hover:bg-goldColor hover:text-white hover:border-black"
                         to="/my-hotels"
                       >
                         My Hotels
                       </Link>
                     )}
-                    <SignOutButton classNames="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-white hover:bg-gray-100 hover:text-black hover:border-black" />
+                    <SignOutButton classNames="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-darkGold hover:bg-goldColor hover:text-white hover:border-black" />
                   </>
                 ) : (
                   <button
@@ -985,7 +985,7 @@ const Header = () => {
                 )}
                 {userLogined?.role === "customer" && (
                   <Link
-                    className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-white hover:bg-gray-100 hover:text-black"
+                    className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-darkGold hover:bg-goldColor hover:text-white"
                     to="/"
                   >
                     <IoCartOutline className="text-2xl" />
@@ -1184,20 +1184,20 @@ const Header = () => {
               <>
                 {userLogined?.role === "customer" ? (
                   <Link
-                    className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-white hover:bg-gray-100 hover:text-black"
+                    className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-darkGold hover:bg-goldColor hover:text-white"
                     to="/my-bookings"
                   >
                     My Bookings
                   </Link>
                 ) : (
                   <Link
-                    className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-white hover:bg-gray-100 hover:text-black"
+                    className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-darkGold hover:bg-goldColor hover:text-white"
                     to="/my-hotels"
                   >
                     My Hotels
                   </Link>
                 )}
-                <SignOutButton classNames="text-black border-white px-3 py-1 md:px-5 md:py-2" />
+                <SignOutButton classNames="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-darkGold hover:bg-goldColor hover:text-white" />
               </>
             ) : (
               <button
@@ -1214,7 +1214,7 @@ const Header = () => {
             )}
             {userLogined?.role === "customer" && (
               <Link
-                className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-gray-100 hover:text-black"
+                className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-goldColor hover:text-white"
                 to="/"
               >
                 <IoCartOutline className="text-2xl" />

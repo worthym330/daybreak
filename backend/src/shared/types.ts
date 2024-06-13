@@ -57,6 +57,9 @@ export type UserType = {
   };
   
   export type PaymentIntentResponse = {
+    amount: any;
+    currency: any;
+    orderId: any;
     paymentIntentId: string;
     clientSecret: string;
     totalCost: number;

@@ -29,7 +29,7 @@ const LatestDestinationCard = ({ hotel }: any) => {
           </span>
           <Link
             to={`detail/${hotel._id}`}
-            className="border-2 border-darkGold text-darkGold font-semibold rounded-lg px-3 py-2 hover:bg-darkGold hover:text-white"
+            className="border-2 border-darkGold text-white bg-goldColor font-semibold rounded-lg px-3 py-2 hover:bg-white hover:text-goldColor"
           >
             Book Now
           </Link>

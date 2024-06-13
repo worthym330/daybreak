@@ -67,6 +67,43 @@ const products = [
       "Free admission for children under 5. $50 food and beverage minimum at Kona Pool Bar or Orchid Marketplace required for complimentary self-parking. No coolers or outside food and beverage allowed.",
   },
   {
+    title: "Spa Pass",
+    features: [
+      "Indoor Jacuzz",
+      "Steam room",
+      "Hot tub",
+      "Fitness Center",
+      "Relaxation Lounge",
+      "Men's and Women's lockers and showers",
+      "10% discount at spa retail shop",
+      "Complimentary wifi",
+      "Self Parking and valet parking available for a free",
+    ],
+    priceAdult: "40",
+    feeAdult: "4",
+    priceChild: "",
+    feeChild: "",
+    priceInfant: "",
+    description:
+      "Adults 18+ only. All amenities are unisex unless otherwise specified.Does not include access to property pools.",
+  },
+  {
+    title: "Paradise Pool Daybed",
+    features: [
+      "Day Passes for up to 4 people (all amenities included in the Day Pass)",
+      "Cushioned daybed for up to 4 people with towel service",
+      "Chef's daily fruit selection plate",
+      "Bottled water",
+    ],
+    priceAdult: "250",
+    feeAdult: "22",
+    priceChild: "",
+    feeChild: "",
+    priceInfant: "",
+    description:
+      "Located at the family-friendly Paradise Pool. Memorial Day, 4th of July and Labor Day Weekends - Groove & splash with a DJ performance on Saturday & Sunday, kid-friendly activities & exciting poolside events. Does not include access to the adult-only Saguaro Pool. If not checked in by 12:00pm, the resort reserves the right to cancel the reservation & re-sell the daybed. 20% service fee on the total price of the daybed, plus food and beverage purchased, will be charged at the property on the day of the rental. No outside food and beverages are permitted. Enhance your experience with food & beverage add-ons: Kid's Paradise: 2 non-alcoholic piña coladas or strawberry daiquiris, 2 orders of crispy chicken tenders, 1 pineapple pool float ($70). Sonoran Package: pitcher of skinny margaritas (serves 5-6), one order of chips, salsa, and guacamole ($99). Go Big Package: choice of any two flatbreads, 2 buckets of beer, 1 dessert of choice ($125). To book, select the Add-on at checkout. Does not include service charge. Service charge will be collected on property.",
+  },
+  {
     title: "Kama'aina Day Pass",
     features: [
       "Discounted Day Pass for local Hawaii residents",
@@ -123,7 +160,7 @@ const Detail = () => {
   const [cartItems, setCartItems] = useState([]);
   const auth_token = localStorage.getItem("auth_token");
   const userLogined = auth_token ? JSON.parse(auth_token) : null;
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleResize = () => {
@@ -466,8 +503,10 @@ const Detail = () => {
                           <span>Subtotal:</span>
                           <span>₹{subtotal.toFixed(2)}</span>
                         </div>
-                        <button className="w-full bg-goldColor text-white py-2 rounded-lg"
-                        onClick={()=>navigate(`hotel/${hotelId}/booking`)}>
+                        <button
+                          className="w-full bg-goldColor text-white py-2 rounded-lg"
+                          onClick={() => navigate(`hotel/${hotelId}/booking`)}
+                        >
                           Book Now
                         </button>
                       </div>

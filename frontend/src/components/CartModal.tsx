@@ -18,7 +18,7 @@ const CartModal = ({ product, hotelId, onClose, date, setCart }:any) => {
 
   useEffect(() => {
     const adultTotal = adultCount * (parseFloat(product.priceAdult) + parseFloat(product.feeAdult));
-    const childTotal = childCount * (parseFloat(product.priceChild) + parseFloat(product.feeChild));
+    const childTotal = product.priceChild ? childCount * (parseFloat(product.priceChild) + parseFloat(product.feeChild)) : 0;
     setTotal(adultTotal + childTotal);
   }, [adultCount, childCount, product.priceAdult, product.feeAdult, product.priceChild, product.feeChild]);
 
@@ -32,7 +32,7 @@ const CartModal = ({ product, hotelId, onClose, date, setCart }:any) => {
       adultCount,
       childCount,
       total,
-      date, // Include selected date in cart item
+      date,
     };
 
     if (existingProductIndex !== -1) {
@@ -40,7 +40,7 @@ const CartModal = ({ product, hotelId, onClose, date, setCart }:any) => {
     } else {
       cart.push(cartItem);
     }
-    setCart(cart)
+    setCart(cart);
     localStorage.setItem('cart', JSON.stringify(cart));
     onClose();
   };
@@ -71,20 +71,22 @@ const CartModal = ({ product, hotelId, onClose, date, setCart }:any) => {
               >+</button>
             </div>
           </div>
-          <div className="flex justify-between items-center">
-            <span>Children (age 3 to 12)</span>
-            <div className="flex items-center">
-              <button
-                className="px-2 py-1 text-gray-600"
-                onClick={() => setChildCount(Math.max(0, childCount - 1))}
-              >−</button>
-              <span className="mx-2">{childCount}</span>
-              <button
-                className="px-2 py-1 text-gray-600"
-                onClick={() => setChildCount(childCount + 1)}
-              >+</button>
+          {product.priceChild && (
+            <div className="flex justify-between items-center">
+              <span>Children (age 3 to 12)</span>
+              <div className="flex items-center">
+                <button
+                  className="px-2 py-1 text-gray-600"
+                  onClick={() => setChildCount(Math.max(0, childCount - 1))}
+                >−</button>
+                <span className="mx-2">{childCount}</span>
+                <button
+                  className="px-2 py-1 text-gray-600"
+                  onClick={() => setChildCount(childCount + 1)}
+                >+</button>
+              </div>
             </div>
-          </div>
+          )}
           <div className="flex justify-between items-center">
             <span>Total</span>
             <span>₹ {total.toFixed(2)}</span>
