@@ -15,11 +15,12 @@ import Detail from "./pages/Detail";
 import Booking from "./pages/Booking";
 import MyBookings from "./pages/MyBookings";
 import Home from "./pages/Home";
+import Cookies from "js-cookie";
 
 const App = () => {
   // const { isLoggedIn } = useAppContext();
-  const auth_token = localStorage.getItem("auth_token");
-  const isLoggedIn = auth_token!==null ? JSON.parse(auth_token) : null;
+  const auth_token = Cookies.get("authentication");
+  const isLoggedIn = auth_token ? JSON.parse(auth_token) : null;
   console.log(isLoggedIn)
   return (
     <Router>

@@ -15,6 +15,7 @@ import { useMutation, useQueryClient } from "react-query";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { HiXMark } from "react-icons/hi2";
 import * as apiClient from "../api-client";
+import Cookies from "js-cookie";
 
 const initialModalState = {
   type: "add",
@@ -102,7 +103,7 @@ const Header = () => {
   const [modal, setModal] = useState(initialModalState);
   const [signupModal, setSignupModal] = useState(initialSignupModalState);
 
-  const auth_token = localStorage.getItem("auth_token");
+  const auth_token = Cookies.get("authentication");
   const userLogined = auth_token ? JSON.parse(auth_token) : null;
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -137,7 +138,7 @@ const Header = () => {
         setModal((prev) => ({ ...prev, state: false, loading: false }));
         showToast({ message: "Sign in Successful!", type: "SUCCESS" });
         setShowDropdown(false);
-        localStorage.setItem("auth_token", JSON.stringify(body.user));
+        Cookies.set("authentication", JSON.stringify(body.user), { expires: 1 })
       } else {
         showToast({ message: "Failed to Login!", type: "ERROR" });
       }
@@ -173,7 +174,7 @@ const Header = () => {
         setSignupModal(initialSignupModalState);
         showToast({ message: "Registered Successful!", type: "SUCCESS" });
         setShowDropdown(false);
-        localStorage.setItem("auth_token", JSON.stringify(body.user));
+        Cookies.set("authentication", JSON.stringify(body.user), { expires: 1 })
       } else {
         showToast({ message: "Failed to register!", type: "ERROR" });
       }
@@ -194,7 +195,7 @@ const Header = () => {
 
   const mutation = useMutation(apiClient.signOut, {
     onSuccess: async () => {
-      localStorage.removeItem("auth_token");
+      Cookies.remove("authentication");
       showToast({ message: "Signed Out!", type: "SUCCESS" });
     },
     onError: (error: Error) => {
@@ -234,7 +235,7 @@ const Header = () => {
 
             showToast({ message: "Sign in Successful!", type: "SUCCESS" });
             setShowDropdown(false);
-            localStorage.setItem("auth_token", JSON.stringify(body.user));
+            Cookies.set("authentication", JSON.stringify(body.user), { expires: 1 })
           } catch (error: any) {
             console.error("Error during sign in:", error);
             setModal((prev) => ({ ...prev, state: false, loading: false }));
@@ -404,7 +405,7 @@ const Header = () => {
             body: JSON.stringify(values),
           });
           const responseBody = await response.json();
-          localStorage.setItem("auth_token", JSON.stringify(responseBody.user));
+          Cookies.set("authentication", JSON.stringify(responseBody.user), { expires: 1 })
           showToast({ message: "Registered Successful!", type: "SUCCESS" });
           await queryClient.invalidateQueries("validateToken");
           setSignupModal(initialSignupModalState);

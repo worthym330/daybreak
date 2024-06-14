@@ -6,6 +6,7 @@ import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import { jwtDecode, JwtPayload } from "jwt-decode";
+import Cookies from "js-cookie";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 interface login {
@@ -59,7 +60,7 @@ const SignIn = () => {
       const body = await response.json();
       if (response.ok) {
         showToast({ message: "Sign in Successful!", type: "SUCCESS" });
-        localStorage.setItem("auth_token", JSON.stringify(body.user));
+        Cookies.set("authentication", JSON.stringify(body.user), { expires: 1 })
       } else {
         showToast({ message: "Failed to Login!", type: "ERROR" });
       }

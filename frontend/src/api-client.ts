@@ -6,6 +6,7 @@ import {
   UserType,
 } from "../../backend/src/shared/types";
 import { BookingFormData } from "./forms/BookingForm/BookingForm";
+import Cookies from "js-cookie";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 export const fetchCurrentUser = async (): Promise<UserType> => {
@@ -46,7 +47,7 @@ export const signIn = async (formData: SignInFormData) => {
   });
 
   const body = await response.json();
-  localStorage.setItem("auth_token", JSON.stringify(body.user));
+  Cookies.set("authentication", JSON.stringify(body.user), { expires: 1 })
   if (!response.ok) {
     throw new Error(body.message);
   }

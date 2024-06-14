@@ -5,6 +5,7 @@ import { useAppContext } from "../contexts/AppContext";
 import { Link } from "react-router-dom";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { jwtDecode, JwtPayload } from "jwt-decode";
+import Cookies from "js-cookie";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 export type RegisterFormData = {
@@ -57,7 +58,7 @@ const Register = () => {
       const body = await response.json();
       if (response.ok) {
         showToast({ message: "Registered Successful!", type: "SUCCESS" });
-        localStorage.setItem("auth_token", JSON.stringify(body.user));
+        Cookies.set("authentication", JSON.stringify(body.user), { expires: 1 })
       } else {
         showToast({ message: "Failed to register!", type: "ERROR" });
       }

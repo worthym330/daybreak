@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { HotelType } from "../../../backend/src/shared/types";
 import { AiFillStar } from "react-icons/ai";
+import Cookies from "js-cookie";
 
 type Props = {
   hotel: HotelType;
@@ -9,8 +10,8 @@ type Props = {
 
 const SearchResultsCard = ({ hotel }: Props) => {
   const [mainImage, setMainImage] = useState(hotel.imageUrls[0]);
-  const auth_token = localStorage.getItem("auth_token");
-  const isLoggedIn = auth_token !== null ? JSON.parse(auth_token) : null;
+  const auth_token = Cookies.get("authentication");
+  const isLoggedIn = auth_token ? JSON.parse(auth_token) : null;
   const navigate = useNavigate();
 
   const handleButtonClick = (id: string) => {
