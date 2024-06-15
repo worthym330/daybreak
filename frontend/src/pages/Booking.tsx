@@ -1,7 +1,7 @@
 import { useQuery } from "react-query";
 import * as apiClient from "../api-client";
 import BookingForm from "../forms/BookingForm/BookingForm";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import BookingDetailsSummary from "../components/BookingDetailsSummary";
 import Cookies from "js-cookie";
 
@@ -10,6 +10,9 @@ const Booking = () => {
   const cart = Cookies.get("cart");
   const parsedCart = cart ? JSON.parse(cart) : [];
   const cartItems = parsedCart;
+  const auth_token = localStorage.getItem("auth_token");
+  const userLogined = auth_token ? JSON.parse(auth_token) : null;
+  const navigate = useNavigate();
 
   const { data: paymentIntentData } = useQuery(
     "createPaymentIntent",
@@ -22,7 +25,6 @@ const Booking = () => {
       enabled: !!hotelId && cartItems.length > 0,
     }
   );
-  
 
   const { data: hotel } = useQuery("fetchHotelByID", () =>
     apiClient.fetchHotelById(hotelId as string)
@@ -36,14 +38,16 @@ const Booking = () => {
     return <></>;
   }
 
+  if (userLogined === null) {
+    navigate(-1);
+    return null;
+  }
+
   // Function to handle Razorpay payment
 
   return (
     <div className="grid md:grid-cols-[1fr_2fr]">
-      <BookingDetailsSummary
-        cartItems={cartItems}
-        hotel={hotel}
-      />
+      <BookingDetailsSummary cartItems={cartItems} hotel={hotel} />
       {currentUser && paymentIntentData && (
         <div>
           {/* Display booking summary */}

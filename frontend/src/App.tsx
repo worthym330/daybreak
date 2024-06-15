@@ -2,7 +2,7 @@ import {
   BrowserRouter as Router,
   Route,
   Routes,
-  Navigate,
+  useNavigate,
 } from "react-router-dom";
 import Layout from "./layouts/Layout";
 import Register from "./pages/Register";
@@ -15,13 +15,26 @@ import Detail from "./pages/Detail";
 import Booking from "./pages/Booking";
 import MyBookings from "./pages/MyBookings";
 import Home from "./pages/Home";
+import { NotFound } from "./pages/NotFound";
 import Cookies from "js-cookie";
 
+const AccessControl = ({ children, requiredRoles }: any) => {
+  const auth_token = Cookies.get("authentication") || "null"; // Fallback to 'null' string
+  const user = JSON.parse(auth_token);
+  const nav = useNavigate();
+
+  if (user === null) {
+    return nav(-1);
+  }
+
+  if (requiredRoles && !requiredRoles.includes(user?.role)) {
+    return nav("/");
+  }
+
+  return children;
+};
+
 const App = () => {
-  // const { isLoggedIn } = useAppContext();
-  const auth_token = Cookies.get("authentication");
-  const isLoggedIn = auth_token ? JSON.parse(auth_token) : null;
-  console.log(isLoggedIn)
   return (
     <Router>
       <Routes>
@@ -50,68 +63,68 @@ const App = () => {
           }
         />
         <Route
-          path="hotel/name/:name"
+          path="/hotel/name/:name"
           element={
             <Layout>
               <Detail />
             </Layout>
           }
         />
+        <Route path="/partner/register" element={<Register />} />
+        <Route path="/partner/sign-in" element={<SignIn />} />
+
         <Route
-          path="/partner/register"
-          element={<Register />}
-        />
-        <Route
-          path="/partner/sign-in"
-          element={<SignIn />}
+          path="/hotel/:hotelId/booking"
+          element={
+            <AccessControl requiredRoles={["customer", "partner"]}>
+              <Layout>
+                <Booking />
+              </Layout>
+            </AccessControl>
+          }
         />
 
-        {isLoggedIn !== null && (
-          <>
-            <Route
-              path="/hotel/:hotelId/booking"
-              element={
-                <Layout>
-                  <Booking />
-                </Layout>
-              }
-            />
-
-            <Route
-              path="/add-hotel"
-              element={
-                <Layout>
-                  <AddHotel />
-                </Layout>
-              }
-            />
-            <Route
-              path="/edit-hotel/:hotelId"
-              element={
-                <Layout>
-                  <EditHotel />
-                </Layout>
-              }
-            />
-            <Route
-              path="/my-hotels"
-              element={
-                <Layout>
-                  <MyHotels />
-                </Layout>
-              }
-            />
-            <Route
-              path="/my-bookings"
-              element={
-                <Layout>
-                  <MyBookings />
-                </Layout>
-              }
-            />
-          </>
-        )}
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route
+          path="/add-hotel"
+          element={
+            <AccessControl requiredRoles={["partner"]}>
+              <Layout>
+                <AddHotel />
+              </Layout>
+            </AccessControl>
+          }
+        />
+        <Route
+          path="/edit-hotel/:hotelId"
+          element={
+            <AccessControl requiredRoles={["partner"]}>
+              <Layout>
+                <EditHotel />
+              </Layout>
+            </AccessControl>
+          }
+        />
+        <Route
+          path="/my-hotels"
+          element={
+            <AccessControl requiredRoles={["partner"]}>
+              <Layout>
+                <MyHotels />
+              </Layout>
+            </AccessControl>
+          }
+        />
+        <Route
+          path="/my-bookings"
+          element={
+            <AccessControl requiredRoles={["customer", "partner"]}>
+              <Layout>
+                <MyBookings />
+              </Layout>
+            </AccessControl>
+          }
+        />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   );

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAppContext } from "../contexts/AppContext";
 import SignOutButton from "./SignOutButton";
@@ -74,6 +74,8 @@ export const loginSchema = Yup.object().shape({
 });
 
 const registerSchema = Yup.object().shape({
+  firstName: Yup.string().required("First Name is required!"),
+  lastName: Yup.string().required("Last Name is required!"),
   email: Yup.string().email("Invalid email").required("Email is required"),
   password: Yup.string()
     .required("Password is required")
@@ -110,6 +112,20 @@ const Header = () => {
   const location = useLocation();
   const [showNav, setShowNav] = useState(false);
   const [tab, setTab] = useState("Guests");
+
+  const headerRef = useRef<HTMLDivElement>(null);
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (headerRef.current && !headerRef.current.contains(event.target as Node)) {
+      setShowNav(false);
+    }
+  };
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleLoginClick = () => {
     setShowDropdown(!showDropdown);
@@ -226,7 +242,7 @@ const Header = () => {
             });
 
             const body = await response.json();
-            setModal((prev) => ({ ...prev, state: false, loading: false }));
+            setModal(initialModalState);
 
             if (!response.ok) {
               showToast({ message: body.message, type: "ERROR" });
@@ -396,23 +412,34 @@ const Header = () => {
         initialValues={data}
         validationSchema={registerSchema}
         onSubmit={async (values: signup) => {
-          const response = await fetch(`${API_BASE_URL}/api/users/register`, {
-            method: "POST",
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(values),
-          });
-          const responseBody = await response.json();
-          Cookies.set("authentication", JSON.stringify(responseBody.user), { expires: 1 })
-          showToast({ message: "Registered Successful!", type: "SUCCESS" });
-          await queryClient.invalidateQueries("validateToken");
-          setSignupModal(initialSignupModalState);
-          if (!response.ok) {
-            // throw new Error(responseBody.message);
+          try {
+            const response = await fetch(`${API_BASE_URL}/api/users/register`, {
+              method: "POST",
+              credentials: "include",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(values),
+            });
+            const responseBody = await response.json();
+            if (response.ok) {
+              localStorage.setItem(
+                "auth_token",
+                JSON.stringify(responseBody.user)
+              );
+              showToast({ message: "Registered Successful!", type: "SUCCESS" });
+              await queryClient.invalidateQueries("validateToken");
+              setSignupModal(initialSignupModalState);
+            } else {
+              showToast({
+                message: responseBody.message || "An error occurred",
+                type: "ERROR",
+              });
+            }
+          } catch (error: any) {
+            console.log(error);
             showToast({
-              message: "Failed to create account!",
+              message: error.message || "An error occurred",
               type: "ERROR",
             });
           }
@@ -436,13 +463,14 @@ const Header = () => {
           >
             <form onSubmit={handleSubmit} noValidate>
               <h1 className="text-center text-2xl font-light text-gray-800 mb-3">
-                Create <span className="text-goldColor font-bold">DayBreak</span> Account
+                Create{" "}
+                <span className="text-goldColor font-bold">DayBreak</span>{" "}
+                Account
               </h1>
-              
 
               <div className="text-left">
                 <label className="text-gray-700 text-sm font-bold flex-1">
-                  {/* First Name */}
+                  First Name
                 </label>
                 <input
                   type="firstName"
@@ -454,15 +482,13 @@ const Header = () => {
                   onBlur={handleBlur}
                 />
                 {touched.firstName && (
-                  <span className="text-red-500">
-                    {errors.firstName}
-                  </span>
+                  <span className="text-red-500">{errors.firstName}</span>
                 )}
               </div>
 
               <div className="text-left">
                 <label className="text-gray-700 text-sm font-bold flex-1">
-                  {/* Last Name */}
+                  Last Name
                 </label>
                 <input
                   type="lastName"
@@ -482,7 +508,7 @@ const Header = () => {
 
               <div className="text-left">
                 <label className="text-gray-700 text-sm font-bold flex-1">
-                  {/* Email */}
+                  Email
                 </label>
                 <input
                   type="email"
@@ -494,15 +520,13 @@ const Header = () => {
                   onBlur={handleBlur}
                 />
                 {touched.email && (
-                  <span className="text-red-500">*
-                    {errors.email}
-                  </span>
+                  <span className="text-red-500">{errors.email}</span>
                 )}
               </div>
 
               <div className="text-left">
                 <label className="text-gray-700 text-sm font-bold flex-1">
-                  {/* Password */}
+                  Password
                 </label>
                 <input
                   type="password"
@@ -514,15 +538,13 @@ const Header = () => {
                   onBlur={handleBlur}
                 />
                 {touched.password && (
-                  <span className="text-red-500">*
-                    {errors.password}
-                  </span>
+                  <span className="text-red-500">{errors.password}</span>
                 )}
               </div>
 
               <div className="text-left">
                 <label className="text-gray-700 text-sm font-bold flex-1">
-                  {/* Confirm Password */}
+                  Confirm Password
                 </label>
                 <input
                   type="password"
@@ -534,7 +556,7 @@ const Header = () => {
                   onBlur={handleBlur}
                 />
                 {touched.confirmpassword && (
-                  <span className="text-red-500">*
+                  <span className="text-red-500">
                     {errors.confirmpassword}
                   </span>
                 )}
@@ -551,15 +573,15 @@ const Header = () => {
                   </button>
                 </span>
                 <span className="text-center text-gray-800">
-                Already have an account?
-                <span
-                  className="cursor-pointer underline text-goldColor"
-                  onClick={() => handleLoginSpanClick()}
-                >
-                  {" "}
-                  Login
+                  Already have an account?
+                  <span
+                    className="cursor-pointer underline text-goldColor"
+                    onClick={() => handleLoginSpanClick()}
+                  >
+                    {" "}
+                    Login
+                  </span>
                 </span>
-              </span>
                 <div className="flex w-full my-1 justify-center items-center">
                   <hr className="border-gray-300 flex-grow" />
                   <span className="text-gray-400 mx-2">OR</span>
@@ -590,7 +612,7 @@ const Header = () => {
       {renderLoginModal()}
       {renderSignUpModal()}
       {location.pathname === "/" ? (
-        <div className="relative w-full h-screen">
+        <div className="relative w-full h-screen" ref={headerRef}>
           <video
             src={videoBg}
             playsInline
@@ -939,7 +961,7 @@ const Header = () => {
         </div>
       ) : // Search Result Page hamburger dropdown Navbar
       showNav ? (
-        <div className="absolute w-full top-0 bg-white text-black z-10 border-b-2 border-black">
+        <div className="absolute w-full top-0 bg-white text-black z-20 border-b-2 border-black" ref={headerRef}>
           <div className="hidden md:block md:px-10">
             <div className="w-full pt-4 flex items-center justify-between py-2">
               <span className="text-2xl md:text-3xl font-bold tracking-tight flex gap-2">
@@ -956,20 +978,20 @@ const Header = () => {
                   <>
                     {userLogined?.role === "customer" ? (
                       <Link
-                        className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-darkGold hover:bg-goldColor hover:text-white hover:border-black"
+                        className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-darkGold hover:bg-goldColor hover:text-white hover:border-black"
                         to="/my-bookings"
                       >
                         My Bookings
                       </Link>
                     ) : (
                       <Link
-                        className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-darkGold hover:bg-goldColor hover:text-white hover:border-black"
+                        className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-darkGold hover:bg-goldColor hover:text-white hover:border-black"
                         to="/my-hotels"
                       >
                         My Hotels
                       </Link>
                     )}
-                    <SignOutButton classNames="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-darkGold hover:bg-goldColor hover:text-white hover:border-black" />
+                    <SignOutButton classNames="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-darkGold hover:bg-goldColor hover:text-white hover:border-black" />
                   </>
                 ) : (
                   <button

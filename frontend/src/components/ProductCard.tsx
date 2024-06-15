@@ -25,10 +25,10 @@ interface ProductCardProps {
 const ProductCard = ({ product, hotelId,date, error, setError, setCart }: ProductCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleSelect = () => {
-    if(!error && date !== null){
-      setError(true)
-    }else{
-      setError(false)
+    if (!error && date === null) {
+      setError(true);
+    } else {
+      setError(false);
       setIsModalOpen(true);
     }
   };
