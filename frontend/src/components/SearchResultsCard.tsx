@@ -100,7 +100,7 @@ const SearchResultsCard = ({ hotel }: Props) => {
           <span className="text-gray-700 font-medium">per night</span>
         </span>
         <button
-          className="bg-blue-600 text-white rounded-md p-4 font-medium text-sm lg:text-sm hover:bg-blue-500"
+          className="bg-goldColor text-white rounded-md p-4 font-medium text-sm lg:text-sm"
           onClick={() => handleButtonClick(hotel._id)}
         >
           {isLoggedIn === null ? "Login to book now!" : "Book Now"}

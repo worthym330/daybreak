@@ -103,30 +103,6 @@ const products = [
     description:
       "Located at the family-friendly Paradise Pool. Memorial Day, 4th of July and Labor Day Weekends - Groove & splash with a DJ performance on Saturday & Sunday, kid-friendly activities & exciting poolside events. Does not include access to the adult-only Saguaro Pool. If not checked in by 12:00pm, the resort reserves the right to cancel the reservation & re-sell the daybed. 20% service fee on the total price of the daybed, plus food and beverage purchased, will be charged at the property on the day of the rental. No outside food and beverages are permitted. Enhance your experience with food & beverage add-ons: Kid's Paradise: 2 non-alcoholic piña coladas or strawberry daiquiris, 2 orders of crispy chicken tenders, 1 pineapple pool float ($70). Sonoran Package: pitcher of skinny margaritas (serves 5-6), one order of chips, salsa, and guacamole ($99). Go Big Package: choice of any two flatbreads, 2 buckets of beer, 1 dessert of choice ($125). To book, select the Add-on at checkout. Does not include service charge. Service charge will be collected on property.",
   },
-  {
-    title: "Kama'aina Day Pass",
-    features: [
-      "Discounted Day Pass for local Hawaii residents",
-      "All amenities included in the Day Pass",
-    ],
-    priceAdult: "65",
-    feeAdult: "6",
-    priceChild: "40",
-    feeChild: "4",
-    priceInfant: "FREE",
-    description:
-      "Must show a valid Hawaii state ID upon check-in. No coolers or outside food and beverage allowed.",
-  },
-  {
-    title: "HamacLand Experience",
-    features: ["Located on an Island in the saltwater lagoon."],
-    priceAdult: "750",
-    feeAdult: "",
-    priceChild: "",
-    feeChild: "",
-    priceInfant: "",
-    description: "",
-  },
 ];
 
 const Tooltip = ({ children, text }: any) => {
@@ -400,7 +376,9 @@ const Detail = () => {
                   Cookies.set("date", date !== null ? date.toISOString() : "", {
                     expires: 1,
                   });
-                  setError(false); // Set cookie with expiry of 7 days
+                  if (selectedDate === null) {
+                    setError(false);
+                  }
                 }}
                 dateFormat="dd/MM/yyyy"
                 minDate={new Date()}
@@ -421,7 +399,7 @@ const Detail = () => {
                   key={index}
                   product={product}
                   hotelId={hotel._id}
-                  date={selectedDate !== null && selectedDate}
+                  date={selectedDate}
                   error={error}
                   setError={setError}
                   setCart={setCart}
@@ -505,7 +483,7 @@ const Detail = () => {
                         </div>
                         <button
                           className="w-full bg-goldColor text-white py-2 rounded-lg"
-                          onClick={() => navigate(`hotel/${hotelId}/booking`)}
+                          onClick={() => navigate(`/hotel/${hotelId}/booking`)}
                         >
                           Book Now
                         </button>

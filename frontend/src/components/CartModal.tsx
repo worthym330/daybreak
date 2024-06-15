@@ -1,13 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
-const CartModal = ({ product, hotelId, onClose, date, setCart }:any) => {
+const CartModal = ({ product, hotelId, onClose, date, setCart }: any) => {
   const [adultCount, setAdultCount] = useState(0);
   const [childCount, setChildCount] = useState(0);
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
-    const savedCart = JSON.parse(localStorage.getItem('cart') || '[]');
-    const savedProduct = savedCart.find((item:any) => item.product.title === product.title && item.hotelId === hotelId);
+    const savedCart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const savedProduct = savedCart.find(
+      (item: any) =>
+        item.product.title === product.title && item.hotelId === hotelId
+    );
 
     if (savedProduct) {
       setAdultCount(savedProduct.adultCount);
@@ -17,32 +20,49 @@ const CartModal = ({ product, hotelId, onClose, date, setCart }:any) => {
   }, [product.title, hotelId]);
 
   useEffect(() => {
-    const adultTotal = adultCount * (parseFloat(product.priceAdult) + parseFloat(product.feeAdult));
-    const childTotal = product.priceChild ? childCount * (parseFloat(product.priceChild) + parseFloat(product.feeChild)) : 0;
+    const adultTotal =
+      adultCount *
+      (parseFloat(product.priceAdult) + parseFloat(product.feeAdult));
+    const childTotal = product.priceChild
+      ? childCount *
+        (parseFloat(product.priceChild) + parseFloat(product.feeChild))
+      : 0;
     setTotal(adultTotal + childTotal);
-  }, [adultCount, childCount, product.priceAdult, product.feeAdult, product.priceChild, product.feeChild]);
+  }, [
+    adultCount,
+    childCount,
+    product.priceAdult,
+    product.feeAdult,
+    product.priceChild,
+    product.feeChild,
+  ]);
 
   const handleAddToCart = () => {
-    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    const existingProductIndex = cart.findIndex((item:any) => item.product.title === product.title && item.hotelId === hotelId);
+    if (adultCount > 0 || childCount > 0) {
+      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+      const existingProductIndex = cart.findIndex(
+        (item: any) =>
+          item.product.title === product.title && item.hotelId === hotelId
+      );
 
-    const cartItem = {
-      product,
-      hotelId,
-      adultCount,
-      childCount,
-      total,
-      date,
-    };
+      const cartItem = {
+        product,
+        hotelId,
+        adultCount,
+        childCount,
+        total,
+        date,
+      };
 
-    if (existingProductIndex !== -1) {
-      cart[existingProductIndex] = cartItem;
-    } else {
-      cart.push(cartItem);
+      if (existingProductIndex !== -1) {
+        cart[existingProductIndex] = cartItem;
+      } else {
+        cart.push(cartItem);
+      }
+      setCart(cart);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      onClose();
     }
-    setCart(cart);
-    localStorage.setItem('cart', JSON.stringify(cart));
-    onClose();
   };
 
   return (
@@ -54,7 +74,12 @@ const CartModal = ({ product, hotelId, onClose, date, setCart }:any) => {
         className="bg-white p-6 rounded-lg shadow-lg relative"
         onClick={(e) => e.stopPropagation()}
       >
-        <button className="absolute top-2 right-2 text-gray-600 rounded-full px-2 py-1 border" onClick={onClose}>×</button>
+        <button
+          className="absolute top-2 right-2 text-gray-600 rounded-full px-2 py-1 border"
+          onClick={onClose}
+        >
+          ×
+        </button>
         <div className="flex flex-col space-y-4 mt-4">
           {/* <h2 className="text-xl font-semibold">Select Tickets</h2> */}
           <div className="flex justify-between items-center">
@@ -63,12 +88,16 @@ const CartModal = ({ product, hotelId, onClose, date, setCart }:any) => {
               <button
                 className="px-2 py-1 text-gray-600"
                 onClick={() => setAdultCount(Math.max(0, adultCount - 1))}
-              >−</button>
+              >
+                −
+              </button>
               <span className="mx-2">{adultCount}</span>
               <button
                 className="px-2 py-1 text-gray-600"
                 onClick={() => setAdultCount(adultCount + 1)}
-              >+</button>
+              >
+                +
+              </button>
             </div>
           </div>
           {product.priceChild && (
@@ -78,12 +107,16 @@ const CartModal = ({ product, hotelId, onClose, date, setCart }:any) => {
                 <button
                   className="px-2 py-1 text-gray-600"
                   onClick={() => setChildCount(Math.max(0, childCount - 1))}
-                >−</button>
+                >
+                  −
+                </button>
                 <span className="mx-2">{childCount}</span>
                 <button
                   className="px-2 py-1 text-gray-600"
                   onClick={() => setChildCount(childCount + 1)}
-                >+</button>
+                >
+                  +
+                </button>
               </div>
             </div>
           )}
