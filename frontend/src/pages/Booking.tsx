@@ -10,8 +10,8 @@ const Booking = () => {
   const cart = Cookies.get("cart");
   const parsedCart = cart ? JSON.parse(cart) : [];
   const cartItems = parsedCart;
-  const auth_token = localStorage.getItem("auth_token");
-  const userLogined = auth_token ? JSON.parse(auth_token) : null;
+  const auth_token = Cookies.get("authentication") || "null";
+  const userLogined = JSON.parse(auth_token);
   const navigate = useNavigate();
 
   const { data: paymentIntentData } = useQuery(
