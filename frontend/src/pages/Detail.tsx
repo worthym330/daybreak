@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import * as apiClient from "./../api-client";
 import { AiFillStar } from "react-icons/ai";
 import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
+import { MdCalendarMonth } from "react-icons/md";
 import {
   FaDumbbell,
   FaHeart,
@@ -115,7 +116,7 @@ const Tooltip = ({ children, text }: any) => {
       onMouseLeave={() => setVisible(false)}
     >
       {visible && (
-        <div className="absolute bottom-full mb-2 px-2 py-1 bg-white text-nowrap text-sm rounded-md shadow-full">
+        <div className="absolute bottom-full mb-2 px-2 py-1 border-2 border-black bg-white text-nowrap text-sm rounded-md shadow-full">
           {text}
         </div>
       )}
@@ -296,6 +297,7 @@ const Detail = () => {
   }
 
   return (
+    // Image Slider Starts
     <div className="space-y-6">
       <div className="relative">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 overflow-hidden px-2">
@@ -322,14 +324,22 @@ const Detail = () => {
           <BiChevronRight className="w-6 h-6" />
         </button>
       </div>
-      <div className="w-full lg:container px-8 lg:mx-auto space-y-2">
-        <div className="flex lg:flex-row flex-col-reverse gap-4 space-y-2 justify-between">
+      {/* Image Slider Ends */}
+
+      {/* Hotel Details Start */}
+      <div className="w-full lg:container px-8 pt-10 lg:mx-auto space-y-2 ">
+        <div className="flex lg:flex-row flex-col-reverse gap-10 space-y-2 justify-between">
           <div className="flex flex-col gap-2 w-full lg:w-2/3">
             <div className="flex justify-between">
               <div className="flex flex-col gap-2">
-                <span className="text-3xl font-bold">{hotel.name}</span>
+                <span className="text-3xl font-semibold font-LuzuryF1 text-goldColor break-normal">
+                  {hotel.name}
+                </span>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 items-center">
+                <span className="bg-darkGold py-1 px-3 rounded-lg text-white">
+                  {hotel.starRating}
+                </span>
                 <span className="flex">
                   {Array.from({ length: hotel.starRating }).map((_, i) => (
                     <AiFillStar key={i} className="fill-yellow-400" />
@@ -337,11 +347,12 @@ const Detail = () => {
                 </span>
               </div>
             </div>
-            <div className="flex justify-between">
+            {/* Facilities Section */}
+            <div className="flex justify-between mt-3">
               <div className="flex gap-2 flex-wrap">
                 {hotel.facilities.map((facility, index) => (
                   <Tooltip key={index} text={facility}>
-                    <div className="border border-goldColor rounded-sm p-3 flex items-center space-x-2 cursor-pointer bg-darkGold text-white">
+                    <div className="border border-goldColor rounded-md p-2 flex items-center space-x-2 cursor-pointer text-goldColor text-xl">
                       {facilityIcons[facility as FacilityKey] && (
                         <span>{facilityIcons[facility as FacilityKey]}</span>
                       )}
@@ -349,7 +360,8 @@ const Detail = () => {
                   </Tooltip>
                 ))}
               </div>
-              <div className="flex gap-2 flex-wrap">
+              {/* Favorite Hotel Button */}
+              <div className="flex gap-2 flex-wrap border border-gray-200 px-4 py-2 rounded-full">
                 <button onClick={handleToggleFavourite}>
                   {isFavourite ? (
                     <span className="flex gap-2">
@@ -364,11 +376,15 @@ const Detail = () => {
                   )}
                 </button>
               </div>
+              {/* Favorite Hotel Button */}
             </div>
+            {/* Facilities Section */}
 
-            <div className="w-full break-words">{hotel.description}</div>
-            <div className="flex items-center gap-4">
-              <span>Date</span>
+            <div className="w-full break-words mb-5">{hotel.description}</div>
+            
+            <span className="text-lg font-medium mb-3">Select a Date</span>
+            <div className="flex items-center gap-2">
+              <MdCalendarMonth className="text-2xl text-btnColor" />
               <DatePicker
                 selected={selectedDate}
                 onChange={(date) => {
@@ -383,7 +399,7 @@ const Detail = () => {
                 dateFormat="dd/MM/yyyy"
                 minDate={new Date()}
                 placeholderText="Please select the date"
-                className={`px-2 py-1 text-goldColor placeholder:text-goldColor border border-darkGold rounded`}
+                className={`px-4 py-2 text-goldColor placeholder:text-goldColor border border-gray-300 rounded`}
               />
             </div>
             <div className="">
@@ -393,7 +409,9 @@ const Detail = () => {
                 </span>
               )}
             </div>
-            <div className="">
+            <hr className="border-gray-200 my-3 w-full" />
+            <span className="text-lg font-medium">Select a product</span>
+            <div className="mt-5">
               {products.map((product, index) => (
                 <ProductCard
                   key={index}
@@ -407,10 +425,12 @@ const Detail = () => {
               ))}
             </div>
           </div>
+          {/* Hotel Details Start */}
 
+          {/* Cart Section */}
           <div className="w-full lg:w-1/3 hidden md:block">
-            <div className="h-fit">
-              <div className="p-4 bg-white rounded-lg shadow-md">
+            <div className="h-fit sticky top-4">
+              <div className="p-4 bg-white rounded-lg shadow-md border border-gray-300">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-bold">Your Cart</h2>
                 </div>
@@ -494,6 +514,7 @@ const Detail = () => {
               </div>
             </div>
           </div>
+          {/* Cart Section */}
         </div>
       </div>
     </div>

@@ -38,10 +38,11 @@ const ProductCard = ({ product, hotelId,date, error, setError, setCart }: Produc
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-xl p-4 mb-4">
+    <div className="bg-white rounded-lg shadow-xl p-8 mb-4 border border-gray-300">
       <div className="flex justify-between">
-        <div className="w-2/3">
-          <h2 className="text-xl font-semibold">{product.title}</h2>
+        {/* Right Box */}
+        <div className="w-2/3 pr-4">
+          <h2 className="text-xl font-semibold text-goldColor">{product.title}</h2>
           <ul className="text-sm text-gray-600 mt-2 space-y-1 list-disc p-4">
             {product.features.map((feature, index) => (
               <li key={index}>{feature}</li>
@@ -49,27 +50,28 @@ const ProductCard = ({ product, hotelId,date, error, setError, setCart }: Produc
           </ul>
           <p className="text-sm text-gray-500">{product.description}</p>
         </div>
-        <div className="border-l-2 border-gray-300 h-auto"></div>
-        <div className="w-1/3 p-4">
-          <div className="flex justify-center justify-between gap-2 text-gray-500 text-sm">
+        {/* Left Box */}
+        <div className="border-l-2 border-gray-200 h-auto"></div>
+        <div className="w-1/3 pl-4 ml-4">
+          <div className="flex justify-between items gap-2 text-gray-500 text-sm">
             {product.priceAdult !== "" && (
               <div className="flex flex-col gap-2">
                 <span>Adults</span>
-                <span className="">₹ {product.priceAdult} </span>
+                <span className="text-xl font-medium text-goldColor">₹ {product.priceAdult} </span>
                 <span className="text-xs">+{product.feeAdult} in fees</span>
               </div>
             )}
             {product.priceChild !== "" && (
               <div className="flex flex-col gap-2">
                 <span>Children</span>
-                <span className="">₹ {product.priceChild}</span>
+                <span className="text-xl font-medium text-goldColor">₹ {product.priceChild}</span>
                 <span className="text-xs">+{product.feeChild} in fees</span>
               </div>
             )}
             {product.priceInfant !== "" && (
               <div className="flex flex-col gap-2">
                 <span>Infant</span>
-                <span className="">{product.priceInfant}</span>
+                <span className="text-xl font-medium text-goldColor">{product.priceInfant}</span>
               </div>
             )}
           </div>
