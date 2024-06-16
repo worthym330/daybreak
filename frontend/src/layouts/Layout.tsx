@@ -14,7 +14,7 @@ const Layout = ({ children }: Props) => {
     <div className="flex flex-col min-h-screen">
       <Header />
       {location?.pathname === "/" && (
-        <div className="container mx-auto">
+        <div className="mx-auto">
           <Hero />
           <SearchBar />
           <Info />
@@ -23,7 +23,7 @@ const Layout = ({ children }: Props) => {
       {location.pathname.includes("/detail/") ? (
         <div className="py-10 flex-1">{children}</div>
       ) : (
-        <div className="container mx-auto py-10 flex-1">{children}</div>
+        <div className="mx-auto py-10 flex-1">{children}</div>
       )}
       <Footer />
     </div>
