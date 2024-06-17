@@ -440,7 +440,7 @@ const Detail = () => {
           {/* Hotel Details Start */}
 
           {/* Cart Section */}
-          <div className="w-full lg:w-1/3 hidden md:block">
+          <div className="w-full lg:w-1/3 md:block">
             <div className="h-fit sticky top-4">
               <div className="p-4 bg-white rounded-lg shadow-md border border-gray-300">
                 <div className="flex items-center justify-between mb-4">
