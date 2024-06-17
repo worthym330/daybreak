@@ -9,6 +9,7 @@ import HalfGeneralSlideover from "../components/slide-over";
 import { hotelFacilities, hotelTypes } from "../config/hotel-options-config";
 import { FaCircleXmark } from "react-icons/fa6";
 import { MdPhotoLibrary } from "react-icons/md";
+import Button from "../components/Button";
 
 const initialModalState = {
   type: "",
@@ -363,39 +364,17 @@ const MyHotels = () => {
               </div>
               <div className="flex flex-col justify-center gap-5 mt-4">
                 <span className="flex items-center justify-between">
-                  <button
+                  <Button
                     type="submit"
                     className="bg-black mx-auto w-full text-white px-4 py-3 rounded-xl font-bold hover:bg-gray-800"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (
-                      <>
-                        <svg
-                          className="animate-spin h-5 w-5 text-white mr-3"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          ></circle>
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291l2.12-2.122A5 5 0 016 12H2c0 1.795.703 3.432 1.757 4.686L6 17.291z"
-                          ></path>
-                        </svg>
-                        <span>Adding in...</span>
-                      </>
+                      "Adding in..."
                     ) : (
                       "Add"
                     )}
-                  </button>
+                  </Button>
                 </span>
               </div>
             </form>

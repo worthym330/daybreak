@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import CartModal from './CartModal';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import Button from './Button';
 
 interface Product {
   title: string;
@@ -76,13 +77,13 @@ const ProductCard = ({ product, hotelId,date, error, setError, setCart }: Produc
             )}
           </div>
           <div className="mt-2">
-            <button
+            <Button
               className="bg-goldColor text-white px-4 py-2 rounded-lg w-full flex gap-2 items-center justify-center"
               onClick={handleSelect}
             >
               <span>Select</span>
               <span className="font-thin">{isModalOpen ? <FaChevronUp className='w-5 h-5 text-sm' /> : <FaChevronDown className='w-5 h-5 text-sm' />}</span>
-            </button>
+            </Button>
           </div>
         </div>
       </div>

@@ -22,6 +22,7 @@ import { FavouriteList } from "../../../backend/src/shared/types";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Cookies from "js-cookie";
+import Button from "../components/Button";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
@@ -506,12 +507,11 @@ const Detail = () => {
                           <span>Subtotal:</span>
                           <span>₹{subtotal.toFixed(2)}</span>
                         </div>
-                        <button
-                          className="w-full bg-goldColor text-white py-2 rounded-lg"
+                        <Button
                           onClick={() => navigate(`/hotel/${hotelId}/booking`)}
                         >
                           Book Now
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   )}

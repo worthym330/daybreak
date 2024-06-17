@@ -10,6 +10,7 @@ import { useState } from "react";
 import { CustomJwtPayload, login, loginSchema } from "../../components/Header";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
+import Button from "../../components/Button";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 type Props = {
@@ -351,17 +352,17 @@ const GuestInfoForm = ({ hotelId, pricePerNight }: Props) => {
             )}
           </div>
           {isLoggedIn ? (
-            <button className="bg-blue-600 text-white h-full p-2 font-bold hover:bg-blue-500 text-xl" >
+            <Button className="bg-blue-600 text-white h-full p-2 font-bold hover:bg-blue-500 text-xl" >
               Book Now
-            </button>
+            </Button>
           ) : (
-            <button
+            <Button
               className="bg-blue-600 text-white h-full p-2 font-bold hover:bg-blue-500 text-xl"
               type="button"
               onClick={() => setModal((prev) => ({ ...prev, state: true }))}
             >
               Login
-            </button>
+            </Button>
           )}
         </div>
       </form>
