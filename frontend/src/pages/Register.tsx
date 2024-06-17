@@ -7,7 +7,8 @@ import { Link } from "react-router-dom";
 // import { jwtDecode, JwtPayload } from "jwt-decode";
 // import Cookies from "js-cookie";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
-import HotelPartnerRegistration from '../assets/images/HotelPartnerRegistration.png'
+import HotelPartnerRegistration from "../assets/images/HotelPartnerRegistration.png";
+import Button from "../components/Button";
 
 export type RegisterFormData = {
   firstName: string;
@@ -33,7 +34,7 @@ const Register = () => {
       .email("Invalid email address")
       .required("Work Email is required!"),
     designation: Yup.string().required("Designation is required!"),
-    contactNo:Yup.string().required("Contact Number is required!")
+    contactNo: Yup.string().required("Contact Number is required!"),
   });
 
   // const responseSignUpGoogle = async (response: any) => {
@@ -78,33 +79,39 @@ const Register = () => {
               hotelName: "",
               email: "",
               role: "partner",
-              designation:"",
-              contactNo:""
+              designation: "",
+              contactNo: "",
             }}
             validationSchema={validationSchema}
             onSubmit={async (values, { setSubmitting }) => {
               try {
                 setSubmitting(false);
-                
-                const response = await fetch(`${API_BASE_URL}/api/users/partner/register`, {
-                  method: "POST",
-                  credentials: "include",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify(values),
-                });
-                
+
+                const response = await fetch(
+                  `${API_BASE_URL}/api/users/partner/register`,
+                  {
+                    method: "POST",
+                    credentials: "include",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(values),
+                  }
+                );
+
                 const responseBody = await response.json();
                 console.log("response data", responseBody);
-            
+
                 if (!response.ok) {
                   showToast({
                     message: "Failed to create account!",
                     type: "ERROR",
                   });
                 } else {
-                  showToast({ message: "Our Team will contact you in 3 working days!", type: "SUCCESS" });
+                  showToast({
+                    message: "Our Team will contact you in 3 working days!",
+                    type: "SUCCESS",
+                  });
                   await queryClient.invalidateQueries("validateToken");
                 }
               } catch (error) {
@@ -117,7 +124,6 @@ const Register = () => {
                 setSubmitting(false);
               }
             }}
-            
           >
             {({ isSubmitting, handleChange, handleBlur, touched, errors }) => (
               <Form className="flex flex-col gap-5">
@@ -195,44 +201,21 @@ const Register = () => {
                     placeholder="Enter your role"
                   />
                   {touched.designation && (
-                    <p className="text-red-700 error_msg">{errors.designation}</p>
+                    <p className="text-red-700 error_msg">
+                      {errors.designation}
+                    </p>
                   )}
                 </label>
                 <div className="flex flex-col justify-center gap-5">
                   <span className="flex items-center justify-between">
-                    <button
+                    <Button
                       type="submit"
-                      className="bg-goldColor mx-auto w-full text-white px-4 py-3 rounded-xl font-bold hover:bg-white hover:text-goldColor border hover:border-goldColor "
                       disabled={isSubmitting}
                     >
-                      {isSubmitting ? (
-                        <>
-                          <svg
-                            className="animate-spin h-5 w-5 text-white mr-3"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                            ></circle>
-                            <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291l2.12-2.122A5 5 0 016 12H2c0 1.795.703 3.432 1.757 4.686L6 17.291z"
-                            ></path>
-                          </svg>
-                          <span>Registering in...</span>
-                        </>
-                      ) : (
-                        "Sign up for Hotel Partner"
-                      )}
-                    </button>
+                      {isSubmitting
+                        ? "Registering in..."
+                        : "Sign up for Hotel Partner"}
+                    </Button>
                   </span>
                   <span className="flex gap-2 text-sm text-center justify-end">
                     <span>Your hotel is already using DayBreak? </span>

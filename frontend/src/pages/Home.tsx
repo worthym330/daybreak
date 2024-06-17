@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 // import hotelImg1 from "../assets/taj.jpg";
 import LatestDestinationCard from "../components/LatestDestinationCard";
 import TopDestinationCard from "../components/TopDestinationCard";
+import Button from "../components/Button";
 
 const Home = () => {
   const { data: hotels } = useQuery("fetchQuery", () =>
@@ -125,15 +126,15 @@ const Home = () => {
           </div>
         </div> */}
         <div className="flex justify-center mt-8">
-          <button
-            className="text-white bg-btnColor h-full py-3 px-7 font-bold text-md md:text-xl hover:bg-[#c39b3f] rounded-md font-LuzuryF3"
+          <Button
+            className="font-LuzuryF3"
             type="button"
             onClick={() => {
               navigate("/partner/register");
             }}
           >
             Become a Hotel Partner
-          </button>
+          </Button>
         </div>
       </section>
       {/* Become Hotelier Section End*/}

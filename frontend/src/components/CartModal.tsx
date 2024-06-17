@@ -1,5 +1,6 @@
 import Cookies from "js-cookie";
 import { useState, useEffect } from "react";
+import Button from "./Button";
 
 const CartModal = ({ product, hotelId, onClose, date, setCart }: any) => {
   const [adultCount, setAdultCount] = useState(0);
@@ -134,12 +135,12 @@ const CartModal = ({ product, hotelId, onClose, date, setCart }: any) => {
             <span>₹ {total.toFixed(2)}</span>
           </div>
           <div className="text-right">
-            <button
+            <Button
               className="bg-goldColor text-white px-4 py-2 rounded-lg"
               onClick={handleAddToCart}
             >
               Add to Cart
-            </button>
+            </Button>
           </div>
         </div>
       </div>

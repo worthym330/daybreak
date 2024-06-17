@@ -8,7 +8,8 @@ import * as Yup from "yup";
 // import { jwtDecode, JwtPayload } from "jwt-decode";
 // import Cookies from "js-cookie";
 // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
-import loginImage from '../assets/images/pexels-gapeppy1-2373201.jpg'
+import loginImage from "../assets/images/pexels-gapeppy1-2373201.jpg";
+import Button from "../components/Button";
 
 interface login {
   email: string;
@@ -16,10 +17,10 @@ interface login {
   loginThrough: string;
 }
 
-export type SignInFormData ={
+export type SignInFormData = {
   email: string;
   password: string;
-}
+};
 
 // interface CustomJwtPayload extends JwtPayload {
 //   email?: string;
@@ -155,39 +156,12 @@ const SignIn = () => {
 
                 <div className="flex flex-col justify-center gap-5">
                   <span className="flex items-center justify-between">
-                    <button
+                    <Button
                       type="submit"
-                      className="bg-goldColor mx-auto w-full text-white px-4 py-3 rounded-xl font-bold hover:bg-white hover:text-goldColor border hover:border-goldColor"
                       disabled={isSubmitting}
                     >
-                      {isSubmitting ? (
-                        <>
-                          <svg
-                            className="animate-spin h-5 w-5 text-white mr-3"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                            ></circle>
-                            <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291l2.12-2.122A5 5 0 016 12H2c0 1.795.703 3.432 1.757 4.686L6 17.291z"
-                            ></path>
-                          </svg>
-                          <span>Logging in...</span>
-                        </>
-                      ) : (
-                        "Login"
-                      )}
-                    </button>
+                      {isSubmitting ? "Logging in..." : "Login"}
+                    </Button>
                   </span>
                   <span className="text-sm text-center flex justify-end gap-2">
                     <span>Don't have an account yet? </span>

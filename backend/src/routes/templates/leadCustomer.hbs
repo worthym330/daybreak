@@ -1,53 +1,8 @@
-import nodemailer from "nodemailer";
-
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: parseInt(process.env.SMTP_PORT || "587", 10),
-  secure: false,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
-
-export const sendLeadNotification = async (leadData: any) => {
-  const mailOptions = {
-    to: process.env.MAILTO,
-    subject: `New Lead Generated ${leadData.hotelName}`,
-    html: ` 
-    <p>Hello,</p>
-    <p>A new lead has been generated with the following details:</p>
-    <ul>
-      <li>Email: ${leadData.email}</li>
-      <li>Full Name: ${leadData.fullName}</li>
-      <li>Hotel Name: ${leadData.hotelName}</li>
-      <li>Designation: ${leadData.designation || "Not provided"}</li>
-      <li>Contact number: ${leadData.contactNo}</li>
-      <li>Status: ${leadData.status}</li>
-    </ul>
-    <p>Thank you.</p>
-  `,
-  };
-
-  try {
-    await transporter.sendMail(mailOptions);
-    console.log("Lead notification email sent");
-  } catch (error) {
-    console.error("Error sending lead notification email:", error);
-  }
-};
-
-export const sendToCustomer = async (leadData: any) => {
-  try {
-    const { email, fullName } = leadData;
-    const mailOptions = {
-      to: email,
-      subject: `Sign Up Confirmation and Onboarding Process`,
-      html: ` 
-      <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
+    <title>Sign Up Confirmation and Onboarding Process</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -87,10 +42,10 @@ export const sendToCustomer = async (leadData: any) => {
             <h1>Welcome to DayBreakPass!</h1>
         </div>
         <div class="content">
-            <p>Hello ${fullName},</p>
+            <p>Hello {{name}},</p>
             <p>Congratulations! Your sign-up with DayBreakPass is complete, and we're excited to begin your onboarding
                 process.
-            </p>
+                .</p>
             <p>Welcome aboard! We're delighted to have you join us. Expect a call soon from one of our representatives.
             </p>
             <p>For any questions or assistance, please feel free to reach out to us at <a href="tel:+918369029862" >8369029862</a> or email us at
@@ -104,10 +59,3 @@ export const sendToCustomer = async (leadData: any) => {
     </div>
 </body>
 </html>
-`,
-    };
-    await transporter.sendMail(mailOptions);
-  } catch (error) {
-    console.error("Error sending lead notification email:", error);
-  }
-};
