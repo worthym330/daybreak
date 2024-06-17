@@ -2,7 +2,7 @@ import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { useQueryClient } from "react-query";
 import { useAppContext } from "../contexts/AppContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 // import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 // import { jwtDecode, JwtPayload } from "jwt-decode";
 // import Cookies from "js-cookie";
@@ -26,6 +26,7 @@ export type RegisterFormData = {
 const Register = () => {
   const queryClient = useQueryClient();
   const { showToast } = useAppContext();
+  const navigate = useNavigate();
 
   const validationSchema = Yup.object().shape({
     fullName: Yup.string().required("Full Name is required!"),
@@ -85,7 +86,7 @@ const Register = () => {
             validationSchema={validationSchema}
             onSubmit={async (values, { setSubmitting }) => {
               try {
-                setSubmitting(false);
+                setSubmitting(true);
 
                 const response = await fetch(
                   `${API_BASE_URL}/api/users/partner/register`,
@@ -102,17 +103,20 @@ const Register = () => {
                 const responseBody = await response.json();
                 console.log("response data", responseBody);
 
-                if (!response.ok) {
-                  showToast({
-                    message: "Failed to create account!",
-                    type: "ERROR",
-                  });
-                } else {
+                if (response.ok) {
                   showToast({
                     message: "Our Team will contact you in 3 working days!",
                     type: "SUCCESS",
                   });
+                  navigate("/")
+                  setSubmitting(false);
                   await queryClient.invalidateQueries("validateToken");
+                } else {
+                  showToast({
+                    message: "Failed to create account!",
+                    type: "ERROR",
+                  });
+                  setSubmitting(false);
                 }
               } catch (error) {
                 console.error("Error creating account:", error);
@@ -120,7 +124,6 @@ const Register = () => {
                   message: "An error occurred while creating the account!",
                   type: "ERROR",
                 });
-              } finally {
                 setSubmitting(false);
               }
             }}
@@ -208,10 +211,7 @@ const Register = () => {
                 </label>
                 <div className="flex flex-col justify-center gap-5">
                   <span className="flex items-center justify-between">
-                    <Button
-                      type="submit"
-                      disabled={isSubmitting}
-                    >
+                    <Button type="submit" disabled={isSubmitting} loading={isSubmitting} >
                       {isSubmitting
                         ? "Registering in..."
                         : "Sign up for Hotel Partner"}

@@ -8,7 +8,7 @@ const Button = ({ loading,className, disabled, children,...rest  }:any) => {
   return (
     <button
       className={classNames(
-        "border-2 text-white bg-goldColor font-semibold rounded-lg px-3 py-2",
+        "border-2 text-white bg-goldColor font-semibold rounded-lg px-3 py-2 ease-in-out duration-300",
         "hover:border-goldColor hover:bg-white hover:text-goldColor",
         loading && "opacity-50 cursor-not-allowed",
         className
@@ -18,7 +18,7 @@ const Button = ({ loading,className, disabled, children,...rest  }:any) => {
     >
       {!loading && children}
       {loading && (
-        <div className="flex justify-center items-center">
+        <div className="flex justify-center items-center w-64">
         <div className="spinner-border animate-spin inline-block w-5 h-5 border-4 rounded-full" role="status">
         </div>
       </div>

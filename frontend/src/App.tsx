@@ -18,6 +18,7 @@ import Home from "./pages/Home";
 import { NotFound } from "./pages/NotFound";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
+import WaitList from "./pages/WaitList";
 
 const AccessControl = ({ children, requiredRoles }: any) => {
   const auth_token = Cookies.get("authentication") || "null";
@@ -48,6 +49,19 @@ const AccessControl = ({ children, requiredRoles }: any) => {
   }
 
   return <>{children}</>;
+};
+
+const AuthRedirect = ({ children }: any) => {
+  const auth_token = Cookies.get("authentication");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (auth_token) {
+      navigate("/"); // Redirect to home or any other page
+    }
+  }, [auth_token]);
+
+  return auth_token ? null : children;
 };
 
 const App = () => {
@@ -86,9 +100,23 @@ const App = () => {
             </Layout>
           }
         />
-        <Route path="/partner/register" element={<Register />} />
-        <Route path="/partner/sign-in" element={<SignIn />} />
-
+        <Route
+          path="/partner/register"
+          element={
+            <AuthRedirect>
+              <Register />
+            </AuthRedirect>
+          }
+        />
+        <Route
+          path="/partner/sign-in"
+          element={
+            <AuthRedirect>
+              <SignIn />
+            </AuthRedirect>
+          }
+        />
+        <Route path="/waitlist" element={<WaitList />} />
         <Route
           path="/hotel/:hotelId/booking"
           element={
