@@ -127,21 +127,20 @@ router.post(
 
       // Calculate the total amount from cartItems
       const totalAmount = cartItems.reduce((sum: number, item: any) => {
-        const itemTotal = item.total * 100; 
+        const itemTotal = item.total * 100;
         return sum + itemTotal;
       }, 0);
-       // Convert to the smallest currency unit (paise)
-
+      // Convert to the smallest currency unit (paise)
 
       const receipt = `rcpt_${hotelId}_${req.userId}`.slice(0, 40);
       const options = {
         amount: totalAmount, // amount in the smallest currency unit
         currency: "INR",
         receipt: receipt,
-        payment_capture: 0, // 1 for automatic capture, 0 for manual
+        payment_capture: 1, // 1 for automatic capture, 0 for manual
         notes: {
           hotelId,
-          userId: req.userId,
+          userId: req.userId, 
         },
       };
 
@@ -156,7 +155,7 @@ router.post(
         amount: order.amount,
         currency: order.currency,
       };
-      console.log('response value', response);
+      console.log("response value", response);
 
       res.json(response);
     } catch (error) {
@@ -171,55 +170,63 @@ router.post(
   verifyToken,
   async (req: Request, res: Response) => {
     try {
-      const { paymentIntentId, order_id } = req.body;
-
+      const { paymentIntentId, orderId, cart } = req.body;
+  
       // Verify the payment signature
       const payment = await razorpayInstance.payments.fetch(paymentIntentId);
-      
+  
       if (!payment) {
         return res.status(400).json({ message: "Payment not found" });
       }
-
-      if (payment.order_id !== order_id || payment.notes.hotelId !== req.params.hotelId || payment.notes.userId !== req.userId) {
+  
+      if (
+        payment.order_id !== orderId ||
+        payment.notes.hotelId !== req.params.hotelId ||
+        payment.notes.userId !== req.userId
+      ) {
         return res.status(400).json({ message: "Payment details mismatch" });
       }
-
+  
       if (payment.status !== "captured") {
         return res.status(400).json({
           message: `Payment not captured. Status: ${payment.status}`,
         });
       }
-
+      let totalCost: number = (payment.amount as number) / 100;
+  
       const newBooking: BookingType = {
         ...req.body,
         userId: req.userId,
+        totalCost: totalCost,
+        cart:cart
       };
-
+  
       const hotel = await Hotel.findOneAndUpdate(
         { _id: req.params.hotelId },
         {
           $push: { bookings: newBooking },
-        }
+        },
+        { new: true }
       );
-
+  
       if (!hotel) {
         return res.status(400).json({ message: "Hotel not found" });
       }
-
+  
       await hotel.save();
-
+  
       const serviceRecord = new ServiceRecord({
         userId: req.userId,
         hotelId: req.params.hotelId,
-        bookingId: newBooking._id,
+        bookingId: newBooking._id, // Ensure newBooking._id is properly set
         paymentId: paymentIntentId,
-        invoiceId: payment.invoice_id || '',
+        invoiceId: payment.invoice_id || "",
         servicesUsed: req.body.servicesUsed || [],
         paymentStatus: payment.status,
       });
-
+  
       await serviceRecord.save();
-
+  
       res.status(200).send();
     } catch (error) {
       console.log(error);
@@ -283,8 +290,7 @@ const constructSearchQuery = (queryParams: any) => {
   return constructedQuery;
 };
 
-
-router.post('/:hotelId/favourite', async (req, res) => {
+router.post("/:hotelId/favourite", async (req, res) => {
   const { hotelId } = req.params;
   const { userId, firstName, lastName, email } = req.body;
 
@@ -292,10 +298,12 @@ router.post('/:hotelId/favourite', async (req, res) => {
     const hotel = await Hotel.findById(hotelId);
 
     if (!hotel) {
-      return res.status(404).json({ message: 'Hotel not found' });
+      return res.status(404).json({ message: "Hotel not found" });
     }
 
-    const favouriteIndex = hotel.favourites.findIndex(fav => fav.userId === userId);
+    const favouriteIndex = hotel.favourites.findIndex(
+      (fav) => fav.userId === userId
+    );
 
     if (favouriteIndex === -1) {
       // Add to favorites
@@ -308,9 +316,8 @@ router.post('/:hotelId/favourite', async (req, res) => {
     await hotel.save();
     res.status(200).json(hotel);
   } catch (error) {
-    res.status(500).json({ message: 'An error occurred', error });
+    res.status(500).json({ message: "An error occurred", error });
   }
 });
 
 export default router;
-

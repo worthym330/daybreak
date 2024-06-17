@@ -2,11 +2,13 @@ import { useMutation, useQueryClient } from "react-query";
 import * as apiClient from "../api-client";
 import { useAppContext } from "../contexts/AppContext";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
+// import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
-import { jwtDecode, JwtPayload } from "jwt-decode";
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+// import { jwtDecode, JwtPayload } from "jwt-decode";
+// import Cookies from "js-cookie";
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+import loginImage from '../assets/images/pexels-gapeppy1-2373201.jpg'
 
 interface login {
   email: string;
@@ -19,10 +21,10 @@ export type SignInFormData ={
   password: string;
 }
 
-interface CustomJwtPayload extends JwtPayload {
-  email?: string;
-  name?: string;
-}
+// interface CustomJwtPayload extends JwtPayload {
+//   email?: string;
+//   name?: string;
+// }
 
 const loginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required"),
@@ -39,34 +41,34 @@ const SignIn = () => {
 
   const location = useLocation();
 
-  const responseLoginGoogle = async (response: any) => {
-    const token = response.credential;
-    const user = jwtDecode<CustomJwtPayload>(token);
-    let payload = {
-      email: user.email,
-      loginThrough: "google",
-      googleToken: token,
-    };
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-      const body = await response.json();
-      if (response.ok) {
-        showToast({ message: "Sign in Successful!", type: "SUCCESS" });
-        localStorage.setItem("auth_token", JSON.stringify(body.user));
-      } else {
-        showToast({ message: "Failed to Login!", type: "ERROR" });
-      }
-    } catch (error) {
-      console.error("Error authenticating with backend:", error);
-    }
-  };
+  // const responseLoginGoogle = async (response: any) => {
+  //   const token = response.credential;
+  //   const user = jwtDecode<CustomJwtPayload>(token);
+  //   let payload = {
+  //     email: user.email,
+  //     loginThrough: "google",
+  //     googleToken: token,
+  //   };
+  //   try {
+  //     const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+  //       method: "POST",
+  //       credentials: "include",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(payload),
+  //     });
+  //     const body = await response.json();
+  //     if (response.ok) {
+  //       showToast({ message: "Sign in Successful!", type: "SUCCESS" });
+  //       Cookies.set("authentication", JSON.stringify(body.user), { expires: 1 })
+  //     } else {
+  //       showToast({ message: "Failed to Login!", type: "ERROR" });
+  //     }
+  //   } catch (error) {
+  //     console.error("Error authenticating with backend:", error);
+  //   }
+  // };
 
   const mutation = useMutation(apiClient.signIn, {
     onSuccess: async () => {
@@ -81,7 +83,7 @@ const SignIn = () => {
 
   return (
     <div className="flex min-h-screen flex-row">
-      <div className="flex flex-col justify-center px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24 w-full lg:w-1/2">
+      <div className="flex flex-col justify-center px-4 py-12 sm:px-6 lg:px-20 xl:px-24 w-full md:w-1/2">
         <div className="mx-auto w-full max-w-sm lg:w-96">
           <Formik
             initialValues={{
@@ -155,7 +157,7 @@ const SignIn = () => {
                   <span className="flex items-center justify-between">
                     <button
                       type="submit"
-                      className="bg-black mx-auto w-full text-white px-4 py-3 rounded-xl font-bold hover:bg-gray-800"
+                      className="bg-goldColor mx-auto w-full text-white px-4 py-3 rounded-xl font-bold hover:bg-white hover:text-goldColor border hover:border-goldColor"
                       disabled={isSubmitting}
                     >
                       {isSubmitting ? (
@@ -190,19 +192,19 @@ const SignIn = () => {
                   <span className="text-sm text-center flex justify-end gap-2">
                     <span>Don't have an account yet? </span>
                     <Link
-                      className="underline text-sky-600"
+                      className="underline font-bold text-goldColor "
                       to="/partner/register"
                     >
                       Register
                     </Link>
                   </span>
-                  <div className="flex w-full my-1 justify-center items-center">
+                  {/* <div className="flex w-full my-1 justify-center items-center">
                     <hr className="border-gray-300 flex-grow" />
                     <span className="text-gray-400 mx-2">OR</span>
                     <hr className="border-gray-300 flex-grow" />
-                  </div>
+                  </div> */}
 
-                  <GoogleOAuthProvider
+                  {/* <GoogleOAuthProvider
                     clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
                   >
                     <div className="w-full flex justify-center">
@@ -213,17 +215,17 @@ const SignIn = () => {
                         />
                       </div>
                     </div>
-                  </GoogleOAuthProvider>
+                  </GoogleOAuthProvider> */}
                 </div>
               </Form>
             )}
           </Formik>
         </div>
       </div>
-      <div className="relative hidden w-0 flex-1 lg:block lg:w-1/2">
+      <div className="relative hidden flex-1 md:block md:w-1/2">
         <img
-          className="absolute inset-0 h-full w-full object-cover"
-          src="https://images.unsplash.com/photo-1496917756835-20cb06e75b4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1908&q=80"
+          className="absolute h-full w-full rounded-md object-fit object-center"
+          src={loginImage}
           alt="Background"
         />
       </div>

@@ -1,10 +1,14 @@
 import { useForm } from "react-hook-form";
-import { PaymentIntentResponse, UserType } from "../../../../backend/src/shared/types";
+import {
+  PaymentIntentResponse,
+  UserType,
+} from "../../../../backend/src/shared/types";
 import { useSearchContext } from "../../contexts/SearchContext";
 import { useParams } from "react-router-dom";
 import { useMutation } from "react-query";
 import * as apiClient from "../../api-client";
 import { useAppContext } from "../../contexts/AppContext";
+import Cookies from "js-cookie";
 
 type Props = {
   currentUser: UserType;
@@ -21,6 +25,7 @@ export type BookingFormData = {
   hotelId: string;
   paymentIntentId: string;
   totalCost: number;
+  orderId?: string;
 };
 
 const BookingForm = ({ currentUser, paymentIntent }: Props) => {
@@ -29,10 +34,17 @@ const BookingForm = ({ currentUser, paymentIntent }: Props) => {
 
   const { showToast, razorpayOptions } = useAppContext();
 
-  const { mutate: bookRoom, isLoading } = useMutation<void, Error, BookingFormData>(
+  const cart = Cookies.get("cart");
+  const parsedCart = cart ? JSON.parse(cart) : [];
+
+  const { mutate: bookRoom, isLoading } = useMutation<
+    void,
+    Error,
+    BookingFormData
+  >(
     "createBooking", // Mutation key
     async (formData) => {
-      await apiClient.createRoomBooking(formData, formData.paymentIntentId);
+      await apiClient.createRoomBooking(formData, parsedCart);
     },
     {
       onSuccess: () => {
@@ -41,7 +53,8 @@ const BookingForm = ({ currentUser, paymentIntent }: Props) => {
       onError: () => {
         showToast({ message: "Error saving booking", type: "ERROR" });
       },
-    });
+    }
+  );
 
   const { handleSubmit, register } = useForm<BookingFormData>({
     defaultValues: {
@@ -52,6 +65,7 @@ const BookingForm = ({ currentUser, paymentIntent }: Props) => {
       hotelId: hotelId,
       totalCost: paymentIntent.totalCost,
       paymentIntentId: paymentIntent.paymentIntentId,
+      orderId: paymentIntent.orderId,
     },
   });
 
@@ -64,17 +78,22 @@ const BookingForm = ({ currentUser, paymentIntent }: Props) => {
         name: `${currentUser.firstName} ${currentUser.lastName}`,
         description: "Booking payment",
         order_id: paymentIntent.orderId,
+        status: "captured",
         handler: async function (response: any) {
           try {
             console.log("Razorpay response:", response);
             if (response.razorpay_payment_id) {
               // Call backend to complete booking
-              await bookRoom(
-                { ...formData, paymentIntentId: response.razorpay_payment_id },
-                paymentIntent.orderId // Pass orderId to the booking function
-              );
+              await bookRoom({
+                ...formData,
+                paymentIntentId: response.razorpay_payment_id,
+                orderId: response.razorpay_order_id,
+              });
             } else {
-              console.error("Razorpay payment_id missing in response:", response);
+              console.error(
+                "Razorpay payment_id missing in response:",
+                response
+              );
               alert("Payment failed. Please try again.");
             }
           } catch (error) {
@@ -98,7 +117,7 @@ const BookingForm = ({ currentUser, paymentIntent }: Props) => {
           method: "upi",
         },
       };
-  
+
       const rzp = new (window as any).Razorpay(options);
       rzp.open();
     } catch (error) {

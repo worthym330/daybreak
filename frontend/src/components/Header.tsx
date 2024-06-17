@@ -15,6 +15,7 @@ import { useMutation, useQueryClient } from "react-query";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { HiXMark } from "react-icons/hi2";
 import * as apiClient from "../api-client";
+import Cookies from "js-cookie";
 
 const initialModalState = {
   type: "add",
@@ -104,7 +105,7 @@ const Header = () => {
   const [modal, setModal] = useState(initialModalState);
   const [signupModal, setSignupModal] = useState(initialSignupModalState);
 
-  const auth_token = localStorage.getItem("auth_token");
+  const auth_token = Cookies.get("authentication");
   const userLogined = auth_token ? JSON.parse(auth_token) : null;
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -115,7 +116,10 @@ const Header = () => {
   const headerRef = useRef<HTMLDivElement>(null);
 
   const handleClickOutside = (event: MouseEvent) => {
-    if (headerRef.current && !headerRef.current.contains(event.target as Node)) {
+    if (
+      headerRef.current &&
+      !headerRef.current.contains(event.target as Node)
+    ) {
       setShowNav(false);
     }
   };
@@ -153,7 +157,9 @@ const Header = () => {
         setModal((prev) => ({ ...prev, state: false, loading: false }));
         showToast({ message: "Sign in Successful!", type: "SUCCESS" });
         setShowDropdown(false);
-        localStorage.setItem("auth_token", JSON.stringify(body.user));
+        Cookies.set("authentication", JSON.stringify(body.user), {
+          expires: 1,
+        });
       } else {
         showToast({ message: "Failed to Login!", type: "ERROR" });
       }
@@ -189,7 +195,9 @@ const Header = () => {
         setSignupModal(initialSignupModalState);
         showToast({ message: "Registered Successful!", type: "SUCCESS" });
         setShowDropdown(false);
-        localStorage.setItem("auth_token", JSON.stringify(body.user));
+        Cookies.set("authentication", JSON.stringify(body.user), {
+          expires: 1,
+        });
       } else {
         showToast({ message: "Failed to register!", type: "ERROR" });
       }
@@ -210,7 +218,7 @@ const Header = () => {
 
   const mutation = useMutation(apiClient.signOut, {
     onSuccess: async () => {
-      localStorage.removeItem("auth_token");
+      Cookies.remove("authentication");
       showToast({ message: "Signed Out!", type: "SUCCESS" });
     },
     onError: (error: Error) => {
@@ -250,7 +258,9 @@ const Header = () => {
 
             showToast({ message: "Sign in Successful!", type: "SUCCESS" });
             setShowDropdown(false);
-            localStorage.setItem("auth_token", JSON.stringify(body.user));
+            Cookies.set("authentication", JSON.stringify(body.user), {
+              expires: 1,
+            });
           } catch (error: any) {
             console.error("Error during sign in:", error);
             setModal((prev) => ({ ...prev, state: false, loading: false }));
@@ -422,10 +432,9 @@ const Header = () => {
             });
             const responseBody = await response.json();
             if (response.ok) {
-              localStorage.setItem(
-                "auth_token",
-                JSON.stringify(responseBody.user)
-              );
+              Cookies.set("authentication", JSON.stringify(responseBody.user), {
+                expires: 1,
+              });
               showToast({ message: "Registered Successful!", type: "SUCCESS" });
               await queryClient.invalidateQueries("validateToken");
               setSignupModal(initialSignupModalState);
@@ -555,9 +564,7 @@ const Header = () => {
                   onBlur={handleBlur}
                 />
                 {touched.confirmpassword && (
-                  <span className="text-red-500">
-                    {errors.confirmpassword}
-                  </span>
+                  <span className="text-red-500">{errors.confirmpassword}</span>
                 )}
               </div>
 
@@ -668,14 +675,13 @@ const Header = () => {
                         )}
                       </button>
                     )}
-                    {userLogined?.role === "customer" && (
-                      <Link
-                        className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-goldColor hover:text-white"
-                        to="/"
-                      >
-                        <IoCartOutline className="text-2xl" />
-                      </Link>
-                    )}
+
+                    <Link
+                      className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-goldColor hover:text-white"
+                      to="/"
+                    >
+                      <IoCartOutline className="text-2xl" />
+                    </Link>
                   </span>
 
                   {/* Dropdown for Login button */}
@@ -899,14 +905,13 @@ const Header = () => {
                     )}
                   </button>
                 )}
-                {userLogined?.role === "customer" && (
-                  <Link
-                    className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-goldColor hover:text-white"
-                    to="/"
-                  >
-                    <IoCartOutline className="text-2xl" />
-                  </Link>
-                )}
+
+                <Link
+                  className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-goldColor hover:text-white"
+                  to="/"
+                >
+                  <IoCartOutline className="text-2xl" />
+                </Link>
               </span>
 
               {/* Dropdown for Login button */}
@@ -960,7 +965,10 @@ const Header = () => {
         </div>
       ) : // Search Result Page hamburger dropdown Navbar
       showNav ? (
-        <div className="absolute w-full top-0 bg-white text-black z-20 border-b-2 border-black" ref={headerRef}>
+        <div
+          className="absolute w-full top-0 bg-white text-black z-20 border-b-2 border-black"
+          ref={headerRef}
+        >
           <div className="hidden md:block md:px-10">
             <div className="w-full pt-4 flex items-center justify-between py-2">
               <span className="text-2xl md:text-3xl font-bold tracking-tight flex gap-2">
@@ -1005,14 +1013,13 @@ const Header = () => {
                     )}
                   </button>
                 )}
-                {userLogined?.role === "customer" && (
-                  <Link
-                    className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-darkGold hover:bg-goldColor hover:text-white"
-                    to="/"
-                  >
-                    <IoCartOutline className="text-2xl" />
-                  </Link>
-                )}
+
+                <Link
+                  className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-darkGold hover:bg-goldColor hover:text-white"
+                  to="/"
+                >
+                  <IoCartOutline className="text-2xl" />
+                </Link>
               </span>
 
               {/* Dropdown for Login button */}
@@ -1234,14 +1241,13 @@ const Header = () => {
                 )}
               </button>
             )}
-            {userLogined?.role === "customer" && (
-              <Link
-                className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-goldColor hover:text-white"
-                to="/"
-              >
-                <IoCartOutline className="text-2xl" />
-              </Link>
-            )}
+
+            <Link
+              className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-goldColor hover:text-white"
+              to="/"
+            >
+              <IoCartOutline className="text-2xl" />
+            </Link>
           </span>
 
           {/* Dropdown for Login button */}
