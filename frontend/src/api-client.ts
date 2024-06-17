@@ -47,7 +47,7 @@ export const signIn = async (formData: SignInFormData) => {
   });
 
   const body = await response.json();
-  Cookies.set("authentication", JSON.stringify(body.user), { expires: 1 })
+  Cookies.set("authentication", JSON.stringify(body.user), { expires: 1 });
   if (!response.ok) {
     throw new Error(body.message);
   }
@@ -226,7 +226,10 @@ export const createPaymentIntent = async (hotelId: string, cartItems: any) => {
   }
 };
 
-export const createRoomBooking = async (formData: BookingFormData, orderId: string) => {
+export const createRoomBooking = async (
+  formData: BookingFormData,
+  cart: any
+) => {
   const response = await fetch(
     `${API_BASE_URL}/api/hotels/${formData.hotelId}/bookings`,
     {
@@ -235,7 +238,7 @@ export const createRoomBooking = async (formData: BookingFormData, orderId: stri
         "Content-Type": "application/json",
       },
       credentials: "include",
-      body: JSON.stringify({ ...formData, orderId }), // Include orderId in the request body
+      body: JSON.stringify({ ...formData, cart }), // Include orderId in the request body
     }
   );
 
@@ -243,7 +246,6 @@ export const createRoomBooking = async (formData: BookingFormData, orderId: stri
     throw new Error("Error booking room");
   }
 };
-
 
 export const fetchMyBookings = async (): Promise<HotelType[]> => {
   const response = await fetch(`${API_BASE_URL}/api/my-bookings`, {

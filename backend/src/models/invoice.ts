@@ -3,12 +3,18 @@ import mongoose from 'mongoose';
 const ServiceRecordSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   hotelId: { type: mongoose.Schema.Types.ObjectId, ref: 'Hotel', required: true },
-  bookingId: { type: mongoose.Schema.Types.ObjectId, ref: 'Booking', required: true },
+  bookingId: { type: mongoose.Schema.Types.ObjectId, ref: 'Booking' },
   paymentId: { type: String, required: true },
   invoiceId: { type: String },
-  servicesUsed: [{ type: String, required: true }],
-  paymentStatus: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now }
+  servicesUsed: [{ type: String }],
+  paymentStatus: { type: String },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt:{type:Date}
+});
+
+ServiceRecordSchema.pre('findOneAndUpdate', function(next) {
+  this.set({ updatedAt: new Date() });
+  next();
 });
 
 const ServiceRecord = mongoose.model('ServiceRecord', ServiceRecordSchema);

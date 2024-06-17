@@ -134,7 +134,7 @@ const Detail = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [error, setError] = useState(false);
   const [carts, setCart] = useState([]);
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState<any[]>([]);
   const auth_token = Cookies.get("authentication") || "null";
   const userLogined = JSON.parse(auth_token);
   const navigate = useNavigate();
@@ -297,6 +297,7 @@ const Detail = () => {
       cart = cart.filter((item) => item.product.title !== itemId);
       Cookies.set("cart", JSON.stringify(cart), { expires: 1 });
     }
+    setCartItems(cart);
     return cart;
   }
 

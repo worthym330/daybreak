@@ -3,10 +3,11 @@ import * as Yup from "yup";
 import { useQueryClient } from "react-query";
 import { useAppContext } from "../contexts/AppContext";
 import { Link } from "react-router-dom";
-import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
-import { jwtDecode, JwtPayload } from "jwt-decode";
-import Cookies from "js-cookie";
+// import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
+// import { jwtDecode, JwtPayload } from "jwt-decode";
+// import Cookies from "js-cookie";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+import HotelPartnerRegistration from '../assets/images/HotelPartnerRegistration.png'
 
 export type RegisterFormData = {
   firstName: string;
@@ -16,10 +17,10 @@ export type RegisterFormData = {
   confirmPassword: string;
 };
 
-interface CustomJwtPayload extends JwtPayload {
-  email?: string;
-  name?: string;
-}
+// interface CustomJwtPayload extends JwtPayload {
+//   email?: string;
+//   name?: string;
+// }
 
 const Register = () => {
   const queryClient = useQueryClient();
@@ -35,41 +36,41 @@ const Register = () => {
     contactNo:Yup.string().required("Contact Number is required!")
   });
 
-  const responseSignUpGoogle = async (response: any) => {
-    const token = response.credential;
-    const user = jwtDecode<CustomJwtPayload>(token);
-    let payload = {
-      email: user.email,
-      firstName: user.name?.split(" ")[0],
-      lastName: user.name?.split(" ")[user.name?.split(" ").length - 1],
-      loginThrough: "google",
-      googleToken: token,
-      role: "partner",
-    };
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/users/register`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-      const body = await response.json();
-      if (response.ok) {
-        showToast({ message: "Registered Successful!", type: "SUCCESS" });
-        Cookies.set("authentication", JSON.stringify(body.user), { expires: 1 })
-      } else {
-        showToast({ message: "Failed to register!", type: "ERROR" });
-      }
-    } catch (error) {
-      console.error("Error authenticating with backend:", error);
-    }
-  };
+  // const responseSignUpGoogle = async (response: any) => {
+  //   const token = response.credential;
+  //   const user = jwtDecode<CustomJwtPayload>(token);
+  //   let payload = {
+  //     email: user.email,
+  //     firstName: user.name?.split(" ")[0],
+  //     lastName: user.name?.split(" ")[user.name?.split(" ").length - 1],
+  //     loginThrough: "google",
+  //     googleToken: token,
+  //     role: "partner",
+  //   };
+  //   try {
+  //     const response = await fetch(`${API_BASE_URL}/api/users/register`, {
+  //       method: "POST",
+  //       credentials: "include",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(payload),
+  //     });
+  //     const body = await response.json();
+  //     if (response.ok) {
+  //       showToast({ message: "Registered Successful!", type: "SUCCESS" });
+  //       Cookies.set("authentication", JSON.stringify(body.user), { expires: 1 })
+  //     } else {
+  //       showToast({ message: "Failed to register!", type: "ERROR" });
+  //     }
+  //   } catch (error) {
+  //     console.error("Error authenticating with backend:", error);
+  //   }
+  // };
 
   return (
     <div className="flex min-h-screen flex-row-reverse">
-      <div className="flex flex-col justify-center px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24 w-full lg:w-1/2">
+      <div className="flex flex-col justify-center px-4 py-12 sm:px-6 md:flex-none md:px-20 xl:px-24 w-full md:w-1/2">
         <div className="mx-auto w-full max-w-sm lg:w-96">
           <Formik
             initialValues={{
@@ -124,15 +125,6 @@ const Register = () => {
                   <h2 className="text-2xl font-bold">
                     Bring Daycation to your hotel
                   </h2>
-                  <span className="flex gap-2">
-                    <span>Your hotel is already using DayBreak? </span>
-                    <Link
-                      className="font-bold text-sky-600"
-                      to="/partner/sign-in"
-                    >
-                      Login
-                    </Link>
-                  </span>
                 </div>
                 <label className="text-gray-700 text-sm font-bold flex-1">
                   Full Name
@@ -210,7 +202,7 @@ const Register = () => {
                   <span className="flex items-center justify-between">
                     <button
                       type="submit"
-                      className="bg-black mx-auto w-full text-white px-4 py-3 rounded-xl font-bold hover:bg-gray-800"
+                      className="bg-goldColor mx-auto w-full text-white px-4 py-3 rounded-xl font-bold hover:bg-white hover:text-goldColor border hover:border-goldColor "
                       disabled={isSubmitting}
                     >
                       {isSubmitting ? (
@@ -242,13 +234,22 @@ const Register = () => {
                       )}
                     </button>
                   </span>
-                  <div className="flex w-full my-1 justify-center items-center">
+                  <span className="flex gap-2 text-sm text-center justify-end">
+                    <span>Your hotel is already using DayBreak? </span>
+                    <Link
+                      className="font-bold text-goldColor underline"
+                      to="/partner/sign-in"
+                    >
+                      Login
+                    </Link>
+                  </span>
+                  {/* <div className="flex w-full my-1 justify-center items-center">
                     <hr className="border-gray-300 flex-grow" />
                     <span className="text-gray-400 mx-2">OR</span>
                     <hr className="border-gray-300 flex-grow" />
-                  </div>
+                  </div> */}
 
-                  <GoogleOAuthProvider
+                  {/* <GoogleOAuthProvider
                     clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
                   >
                     <div className="w-full flex justify-center">
@@ -259,17 +260,17 @@ const Register = () => {
                         />
                       </div>
                     </div>
-                  </GoogleOAuthProvider>
+                  </GoogleOAuthProvider> */}
                 </div>
               </Form>
             )}
           </Formik>
         </div>
       </div>
-      <div className="relative hidden w-0 flex-1 lg:block lg:w-1/2">
+      <div className="relative hidden w-0 flex-1 md:block md:w-1/2">
         <img
-          className="absolute inset-0 h-full w-full object-cover"
-          src="https://images.unsplash.com/photo-1496917756835-20cb06e75b4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1908&q=80"
+          className="absolute h-full w-full rounded-md object-fit object-center"
+          src={HotelPartnerRegistration}
           alt="Background"
         />
       </div>
