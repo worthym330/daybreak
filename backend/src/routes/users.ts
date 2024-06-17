@@ -5,7 +5,7 @@ import { check, validationResult } from "express-validator";
 import verifyToken from "../middleware/auth";
 import { OAuth2Client } from "google-auth-library";
 import Lead from "../models/leads";
-import { sendLeadNotification } from "./mail";
+import { sendLeadNotification, sendToCustomer } from "./mail";
 
 const router = express.Router();
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -135,6 +135,7 @@ router.post(
       const lead = new Lead(leadData);
       await lead.save();
       await sendLeadNotification(leadData)
+      await sendToCustomer(leadData)
       const body = {
         firstName: fullName.split(' ')[0],
         lastName: fullName.split(' ')[fullName.split(' ').length - 1],
