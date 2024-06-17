@@ -2,35 +2,53 @@ import {
   BrowserRouter as Router,
   Route,
   Routes,
-  Navigate,
-} from 'react-router-dom';
-import Layout from './layouts/Layout';
-import Register from './pages/Register';
-import SignIn from './pages/SignIn';
-import AddHotel from './pages/AddHotel';
-import MyHotels from './pages/MyHotels';
-import EditHotel from './pages/EditHotel';
-import Search from './pages/Search';
-import Detail from './pages/Detail';
-import Booking from './pages/Booking';
-import MyBookings from './pages/MyBookings';
-import Home from './pages/Home';
-import { NotFound } from './pages/NotFound';
+  useNavigate,
+} from "react-router-dom";
+import Layout from "./layouts/Layout";
+import Register from "./pages/Register";
+import SignIn from "./pages/SignIn";
+import AddHotel from "./pages/AddHotel";
+import MyHotels from "./pages/MyHotels";
+import EditHotel from "./pages/EditHotel";
+import Search from "./pages/Search";
+import Detail from "./pages/Detail";
+import Booking from "./pages/Booking";
+import MyBookings from "./pages/MyBookings";
+import Home from "./pages/Home";
+import { NotFound } from "./pages/NotFound";
+import Cookies from "js-cookie";
+import { useEffect, useState } from "react";
 
-const AccessControl = ({ children, requiredRoles }:any) => {
-  const auth_token = localStorage.getItem('auth_token');
-  const user = auth_token !== null ? JSON.parse(auth_token) : null;
-  if (user === null) {
-    return false
+const AccessControl = ({ children, requiredRoles }: any) => {
+  const auth_token = Cookies.get("authentication") || "null";
+  const user = JSON.parse(auth_token);
+  const navigate = useNavigate();
+  const [unauthenticated, setUnauthenticated] = useState(false);
+  useEffect(() => {
+    if (user === null) {
+      setUnauthenticated(true);
+      setTimeout(() => {
+        navigate(-1);
+      }, 3000);
+    } else if (requiredRoles && !requiredRoles.includes(user.role)) {
+      navigate("/");
+    }
+  }, [user, requiredRoles, navigate]);
+
+  if (user === null || (requiredRoles && !requiredRoles.includes(user.role))) {
+    return (
+      <>
+        {unauthenticated && (
+          <div className="fixed top-4 right-0 transform -translate-x-1/2 bg-red-500 text-white p-4 rounded shadow-lg">
+            Please login and try again.
+          </div>
+        )}
+      </>
+    );
   }
 
-  if (requiredRoles && !requiredRoles.includes(user?.role)) {
-    return <Navigate to="/" />;
-  }
-
-  return children;
+  return <>{children}</>;
 };
-
 
 const App = () => {
   return (
@@ -68,19 +86,13 @@ const App = () => {
             </Layout>
           }
         />
-        <Route
-          path="/partner/register"
-          element={<Register />}
-        />
-        <Route
-          path="/partner/sign-in"
-          element={<SignIn />}
-        />
+        <Route path="/partner/register" element={<Register />} />
+        <Route path="/partner/sign-in" element={<SignIn />} />
 
         <Route
           path="/hotel/:hotelId/booking"
           element={
-            <AccessControl requiredRoles={['customer', 'partner']}>
+            <AccessControl requiredRoles={["customer"]}>
               <Layout>
                 <Booking />
               </Layout>
@@ -91,7 +103,7 @@ const App = () => {
         <Route
           path="/add-hotel"
           element={
-            <AccessControl requiredRoles={['partner']}>
+            <AccessControl requiredRoles={["partner"]}>
               <Layout>
                 <AddHotel />
               </Layout>
@@ -101,7 +113,7 @@ const App = () => {
         <Route
           path="/edit-hotel/:hotelId"
           element={
-            <AccessControl requiredRoles={['partner']}>
+            <AccessControl requiredRoles={["partner"]}>
               <Layout>
                 <EditHotel />
               </Layout>
@@ -111,7 +123,7 @@ const App = () => {
         <Route
           path="/my-hotels"
           element={
-            <AccessControl requiredRoles={['partner']}>
+            <AccessControl requiredRoles={["partner"]}>
               <Layout>
                 <MyHotels />
               </Layout>
@@ -121,7 +133,7 @@ const App = () => {
         <Route
           path="/my-bookings"
           element={
-            <AccessControl requiredRoles={['customer', 'partner']}>
+            <AccessControl requiredRoles={["customer"]}>
               <Layout>
                 <MyBookings />
               </Layout>

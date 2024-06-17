@@ -9,6 +9,7 @@ import Modal from "../../components/modal";
 import { useState } from "react";
 import { CustomJwtPayload, login, loginSchema } from "../../components/Header";
 import { jwtDecode } from "jwt-decode";
+import Cookies from "js-cookie";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 type Props = {
@@ -42,8 +43,8 @@ const GuestInfoForm = ({ hotelId, pricePerNight }: Props) => {
   // const location = useLocation();
   const { showToast } = useAppContext();
 
-  const auth_token = localStorage.getItem("auth_token");
-  const isLoggedIn = auth_token !== null ? JSON.parse(auth_token) : null;
+  const auth_token = Cookies.get("authentication");
+  const isLoggedIn = auth_token ? JSON.parse(auth_token) : null;
   const [modal, setModal] = useState(initialModalState);
 
   const {
@@ -111,7 +112,7 @@ const GuestInfoForm = ({ hotelId, pricePerNight }: Props) => {
       if (response.ok) {
         setModal((prev) => ({ ...prev, state: false, loading: false }));
         showToast({ message: "Sign in Successful!", type: "SUCCESS" });
-        localStorage.setItem("auth_token", JSON.stringify(body.user));
+        Cookies.set("authentication", JSON.stringify(body.user), { expires: 1 });
       } else {
         showToast({ message: "Failed to Login!", type: "ERROR" });
       }
@@ -139,7 +140,7 @@ const GuestInfoForm = ({ hotelId, pricePerNight }: Props) => {
           const body = await response.json();
           setModal((prev) => ({ ...prev, state: false, loading: false }));
           showToast({ message: "Sign in Successful!", type: "SUCCESS" });
-          localStorage.setItem("auth_token", JSON.stringify(body.user));
+          Cookies.set("authentication", JSON.stringify(body.user), { expires: 1 });
           if (!response.ok) {
             throw new Error(body.message);
           }

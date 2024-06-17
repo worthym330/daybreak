@@ -41,6 +41,7 @@ router.post(
     const { email, googleToken, firstName, lastName, password, role, loginThrough } = req.body;
     try {
       let user = await User.findOne({ email });
+      console.log('Working');
       if (user) {
         return res.status(400).json({ message: "User already exists" });
       }

@@ -3,14 +3,15 @@ import * as apiClient from "../api-client";
 import BookingForm from "../forms/BookingForm/BookingForm";
 import { useNavigate, useParams } from "react-router-dom";
 import BookingDetailsSummary from "../components/BookingDetailsSummary";
+import Cookies from "js-cookie";
 
 const Booking = () => {
   const { hotelId } = useParams();
-  const cart = localStorage.getItem("cart");
+  const cart = Cookies.get("cart");
   const parsedCart = cart ? JSON.parse(cart) : [];
   const cartItems = parsedCart;
-  const auth_token = localStorage.getItem("auth_token");
-  const userLogined = auth_token ? JSON.parse(auth_token) : null;
+  const auth_token = Cookies.get("authentication") || "null";
+  const userLogined = JSON.parse(auth_token);
   const navigate = useNavigate();
 
   const { data: paymentIntentData } = useQuery(

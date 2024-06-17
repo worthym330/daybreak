@@ -1,3 +1,4 @@
+import Cookies from "js-cookie";
 import { useState, useEffect } from "react";
 
 const CartModal = ({ product, hotelId, onClose, date, setCart }: any) => {
@@ -6,18 +7,20 @@ const CartModal = ({ product, hotelId, onClose, date, setCart }: any) => {
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
-    const savedCart = JSON.parse(localStorage.getItem("cart") || "[]");
-    const savedProduct = savedCart.find(
-      (item: any) =>
-        item.product.title === product.title && item.hotelId === hotelId
-    );
-
-    if (savedProduct) {
-      setAdultCount(savedProduct.adultCount);
-      setChildCount(savedProduct.childCount);
-      setTotal(savedProduct.total);
+    const savedCart = Cookies.get("cart");
+    if (savedCart) {
+      const cart = JSON.parse(savedCart) as any[]; // Use 'as any[]' to handle array type
+      const savedProduct = cart.find(
+        (item) =>
+          item.product.title === product.title && item.hotelId === hotelId
+      );
+      if (savedProduct) {
+        setAdultCount(savedProduct.adultCount);
+        setChildCount(savedProduct.childCount);
+        setTotal(savedProduct.total);
+      }
     }
-  }, [product.title, hotelId]);
+  }, [product.title, hotelId]);  
 
   useEffect(() => {
     const adultTotal =
@@ -39,12 +42,17 @@ const CartModal = ({ product, hotelId, onClose, date, setCart }: any) => {
 
   const handleAddToCart = () => {
     if (adultCount > 0 || childCount > 0) {
-      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+      let cart: any[] = [];
+      const savedCart = Cookies.get("cart");
+      if (savedCart) {
+        cart = JSON.parse(savedCart) as any[]; // Ensure cart is initialized correctly
+      }
+  
       const existingProductIndex = cart.findIndex(
-        (item: any) =>
+        (item) =>
           item.product.title === product.title && item.hotelId === hotelId
       );
-
+  
       const cartItem = {
         product,
         hotelId,
@@ -53,17 +61,18 @@ const CartModal = ({ product, hotelId, onClose, date, setCart }: any) => {
         total,
         date,
       };
-
+  
       if (existingProductIndex !== -1) {
         cart[existingProductIndex] = cartItem;
       } else {
         cart.push(cartItem);
       }
+  
+      Cookies.set("cart", JSON.stringify(cart), { expires: 7 });
       setCart(cart);
-      localStorage.setItem("cart", JSON.stringify(cart));
       onClose();
     }
-  };
+  };  
 
   return (
     <div

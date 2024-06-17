@@ -6,6 +6,7 @@ import {
   UserType,
 } from "../../backend/src/shared/types";
 import { BookingFormData } from "./forms/BookingForm/BookingForm";
+import Cookies from "js-cookie";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 export const fetchCurrentUser = async (): Promise<UserType> => {
@@ -46,7 +47,7 @@ export const signIn = async (formData: SignInFormData) => {
   });
 
   const body = await response.json();
-  localStorage.setItem("auth_token", JSON.stringify(body.user));
+  Cookies.set("authentication", JSON.stringify(body.user), { expires: 1 });
   if (!response.ok) {
     throw new Error(body.message);
   }
@@ -225,7 +226,10 @@ export const createPaymentIntent = async (hotelId: string, cartItems: any) => {
   }
 };
 
-export const createRoomBooking = async (formData: BookingFormData, orderId: string) => {
+export const createRoomBooking = async (
+  formData: BookingFormData,
+  cart: any
+) => {
   const response = await fetch(
     `${API_BASE_URL}/api/hotels/${formData.hotelId}/bookings`,
     {
@@ -234,7 +238,7 @@ export const createRoomBooking = async (formData: BookingFormData, orderId: stri
         "Content-Type": "application/json",
       },
       credentials: "include",
-      body: JSON.stringify({ ...formData, orderId }), // Include orderId in the request body
+      body: JSON.stringify({ ...formData, cart }), // Include orderId in the request body
     }
   );
 
@@ -242,7 +246,6 @@ export const createRoomBooking = async (formData: BookingFormData, orderId: stri
     throw new Error("Error booking room");
   }
 };
-
 
 export const fetchMyBookings = async (): Promise<HotelType[]> => {
   const response = await fetch(`${API_BASE_URL}/api/my-bookings`, {

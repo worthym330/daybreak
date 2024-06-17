@@ -1,6 +1,7 @@
 import { useMutation } from "react-query";
 import * as apiClient from "../api-client";
 import { useAppContext } from "../contexts/AppContext";
+import Cookies from "js-cookie";
 
 const SignOutButton = (props:any) => {
   // const queryClient = useQueryClient();
@@ -10,7 +11,7 @@ const SignOutButton = (props:any) => {
   const mutation = useMutation(apiClient.signOut, {
     onSuccess: async () => {
       // await queryClient.invalidateQueries("validateToken");
-      localStorage.removeItem("auth_token")
+      Cookies.remove("authentication");
       showToast({ message: "Signed Out!", type: "SUCCESS" });
     },
     onError: (error: Error) => {
