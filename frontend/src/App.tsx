@@ -19,6 +19,11 @@ import { NotFound } from "./pages/NotFound";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import WaitList from "./pages/WaitList";
+import AboutUs from "./pages/AboutUs";
+import TermsAndConditions from "./pages/TermAndCondition";
+import PrivacyPolicy from "./pages/PrivacyandPolicy";
+import Support from "./pages/Support";
+import CookiePolicy from "./pages/CookiePolicy";
 
 const AccessControl = ({ children, requiredRoles }: any) => {
   const auth_token = Cookies.get("authentication") || "null";
@@ -114,6 +119,44 @@ const App = () => {
             <AuthRedirect>
               <SignIn />
             </AuthRedirect>
+          }
+        />
+        <Route
+          path="/terms-and-condition"
+          element={
+            <Layout>
+              <TermsAndConditions />
+            </Layout>
+          }
+        />
+         <Route
+          path="/privacy-and-policy"
+          element={
+            <Layout>
+              <PrivacyPolicy />
+            </Layout>
+          }
+        />
+        <Route
+          path="/support"
+          element={
+            <Layout>
+              <Support />
+            </Layout>
+          }
+        />
+        <Route
+          path="/cookie-policy"
+          element={
+            <Layout>
+              <CookiePolicy />
+            </Layout>
+          }
+        />
+        <Route
+          path="/about-us"
+          element={
+              <AboutUs />
           }
         />
         <Route path="/waitlist" element={<WaitList />} />

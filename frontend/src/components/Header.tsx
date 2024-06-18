@@ -639,24 +639,24 @@ const Header = () => {
                         <SignOutButton classNames="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-goldColor hover:text-white" />
                       </>
                     ) : ( */}
-                      <button
-                        className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-goldColor  hover:border-black hover:bg-btnColor hover:text-white"
-                        onClick={()=> navigate('/partner/sign-in')}
-                      >
-                        Hotel Login{" "}
-                        {/* {arrowDirection === "down" ? (
+                    <button
+                      className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-goldColor  hover:border-black hover:bg-btnColor hover:text-white"
+                      onClick={() => navigate("/partner/sign-in")}
+                    >
+                      Hotel Login{" "}
+                      {/* {arrowDirection === "down" ? (
                           <IoIosArrowDown className="ml-3 text-xl" />
                         ) : (
                           <IoIosArrowUp className="ml-3 text-xl" />
                         )} */}
-                      </button>
+                    </button>
                     {/* )} */}
                     <button
-                        className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-goldColor hover:border-black hover:bg-btnColor hover:text-white"
-                        onClick={()=> navigate('/waitlist')}
-                      >
-                        Join WaitList{" "}
-                      </button>
+                      className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-goldColor hover:border-black hover:bg-btnColor hover:text-white"
+                      onClick={() => navigate("/waitlist")}
+                    >
+                      Join WaitList{" "}
+                    </button>
 
                     <Link
                       className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-goldColor  hover:border-black hover:bg-goldColor hover:text-white"
@@ -723,7 +723,9 @@ const Header = () => {
                       className="py-3 text-fontSecondaryColor"
                       to="/about-us"
                     >
-                      About DayBreakPass
+                      <span onClick={() => setShowNav(!showNav)}>
+                        About DayBreakPass
+                      </span>
                     </Link>
                   </div>
                   <div className="flex gap-20 md:w-1/2 justify-center">
@@ -816,28 +818,28 @@ const Header = () => {
                         </button>
                       ) : (
                         <> */}
-                          <button
-                            className="bg-white text-black px-3 py-2 mb-4 w-full rounded-md border-2 border-black hover:bg-btnColor hover:text-white"
-                            onClick={() => {
-                              // setSignupModal((prev) => ({
-                              //   ...prev,
-                              //   state: true,
-                              // }));
-                              navigate('/waitlist')
-                            }}
-                          >
-                            Join Waitlist
-                          </button>
-                          <button
-                            className="bg-black text-white px-3 py-2 mb-4 w-full rounded-md border-2 border-black hover:bg-btnColor hover:text-white"
-                            onClick={() => {
-                              // setModal((prev) => ({ ...prev, state: true }));
-                              navigate('/partner/sign-in')
-                            }}
-                          >
-                            Hotel Login
-                          </button>
-                        {/* </>
+                      <button
+                        className="bg-white text-black px-3 py-2 mb-4 w-full rounded-md border-2 border-black hover:bg-btnColor hover:text-white"
+                        onClick={() => {
+                          // setSignupModal((prev) => ({
+                          //   ...prev,
+                          //   state: true,
+                          // }));
+                          navigate("/waitlist");
+                        }}
+                      >
+                        Join Waitlist
+                      </button>
+                      <button
+                        className="bg-black text-white px-3 py-2 mb-4 w-full rounded-md border-2 border-black hover:bg-btnColor hover:text-white"
+                        onClick={() => {
+                          // setModal((prev) => ({ ...prev, state: true }));
+                          navigate("/partner/sign-in");
+                        }}
+                      >
+                        Hotel Login
+                      </button>
+                      {/* </>
                       )} */}
                     </div>
                   </div>
@@ -856,7 +858,7 @@ const Header = () => {
                 </span>
                 <Link to="/">DayBreakPass</Link>
               </span>
-              <span className="flex space-x-2">
+              <span className="hidden md:flex space-x-2">
                 {/* {userLogined !== null ? (
                   <>
                     {userLogined?.role === "customer" ? (
@@ -877,24 +879,24 @@ const Header = () => {
                     <SignOutButton classNames="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-goldColor hover:text-white" />
                   </>
                 ) : ( */}
-                  <button
-                    className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-goldColor hover:border-white hover:bg-btnColor hover:text-white"
-                    onClick={()=>navigate('/partner/sign-in')}
-                  >
-                    Hotel Login{" "}
-                    {/* {arrowDirection === "down" ? (
+                <button
+                  className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-goldColor hover:border-white hover:bg-btnColor hover:text-white"
+                  onClick={() => navigate("/partner/sign-in")}
+                >
+                  Hotel Login{" "}
+                  {/* {arrowDirection === "down" ? (
                       <IoIosArrowDown className="ml-3 text-xl" />
                     ) : (
                       <IoIosArrowUp className="ml-3 text-xl" />
                     )} */}
-                  </button>
+                </button>
 
-                  <button
-                    className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-goldColor hover:border-white hover:bg-btnColor hover:text-white"
-                    onClick={()=>navigate('/waitlist')}
-                  >
-                    Join Waitlist
-                  </button>
+                <button
+                  className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-goldColor hover:border-white hover:bg-btnColor hover:text-white"
+                  onClick={() => navigate("/waitlist")}
+                >
+                  Join Waitlist
+                </button>
                 {/* )} */}
 
                 <Link
@@ -992,30 +994,30 @@ const Header = () => {
                     <SignOutButton classNames="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-darkGold hover:bg-goldColor hover:text-white hover:border-black" />
                   </>
                 ) : ( */}
-                  <button
-                    className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:border-btnColor hover:bg-btnColor hover:text-white"
-                    onClick={()=>navigate('/partner/sign-in')}
-                  >
-                    Hotel Login{" "}
-                    {/* {arrowDirection === "down" ? (
+                <button
+                  className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:border-btnColor hover:bg-btnColor hover:text-white"
+                  onClick={() => navigate("/partner/sign-in")}
+                >
+                  Hotel Login{" "}
+                  {/* {arrowDirection === "down" ? (
                       <IoIosArrowDown className="ml-3 text-xl" />
                     ) : (
                       <IoIosArrowUp className="ml-3 text-xl" />
                     )}*/}
-                  </button> 
+                </button>
                 {/* )} */}
 
                 <button
-                    className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:border-btnColor hover:bg-btnColor hover:text-white"
-                    onClick={()=>navigate('/waitlist')}
-                  >
-                    Join Waitlist{" "}
-                    {/* {arrowDirection === "down" ? (
+                  className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:border-btnColor hover:bg-btnColor hover:text-white"
+                  onClick={() => navigate("/waitlist")}
+                >
+                  Join Waitlist{" "}
+                  {/* {arrowDirection === "down" ? (
                       <IoIosArrowDown className="ml-3 text-xl" />
                     ) : (
                       <IoIosArrowUp className="ml-3 text-xl" />
                     )}*/}
-                  </button> 
+                </button>
 
                 <Link
                   className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-darkGold hover:bg-goldColor hover:text-white"
@@ -1079,7 +1081,9 @@ const Header = () => {
                   Unforgettable resorts and memories await
                 </span>
                 <Link className="py-3 text-fontSecondaryColor" to="/about-us">
-                  About DayBreakPass
+                  <span onClick={() => setShowNav(!showNav)}>
+                    About DayBreakPass
+                  </span>
                 </Link>
               </div>
               <div className="flex gap-20 md:w-1/2 justify-center">
@@ -1171,28 +1175,28 @@ const Header = () => {
                     </button>
                   ) : (
                     <> */}
-                      <button
-                        className="bg-white text-black px-3 py-2 mb-4 w-full rounded-md border-2 border-black hover:bg-btnColor hover:text-white"
-                        onClick={() => {
-                          // setSignupModal((prev) => ({
-                          //   ...prev,
-                          //   state: true,
-                          // }));
-                          navigate('/waitlist')
-                        }}
-                      >
-                        Join Waitlist
-                      </button>
-                      <button
-                        className="bg-black text-white px-3 py-2 mb-4 w-full rounded-md border-2 border-black hover:bg-btnColor hover:text-white"
-                        onClick={() => {
-                          // setModal((prev) => ({ ...prev, state: true }));
-                          navigate('/partner/sign-in')
-                        }}
-                      >
-                        Hotel Login
-                      </button>
-                    {/* </>
+                  <button
+                    className="bg-white text-black px-3 py-2 mb-4 w-full rounded-md border-2 border-black hover:bg-btnColor hover:text-white"
+                    onClick={() => {
+                      // setSignupModal((prev) => ({
+                      //   ...prev,
+                      //   state: true,
+                      // }));
+                      navigate("/waitlist");
+                    }}
+                  >
+                    Join Waitlist
+                  </button>
+                  <button
+                    className="bg-black text-white px-3 py-2 mb-4 w-full rounded-md border-2 border-black hover:bg-btnColor hover:text-white"
+                    onClick={() => {
+                      // setModal((prev) => ({ ...prev, state: true }));
+                      navigate("/partner/sign-in");
+                    }}
+                  >
+                    Hotel Login
+                  </button>
+                  {/* </>
                   )} */}
                 </div>
               </div>
@@ -1213,7 +1217,7 @@ const Header = () => {
               DayBreakPass
             </Link>
           </span>
-          <span className="flex space-x-2">
+          <span className="space-x-2 hidden md:flex">
             {/* {userLogined !== null ? (
               <>
                 {userLogined?.role === "customer" ? (
@@ -1234,24 +1238,24 @@ const Header = () => {
                 <SignOutButton classNames="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-darkGold hover:bg-goldColor hover:text-white" />
               </>
             ) : ( */}
-              <button
-                className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-goldColor hover:border-black hover:bg-btnColor hover:text-white"
-                onClick={() => navigate('/partner/sign-in')}
-              >
-                Hotel Login{" "}
-                {/* {arrowDirection === "down" ? (
+            <button
+              className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-goldColor hover:border-black hover:bg-btnColor hover:text-white"
+              onClick={() => navigate("/partner/sign-in")}
+            >
+              Hotel Login{" "}
+              {/* {arrowDirection === "down" ? (
                   <IoIosArrowDown className="ml-3 text-xl" />
                 ) : (
                   <IoIosArrowUp className="ml-3 text-xl" />
                 )} */}
-              </button>
+            </button>
             {/* )} */}
             <button
-                className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-goldColor hover:border-black hover:bg-btnColor hover:text-white"
-                onClick={() => navigate('/waitlist')}
-              >
-                Join Waitlist{" "}
-              </button>
+              className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-goldColor hover:border-black hover:bg-btnColor hover:text-white"
+              onClick={() => navigate("/waitlist")}
+            >
+              Join Waitlist{" "}
+            </button>
 
             <Link
               className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-goldColor hover:border-black hover:bg-goldColor hover:text-white"
