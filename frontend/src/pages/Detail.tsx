@@ -508,9 +508,10 @@ const Detail = () => {
                           <span>₹{subtotal.toFixed(2)}</span>
                         </div>
                         <Button
-                          onClick={() => navigate(`/hotel/${hotelId}/booking`)}
+                          onClick={() => navigate(`/waitlist`)}
+                          className='w-full'
                         >
-                          Book Now
+                          Join Waitlist
                         </Button>
                       </div>
                     </div>
