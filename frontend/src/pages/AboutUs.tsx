@@ -93,7 +93,7 @@ const About = () => {
                 their bottom line revenue.
               </span>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-20">
+            {/* <div className="grid grid-cols-2 md:grid-cols-4 gap-20">
               <div className="relative col-span-1 p-2">
                 <img
                   className="w-[10rem] rounded-md transition duration-300 ease-in-out filter grayscale hover:filter-none"
@@ -122,7 +122,7 @@ const About = () => {
                   alt="Taj Hotel"
                 />
               </div>
-            </div>
+            </div> */}
             <div className="flex flex-col justify-center items-center mt-10 text-center">
               <span>Want to Bring Daycation to Your Hotel? </span>
               <Link
