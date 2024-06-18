@@ -89,7 +89,6 @@ const WaitList = () => {
   };
 
   const handleClick = () => {
-    console.log(query1)
     setModal((prev) => ({
       ...prev,
       state: true,
@@ -102,10 +101,9 @@ const WaitList = () => {
 
   const renderModal = () => {
     const { state, data } = modal;
-    console.log(data)
     return (
       <Formik
-        initialValues={modal.data}
+        initialValues={data}
         validationSchema={validationSchema}
         onSubmit={async (
           values: WaitlistFormValues,
