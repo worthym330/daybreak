@@ -1,5 +1,5 @@
 import { useAppContext } from "../contexts/AppContext";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import {
@@ -14,6 +14,7 @@ import { Formik } from "formik";
 import Modal from "../components/modal";
 import * as Yup from "yup";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL || "";
 
 const initialModalState = {
   type: "add",
@@ -45,15 +46,19 @@ const validationSchema = Yup.object({
 });
 
 const WaitList = () => {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search)
+  const query1 = queryParams.get("uid");
   const { showToast } = useAppContext();
   const navigate = useNavigate();
   const [submited, setSubmitted] = useState(false);
   const [code, setCode] = useState("");
   const [number, setNumber] = useState(0);
   const [modal, setModal] = useState(initialModalState);
+  const [referralCode, setRefferalCode] = useState(query1)
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(`https://www.DayBreakPasspass.com?uid=${code}`);
+    navigator.clipboard.writeText(`${FRONTEND_URL}/waitlist?uid=${code}`);
     showToast({
       message: "Referral link copied to clipboard!",
       type: "SUCCESS",
@@ -61,7 +66,7 @@ const WaitList = () => {
   };
 
   const openSocialMedia = (platform: string) => {
-    navigator.clipboard.writeText(`https://www.DayBreakPasspass.com?uid=${code}`);
+    navigator.clipboard.writeText(`${FRONTEND_URL}/waitlist?uid=${code}`);
     switch (platform) {
       case "instagram":
         window.open(`https://instagram.com`, "_blank");
@@ -83,18 +88,31 @@ const WaitList = () => {
     }
   };
 
+  const handleClick = () => {
+    console.log(query1)
+    setModal((prev) => ({
+      ...prev,
+      state: true,
+      data: {
+        ...prev.data,
+        referralCode: query1 ?query1:"",
+      },
+    }));
+  };
+
   const renderModal = () => {
     const { state, data } = modal;
-
+    console.log(data)
     return (
       <Formik
-        initialValues={data}
+        initialValues={modal.data}
         validationSchema={validationSchema}
         onSubmit={async (
           values: WaitlistFormValues,
           { resetForm, setSubmitting }
         ) => {
           try {
+            values.referralCode = referralCode || ''
             const response = await fetch(`${API_BASE_URL}/api/waitlist`, {
               method: "POST",
               headers: {
@@ -113,7 +131,7 @@ const WaitList = () => {
                 message: "Form submitted successfully",
                 type: "SUCCESS",
               });
-              console.log(responseBody)
+              console.log(responseBody);
               setModal(initialModalState);
               setNumber(responseBody.referredNumber);
               setCode(responseBody.referralCode);
@@ -187,15 +205,17 @@ const WaitList = () => {
 
               <div className="text-left">
                 <label className="text-gray-700 text-sm font-bold flex-1">
-                  Referral Code
+                  Referral Code <span className="text-sx text-gray-500">(Please enter your referral code if you have one)</span>
                 </label>
                 <input
                   type="text"
                   name="referralCode"
-                  value={values.referralCode}
+                  value={referralCode || ''}
                   placeholder="Referral Code"
                   className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
-                  onChange={handleChange}
+                  onChange={(e)=>{
+                    setRefferalCode(e.target.value)
+                  }}
                   onBlur={handleBlur}
                 />
                 {touched.referralCode && (
@@ -205,13 +225,13 @@ const WaitList = () => {
 
               <div className="text-left">
                 <label className="text-gray-700 text-sm font-bold flex-1">
-                  city
+                  City
                 </label>
                 <input
                   type="text"
                   name="city"
                   value={values.city}
-                  placeholder="city"
+                  placeholder="City"
                   className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
                   onChange={handleChange}
                   onBlur={handleBlur}
@@ -262,7 +282,7 @@ const WaitList = () => {
             <div className="flex items-center space-x-4 mb-4 w-full justify-center">
               <input
                 type="text"
-                value={`https://www.DayBreakPasspass.com?uid=${code}`}
+                value={`${FRONTEND_URL}/waitlist?uid=${code}`}
                 readOnly
                 className="bg-white text-black rounded-lg p-2 w-80"
               />
@@ -297,26 +317,26 @@ const WaitList = () => {
             </div>
             <p className="text-lg">Your Place in Line:</p>
             <p className="text-4xl md:text-6xl duration-500 animate-fade-right animate-twice animate-duration-500 animate-ease-in">
-              {531+number}
+              {531 + number}
             </p>
           </div>
         ) : (
           <div className="flex flex-col justify-center items-center min-h-[80vh] gap-4 mt-4">
-            <h2 className="mt-2 text-xl font-extrabold text-white text-xl md:text-3xl">Launching Soon</h2>
+            <h2 className="mt-2 text-xl font-extrabold text-white text-xl md:text-3xl">
+              Launching Soon
+            </h2>
             <p className="mt-4 text-4xl lg:text-6xl duration-500 animate-fade-right animate-twice animate-duration-500 animate-ease-in font-bold font-HKFONT">
               Join the waitlist!
             </p>
             <p className="mt-4 text-2xl text-center">
               Let’s tick your bucketlist
-              </p><p className="mt-2 text-lg text-center">Get access to luxury hotels, resorts and spa to have your
+            </p>
+            <p className="mt-2 text-lg text-center">
+              Get access to luxury hotels, resorts and spa to have your
               daycation with dirty martini and pool parties etc. Stay tuned!
             </p>
             <div className="mt-8 space-y-4 w-full max-w-md flex justify-center items-center">
-              <Button
-                type="Button"
-                className=""
-                onClick={() => setModal((prev) => ({ ...prev, state: true }))}
-              >
+              <Button type="Button" className="" onClick={() => handleClick()}>
                 Join Waitlist
               </Button>
             </div>
