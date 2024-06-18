@@ -1,7 +1,7 @@
 const TermsAndConditions = () => {
   return (
     <div className="">
-      <div className="container mx-auto bg-transparent">
+      <div className="">
         <h1 className="text-4xl font-bold text-center my-4">
           Terms and Conditions
         </h1>
@@ -14,7 +14,7 @@ const TermsAndConditions = () => {
         </p>
         <div className="space-y-4 text-justify">
           <section>
-            <h2 className="text-xl font-semibold text-goldColor">Website Usage</h2>
+            <h2 className="text-xl font-semibold">Website Usage</h2>
             <ol className="list-[lower-alpha] list-outside ml-5">
               <li>
                 The DayBreakPass website is intended for personal and commercial
@@ -43,7 +43,7 @@ const TermsAndConditions = () => {
             </ol>
           </section>
           <section>
-            <h2 className="text-xl font-semibold text-goldColor">Booking and Payment</h2>
+            <h2 className="text-xl font-semibold">Booking and Payment</h2>
             <ol className="list-[lower-alpha] list-outside ml-5">
               <li>
                 All bookings made through DayBreakPass are subject to
@@ -65,7 +65,7 @@ const TermsAndConditions = () => {
             </ol>
           </section>
           <section>
-            <h2 className="text-xl font-semibold text-goldColor">Cancellation and Refund</h2>
+            <h2 className="text-xl font-semibold">Cancellation and Refund</h2>
             <ol className="list-[lower-alpha] list-outside ml-5">
               <li>
                 Cancellation policies vary based on the type of booking,
@@ -83,7 +83,7 @@ const TermsAndConditions = () => {
             </ol>
           </section>
           <section>
-            <h2 className="text-xl font-semibold text-goldColor">User Content</h2>
+            <h2 className="text-xl font-semibold">User Content</h2>
             <ol className="list-[lower-alpha] list-outside ml-5">
               <li>
                 Users may have the option to post reviews, comments, photos, or
@@ -100,7 +100,7 @@ const TermsAndConditions = () => {
             </ol>
           </section>
           <section>
-            <h2 className="text-xl font-semibold text-goldColor">Intellectual Property</h2>
+            <h2 className="text-xl font-semibold">Intellectual Property</h2>
             <ol className="list-[lower-alpha] list-outside ml-5">
               <li>
                 All content on the DayBreakPass website, including text,
@@ -116,7 +116,7 @@ const TermsAndConditions = () => {
             </ol>
           </section>
           <section>
-            <h2 className="text-xl font-semibold text-goldColor">Liability Disclaimer</h2>
+            <h2 className="text-xl font-semibold">Liability Disclaimer</h2>
             <ol className="list-[lower-alpha] list-outside ml-5">
               <li>
                 DayBreakPass strives to provide accurate and up-to-date
@@ -132,7 +132,7 @@ const TermsAndConditions = () => {
             </ol>
           </section>
           <section>
-            <h2 className="text-xl font-semibold text-goldColor">
+            <h2 className="text-xl font-semibold">
               Governing Law and Jurisdiction
             </h2>
             <ol className="list-[lower-alpha] list-outside ml-5">
@@ -145,7 +145,7 @@ const TermsAndConditions = () => {
             </ol>
           </section>
           <section>
-            <h2 className="text-xl font-semibold text-goldColor">Modification of Terms</h2>
+            <h2 className="text-xl font-semibold">Modification of Terms</h2>
             <ol className="list-[lower-alpha] list-outside ml-5">
               <li>
                 DayBreakPass reserves the right to modify or update these terms

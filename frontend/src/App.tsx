@@ -24,6 +24,7 @@ import TermsAndConditions from "./pages/TermAndCondition";
 import PrivacyPolicy from "./pages/PrivacyandPolicy";
 import Support from "./pages/Support";
 import CookiePolicy from "./pages/CookiePolicy";
+import Login from "./pages/LoginandSignup";
 
 const AccessControl = ({ children, requiredRoles }: any) => {
   const auth_token = Cookies.get("authentication") || "null";
@@ -129,7 +130,7 @@ const App = () => {
             </Layout>
           }
         />
-         <Route
+        <Route
           path="/privacy-and-policy"
           element={
             <Layout>
@@ -153,10 +154,25 @@ const App = () => {
             </Layout>
           }
         />
+        <Route path="/about-us" element={<AboutUs />} />
         <Route
-          path="/about-us"
+          path="/register"
           element={
-              <AboutUs />
+            <AuthRedirect>
+              <Layout>
+                <Login Login={false} />
+              </Layout>
+            </AuthRedirect>
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <AuthRedirect>
+              <Layout>
+                <Login Login={true} />
+              </Layout>
+            </AuthRedirect>
           }
         />
         <Route path="/waitlist" element={<WaitList />} />

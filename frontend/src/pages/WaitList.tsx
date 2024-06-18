@@ -248,7 +248,7 @@ const WaitList = () => {
             className="text-2xl font-bold cursor-pointer"
             onClick={() => navigate("/")}
           >
-            DayBreakPassPass
+            DayBreakPass
           </span>
         </div>
         {submited ? (
