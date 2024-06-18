@@ -111,3 +111,25 @@ export const sendToCustomer = async (leadData: any) => {
     console.error("Error sending lead notification email:", error);
   }
 };
+
+export const sendCredential = async (body: any) => {
+  try {
+    const { email, firstName, password } = body;
+    const mailOptions = {
+      to: email,
+      subject: `Welcome to the DayBreakPass, get your credentials`,
+      html: ` 
+     <h1>Welcome to DayBreakPass, ${firstName}!</h1>
+        <p>We are excited to have you on board. Here are your account details:</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Password:</strong> ${password}</p>
+        <p>Please change your password after logging in for the first time for security purposes.</p>
+        <p>Best regards,</p>
+        <p>DayBreakPass</p>
+`,
+    };
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error("Error sending lead notification email:", error);
+  }
+};
