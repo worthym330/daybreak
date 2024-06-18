@@ -218,7 +218,7 @@ const Register = () => {
                     </Button>
                   </span>
                   <span className="flex gap-2 text-sm text-center justify-end">
-                    <span>Your hotel is already using DayBreak? </span>
+                    <span>Your hotel is already using DayBreakPass? </span>
                     <Link
                       className="font-bold text-goldColor underline"
                       to="/partner/sign-in"

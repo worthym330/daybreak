@@ -132,7 +132,7 @@ router.put(
 // async function uploadImages(imageFiles: Express.Multer.File[]) {
 //   const uploadPromises = imageFiles.map(async (image) => {
 //     const params = {
-//       Bucket:'daybreakimages',
+//       Bucket:'DayBreakPassimages',
 //       Key: `images/${Date.now()}_${image.originalname}`,
 //       Body: image.buffer,
 //       ContentType: image.mimetype,

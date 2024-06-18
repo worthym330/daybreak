@@ -7,14 +7,14 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row justify-center items-center gap-10 md:gap-6 w-full">
           <div className="flex flex-col items-center md:w-1/3 text-center">
             <span className="text-3xl text-white font-bold tracking-tight mb-4">
-              DayBreak
+              DayBreakPass
             </span>
             <div className="flex flex-col items-center">
               <span className="text-gray-400 mb-2">Connect with us</span>
               <div className="flex gap-4 cursor-pointer">
-                <FaFacebook className="w-8 h-8" fill="white" />
-                <FaInstagram className="w-8 h-8" fill="white" />
-                <FaLinkedinIn className="w-8 h-8" fill="white" />
+                <FaFacebook className="w-8 h-8" fill="white" onClick={()=>window.open(`https://facebook.com`, "_blank")}/>
+                <FaInstagram className="w-8 h-8" fill="white" onClick={()=>window.open(`https://www.instagram.com/daybreakpass/`, "_blank")}/>
+                <FaLinkedinIn className="w-8 h-8" fill="white" onClick={()=>window.open(`https://www.linkedin.com/`, "_blank")}/>
               </div>
             </div>
           </div>
@@ -41,7 +41,7 @@ const Footer = () => {
         </div>
         <hr className="border-gray-500 my-3 w-full" />
         <div className="flex justify-center items-center pb-3">
-          <span className="text-white">2024 © Daybreak</span>
+          <span className="text-white">2024 © DayBreakPass</span>
         </div>
       </div>
     </div>

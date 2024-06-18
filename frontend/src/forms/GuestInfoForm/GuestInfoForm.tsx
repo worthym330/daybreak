@@ -166,7 +166,7 @@ const GuestInfoForm = ({ hotelId, pricePerNight }: Props) => {
             <form onSubmit={handleSubmit} noValidate>
               <h1 className="text-center text-3xl font-light text-gray-800">
                 Welcome to{" "}
-                <span className="text-gray-800 font-bold">DayBreak</span>
+                <span className="text-gray-800 font-bold">DayBreakPass</span>
               </h1>
               <div className="text-left">
                 <label className="text-gray-700 text-sm font-bold flex-1">
