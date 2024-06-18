@@ -63,7 +63,7 @@ const products = [
     feeAdult: "9",
     priceChild: "60",
     feeChild: "5",
-    priceInfant: "FREE",
+    priceInfant: "",
     description:
       "Free admission for children under 5. $50 food and beverage minimum at Kona Pool Bar or Orchid Marketplace required for complimentary self-parking. No coolers or outside food and beverage allowed.",
   },
@@ -340,7 +340,7 @@ const Detail = () => {
       {/* Image Slider Ends */}
 
       {/* Hotel Details Start */}
-      <div className="w-full lg:container px-8 pt-10 lg:mx-auto space-y-2">
+      <div className="w-full lg:container px-4 pt-10 lg:mx-auto space-y-2">
         <div className="flex lg:flex-row flex-col-reverse gap-10 space-y-2 justify-between">
           <div className="flex flex-col gap-2 w-full lg:w-2/3">
             <div className="flex justify-between">
