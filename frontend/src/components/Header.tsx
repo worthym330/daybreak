@@ -290,7 +290,7 @@ const Header = () => {
             <form onSubmit={handleSubmit} noValidate>
               <h1 className="text-center text-2xl font-light text-gray-800 mb-5">
                 Welcome to{" "}
-                <span className="text-goldColor font-bold">DayBreak</span>
+                <span className="text-goldColor font-bold">DayBreakPass</span>
               </h1>
 
               <div className="text-left">
@@ -472,7 +472,7 @@ const Header = () => {
             <form onSubmit={handleSubmit} noValidate>
               <h1 className="text-center text-2xl font-light text-gray-800 mb-3">
                 Create{" "}
-                <span className="text-goldColor font-bold">DayBreak</span>{" "}
+                <span className="text-goldColor font-bold">DayBreakPass</span>{" "}
                 Account
               </h1>
 
@@ -640,7 +640,7 @@ const Header = () => {
                         onClick={() => setShowNav(!showNav)}
                       />
                     </span>
-                    <Link to="/">DayBreak</Link>
+                    <Link to="/">DayBreakPass</Link>
                   </span>
                   <span className="flex space-x-2">
                     {userLogined !== null ? (
@@ -741,7 +741,7 @@ const Header = () => {
                       className="py-3 text-fontSecondaryColor"
                       to="/about-us"
                     >
-                      About DayBreak
+                      About DayBreakPass
                     </Link>
                   </div>
                   <div className="flex gap-20 md:w-1/2 justify-center">
@@ -870,7 +870,7 @@ const Header = () => {
                     onClick={() => setShowNav(!showNav)}
                   />
                 </span>
-                <Link to="/">DayBreak</Link>
+                <Link to="/">DayBreakPass</Link>
               </span>
               <span className="flex space-x-2">
                 {userLogined !== null ? (
@@ -978,7 +978,7 @@ const Header = () => {
                     onClick={() => setShowNav(!showNav)}
                   />
                 </span>
-                <Link to="/">DayBreak</Link>
+                <Link to="/">DayBreakPass</Link>
               </span>
               <span className="flex space-x-2">
                 {userLogined !== null ? (
@@ -1076,7 +1076,7 @@ const Header = () => {
                   Unforgettable resorts and memories await
                 </span>
                 <Link className="py-3 text-fontSecondaryColor" to="/about-us">
-                  About DayBreak
+                  About DayBreakPass
                 </Link>
               </div>
               <div className="flex gap-20 md:w-1/2 justify-center">
@@ -1205,7 +1205,7 @@ const Header = () => {
               />
             </span>
             <Link to="/" className="">
-              DayBreak
+              DayBreakPass
             </Link>
           </span>
           <span className="flex space-x-2">
