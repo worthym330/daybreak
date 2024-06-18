@@ -660,7 +660,7 @@ const Header = () => {
                             My Hotels
                           </Link>
                         )}
-                        <SignOutButton classNames="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-goldColor hover:text-white hidden lg:block" />
+                        <SignOutButton classNames="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-goldColor hover:text-white hidden md:block" />
                       </>
                     ) : (
                       <button
@@ -890,7 +890,7 @@ const Header = () => {
                         My Hotels
                       </Link>
                     )}
-                    <SignOutButton classNames="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-goldColor hover:text-white hidden lg:block" />
+                    <SignOutButton classNames="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-goldColor hover:text-white hidden md:block" />
                   </>
                 ) : (
                   <button
@@ -998,7 +998,7 @@ const Header = () => {
                         My Hotels
                       </Link>
                     )}
-                    <SignOutButton classNames="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-darkGold hover:bg-goldColor hover:text-white hover:border-black hidden lg:block" />
+                    <SignOutButton classNames="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-darkGold hover:bg-goldColor hover:text-white hover:border-black hidden md:block" />
                   </>
                 ) : (
                   <button
@@ -1226,7 +1226,7 @@ const Header = () => {
                     My Hotels
                   </Link>
                 )}
-                <SignOutButton classNames="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-darkGold hover:bg-goldColor hover:text-white hidden lg:block" />
+                <SignOutButton classNames="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-darkGold hover:bg-goldColor hover:text-white hidden md:block" />
               </>
             ) : (
               <button
