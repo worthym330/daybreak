@@ -47,7 +47,7 @@ const validationSchema = Yup.object({
 
 const WaitList = () => {
   const location = useLocation();
-  const queryParams = new URLSearchParams(location.search)
+  const queryParams = new URLSearchParams(location.search);
   const query1 = queryParams.get("uid");
   const { showToast } = useAppContext();
   const navigate = useNavigate();
@@ -55,7 +55,7 @@ const WaitList = () => {
   const [code, setCode] = useState("");
   const [number, setNumber] = useState(0);
   const [modal, setModal] = useState(initialModalState);
-  const [referralCode, setRefferalCode] = useState(query1)
+  const [referralCode, setRefferalCode] = useState(query1);
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(`${FRONTEND_URL}/waitlist?uid=${code}`);
@@ -88,17 +88,6 @@ const WaitList = () => {
     }
   };
 
-  const handleClick = () => {
-    setModal((prev) => ({
-      ...prev,
-      state: true,
-      data: {
-        ...prev.data,
-        referralCode: query1 ?query1:"",
-      },
-    }));
-  };
-
   const renderModal = () => {
     const { state, data } = modal;
     return (
@@ -110,7 +99,7 @@ const WaitList = () => {
           { resetForm, setSubmitting }
         ) => {
           try {
-            values.referralCode = referralCode || ''
+            values.referralCode = referralCode || "";
             const response = await fetch(`${API_BASE_URL}/api/waitlist`, {
               method: "POST",
               headers: {
@@ -203,16 +192,19 @@ const WaitList = () => {
 
               <div className="text-left">
                 <label className="text-gray-700 text-sm font-bold flex-1">
-                  Referral Code <span className="text-sx text-gray-500">(Please enter your referral code if you have one)</span>
+                  Referral Code{" "}
+                  <span className="text-sx text-gray-500">
+                    (Please enter your referral code if you have one)
+                  </span>
                 </label>
                 <input
                   type="text"
                   name="referralCode"
-                  value={referralCode || ''}
+                  value={referralCode || ""}
                   placeholder="Referral Code"
                   className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
-                  onChange={(e)=>{
-                    setRefferalCode(e.target.value)
+                  onChange={(e) => {
+                    setRefferalCode(e.target.value);
                   }}
                   onBlur={handleBlur}
                 />
@@ -334,7 +326,7 @@ const WaitList = () => {
               daycation with dirty martini and pool parties etc. Stay tuned!
             </p>
             <div className="mt-8 space-y-4 w-full max-w-md flex justify-center items-center">
-              <Button type="Button" className="" onClick={() => handleClick()}>
+              <Button type="Button" className="" onClick={() => setModal((prev) => ({...prev,state: true}))}>
                 Join Waitlist
               </Button>
             </div>
