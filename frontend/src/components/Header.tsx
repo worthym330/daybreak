@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAppContext } from "../contexts/AppContext";
-// import SignOutButton from "./SignOutButton";
+import SignOutButton from "./SignOutButton";
 import videoBg from "../assets/VideoBg.mp4";
-// import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
+import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { IoCartOutline } from "react-icons/io5";
 import { Formik } from "formik";
 import Modal from "./modal";
@@ -11,12 +11,11 @@ import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import * as Yup from "yup";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 import { jwtDecode, JwtPayload } from "jwt-decode";
-import { useQueryClient } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { HiXMark } from "react-icons/hi2";
-// import * as apiClient from "../api-client";
+import * as apiClient from "../api-client";
 import Cookies from "js-cookie";
-import Button from "./Button";
 
 const initialModalState = {
   type: "add",
@@ -101,13 +100,13 @@ function classNames(...classes: any[]): string {
 
 const Header = () => {
   const { showToast } = useAppContext();
-  // const [showDropdown, setShowDropdown] = useState(false);
-  // const [arrowDirection, setArrowDirection] = useState("down");
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [arrowDirection, setArrowDirection] = useState("down");
   const [modal, setModal] = useState(initialModalState);
   const [signupModal, setSignupModal] = useState(initialSignupModalState);
 
-  // const auth_token = Cookies.get("authentication");
-  // const userLogined = auth_token ? JSON.parse(auth_token) : null;
+  const auth_token = Cookies.get("authentication");
+  const userLogined = auth_token ? JSON.parse(auth_token) : null;
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const location = useLocation();
@@ -131,10 +130,10 @@ const Header = () => {
     };
   }, []);
 
-  // const handleLoginClick = () => {
-  //   setShowDropdown(!showDropdown);
-  //   setArrowDirection(showDropdown ? "down" : "up");
-  // };
+  const handleLoginClick = () => {
+    setShowDropdown(!showDropdown);
+    setArrowDirection(showDropdown ? "down" : "up");
+  };
 
   const responseLoginGoogle = async (response: any) => {
     const token = response.credential;
@@ -157,7 +156,7 @@ const Header = () => {
       if (response.ok) {
         setModal((prev) => ({ ...prev, state: false, loading: false }));
         showToast({ message: "Sign in Successful!", type: "SUCCESS" });
-        // setShowDropdown(false);
+        setShowDropdown(false);
         Cookies.set("authentication", JSON.stringify(body.user), {
           expires: 1,
         });
@@ -195,7 +194,7 @@ const Header = () => {
       if (response.ok) {
         setSignupModal(initialSignupModalState);
         showToast({ message: "Registered Successful!", type: "SUCCESS" });
-        // setShowDropdown(false);
+        setShowDropdown(false);
         Cookies.set("authentication", JSON.stringify(body.user), {
           expires: 1,
         });
@@ -217,19 +216,19 @@ const Header = () => {
     setModal((prev) => ({ ...prev, state: true }));
   }
 
-  // const mutation = useMutation(apiClient.signOut, {
-  //   onSuccess: async () => {
-  //     Cookies.remove("authentication");
-  //     showToast({ message: "Signed Out!", type: "SUCCESS" });
-  //   },
-  //   onError: (error: Error) => {
-  //     showToast({ message: error.message, type: "ERROR" });
-  //   },
-  // });
+  const mutation = useMutation(apiClient.signOut, {
+    onSuccess: async () => {
+      Cookies.remove("authentication");
+      showToast({ message: "Signed Out!", type: "SUCCESS" });
+    },
+    onError: (error: Error) => {
+      showToast({ message: error.message, type: "ERROR" });
+    },
+  });
 
-  // const handleClick = () => {
-  //   mutation.mutate();
-  // };
+  const handleClick = () => {
+    mutation.mutate();
+  };
 
   const renderLoginModal = () => {
     const { state, data } = modal;
@@ -258,7 +257,7 @@ const Header = () => {
             }
 
             showToast({ message: "Sign in Successful!", type: "SUCCESS" });
-            // setShowDropdown(false);
+            setShowDropdown(false);
             Cookies.set("authentication", JSON.stringify(body.user), {
               expires: 1,
             });
@@ -291,7 +290,7 @@ const Header = () => {
             <form onSubmit={handleSubmit} noValidate>
               <h1 className="text-center text-2xl font-light text-gray-800 mb-5">
                 Welcome to{" "}
-                <span className="text-goldColor font-bold">DayBreakPass</span>
+                <span className="text-goldColor font-bold">DayBreak</span>
               </h1>
 
               <div className="text-left">
@@ -334,14 +333,39 @@ const Header = () => {
 
               <div className="flex flex-col justify-center gap-5">
                 <span className="flex items-center justify-between mt-5">
-                  <Button
+                  <button
                     type="submit"
                     className="bg-black mx-auto w-full text-white px-4 py-3 rounded-xl font-bold hover:bg-btnColor"
                     disabled={isSubmitting}
-                    loading={isSubmitting}
                   >
-                    {isSubmitting ? "Logging in..." : "Login"}
-                  </Button>
+                    {isSubmitting ? (
+                      <>
+                        <svg
+                          className="animate-spin h-5 w-5 text-white mr-3"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291l2.12-2.122A5 5 0 016 12H2c0 1.795.703 3.432 1.757 4.686L6 17.291z"
+                          ></path>
+                        </svg>
+                        <span>Logging in...</span>
+                      </>
+                    ) : (
+                      "Login"
+                    )}
+                  </button>
                 </span>
                 <span className="text-center text-gray-800">
                   Don't have an account yet?{" "}
@@ -448,7 +472,7 @@ const Header = () => {
             <form onSubmit={handleSubmit} noValidate>
               <h1 className="text-center text-2xl font-light text-gray-800 mb-3">
                 Create{" "}
-                <span className="text-goldColor font-bold">DayBreakPass</span>{" "}
+                <span className="text-goldColor font-bold">DayBreak</span>{" "}
                 Account
               </h1>
 
@@ -546,13 +570,13 @@ const Header = () => {
 
               <div className="flex flex-col justify-center gap-5 mt-5">
                 <span className="flex items-center justify-between">
-                  <Button
+                  <button
                     type="submit"
                     className="bg-black mx-auto w-full text-white px-4 py-3 rounded-xl font-bold hover:bg-btnColor"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? "Registering..." : "Register"}
-                  </Button>
+                  </button>
                 </span>
                 <span className="text-center text-gray-800">
                   Already have an account?
@@ -616,10 +640,10 @@ const Header = () => {
                         onClick={() => setShowNav(!showNav)}
                       />
                     </span>
-                    <Link to="/">DayBreakPass</Link>
+                    <Link to="/">DayBreak</Link>
                   </span>
                   <span className="flex space-x-2">
-                    {/* {userLogined !== null ? (
+                    {userLogined !== null ? (
                       <>
                         {userLogined?.role === "customer" ? (
                           <Link
@@ -638,28 +662,22 @@ const Header = () => {
                         )}
                         <SignOutButton classNames="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-goldColor hover:text-white" />
                       </>
-                    ) : ( */}
-                    <button
-                      className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-goldColor  hover:border-black hover:bg-btnColor hover:text-white"
-                      onClick={() => navigate("/partner/sign-in")}
-                    >
-                      Hotel Login{" "}
-                      {/* {arrowDirection === "down" ? (
+                    ) : (
+                      <button
+                        className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:border-btnColor hover:bg-btnColor hover:text-white"
+                        onClick={handleLoginClick}
+                      >
+                        Login{" "}
+                        {arrowDirection === "down" ? (
                           <IoIosArrowDown className="ml-3 text-xl" />
                         ) : (
                           <IoIosArrowUp className="ml-3 text-xl" />
-                        )} */}
-                    </button>
-                    {/* )} */}
-                    <button
-                      className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-goldColor hover:border-black hover:bg-btnColor hover:text-white"
-                      onClick={() => navigate("/waitlist")}
-                    >
-                      Join WaitList{" "}
-                    </button>
+                        )}
+                      </button>
+                    )}
 
                     <Link
-                      className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-goldColor  hover:border-black hover:bg-goldColor hover:text-white"
+                      className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-goldColor hover:text-white"
                       to="/"
                     >
                       <IoCartOutline className="text-2xl" />
@@ -667,7 +685,7 @@ const Header = () => {
                   </span>
 
                   {/* Dropdown for Login button */}
-                  {/* {showDropdown && (
+                  {showDropdown && (
                     <div className="absolute bg-gray-100 text-rp-primary-black right-4 top-20 -mt-1 rounded-xl w-56 md:w-72 z-300 flex flex-col items-start shadow-login-card md:top-20 shadow-md">
                       <button
                         type="button"
@@ -709,7 +727,7 @@ const Header = () => {
                         List My Hotel
                       </button>
                     </div>
-                  )} */}
+                  )}
                   {/* Dropdown End */}
                 </div>
 
@@ -723,9 +741,7 @@ const Header = () => {
                       className="py-3 text-fontSecondaryColor"
                       to="/about-us"
                     >
-                      <span onClick={() => setShowNav(!showNav)}>
-                        About DayBreakPass
-                      </span>
+                      About DayBreak
                     </Link>
                   </div>
                   <div className="flex gap-20 md:w-1/2 justify-center">
@@ -809,7 +825,7 @@ const Header = () => {
                     </div>
 
                     <div>
-                      {/* {userLogined !== null ? (
+                      {userLogined !== null ? (
                         <button
                           className="bg-red-500 text-white px-3 py-2 mb-4 w-full rounded-md"
                           onClick={handleClick}
@@ -817,30 +833,28 @@ const Header = () => {
                           Log out
                         </button>
                       ) : (
-                        <> */}
-                      <button
-                        className="bg-white text-black px-3 py-2 mb-4 w-full rounded-md border-2 border-black hover:bg-btnColor hover:text-white"
-                        onClick={() => {
-                          // setSignupModal((prev) => ({
-                          //   ...prev,
-                          //   state: true,
-                          // }));
-                          navigate("/waitlist");
-                        }}
-                      >
-                        Join Waitlist
-                      </button>
-                      <button
-                        className="bg-black text-white px-3 py-2 mb-4 w-full rounded-md border-2 border-black hover:bg-btnColor hover:text-white"
-                        onClick={() => {
-                          // setModal((prev) => ({ ...prev, state: true }));
-                          navigate("/partner/sign-in");
-                        }}
-                      >
-                        Hotel Login
-                      </button>
-                      {/* </>
-                      )} */}
+                        <>
+                          <button
+                            className="bg-white text-black px-3 py-2 mb-4 w-full rounded-md border-2 border-black hover:bg-btnColor hover:text-white"
+                            onClick={() => {
+                              setSignupModal((prev) => ({
+                                ...prev,
+                                state: true,
+                              }));
+                            }}
+                          >
+                            Sign Up
+                          </button>
+                          <button
+                            className="bg-black text-white px-3 py-2 mb-4 w-full rounded-md border-2 border-black hover:bg-btnColor hover:text-white"
+                            onClick={() => {
+                              setModal((prev) => ({ ...prev, state: true }));
+                            }}
+                          >
+                            Login
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -856,10 +870,10 @@ const Header = () => {
                     onClick={() => setShowNav(!showNav)}
                   />
                 </span>
-                <Link to="/">DayBreakPass</Link>
+                <Link to="/">DayBreak</Link>
               </span>
-              <span className="hidden md:flex space-x-2">
-                {/* {userLogined !== null ? (
+              <span className="flex space-x-2">
+                {userLogined !== null ? (
                   <>
                     {userLogined?.role === "customer" ? (
                       <Link
@@ -878,29 +892,22 @@ const Header = () => {
                     )}
                     <SignOutButton classNames="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-goldColor hover:text-white" />
                   </>
-                ) : ( */}
-                <button
-                  className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-goldColor hover:border-white hover:bg-btnColor hover:text-white"
-                  onClick={() => navigate("/partner/sign-in")}
-                >
-                  Hotel Login{" "}
-                  {/* {arrowDirection === "down" ? (
+                ) : (
+                  <button
+                    className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:border-btnColor hover:bg-btnColor hover:text-white"
+                    onClick={handleLoginClick}
+                  >
+                    Login{" "}
+                    {arrowDirection === "down" ? (
                       <IoIosArrowDown className="ml-3 text-xl" />
                     ) : (
                       <IoIosArrowUp className="ml-3 text-xl" />
-                    )} */}
-                </button>
-
-                <button
-                  className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-goldColor hover:border-white hover:bg-btnColor hover:text-white"
-                  onClick={() => navigate("/waitlist")}
-                >
-                  Join Waitlist
-                </button>
-                {/* )} */}
+                    )}
+                  </button>
+                )}
 
                 <Link
-                  className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-goldColor hover:border-white hover:bg-goldColor hover:text-white"
+                  className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-goldColor hover:text-white"
                   to="/"
                 >
                   <IoCartOutline className="text-2xl" />
@@ -908,7 +915,7 @@ const Header = () => {
               </span>
 
               {/* Dropdown for Login button */}
-              {/* {showDropdown && (
+              {showDropdown && (
                 <div className="absolute bg-white text-rp-primary-black right-4 md:right-16 top-20 -mt-1 rounded-xl w-56 md:w-72 z-300 flex flex-col items-start shadow-login-card md:top-24">
                   <button
                     type="button"
@@ -950,7 +957,7 @@ const Header = () => {
                     List My Hotel
                   </button>
                 </div>
-              )} */}
+              )}
               {/* Dropdown End */}
             </div>
           )}
@@ -971,10 +978,10 @@ const Header = () => {
                     onClick={() => setShowNav(!showNav)}
                   />
                 </span>
-                <Link to="/">DayBreakPass</Link>
+                <Link to="/">DayBreak</Link>
               </span>
               <span className="flex space-x-2">
-                {/* {userLogined !== null ? (
+                {userLogined !== null ? (
                   <>
                     {userLogined?.role === "customer" ? (
                       <Link
@@ -993,31 +1000,19 @@ const Header = () => {
                     )}
                     <SignOutButton classNames="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-darkGold hover:bg-goldColor hover:text-white hover:border-black" />
                   </>
-                ) : ( */}
-                <button
-                  className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:border-btnColor hover:bg-btnColor hover:text-white"
-                  onClick={() => navigate("/partner/sign-in")}
-                >
-                  Hotel Login{" "}
-                  {/* {arrowDirection === "down" ? (
+                ) : (
+                  <button
+                    className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:border-btnColor hover:bg-btnColor hover:text-white"
+                    onClick={handleLoginClick}
+                  >
+                    Login{" "}
+                    {arrowDirection === "down" ? (
                       <IoIosArrowDown className="ml-3 text-xl" />
                     ) : (
                       <IoIosArrowUp className="ml-3 text-xl" />
-                    )}*/}
-                </button>
-                {/* )} */}
-
-                <button
-                  className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:border-btnColor hover:bg-btnColor hover:text-white"
-                  onClick={() => navigate("/waitlist")}
-                >
-                  Join Waitlist{" "}
-                  {/* {arrowDirection === "down" ? (
-                      <IoIosArrowDown className="ml-3 text-xl" />
-                    ) : (
-                      <IoIosArrowUp className="ml-3 text-xl" />
-                    )}*/}
-                </button>
+                    )}
+                  </button>
+                )}
 
                 <Link
                   className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-darkGold hover:bg-goldColor hover:text-white"
@@ -1028,7 +1023,7 @@ const Header = () => {
               </span>
 
               {/* Dropdown for Login button */}
-              {/* {showDropdown && (
+              {showDropdown && (
                 <div className="absolute bg-gray-100 text-rp-primary-black right-4 top-20 -mt-1 rounded-xl w-56 md:w-72 z-300 flex flex-col items-start shadow-login-card md:top-20 shadow-md">
                   <button
                     type="button"
@@ -1070,7 +1065,7 @@ const Header = () => {
                     List My Hotel
                   </button>
                 </div>
-              )} */}
+              )}
               {/* Dropdown End */}
             </div>
 
@@ -1081,9 +1076,7 @@ const Header = () => {
                   Unforgettable resorts and memories await
                 </span>
                 <Link className="py-3 text-fontSecondaryColor" to="/about-us">
-                  <span onClick={() => setShowNav(!showNav)}>
-                    About DayBreakPass
-                  </span>
+                  About DayBreak
                 </Link>
               </div>
               <div className="flex gap-20 md:w-1/2 justify-center">
@@ -1166,7 +1159,7 @@ const Header = () => {
                   </div>
                 </div>
                 <div className="flex flex-col justify-end h-full">
-                  {/* {userLogined !== null ? (
+                  {userLogined !== null ? (
                     <button
                       className="bg-red-500 text-white px-3 py-2 mb-4 w-full rounded-md"
                       onClick={handleClick}
@@ -1174,30 +1167,28 @@ const Header = () => {
                       Log out
                     </button>
                   ) : (
-                    <> */}
-                  <button
-                    className="bg-white text-black px-3 py-2 mb-4 w-full rounded-md border-2 border-black hover:bg-btnColor hover:text-white"
-                    onClick={() => {
-                      // setSignupModal((prev) => ({
-                      //   ...prev,
-                      //   state: true,
-                      // }));
-                      navigate("/waitlist");
-                    }}
-                  >
-                    Join Waitlist
-                  </button>
-                  <button
-                    className="bg-black text-white px-3 py-2 mb-4 w-full rounded-md border-2 border-black hover:bg-btnColor hover:text-white"
-                    onClick={() => {
-                      // setModal((prev) => ({ ...prev, state: true }));
-                      navigate("/partner/sign-in");
-                    }}
-                  >
-                    Hotel Login
-                  </button>
-                  {/* </>
-                  )} */}
+                    <>
+                      <button
+                        className="bg-white text-black px-3 py-2 mb-4 w-full rounded-md border-2 border-black hover:bg-btnColor hover:text-white"
+                        onClick={() => {
+                          setSignupModal((prev) => ({
+                            ...prev,
+                            state: true,
+                          }));
+                        }}
+                      >
+                        Sign Up
+                      </button>
+                      <button
+                        className="bg-black text-white px-3 py-2 mb-4 w-full rounded-md border-2 border-black hover:bg-btnColor hover:text-white"
+                        onClick={() => {
+                          setModal((prev) => ({ ...prev, state: true }));
+                        }}
+                      >
+                        Login
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -1214,11 +1205,11 @@ const Header = () => {
               />
             </span>
             <Link to="/" className="">
-              DayBreakPass
+              DayBreak
             </Link>
           </span>
-          <span className="space-x-2 hidden md:flex">
-            {/* {userLogined !== null ? (
+          <span className="flex space-x-2">
+            {userLogined !== null ? (
               <>
                 {userLogined?.role === "customer" ? (
                   <Link
@@ -1237,28 +1228,22 @@ const Header = () => {
                 )}
                 <SignOutButton classNames="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-darkGold hover:bg-goldColor hover:text-white" />
               </>
-            ) : ( */}
-            <button
-              className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-goldColor hover:border-black hover:bg-btnColor hover:text-white"
-              onClick={() => navigate("/partner/sign-in")}
-            >
-              Hotel Login{" "}
-              {/* {arrowDirection === "down" ? (
+            ) : (
+              <button
+                className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:border-btnColor hover:bg-btnColor hover:text-white"
+                onClick={handleLoginClick}
+              >
+                Login{" "}
+                {arrowDirection === "down" ? (
                   <IoIosArrowDown className="ml-3 text-xl" />
                 ) : (
                   <IoIosArrowUp className="ml-3 text-xl" />
-                )} */}
-            </button>
-            {/* )} */}
-            <button
-              className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-goldColor hover:border-black hover:bg-btnColor hover:text-white"
-              onClick={() => navigate("/waitlist")}
-            >
-              Join Waitlist{" "}
-            </button>
+                )}
+              </button>
+            )}
 
             <Link
-              className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-goldColor hover:border-black hover:bg-goldColor hover:text-white"
+              className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-goldColor hover:text-white"
               to="/"
             >
               <IoCartOutline className="text-2xl" />
@@ -1266,7 +1251,7 @@ const Header = () => {
           </span>
 
           {/* Dropdown for Login button */}
-          {/* {showDropdown && (
+          {showDropdown && (
             <div className="absolute bg-gray-100 text-rp-primary-black right-4 top-20 -mt-1 rounded-xl w-56 md:w-72 z-50 flex flex-col items-start shadow-login-card md:top-20 shadow-md">
               <button
                 type="button"
@@ -1308,7 +1293,7 @@ const Header = () => {
                 List My Hotel
               </button>
             </div>
-          )} */}
+          )}
           {/* Dropdown End */}
         </div>
       )}
