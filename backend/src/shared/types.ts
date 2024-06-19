@@ -25,6 +25,8 @@ export type HotelType = {
   lastUpdated: Date;
   bookings: BookingType[];
   favourites: FavouriteList[];
+  productTitle: any;
+  hotelType: any;
 };
 
 export type BookingType = {
