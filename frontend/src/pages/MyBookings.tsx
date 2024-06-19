@@ -22,7 +22,7 @@ const MyBookings = () => {
       {/* User Header Ends */}
 
       <div className="mx-auto max-w-6xl w-full d:flex d:flex-row d:items-start d:pt-5 pt-5">
-        <h1 className="text-2xl text-center lg:text-left font-medium mb-5">My Bookings</h1>
+        <h1 className="text-2xl text-center lg:text-left font-medium mb-5 pl-0 lg:pl-5">My Bookings</h1>
         {/* Tabs */}
         <div className="d:w-9/12">
           <section className="py-4">
