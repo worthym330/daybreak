@@ -16,3 +16,20 @@ body {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
 }
+
+.text-3d {
+    position: relative;
+    color: white;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.text-3d::before {
+    content: attr(data-text);
+    position: absolute;
+    top: 3px;
+    left: 5px;
+    color: #B5813F;
+    z-index: -1;
+    white-space: nowrap;
+}
