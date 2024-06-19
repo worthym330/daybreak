@@ -36,7 +36,7 @@ const WaitList = () => {
   const query1 = queryParams.get("uid");
   const { showToast } = useAppContext();
   const navigate = useNavigate();
-  const [submited, setSubmitted] = useState(false);
+  const [submited, setSubmitted] = useState(true);
   const [code, setCode] = useState("");
   const [number, setNumber] = useState(0);
   const [referralCode] = useState(query1);
@@ -58,7 +58,7 @@ const WaitList = () => {
         window.open(`https://www.instagram.com`, "_blank");
         break;
       case "whatsapp":
-        window.open(`https://www.api.whatsapp.com/send?text=${encodeURIComponent(baseUrl)}`, "_blank");
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(baseUrl)}`, "_blank");
         break;
       case "twitter":
         window.open(`https://www.x.com/`, "_blank");
