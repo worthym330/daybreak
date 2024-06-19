@@ -37,7 +37,7 @@ const PrivacyPolicy = () => {
           
           <h2 className="text-xl font-semibold mt-6 mb-2">Contacting Us</h2>
           <p className="mb-4">If you have any questions about this Privacy Policy, the practices of this Website, or your dealings with this Website, please contact us at:</p>
-          <p className="mb-4">Email: <a href="mailto:team@daybreakpass.com" className="text-purple-700 hover:underline">team@daybreakpass.com</a></p>
+          <p className="mb-4">Email: <a href="mailto:team@daybreakpass.com" className="text-goldColor hover:underline">team@daybreakpass.com</a></p>
           
           <p className="mb-4">This Privacy Policy was last updated on 18th June 2024.</p>
         </section>

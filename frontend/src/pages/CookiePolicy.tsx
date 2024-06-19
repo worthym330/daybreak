@@ -109,7 +109,8 @@ const CookiePolicy = () => {
             your browser cookie settings at{" "}
             <a
               href="www.allaboutcookies.org"
-              className="text-purple-700 hover:underline"
+              className="text-goldColor hover:underline"
+              target="_blank"
             >
               {" "}
               www.allaboutcookies.org
@@ -122,7 +123,7 @@ const CookiePolicy = () => {
             us at{" "}
             <a
               href="mailto:team@daybreakpass.com"
-              className="text-purple-700 hover:underline"
+              className="text-goldColor hover:underline"
             >
               team@daybreakpass.com
             </a>

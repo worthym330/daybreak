@@ -5,8 +5,8 @@ import { AiOutlineClose } from "react-icons/ai";
 import {
   FaFacebook,
   FaInstagram,
-  FaLink,
   FaLinkedin,
+  FaRegCopy,
   FaWhatsapp,
 } from "react-icons/fa";
 import { Formik } from "formik";
@@ -100,34 +100,34 @@ const WaitList = () => {
               type="text"
               value={`${FRONTEND_URL}/waitlist?uid=${code}`}
               readOnly
-              className="border-2 rounded-full text-goldColor text-lg w-full md:w-96 px-4 py-3 font-bold"
+              className="border-2 rounded-full bg-goldColor text-white text-lg w-full md:w-96 px-4 py-3 font-bold"
             />
             <button
               onClick={copyToClipboard}
-              className="bg-gray-700 p-2 rounded-lg"
+              className="p-2 rounded-lg"
             >
-              <FaLink className="text-white" />
+              <FaRegCopy className="text-white w-6 h-6" />
             </button>
           </div>
           <div className="flex space-x-2 md:space-x-4 mb-6">
             <FaInstagram
-              className="text-xl md:text-2xl cursor-pointer"
+              className="text-xl md:text-2xl cursor-pointer w-6 h-6"
               onClick={() => openSocialMedia("instagram")}
             />
             <FaWhatsapp
-              className="text-xl md:text-2xl cursor-pointer"
+              className="text-xl md:text-2xl cursor-pointer w-6 h-6"
               onClick={() => openSocialMedia("whatsapp")}
             />
             <FaFacebook
-              className="text-xl md:text-2xl cursor-pointer"
+              className="text-xl md:text-2xl cursor-pointer w-6 h-6"
               onClick={() => openSocialMedia("facebook")}
             />
             <AiOutlineClose
-              className="text-xl md:text-2xl cursor-pointer"
+              className="text-xl md:text-2xl cursor-pointer w-6 h-6"
               onClick={() => openSocialMedia("twitter")}
             />
             <FaLinkedin
-              className="text-xl md:text-2xl cursor-pointer"
+              className="text-xl md:text-2xl cursor-pointer w-6 h-6"
               onClick={() => openSocialMedia("linkedin")}
             />
           </div>
@@ -144,8 +144,7 @@ const WaitList = () => {
             backgroundSize: "cover",
             backgroundRepeat: "no-repeat",
             // opacity: 0.5,
-            filter: "brightness(1.3)",
-            zIndex: -1,
+            filter: "brightness(1.5)",
           }}
         >
           <div className="px-8 py-4 md:py-8 ">
