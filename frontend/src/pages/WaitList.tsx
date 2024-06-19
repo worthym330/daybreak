@@ -36,7 +36,7 @@ const WaitList = () => {
   const query1 = queryParams.get("uid");
   const { showToast } = useAppContext();
   const navigate = useNavigate();
-  const [submited, setSubmitted] = useState(true);
+  const [submited, setSubmitted] = useState(false);
   const [code, setCode] = useState("");
   const [number, setNumber] = useState(0);
   const [referralCode] = useState(query1);
