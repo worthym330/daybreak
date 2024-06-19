@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import aboutImage from "../assets/images/about.jpg";
+import founderImg from "../assets/images/vitthal-kushe.jpeg"
 
 const About = () => {
   return (
@@ -64,7 +65,7 @@ const About = () => {
             <div className="flex flex-col md:flex-row space-x-0 md:space-x-8 justify-center items-center gap-10 lg:gap-20">
               <div className="flex flex-col w-[10rem] text-center">
                 <img
-                  src="https://via.placeholder.com/150"
+                  src={founderImg}
                   alt="Vitthal Kushe"
                   className="rounded-full mb-2"
                 />
@@ -88,11 +89,12 @@ const About = () => {
               <span className="flex text-2xl lg:text-4xl md:text-4xl mb-4 font-bold font-LuzuryF1 text-center justify-center text-goldColor">
                 Trusted by the Best Luxury Hotels
               </span>
-              <span className="text-center max-w-xl mx-auto mb-8 md:mb-12 text-sm md:text-lg">
+              {/* <span className="text-center max-w-xl mx-auto mb-8 md:mb-12 text-sm md:text-lg">
                 Join the world's top hotel brands using Daycation to increase
                 their bottom line revenue.
-              </span>
+              </span> */}
             </div>
+            {/* <div className="grid grid-cols-2 md:grid-cols-4 gap-20">
             {/* <div className="grid grid-cols-2 md:grid-cols-4 gap-20">
               <div className="relative col-span-1 p-2">
                 <img
@@ -127,7 +129,7 @@ const About = () => {
               <span>Want to Bring Daycation to Your Hotel? </span>
               <Link
                 to="/partner/register"
-                className="font-LuzuryF3 text-goldColor hover:underline underline-goldColor text-2xl"
+                className="font-LuzuryF3 text-goldColor hover:underline underline-goldColor "
               >
                 Become a Hotel Partner{" "}
               </Link>

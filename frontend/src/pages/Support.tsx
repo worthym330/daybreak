@@ -4,7 +4,7 @@ const Support = () => {
       <main className="container mx-auto px-4 flex gap-4 flex-col md:flex-row">
         <section className="bg-white rounded ">
           <h1 className="text-2xl font-bold mb-4">Frequently Asked Questions</h1>
-          <p className="mb-4">New to DayBreakPass? You can learn more about us here, and in case you still have any other questions, feel free to reach out to us at <a href="mailto:team@daybreakpass.com" className="text-purple-700 hover:underline">team@daybreakpass.com</a></p>
+          <p className="mb-4">New to DayBreakPass? You can learn more about us here, and in case you still have any other questions, feel free to reach out to us at <a href="mailto:team@daybreakpass.com" className="text-goldColor hover:underline">team@daybreakpass.com</a></p>
           <ul className="list-disc list-inside ml-5 space-y-2">
             <li>
               <strong>If I book a DayBreakPass, am I guaranteed a pool chair?</strong>
@@ -35,7 +35,7 @@ const Support = () => {
         <section className="p-6 rounded  mt-8">
           <h2 className="text-xl font-semibold mb-4">Have any other questions?</h2>
           <p>Contact us</p>
-          <p><a href="mailto:team@daybreakpass.com" className="text-purple-700 hover:underline">team@daybreakpass.com</a></p>
+          <p><a href="mailto:team@daybreakpass.com" className="text-goldColor hover:underline">team@daybreakpass.com</a></p>
         </section>
       </main>
     </div>
