@@ -62,7 +62,7 @@ const Footer = () => {
               </span>
               {/* <Link to='/login' className="text-white font-medium mb-1">Sign in</Link>
               <Link to='/register' className="text-white font-medium mb-1">Sign up</Link> */}
-              <Link to='waitlist' className="text-white font-medium mb-1">Join Waitlist</Link>
+              <Link to='/waitlist' className="text-white font-medium mb-1">Join Waitlist</Link>
               <span className="text-white font-medium mb-1">Help</span>
             </div>
             <div className="flex flex-col w-full md:w-1/3">
