@@ -63,7 +63,7 @@ const products = [
     feeAdult: "9",
     priceChild: "60",
     feeChild: "5",
-    priceInfant: "FREE",
+    priceInfant: "",
     description:
       "Free admission for children under 5. $50 food and beverage minimum at Kona Pool Bar or Orchid Marketplace required for complimentary self-parking. No coolers or outside food and beverage allowed.",
   },
