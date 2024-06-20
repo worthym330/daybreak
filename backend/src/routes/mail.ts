@@ -84,22 +84,22 @@ export const sendToCustomer = async (leadData: any) => {
 <body>
     <div class="container">
         <div class="header">
-            <h1>Welcome to DayBreakPassPass!</h1>
+            <h1>Welcome to DayBreakPass!</h1>
         </div>
         <div class="content">
             <p>Hello ${fullName},</p>
-            <p>Congratulations! Your sign-up with DayBreakPassPass is complete, and we're excited to begin your onboarding
+            <p>Congratulations! Your sign-up with DayBreakPass is complete, and we're excited to begin your onboarding
                 process.
             </p>
             <p>Welcome aboard! We're delighted to have you join us. Expect a call soon from one of our representatives.
             </p>
             <p>For any questions or assistance, please feel free to reach out to us at <a href="tel:+918369029862" >8369029862</a> or email us at
-               <a href="mailto:team@DayBreakPasspass.com"> team@DayBreakPasspass.com</a>.
+               <a href="mailto:team@daybreakpass.com"> team@daybreakpass.com</a>.
             </p>
-            <p>Best regards,<br>The Team DayBreakPassPass</p>
+            <p>Best regards,<br>The Team DayBreakPass</p>
         </div>
         <div class="footer">
-            <p>&copy; 2024 DayBreakPassPass. All rights reserved.</p>
+            <p>&copy; 2024 DayBreakPass. All rights reserved.</p>
         </div>
     </div>
 </body>
