@@ -1,4 +1,3 @@
-// src/pages/Detail.tsx
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "react-query";
@@ -71,7 +70,7 @@ const products = [
   {
     title: "Spa Pass",
     features: [
-      "Indoor Jacuzz",
+      "Indoor Jacuzzi",
       "Steam room",
       "Hot tub",
       "Fitness Center",
@@ -87,7 +86,7 @@ const products = [
     feeChild: "",
     priceInfant: "",
     description:
-      "Adults 18+ only. All amenities are unisex unless otherwise specified.Does not include access to property pools.",
+      "Adults 18+ only. All amenities are unisex unless otherwise specified. Does not include access to property pools.",
   },
   {
     title: "Paradise Pool Daybed",
@@ -142,10 +141,8 @@ const Detail = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 640) {
+      if (window.innerWidth < 1024) {
         setSlidesToShow(1);
-      } else if (window.innerWidth < 1024) {
-        setSlidesToShow(2);
       } else {
         setSlidesToShow(3);
       }
@@ -303,17 +300,27 @@ const Detail = () => {
   }
 
   return (
-    // Image Slider Starts
     <div className="space-y-6">
+      {/* Image Slider Starts */}
       <div className="relative">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 overflow-hidden px-2">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 overflow-hidden px-2">
           {getDisplayedImages().map((image, index) => (
-            <div key={index} className="h-[300px]">
+            <div key={index} className="h-[300px] relative">
               <img
                 src={image}
                 alt={hotel.name}
                 className="rounded-md w-full h-full object-cover object-center border"
               />
+              {/* Favourite Button for Mobile and Tablet */}
+              <div className="absolute top-2 right-2 lg:hidden">
+                <button onClick={handleToggleFavourite}>
+                  {isFavourite ? (
+                    <FaHeart className="w-6 h-6 text-red-500 fill-current" />
+                  ) : (
+                    <FaHeart className="w-6 h-6 text-gray-300 fill-current" />
+                  )}
+                </button>
+              </div>
             </div>
           ))}
         </div>
@@ -333,12 +340,12 @@ const Detail = () => {
       {/* Image Slider Ends */}
 
       {/* Hotel Details Start */}
-      <div className="w-full lg:container px-8 pt-10 lg:mx-auto space-y-2 ">
+      <div className="w-full lg:container px-8 pt-10 lg:mx-auto space-y-2">
         <div className="flex lg:flex-row flex-col-reverse gap-10 space-y-2 justify-between">
           <div className="flex flex-col gap-2 w-full lg:w-2/3">
             <div className="flex justify-between">
               <div className="flex flex-col gap-2">
-                <span className="text-3xl font-semibold font-LuzuryF1 text-goldColor break-normal">
+                <span className="text-3xl font-semibold font-LuxuryF1 text-goldColor break-normal">
                   {hotel.name}
                 </span>
               </div>
@@ -366,8 +373,8 @@ const Detail = () => {
                   </Tooltip>
                 ))}
               </div>
-              {/* Favorite Hotel Button */}
-              <div className="flex gap-2 flex-wrap border border-gray-200 px-4 py-2 rounded-full">
+              {/* Favorite Hotel Button for Desktop */}
+              <div className="hidden lg:flex gap-2 flex-wrap border border-gray-200 px-4 py-2 rounded-full">
                 <button onClick={handleToggleFavourite}>
                   {isFavourite ? (
                     <span className="flex gap-2">
@@ -382,12 +389,11 @@ const Detail = () => {
                   )}
                 </button>
               </div>
-              {/* Favorite Hotel Button */}
             </div>
             {/* Facilities Section */}
 
             <div className="w-full break-words mb-5">{hotel.description}</div>
-            
+
             <span className="text-lg font-medium mb-3">Select a Date</span>
             <div className="flex items-center gap-2">
               <MdCalendarMonth className="text-2xl text-btnColor" />
@@ -434,7 +440,7 @@ const Detail = () => {
           {/* Hotel Details Start */}
 
           {/* Cart Section */}
-          <div className="w-full lg:w-1/3 hidden md:block">
+          <div className="w-full lg:w-1/3">
             <div className="h-fit sticky top-4">
               <div className="p-4 bg-white rounded-lg shadow-md border border-gray-300">
                 <div className="flex items-center justify-between mb-4">
@@ -472,6 +478,7 @@ const Detail = () => {
                           </p>
                         </div>
                       </div>
+                      
                       {cartItems.length > 0 &&
                         cartItems.map((item: any, index: any) => (
                           <div
