@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useQuery } from "react-query";
 import * as apiClient from "../api-client";
+import Cookies from "js-cookie";
 
 const MyBookings = () => {
   const { data: hotels } = useQuery("fetchMyBookings", apiClient.fetchMyBookings);
   const [activeTab, setActiveTab] = useState("bookings");
+  const personalInfo = JSON.parse(Cookies.get('authentication')||'[]')
 
   return (
     <main className="space-y-5">
@@ -12,11 +14,11 @@ const MyBookings = () => {
       <div className="bg-white border-b py-4 px-10 d:py-7">
         <div className="mx-auto max-w-6xl w-full">
           <div className="text-goldColor font-medium text-3xl leading-30px tracking-extraTight d:text-35 d:leading-10 mb-2">
-            Ranjit G
+            {personalInfo.name}
           </div>
-          <div className="leading-relaxed d:text-17 d:leading-8">
+          {/* <div className="leading-relaxed d:text-17 d:leading-8">
             $0 credits available
-          </div>
+          </div> */}
         </div>
       </div>
       {/* User Header Ends */}
