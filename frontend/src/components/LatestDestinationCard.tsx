@@ -6,7 +6,7 @@ import Button from "./Button";
 const LatestDestinationCard = ({ hotel }: any) => {
   const navigate = useNavigate();
   return (
-    <div className="relative border pb-5 pt-3 px-3 rounded-xl" key={hotel._id}>
+    <div className="relative border border-goldColor pb-5 pt-3 px-3 rounded-xl" key={hotel._id}>
       <div className="relative bg-cover bg-center block max-w-full overflow-hidden">
         <Link to={`/detail/${hotel._id}`}>
           <div className="h-[250px]">

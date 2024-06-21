@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import CartModal from './CartModal';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import Button from './Button';
@@ -32,6 +32,7 @@ const ProductCard = ({
   setCart,
 }: ProductCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth <= 768);
 
   const handleSelect = () => {
     if (!error && date === null) {
@@ -46,11 +47,18 @@ const ProductCard = ({
     setIsModalOpen(false);
   };
 
-  // Determine if we are on mobile or tablet (small screens)
-  const isSmallScreen = window.innerWidth <= 768; // Example breakpoint for tablets
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSmallScreen(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   return (
-    <div className="bg-white rounded-lg lg:shadow-xl p-4 lg:p-8 mb-4 border border-gray-300">
+    <div className="bg-white rounded-lg md:shadow-xl p-4 md:p-8 mb-4 border border-gray-300">
       {/* Conditionally render based on screen size */}
       {isSmallScreen ? (
         <div className="flex justify-between items-center">
