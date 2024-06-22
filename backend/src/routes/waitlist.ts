@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import Waitlist, { IWaitlist } from "../models/waitlist";
 import mongoose from "mongoose";
 import User from "../models/user";
-import { sendCredential } from "./mail";
+import { sendCredential, sendReferral } from "./mail";
 
 const router = express.Router();
 
@@ -68,6 +68,13 @@ router.post("/", async (req: Request, res: Response) => {
       referralCode: savedEntry.referralCode,
     };
 
+    let body ={
+      name: name,
+      email,
+      referralCode:savedEntry.referralCode,
+      waitlistNumber: 1038 + allData.length
+    }
+    await sendReferral(body)
     res.status(201).json(returnData);
   } catch (error) {
     console.error("Error details:", error);
