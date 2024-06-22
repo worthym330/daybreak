@@ -31,7 +31,7 @@ export default function HalfGeneralSlideover(props: any) {
                 leaveFrom="translate-x-0"
                 leaveTo="translate-x-full"
               >
-                <Dialog.Panel className="pointer-events-auto w-80vw md:w-50vw">
+                <Dialog.Panel className="pointer-events-auto w-80vw">
                   <div className="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
                     <div className="bg-goldColor px-4 py-6 sm:px-6">
                       <div className="flex items-center justify-between">

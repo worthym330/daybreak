@@ -46,14 +46,10 @@ const ProductCard = ({
     setIsModalOpen(false);
   };
 
-  // Determine if we are on mobile or tablet (small screens)
-  const isSmallScreen = window.innerWidth <= 768; // Example breakpoint for tablets
-
   return (
     <div className="bg-white rounded-lg lg:shadow-xl p-4 lg:p-8 mb-4 border border-gray-300">
       {/* Conditionally render based on screen size */}
-      {isSmallScreen ? (
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center md:hidden">
           <div className="w-2/3 pr-4">
             <h2 className="text-lg lg:text-xl font-semibold text-goldColor">{product.title}</h2>
           </div>
@@ -73,10 +69,8 @@ const ProductCard = ({
             </Button>
           </div>
         </div>
-      ) : (
-        // Full view for larger screens
-        <div className="flex justify-between">
-          {/* Right Box */}
+        <div className="md:flex justify-between hidden">
+          {/* Left Box */}
           <div className="w-2/3 pr-4">
             <h2 className="text-xl font-semibold text-goldColor">{product.title}</h2>
             <ul className="text-sm text-gray-600 mt-2 space-y-1 list-disc p-4">
@@ -86,14 +80,14 @@ const ProductCard = ({
             </ul>
             <p className="text-sm text-gray-500">{product.description}</p>
           </div>
-          {/* Left Box */}
+          {/* Right Box */}
           <div className="border-l-2 border-gray-200 h-auto"></div>
           <div className="w-1/3 pl-4 ml-4">
             <div className="flex justify-between items gap-2 text-gray-500 text-sm">
               {product.priceAdult !== '' && (
                 <div className="flex flex-col gap-2">
                   <span>Adults</span>
-                  <span className="text-xl font-medium text-goldColor">₹ {product.priceAdult} </span>
+                  <span className="text-xl font-medium text-goldColor text-nowrap">₹ {product.priceAdult} </span>
                   <span className="text-xs">+{product.feeAdult} in fees</span>
                 </div>
               )}
@@ -128,7 +122,6 @@ const ProductCard = ({
             </div>
           </div>
         </div>
-      )}
       {isModalOpen && (
         <CartModal
           product={product}

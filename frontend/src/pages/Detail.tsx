@@ -340,10 +340,10 @@ const Detail = () => {
       {/* Image Slider Ends */}
 
       {/* Hotel Details Start */}
-      <div className="w-full lg:container px-4 pt-10 lg:mx-auto space-y-2">
+      <div className="w-full lg:container px-8 pt-10 lg:mx-auto space-y-2">
         <div className="flex lg:flex-row flex-col-reverse gap-10 space-y-2 justify-between">
           <div className="flex flex-col gap-2 w-full lg:w-2/3">
-            <div className="flex justify-between">
+            <div className="flex justify-between flex-col md:flex-row">
               <div className="flex flex-col gap-2">
                 <span className="text-3xl font-semibold font-LuxuryF1 text-goldColor break-normal">
                   {hotel.name}
@@ -351,10 +351,10 @@ const Detail = () => {
               </div>
               <div className="flex gap-2 items-center">
                 <span className="bg-darkGold py-1 px-3 rounded-lg text-white">
-                  {hotel.starRating}
+                  {hotel.star}
                 </span>
                 <span className="flex">
-                  {Array.from({ length: hotel.starRating }).map((_, i) => (
+                  {Array.from({ length: hotel.star }).map((_, i) => (
                     <AiFillStar key={i} className="fill-yellow-400" />
                   ))}
                 </span>
@@ -440,7 +440,7 @@ const Detail = () => {
           {/* Hotel Details Start */}
 
           {/* Cart Section */}
-          <div className="w-full lg:w-1/3 md:block">
+          <div className="w-full lg:w-1/3">
             <div className="h-fit sticky top-4">
               <div className="p-4 bg-white rounded-lg shadow-md border border-gray-300">
                 <div className="flex items-center justify-between mb-4">

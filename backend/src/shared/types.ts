@@ -8,26 +8,23 @@ export type UserType = {
   status: boolean;
 };
 
-export type HotelType = {
-  _id: string;
-  userId: string;
+export interface HotelType {
+  _id?: any;
+  userId?: string;
   name: string;
   city: string;
-  country: string;
+  state: string;
   description: string;
-  type: string;
-  adultCount: number;
-  childCount: number;
+  cancellationPolicy: string;
   facilities: string[];
-  pricePerNight: number;
-  starRating: number;
+  hotelType: string[];
   imageUrls: string[];
+  productTitle: ProductType[];
+  star: number;
   lastUpdated: Date;
   bookings: BookingType[];
   favourites: FavouriteList[];
-  productTitle: any;
-  hotelType: any;
-};
+}
 
 export type BookingType = {
   _id: string;
@@ -67,3 +64,20 @@ export type PaymentIntentResponse = {
   clientSecret: string;
   totalCost: number;
 };
+
+
+export interface ProductType {
+  title: string;
+  description: string;
+  adultPrice: number;
+  childPrice: number;
+  otherpoints: string;
+  notes: string;
+  maxPeople: string;
+  selectedDates: Date[];
+  slotTime: string;
+  startTime: string;
+  endTime: string;
+  isChildPrice: boolean;
+  maxGuestsperDay: number;
+}

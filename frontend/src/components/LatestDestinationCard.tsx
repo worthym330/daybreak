@@ -6,7 +6,7 @@ import Button from "./Button";
 const LatestDestinationCard = ({ hotel }: any) => {
   const navigate = useNavigate()
   return (
-    <div className="relative border pb-5 pt-3 px-3 rounded-xl" key={hotel._id}>
+    <div className="relative border border-goldColor pb-5 pt-3 px-3 rounded-xl" key={hotel._id}>
       <div className="relative bg-cover bg-center block max-w-full overflow-hidden">
         <div className="h-[250px]">
           <img
@@ -22,7 +22,7 @@ const LatestDestinationCard = ({ hotel }: any) => {
               {hotel.city}, {hotel.country}
             </span>
           </p>
-          <span className="p-2 font-semibold">{hotel.name}</span>
+          <span className="p-2 font-semibold truncate">{hotel.name}</span>
         </div>
         <div className="flex justify-between p-2 mt-4 items-center">
           <span className="flex gap-2 bg-goldColor text-white font-semibold rounded-lg px-3 py-2">

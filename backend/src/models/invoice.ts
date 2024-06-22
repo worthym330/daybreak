@@ -10,7 +10,7 @@ const ServiceRecordSchema = new mongoose.Schema({
   paymentStatus: { type: String },
   createdAt: { type: Date, default: Date.now },
   updatedAt:{type:Date}
-});
+}, { timestamps: true });
 
 ServiceRecordSchema.pre('findOneAndUpdate', function(next) {
   this.set({ updatedAt: new Date() });
