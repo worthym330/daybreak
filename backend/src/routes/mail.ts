@@ -134,24 +134,24 @@ export const sendCredential = async (body: any) => {
   }
 };
 
-export const sendReferral = async(body:any) =>{
-  try {
-    const { email, name, referralCode, waitlistNumber } = body;
-    const mailOptions = {
-      to: email,
-      subject: `Welcome to DayBreakPass!`,
-      html: ` 
-    <h3>Hi ${name},</h3>
-    <p>Thank you for joining our waitlist. We are excited to have you on board!.</p>
-    <p>Your referral code is: <strong>${referralCode}</strong></p>
-    <p>Your waiting list number is: <strong>${waitlistNumber}</strong></p>
-    <p>Share this code with your friends and help them join our service too. 
-    <a href="${process.env.FRONTEND_URL}/waitlist?uid=${referralCode}">${process.env.FRONTEND_URL}/waitlist?uid=${referralCode}</a></p>
-    <p>Best regards,<br>DayBreakPass</p>
-`,
-    };
-    await transporter.sendMail(mailOptions);
-  } catch (error) {
-    console.error("Error sending lead notification email:", error);
-  }
-}
+// export const sendReferral = async(body:any) =>{
+//   try {
+//     const { email, name, referralCode, waitlistNumber } = body;
+//     const mailOptions = {
+//       to: email,
+//       subject: `Welcome to DayBreakPass!`,
+//       html: ` 
+//     <h3>Hi ${name},</h3>
+//     <p>Thank you for joining our waitlist. We are excited to have you on board!.</p>
+//     <p>Your referral code is: <strong>${referralCode}</strong></p>
+//     <p>Your waiting list number is: <strong>${waitlistNumber}</strong></p>
+//     <p>Share this code with your friends and help them join our service too. 
+//     <a href="${process.env.FRONTEND_URL}/waitlist?uid=${referralCode}">${process.env.FRONTEND_URL}/waitlist?uid=${referralCode}</a></p>
+//     <p>Best regards,<br>DayBreakPass</p>
+// `,
+//     };
+//     await transporter.sendMail(mailOptions);
+//   } catch (error) {
+//     console.error("Error sending lead notification email:", error);
+//   }
+// }
