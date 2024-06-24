@@ -50,3 +50,20 @@ body {
         animation: slide-down 0.5s ease-out;
     }
 }
+
+.form-checkbox-round {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 1em;
+    height: 1em;
+    border: 2px solid #B5813F;
+    border-radius: 50%;
+    outline: none;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+.form-checkbox-round:checked {
+    background-color: #B5813F;
+}

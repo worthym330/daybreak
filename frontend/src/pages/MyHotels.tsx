@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { BsBuilding, BsMap } from "react-icons/bs";
 import { BiStar } from "react-icons/bi";
 import { useEffect, useState } from "react";
@@ -1098,12 +1097,6 @@ const MyHotels = () => {
       {renderModal()}
       <span className="flex justify-between">
         <h1 className="text-3xl font-bold">My Hotels</h1>
-        <Link
-          to="/add-hotel"
-          className="flex bg-blue-600 text-white text-xl font-bold p-2 hover:bg-blue-500"
-        >
-          Add Hotel
-        </Link>
         <Button onClick={() => setModal((prev) => ({ ...prev, state: true }))}>
           Add Hotel
         </Button>
