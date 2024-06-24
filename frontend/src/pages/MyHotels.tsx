@@ -9,6 +9,8 @@ import HalfGeneralSlideover from "../components/slide-over";
 import { hotelFacilities, hotelTypes } from "../config/hotel-options-config";
 import { FaCircleXmark } from "react-icons/fa6";
 import { MdPhotoLibrary } from "react-icons/md";
+import { MdDelete } from "react-icons/md";
+import { FaEdit } from "react-icons/fa";
 import Button from "../components/Button";
 
 const initialModalState = {
@@ -71,72 +73,77 @@ const MyHotels = () => {
             }}
           >
             <form onSubmit={handleSubmit} noValidate>
-              <div className="mt-4 text-left grid md:grid-cols-2 grid-cols-1 gap-4 ">
+              <div className="mt-4 text-left grid md:grid-cols-2 grid-cols-1 gap-4 text-darkGold">
                 <div className="text-left">
-                  <label className="text-gray-700 text-sm flex-1">Name</label>
+                  <label className="text-darkGold text-sm font-medium flex-1 ">
+                    Hotel Name
+                  </label>
                   <input
                     type="name"
                     name="name"
                     value={values.name}
-                    placeholder="Enter Hotel Name"
-                    className="border rounded-md w-full px-2 py-3 font-normal"
+                    placeholder="Enter hotel name"
+                    className="border rounded-md w-full px-5 py-3 font-normal mt-2"
                     onChange={handleChange}
                     onBlur={handleBlur}
                   />
                   {/* {touched.name && (
-                  <span className="text-red-500 font-semibold">
-                    {errors.name}
-                  </span>
-                )} */}
+                    <span className="text-red-500 font-semibold">
+                      {errors.name}
+                    </span>
+                  )} */}
                 </div>
 
                 <div className="text-left">
-                  <label className="text-gray-700 text-sm flex-1">City</label>
+                  <label className="text-darkGold text-sm font-medium flex-1">
+                    City
+                  </label>
                   <input
                     type="city"
                     name="city"
                     value={values.city}
-                    placeholder="Enter your City"
-                    className="border rounded-md w-full px-2 py-3 font-normal"
+                    placeholder="Enter your city"
+                    className="border rounded-md w-full px-5 py-3 font-normal mt-2"
                     onChange={handleChange}
                     onBlur={handleBlur}
                   />
                   {/* {touched.city && (
-                  <span className="text-red-500 font-semibold">
-                    {errors.city}
-                  </span>
-                )} */}
+                    <span className="text-red-500 font-semibold">
+                      {errors.city}
+                    </span>
+                  )} */}
                 </div>
 
                 <div className="text-left col-span-1 md:col-span-2">
-                  <label className="text-gray-700 text-sm flex-1">
+                  <label className="text-darkGold text-sm font-medium flex-1">
                     Description
                   </label>
                   <textarea
                     name="description"
                     value={values.description}
-                    placeholder="Enter your description"
-                    className="border rounded-md w-full px-2 py-3 font-normal"
+                    placeholder="Enter hotel description"
+                    className="border rounded-md w-full px-5 py-3 font-normal mt-2 h-40 resize-none overflow-y-auto"
                     onChange={(e) => {
                       setValues({ ...values, description: e.target.value });
                     }}
                     onBlur={handleBlur}
                   />
+
                   {/* {touched.description" && (
-                  <span className="text-red-500 font-semibold">
-                    {errors.description"}
-                  </span>
-                )} */}
+                    <span className="text-red-500 font-semibold">
+                      {errors.description"}
+                    </span>
+                  )} */}
                 </div>
 
                 <div className="text-left">
                   <label
                     htmlFor="price"
-                    className="block text-sm font-medium leading-6 text-gray-900"
+                    className="block text-sm font-medium leading-6 text-darkGold"
                   >
                     Price
                   </label>
-                  <div className="relative rounded-md shadow-sm">
+                  <div className="relative rounded-md shadow-sm mt-2">
                     <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                       <span className="text-gray-500 sm:text-sm">₹</span>
                     </div>
@@ -145,13 +152,13 @@ const MyHotels = () => {
                       name="price"
                       id="price"
                       value={values.price}
-                      className="border rounded-md w-full px-2 py-3 font-normal pl-7"
+                      className="border rounded-md w-full px-5 py-3 font-normal pl-7"
                       placeholder="0.00"
                       aria-describedby="price-currency"
                     />
                     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                       <span
-                        className="text-gray-500 sm:text-sm"
+                        className="text-darkGold sm:text-sm"
                         id="price-currency"
                       >
                         INR
@@ -159,17 +166,17 @@ const MyHotels = () => {
                     </div>
                   </div>
                   {/* {touched.city && (
-                  <span className="text-red-500 font-semibold">
-                    {errors.city}
-                  </span>
-                )} */}
+                    <span className="text-red-500 font-semibold">
+                      {errors.city}
+                    </span>
+                  )} */}
                 </div>
                 <div className="text-left">
-                  <label className="text-gray-700 text-sm flex-1">Star</label>
+                  <label className="text-darkGold text-sm flex-1">Star</label>
                   <select
                     name="star"
                     value={values.star}
-                    className="border rounded-md w-full px-2 py-3 font-normal"
+                    className="border rounded-md w-full px-5 py-3 font-normal mt-2 bg-white"
                     onChange={handleChange}
                     onBlur={handleBlur}
                   >
@@ -190,47 +197,47 @@ const MyHotels = () => {
                 </div>
 
                 <div className="text-left col-span-1 md:col-span-2">
-                  <label className="text-gray-700 font-bold text-sm flex-1">
+                  <label className="block font-medium text-sm mb-2">
                     Facilities
                   </label>
-                  <div className="flex flex-wrap gap-4">
+                  <div className="flex flex-wrap gap-2 mt-1">
                     {hotelFacilities.map((facility) => (
                       <label
                         key={facility}
-                        className="text-sm flex gap-1 text-gray-700"
+                        className="inline-flex items-center gap-1 text-darkGold border border-goldColor rounded-md py-3 px-3"
                       >
                         <input
                           type="checkbox"
+                          className="form-checkbox-round text-blue-600"
                           name="facilities"
                           value={facility}
                           onChange={handleChange}
                           onBlur={handleBlur}
                           checked={values.facilities.includes(facility)}
                         />
-                        {facility}
+                        <span className="text-sm pl-1">{facility}</span>
                       </label>
                     ))}
-
-                    {/* {touched.facilities && (
-                      <span className="text-red-500 font-semibold">
-                        {errors.facilities}
-                      </span>
-                    )} */}
                   </div>
+                  {/* Optional: Display error message */}
+                  {/* {touched.facilities && errors.facilities && (
+    <span className="block text-sm text-red-500 mt-1">{errors.facilities}</span>
+  )} */}
                 </div>
 
                 <div className="text-left col-span-1 md:col-span-2">
-                  <label className="text-gray-700 font-bold text-sm flex-1">
+                  <label className="block font-medium text-sm mb-2">
                     Hotel Type
                   </label>
-                  <div className="flex flex-wrap gap-4">
+                  <div className="flex flex-wrap gap-2 mt-1">
                     {hotelTypes.map((hotel) => (
                       <label
                         key={hotel}
-                        className="text-sm flex gap-1 text-gray-700"
+                        className="inline-flex items-center gap-1 text-darkGold border border-goldColor rounded-md py-3 px-3"
                       >
                         <input
                           type="checkbox"
+                          className="form-checkbox-round text-blue-600"
                           name="hotelType"
                           value={hotel}
                           onChange={handleChange}
@@ -250,43 +257,13 @@ const MyHotels = () => {
                 </div>
 
                 <div className="text-left col-span-1 md:col-span-2">
-                  <label className="text-gray-700 font-bold text-sm flex-1">
-                    Hotel Type
-                  </label>
-                  <div className="flex flex-wrap gap-4">
-                    {hotelTypes.map((hotel) => (
-                      <label
-                        key={hotel}
-                        className="text-sm flex gap-1 text-gray-700"
-                      >
-                        <input
-                          type="checkbox"
-                          name="hotelType"
-                          value={hotel}
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          checked={values.hotelType.includes(hotel)}
-                        />
-                        {hotel}
-                      </label>
-                    ))}
-
-                    {/* {touched.facilities && (
-                      <span className="text-red-500 font-semibold">
-                        {errors.facilities}
-                      </span>
-                    )} */}
-                  </div>
-                </div>
-
-                <div className="text-left col-span-1 md:col-span-2">
-                  <div className="w-full bg-gray-50 p-6 rounded-md shadow-md">
-                    <h2 className="text-2xl font-bold text-gray-900 flex justify-center mt-2">
-                      Uploads
+                  <div className="w-full p-0 lg:p-6">
+                    <h2 className="text-[0.9rem] md:text-[1.2rem] font-medium text-darkGold flex justify-center mt-2">
+                      Upload your hotel images
                     </h2>
                     <div
                       onDragOver={(e) => e.preventDefault()}
-                      onDrop={(e:any) => {
+                      onDrop={(e: any) => {
                         e.preventDefault();
                         const data = e.target.files;
                         const newData = Array.from(data);
@@ -296,7 +273,7 @@ const MyHotels = () => {
                           imageUrls: updatedFiles,
                         });
                       }}
-                      className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10"
+                      className="mt-8 flex justify-center rounded-lg border border-dashed border-goldColor px-6 py-10"
                     >
                       <div className="text-center">
                         <MdPhotoLibrary
@@ -315,7 +292,7 @@ const MyHotels = () => {
                               type="file"
                               className="sr-only"
                               accept="application/pdf"
-                              onChange={(e:any) => {
+                              onChange={(e: any) => {
                                 const data = e.target.files;
                                 const newData = Array.from(data);
                                 const updatedFiles = [...newData];
@@ -332,7 +309,7 @@ const MyHotels = () => {
                         <p className="text-xs leading-5 flex w-full items-center justify-center gap-3 text-gray-600">
                           {values.imageUrls && values.imageUrls.length > 0 ? (
                             <p>
-                              {values.imageUrls.map((s:any) => (
+                              {values.imageUrls.map((s: any) => (
                                 <span className="flex gap-2">
                                   {" "}
                                   <p>{s.name}</p>
@@ -342,7 +319,7 @@ const MyHotels = () => {
                                       setValues({
                                         ...values,
                                         imageUrls: values.files.filter(
-                                          (e:any) => e !== s
+                                          (e: any) => e !== s
                                         ),
                                       });
                                     }}
@@ -369,11 +346,7 @@ const MyHotels = () => {
                     className="bg-black mx-auto w-full text-white px-4 py-3 rounded-xl font-bold hover:bg-gray-800"
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? (
-                      "Adding in..."
-                    ) : (
-                      "Add"
-                    )}
+                    {isSubmitting ? "Adding in..." : "Add"}
                   </Button>
                 </span>
               </div>
@@ -389,60 +362,62 @@ const MyHotels = () => {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 p-4 md:p-8">
       {renderModal()}
-      <span className="flex justify-between">
-        <h1 className="text-3xl font-bold">My Hotels</h1>
-        <Link
-          to="/add-hotel"
-          className="flex bg-blue-600 text-white text-xl font-bold p-2 hover:bg-blue-500"
-        >
-          Add Hotel
-        </Link>
-        <div
-          className="flex bg-blue-600 text-white text-xl font-bold p-2 hover:bg-blue-500"
+      <span className="flex justify-between items-center">
+        <h1 className="text-2xl font-medium text-darkGold mb-4 md:mb-0">
+          My Hotels
+        </h1>
+        <Button
+          className="flex text-white text-xl p-2 bg-goldColor hover:bg-white hover:text-goldColor hover:border-2 hover:border-goldColor rounded-lg"
           onClick={() => setModal((prev) => ({ ...prev, state: true }))}
         >
           Add Hotel
-        </div>
+        </Button>
       </span>
-      <div className="grid grid-cols-1 gap-8">
+      <div className="grid grid-cols-1 gap-8 border border-goldColor rounded-lg p-4">
         {hotelData.map((hotel) => (
           <div
+            key={hotel._id}
             data-testid="hotel-card"
-            className="flex flex-col justify-between border border-slate-300 rounded-lg p-8 gap-5"
+            className="flex flex-col justify-between p-4 gap-5"
           >
-            <h2 className="text-2xl font-bold">{hotel.name}</h2>
+            <h2 className="text-3xl font-bold text-goldColor font-LuzuryF1">
+              {hotel.name}
+            </h2>
             <div className="whitespace-pre-line">{hotel.description}</div>
-            <div className="grid grid-cols-5 gap-2">
-              <div className="border border-slate-300 rounded-sm p-3 flex items-center">
+            <hr />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 text-darkGold">
+              <div className="border border-goldColor rounded-lg p-3 flex items-center">
                 <BsMap className="mr-1" />
                 {hotel.city}, {hotel.country}
               </div>
-              <div className="border border-slate-300 rounded-sm p-3 flex items-center">
+              <div className="border border-goldColor rounded-lg p-3 flex items-center">
                 <BsBuilding className="mr-1" />
                 {hotel.type}
               </div>
-              <div className="border border-slate-300 rounded-sm p-3 flex items-center">
+              <div className="border border-goldColor rounded-lg p-3 flex items-center">
                 <BiMoney className="mr-1" />£{hotel.pricePerNight} per night
               </div>
-              <div className="border border-slate-300 rounded-sm p-3 flex items-center">
+              <div className="border border-goldColor rounded-lg p-3 flex items-center">
                 <BiHotel className="mr-1" />
                 {hotel.adultCount} adults, {hotel.childCount} children
               </div>
-              <div className="border border-slate-300 rounded-sm p-3 flex items-center">
+              <div className="border border-goldColor rounded-lg p-3 flex items-center">
                 <BiStar className="mr-1" />
                 {hotel.starRating} Star Rating
               </div>
             </div>
-            <span className="flex justify-end">
-              <Link
-                to={`/edit-hotel/${hotel._id}`}
-                className="flex bg-blue-600 text-white text-xl font-bold p-2 hover:bg-blue-500"
-              >
-                View Details
-              </Link>
-            </span>
+            <div className="flex flex-col md:flex-row justify-end gap-3">
+              <button className="flex items-center justify-center border-2 bg-black text-white px-5 py-2 rounded-lg text-lg hover:bg-white hover:text-black hover:border-2 hover:border-black">
+                <FaEdit className="mr-1" />
+                Edit
+              </button>
+              <button className="flex items-center justify-center border-2 bg-red-600 text-white px-5 py-2 rounded-lg text-lg hover:bg-white hover:text-red-600 hover:border-2 hover:border-red-600">
+                <MdDelete className="mr-1" />
+                Delete
+              </button>
+            </div>
           </div>
         ))}
       </div>
