@@ -51,6 +51,8 @@ const hotelSchema = new mongoose.Schema<HotelType>({
   productTitle: [productSchema],
   star: { type: Number, min: 1, max: 5 },
   lastUpdated: { type: Date },
+  mapurl:{type:String},
+  pincode:{type:String},
   bookings: [bookingSchema],
   favourites: [favouriteListSchema],
 }, { timestamps: true });

@@ -136,7 +136,6 @@ const WaitList = () => {
           isSubmitting,
           errors,
           touched,
-          handleBlur,
           handleChange,
         }) => (
           <Modal
@@ -158,7 +157,6 @@ const WaitList = () => {
                   placeholder="Name"
                   className="border rounded w-full px-2 py-3 font-normal mb-3 mt-3"
                   onChange={handleChange}
-                  onBlur={handleBlur}
                 />
                 {touched.name && (
                   <span className="text-red-500">{errors.name}</span>
@@ -176,7 +174,6 @@ const WaitList = () => {
                   placeholder="Email"
                   className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
                   onChange={handleChange}
-                  onBlur={handleBlur}
                 />
                 {touched.email && (
                   <span className="text-red-500 font-semibold">
@@ -196,7 +193,6 @@ const WaitList = () => {
                   placeholder="Referral Code"
                   className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
                   onChange={handleChange}
-                  onBlur={handleBlur}
                 />
                 {touched.referralCode && (
                   <span className="text-red-500">{errors.referralCode}</span>
@@ -214,7 +210,6 @@ const WaitList = () => {
                   placeholder="city"
                   className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
                   onChange={handleChange}
-                  onBlur={handleBlur}
                 />
                 {touched.city && (
                   <span className="text-red-500">{errors.city}</span>

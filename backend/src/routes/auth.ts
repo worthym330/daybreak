@@ -21,7 +21,7 @@ router.post(
       return res.status(400).json({ message: errors.array() });
     }
 
-    const { email, password, loginThrough, googleToken } = req.body;
+    const { email, password, loginThrough, googleToken, userType } = req.body;
 
     try {
       let user;
@@ -38,12 +38,12 @@ router.post(
           return res.status(400).json({ message: "Invalid Google token" });
         }
 
-        user = await User.findOne({ email: googleEmail });
+        user = await User.findOne({ email: googleEmail, role:userType });
         if (!user) {
           return res.status(400).json({ message: "User not found" });
         }
       } else if (email && password) {
-        user = await User.findOne({ email });
+        user = await User.findOne({ email, role:userType });
         if (!user) {
           return res.status(400).json({ message: "Invalid Credentials" });
         }
@@ -62,14 +62,14 @@ router.post(
       }
 
       const token = jwt.sign(
-        { userId: user.id },
+        { userId: user.id},
         process.env.JWT_SECRET_KEY as string,
         {
           expiresIn: "1d",
         }
       );
 
-      const payload = {
+      const userPayload = {
         token: token,
         name: `${user.firstName} ${user.lastName}`,
         email: user.email,
@@ -83,7 +83,7 @@ router.post(
         maxAge: 86400000,
       });
 
-      res.status(200).json({ user: payload });
+      res.status(200).json({ user: userPayload });
     } catch (error) {
       console.log(error);
       res.status(500).json({ message: "Something went wrong" });

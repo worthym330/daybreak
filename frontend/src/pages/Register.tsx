@@ -128,7 +128,7 @@ const Register = () => {
               }
             }}
           >
-            {({ isSubmitting, handleChange, handleBlur, touched, errors }) => (
+            {({ isSubmitting, handleChange, touched, errors }) => (
               <Form className="flex flex-col gap-5">
                 <div className="flex flex-col gap-2">
                   <h2 className="text-2xl font-bold">
@@ -142,7 +142,6 @@ const Register = () => {
                     name="fullName"
                     type="text"
                     onChange={handleChange}
-                    onBlur={handleBlur}
                     placeholder="Enter your full name"
                   />
                   {touched.fullName && (
@@ -156,7 +155,6 @@ const Register = () => {
                     name="email"
                     type="email"
                     onChange={handleChange}
-                    onBlur={handleBlur}
                     placeholder="Enter your work email"
                   />
                   {touched.email && (
@@ -170,7 +168,6 @@ const Register = () => {
                     name="contactNo"
                     type="contactNo"
                     onChange={handleChange}
-                    onBlur={handleBlur}
                     placeholder="Enter your Contact Number"
                   />
                   {touched.contactNo && (
@@ -185,7 +182,7 @@ const Register = () => {
                       name="hotelName"
                       type="text"
                       onChange={handleChange}
-                      onBlur={handleBlur}
+
                       placeholder="Enter your Hotel Name"
                     />
                   </div>
@@ -200,7 +197,6 @@ const Register = () => {
                     name="designation"
                     type="designation"
                     onChange={handleChange}
-                    onBlur={handleBlur}
                     placeholder="Enter your role"
                   />
                   {touched.designation && (

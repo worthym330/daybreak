@@ -44,13 +44,14 @@ router.post(
         hotelType,
         productTitle,
         star,
+        mapurl,
+        pincode
       } = req.body;
 
       // Upload images and get URLs
       const imageUrls = await uploadImages(imageFiles);
-      const facilitiesMap = facilities.split(',')
-      const HotelTypes = hotelType.split(',')
-
+      const facilitiesMap = facilities.split(",");
+      const HotelTypes = hotelType.split(",");
 
       // Create a new hotel object
       const newHotel: HotelType = {
@@ -63,6 +64,8 @@ router.post(
         facilities: facilitiesMap,
         hotelType: HotelTypes,
         imageUrls: imageUrls,
+        pincode,
+        mapurl,
         productTitle: JSON.parse(productTitle).map((product: any) => ({
           title: product.title,
           description: product.description,
@@ -71,7 +74,9 @@ router.post(
           otherpoints: product.otherpoints,
           notes: product.notes,
           maxPeople: product.maxPeople,
-          selectedDates: product.selectedDates.map((date: string) => new Date(date)),
+          selectedDates: product.selectedDates.map(
+            (date: string) => new Date(date)
+          ),
           slotTime: product.slotTime,
           startTime: product.startTime,
           endTime: product.endTime,
@@ -124,25 +129,31 @@ router.put(
   upload.array("imageFiles"),
   async (req: Request, res: Response) => {
     try {
-      const {hotelId} = req.params;
+      const { hotelId } = req.params;
       const imageFiles = req.files as Express.Multer.File[];
       const { productTitle, facilities, hotelType, ...hotelData } = req.body;
       // Find the existing hotel by ID
       const existingHotel = await Hotel.findById(hotelId);
       if (!existingHotel) {
-        return res.status(404).json({ message: 'Hotel not found' });
+        return res.status(404).json({ message: "Hotel not found" });
       }
 
       // Parse productTitle to ensure dates are correct
-      const parsedProductTitle = JSON.parse(productTitle).map((product: any) => ({
-        ...product,
-        selectedDates: product.selectedDates.map((date:any) => new Date(date))
-      }));
+      const parsedProductTitle = JSON.parse(productTitle).map(
+        (product: any) => ({
+          ...product,
+          selectedDates: product.selectedDates.map(
+            (date: any) => new Date(date)
+          ),
+        })
+      );
 
       // Delete the existing images if any new images are uploaded
-      console.log(imageFiles)
+      console.log(imageFiles);
       if (imageFiles.length > 0) {
-        const existingImageUrls = existingHotel.imageUrls.map((url:any) => url.split('/').pop() || '');
+        const existingImageUrls = existingHotel.imageUrls.map(
+          (url: any) => url.split("/").pop() || ""
+        );
         await deleteFiles(existingImageUrls);
       }
 
@@ -155,7 +166,7 @@ router.put(
         imageUrls: imageFiles.length > 0 ? imageUrls : existingHotel.imageUrls,
         lastUpdated: new Date(),
         userId: req.userId,
-        productTitle: parsedProductTitle
+        productTitle: parsedProductTitle,
       };
 
       // Update the hotel in the database
@@ -164,7 +175,7 @@ router.put(
       res.status(200).json(updatedHotel);
     } catch (e) {
       console.error(e);
-      res.status(500).json({ message: 'Something went wrong' });
+      res.status(500).json({ message: "Something went wrong" });
     }
   }
 );
@@ -227,9 +238,9 @@ async function uploadImages(imageFiles: Express.Multer.File[]) {
 async function deleteFiles(filenames: string[]) {
   try {
     const uploadDir = path.resolve(__dirname, "../../uploads/hotel/images");
-console.log('called at deled file')
+    console.log("called at deled file");
     if (fs.existsSync(uploadDir)) {
-      filenames.forEach(filename => {
+      filenames.forEach((filename) => {
         const filePath = path.join(uploadDir, filename);
         if (fs.existsSync(filePath)) {
           fs.unlinkSync(filePath);
@@ -244,8 +255,32 @@ console.log('called at deled file')
     }
   } catch (error) {
     console.error("Error deleting files:", error);
-    throw error; 
+    throw error;
   }
 }
+
+router.delete("/:id", verifyToken, async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const hotel = await Hotel.findOne({
+      _id: id,
+      userId: req.userId,
+    });
+    const files = hotel?.imageUrls || [];
+    if (files.length > 0) {
+      const filenames = files
+        .map((file) => file.split("/").pop())
+        .filter(Boolean) as string[];
+      await deleteFiles(filenames);
+    }
+    await Hotel.deleteOne({
+      _id: id,
+      userId: req.userId,
+    });
+    res.status(200).json("Successfully deleted hotel");
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting hotel" });
+  }
+});
 
 export default router;

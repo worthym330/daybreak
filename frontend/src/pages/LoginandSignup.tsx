@@ -167,7 +167,6 @@ const Login = ({ Login }: any) => {
             {({
               isSubmitting,
               handleChange,
-              handleBlur,
               touched,
               errors,
               values,
@@ -185,7 +184,6 @@ const Login = ({ Login }: any) => {
                     placeholder="Enter your email address"
                     className="border rounded w-full px-2 py-3 font-normal mb-3 mt-3"
                     onChange={handleChange}
-                    onBlur={handleBlur}
                   />
                   {touched.email && (
                     <span className="text-red-500 font-semibold">
@@ -205,7 +203,6 @@ const Login = ({ Login }: any) => {
                     placeholder="Enter your password"
                     className="border rounded w-full px-2 py-3 font-normal mb-3 mt-3"
                     onChange={handleChange}
-                    onBlur={handleBlur}
                   />
                   {touched.password && (
                     <span className="text-red-500 font-semibold">
@@ -255,14 +252,14 @@ const Login = ({ Login }: any) => {
       </div>
       <div className="relative hidden flex-1 md:block md:w-1/2">
         <img
-          className="absolute h-full w-full rounded-md object-fill object-center"
+          className="absolute h-full w-full rounded-md object-cover object-center"
           src={loginImage}
           alt="Background"
         />
       </div>
     </div>
   ) : (
-    <div className="flex min-h-screen flex-row">
+    <div className="flex min-h-screen flex-row-reverse">
       <div className="flex flex-col justify-center px-4 py-12 sm:px-6 lg:px-20 xl:px-24 w-full md:w-1/2">
         <h2 className="text-3xl font-bold">Register</h2>
         <div className="mx-auto w-full max-w-sm lg:w-96">
@@ -325,7 +322,6 @@ const Login = ({ Login }: any) => {
               isSubmitting,
               errors,
               touched,
-              handleBlur,
               handleChange,
             }) => (
               <form onSubmit={handleSubmit} noValidate>
@@ -340,7 +336,6 @@ const Login = ({ Login }: any) => {
                     placeholder="First Name"
                     className="border rounded w-full px-2 py-3 font-normal mb-3 mt-3"
                     onChange={handleChange}
-                    onBlur={handleBlur}
                   />
                   {touched.firstName && (
                     <span className="text-red-500">{errors.firstName}</span>
@@ -358,7 +353,6 @@ const Login = ({ Login }: any) => {
                     placeholder="Last Name"
                     className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
                     onChange={handleChange}
-                    onBlur={handleBlur}
                   />
                   {touched.lastName && (
                     <span className="text-red-500 font-semibold">
@@ -378,7 +372,6 @@ const Login = ({ Login }: any) => {
                     placeholder="Email address"
                     className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
                     onChange={handleChange}
-                    onBlur={handleBlur}
                   />
                   {touched.email && (
                     <span className="text-red-500">{errors.email}</span>
@@ -396,7 +389,6 @@ const Login = ({ Login }: any) => {
                     placeholder="Password"
                     className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
                     onChange={handleChange}
-                    onBlur={handleBlur}
                   />
                   {touched.password && (
                     <span className="text-red-500">{errors.password}</span>
@@ -414,7 +406,6 @@ const Login = ({ Login }: any) => {
                     placeholder="Confirm Password"
                     className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
                     onChange={handleChange}
-                    onBlur={handleBlur}
                   />
                   {touched.confirmpassword && (
                     <span className="text-red-500">
@@ -468,7 +459,7 @@ const Login = ({ Login }: any) => {
       </div>
       <div className="relative hidden flex-1 md:block md:w-1/2">
         <img
-          className="absolute h-full w-full rounded-md object-fill object-center"
+          className="absolute h-full w-full rounded-md object-cover object-center"
           src={loginImage}
           alt="Background"
         />

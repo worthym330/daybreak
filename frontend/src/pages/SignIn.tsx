@@ -91,6 +91,7 @@ const SignIn = () => {
               email: "",
               password: "",
               loginThrough: "password",
+              userType:"partner",
             }}
             validationSchema={loginSchema}
             onSubmit={(values: login, { setSubmitting }) => {
@@ -107,7 +108,6 @@ const SignIn = () => {
             {({
               isSubmitting,
               handleChange,
-              handleBlur,
               touched,
               errors,
               values,
@@ -125,7 +125,6 @@ const SignIn = () => {
                     placeholder="Enter your email address"
                     className="border rounded w-full px-2 py-3 font-normal mb-3 mt-3"
                     onChange={handleChange}
-                    onBlur={handleBlur}
                   />
                   {touched.email && (
                     <span className="text-red-500 font-semibold">
@@ -145,7 +144,6 @@ const SignIn = () => {
                     placeholder="Enter your password"
                     className="border rounded w-full px-2 py-3 font-normal mb-3 mt-3"
                     onChange={handleChange}
-                    onBlur={handleBlur}
                   />
                   {touched.password && (
                     <span className="text-red-500 font-semibold">

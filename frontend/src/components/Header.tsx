@@ -16,6 +16,7 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { HiXMark } from "react-icons/hi2";
 import * as apiClient from "../api-client";
 import Cookies from "js-cookie";
+import { toast } from "react-toastify";
 
 const initialModalState = {
   type: "add",
@@ -27,6 +28,7 @@ const initialModalState = {
     email: "",
     password: "",
     loginThrough: "password",
+    userType:"customer",
   },
 };
 
@@ -256,14 +258,14 @@ const Header = () => {
               throw new Error(body.message);
             }
 
-            showToast({ message: "Sign in Successful!", type: "SUCCESS" });
+            toast.success('Logined Successfully!')
             setShowDropdown(false);
             Cookies.set("authentication", JSON.stringify(body.user), {
               expires: 1,
             });
           } catch (error: any) {
             console.error("Error during sign in:", error);
-            setModal((prev) => ({ ...prev, state: false, loading: false }));
+            setModal(initialModalState);
             showToast({
               message: error.message || "An error occurred during sign in",
               type: "ERROR",
@@ -277,7 +279,6 @@ const Header = () => {
           isSubmitting,
           errors,
           touched,
-          handleBlur,
           handleChange,
         }) => (
           <Modal
@@ -295,7 +296,7 @@ const Header = () => {
 
               <div className="text-left">
                 <label className="text-gray-700 text-sm font-bold flex-1">
-                  {/* Email */}
+                  Email
                 </label>
                 <input
                   type="email"
@@ -304,18 +305,17 @@ const Header = () => {
                   placeholder="Email address"
                   className="border rounded w-full px-2 py-3 font-normal mb-3 mt-3"
                   onChange={handleChange}
-                  onBlur={handleBlur}
                 />
                 {touched.email && (
                   <span className="text-red-500 font-normal">
-                    *{errors.email}
+                    {errors.email}
                   </span>
                 )}
               </div>
 
               <div className="text-left">
                 <label className="text-gray-700 text-sm font-bold flex-1">
-                  {/* Password */}
+                  Password
                 </label>
                 <input
                   type="password"
@@ -324,10 +324,9 @@ const Header = () => {
                   placeholder="Password"
                   className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
                   onChange={handleChange}
-                  onBlur={handleBlur}
                 />
                 {touched.password && (
-                  <span className="text-red-500">*{errors.password}</span>
+                  <span className="text-red-500">{errors.password}</span>
                 )}
               </div>
 
@@ -459,7 +458,6 @@ const Header = () => {
           isSubmitting,
           errors,
           touched,
-          handleBlur,
           handleChange,
         }) => (
           <Modal
@@ -487,7 +485,6 @@ const Header = () => {
                   placeholder="First Name"
                   className="border rounded w-full px-2 py-3 font-normal mb-3 mt-3"
                   onChange={handleChange}
-                  onBlur={handleBlur}
                 />
                 {touched.firstName && (
                   <span className="text-red-500">{errors.firstName}</span>
@@ -505,7 +502,6 @@ const Header = () => {
                   placeholder="Last Name"
                   className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
                   onChange={handleChange}
-                  onBlur={handleBlur}
                 />
                 {touched.lastName && (
                   <span className="text-red-500 font-semibold">
@@ -525,7 +521,6 @@ const Header = () => {
                   placeholder="Email address"
                   className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
                   onChange={handleChange}
-                  onBlur={handleBlur}
                 />
                 {touched.email && (
                   <span className="text-red-500">{errors.email}</span>
@@ -543,7 +538,6 @@ const Header = () => {
                   placeholder="Password"
                   className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
                   onChange={handleChange}
-                  onBlur={handleBlur}
                 />
                 {touched.password && (
                   <span className="text-red-500">{errors.password}</span>
@@ -561,7 +555,6 @@ const Header = () => {
                   placeholder="Confirm Password"
                   className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
                   onChange={handleChange}
-                  onBlur={handleBlur}
                 />
                 {touched.confirmpassword && (
                   <span className="text-red-500">{errors.confirmpassword}</span>

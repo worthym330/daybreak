@@ -32,15 +32,10 @@ interface HotelType {
   star: string;
   imageUrls: string[];
   productTitle: string[];
+  mapurl: string;
+  pincode: string;
 }
 
-interface ModalState {
-  type: string;
-  state: boolean;
-  index: null | number;
-  id: string;
-  data: HotelType;
-}
 interface ModalState {
   type: string;
   state: boolean;
@@ -65,6 +60,8 @@ const initialModalState: ModalState = {
     star: "",
     imageUrls: [],
     productTitle: [],
+    pincode: "",
+    mapurl: "",
   },
 };
 
@@ -127,7 +124,8 @@ const productSchema = Yup.object().shape({
       ? schema.required("Max People is required for Luxury Tents")
       : schema.notRequired();
   }),
-  maxGuestsperDay: Yup.number().typeError("Max People must be a number")
+  maxGuestsperDay: Yup.number()
+    .typeError("Max People must be a number")
     .required("Max People is required")
     .positive("Max People must be a positive number"),
 });
@@ -142,16 +140,21 @@ const validationSchema = Yup.object().shape({
     .required("Star rating is required")
     .oneOf([1, 2, 3, 4, 5], "Invalid star rating"),
   facilities: Yup.array()
-    .of(Yup.string())
-    .required("At least one facility is required"),
+    .of(Yup.string().required("Facility is required"))
+    .min(1, "At least one facility is required"),
   hotelType: Yup.array()
-    .of(Yup.string())
-    .required("At least one hotel type is required"),
+    .of(Yup.string().required("Hotel type is required"))
+    .min(1, "At least one hotel type is required"),
   imageUrls: Yup.array().of(Yup.mixed()).required("Images are required"),
   productTitle: Yup.array()
     .of(productSchema)
     .required("Product title is required")
     .min(1, "At least one product is required"),
+  mapurl: Yup.string().required("Google Map URL is required"),
+  pincode: Yup.string()
+    .matches(/^[0-9]+$/, "Pin Code must be a numeric string")
+    .required("Pin Code is required")
+    .matches(/^[0-9]{6}$/, "Pin Code must be exactly 6 digits"),
 });
 
 const MyHotels = () => {
@@ -176,17 +179,17 @@ const MyHotels = () => {
   }, []);
 
   const renderModal = () => {
-    const {data, id, state } = modal;
+    const { data, id, state } = modal;
     return (
       <Formik
-      enableReinitialize={true}
+        enableReinitialize
         initialValues={data}
         validationSchema={validationSchema}
         onSubmit={async (values: any, { setSubmitting, resetForm }) => {
           // setSubmitting(true);
           console.log(values);
-          delete values.bookings
-          delete values.favourites
+          delete values.bookings;
+          delete values.favourites;
           const { ...otherValues } = values;
           const formData = new FormData();
           for (const key in otherValues) {
@@ -207,7 +210,7 @@ const MyHotels = () => {
           }
           if (id) {
             try {
-              console.log('called')
+              console.log("called");
               const response = await fetch(
                 `${API_BASE_URL}/api/my-hotels/${id}`,
                 {
@@ -268,12 +271,14 @@ const MyHotels = () => {
           setValues,
           handleBlur,
           handleChange,
+          resetForm,
         }) => (
           <HalfGeneralSlideover
             title={id ? "Edit Hotel" : "Add Hotel"}
             open={state}
             setOpen={() => {
               setModal(initialModalState);
+              resetForm();
             }}
           >
             <form onSubmit={handleSubmit} noValidate>
@@ -284,16 +289,14 @@ const MyHotels = () => {
                     type="name"
                     name="name"
                     value={values.name}
-                    disabled={id?true:false}
+                    disabled={id ? true : false}
                     placeholder="Enter Hotel Name"
                     className="border rounded-md w-full px-2 py-3 font-normal"
                     onChange={handleChange}
                     onBlur={handleBlur}
                   />
                   {touched.name && typeof errors?.name === "string" && (
-                    <span className="text-red-500 font-semibold">
-                      {errors.name}
-                    </span>
+                    <span className="text-red-500 text-sm">{errors.name}</span>
                   )}
                 </div>
                 <div className="text-left">
@@ -302,15 +305,33 @@ const MyHotels = () => {
                     type="city"
                     name="city"
                     value={values.city}
-                    disabled={id?true:false}
+                    disabled={id ? true : false}
                     placeholder="Enter your City"
                     className="border rounded-md w-full px-2 py-3 font-normal"
                     onChange={handleChange}
                     onBlur={handleBlur}
                   />
                   {touched.city && typeof errors?.city === "string" && (
-                    <span className="text-red-500 font-semibold">
-                      {errors.city}
+                    <span className="text-red-500 text-sm">{errors.city}</span>
+                  )}
+                </div>
+                <div className="text-left">
+                  <label className="text-gray-700 text-sm flex-1">
+                    Pin Code
+                  </label>
+                  <input
+                    type="pincode"
+                    name="pincode"
+                    value={values.pincode}
+                    disabled={id ? true : false}
+                    placeholder="Enter your Pin Code"
+                    className="border rounded-md w-full px-2 py-3 font-normal"
+                    onChange={handleChange}
+                    // onBlur={handleBlur}
+                  />
+                  {touched.pincode && typeof errors?.pincode === "string" && (
+                    <span className="text-red-500 text-sm">
+                      {errors.pincode as String}
                     </span>
                   )}
                 </div>
@@ -320,15 +341,33 @@ const MyHotels = () => {
                     type="state"
                     name="state"
                     value={values.state}
-                    disabled={id?true:false}
+                    disabled={id ? true : false}
                     placeholder="Enter your State"
                     className="border rounded-md w-full px-2 py-3 font-normal"
                     onChange={handleChange}
                     onBlur={handleBlur}
                   />
                   {touched.state && typeof errors?.state === "string" && (
-                    <span className="text-red-500 font-semibold">
-                      {errors.state}
+                    <span className="text-red-500 text-sm">{errors.state}</span>
+                  )}
+                </div>
+                <div className="text-left">
+                  <label className="text-gray-700 text-sm flex-1">
+                    Google Map URL
+                  </label>
+                  <input
+                    type="mapurl"
+                    name="mapurl"
+                    value={values.mapurl}
+                    disabled={id ? true : false}
+                    placeholder="Enter your Google Map URL"
+                    className="border rounded-md w-full px-2 py-3 font-normal"
+                    onChange={handleChange}
+                    // onBlur={handleBlur}
+                  />
+                  {touched.mapurl && (
+                    <span className="text-red-500 text-sm">
+                      {errors.mapurl as String}
                     </span>
                   )}
                 </div>
@@ -351,9 +390,7 @@ const MyHotels = () => {
                     <option value="5">5 Stars</option>
                   </select>
                   {touched.star && typeof errors?.star === "string" && (
-                    <span className="text-red-500 font-semibold">
-                      {errors.star}
-                    </span>
+                    <span className="text-red-500 text-sm">{errors.star}</span>
                   )}
                 </div>
                 <div className="text-left">
@@ -372,7 +409,7 @@ const MyHotels = () => {
                   />
                   {touched.description &&
                     typeof errors?.description === "string" && (
-                      <span className="text-red-500 font-semibold">
+                      <span className="text-red-500 text-sm">
                         {errors.description}
                       </span>
                     )}
@@ -396,7 +433,7 @@ const MyHotels = () => {
                   />
                   {touched.cancellationPolicy &&
                     typeof errors?.cancellationPolicy === "string" && (
-                      <span className="text-red-500 font-semibold">
+                      <span className="text-red-500 text-sm">
                         {errors.cancellationPolicy}
                       </span>
                     )}
@@ -427,7 +464,7 @@ const MyHotels = () => {
                       </div>
                       {touched.facilities &&
                         typeof errors.facilities === "string" && (
-                          <span className="text-red-500 font-semibold">
+                          <span className="text-red-500 text-sm">
                             {errors.facilities}
                           </span>
                         )}
@@ -456,7 +493,7 @@ const MyHotels = () => {
                       </div>
                       {touched.hotelType &&
                         typeof errors.hotelType === "string" && (
-                          <span className="text-red-500 font-semibold">
+                          <span className="text-red-500 text-sm">
                             {errors.hotelType}
                           </span>
                         )}
@@ -518,31 +555,37 @@ const MyHotels = () => {
                               {values.imageUrls &&
                               values.imageUrls.length > 0 ? (
                                 <p>
-                                  {values.imageUrls.map((s: any) =>{
-                                    let name
-                                    if(id){
-                                      name = s.split('/').pop()
+                                  {values.imageUrls.map((s: any) => {
+                                    let name;
+                                    if (id) {
+                                      name = s.split("/").pop();
                                     }
-                                    return(
-                                    <span className="flex gap-2">
-                                      {" "}
-                                      {s.name ?<p>{s.name}</p>:<p>{name}</p>}
-                                      <button
-                                        type="button"
-                                        onClick={() => {
-                                          setValues({
-                                            ...values,
-                                            imageUrls: values.imageUrls.filter(
-                                              (e: any) => e !== s
-                                            ),
-                                          });
-                                        }}
-                                        className="cursor-pointer text-red-500 px-1 py-1 hover:bg-red-800 hover:rounded-md hover:text-white disabled:text-gray-700 disabled:hover:bg-gray-300 hover:border-slate-300 hover:border-solid"
-                                      >
-                                        <FaCircleXmark className="w-4" />
-                                      </button>
-                                    </span>
-                                  )})}
+                                    return (
+                                      <span className="flex gap-2">
+                                        {" "}
+                                        {s.name ? (
+                                          <p>{s.name}</p>
+                                        ) : (
+                                          <p>{name}</p>
+                                        )}
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            setValues({
+                                              ...values,
+                                              imageUrls:
+                                                values.imageUrls.filter(
+                                                  (e: any) => e !== s
+                                                ),
+                                            });
+                                          }}
+                                          className="cursor-pointer text-red-500 px-1 py-1 hover:bg-red-800 hover:rounded-md hover:text-white disabled:text-gray-700 disabled:hover:bg-gray-300 hover:border-slate-300 hover:border-solid"
+                                        >
+                                          <FaCircleXmark className="w-4" />
+                                        </button>
+                                      </span>
+                                    );
+                                  })}
                                 </p>
                               ) : (
                                 "Images"
@@ -552,7 +595,7 @@ const MyHotels = () => {
                         </div>
                         {touched.imageUrls &&
                           typeof errors.imageUrls === "string" && (
-                            <span className="text-red-500 font-semibold">
+                            <span className="text-red-500 text-sm">
                               {errors.imageUrls}
                             </span>
                           )}
@@ -613,7 +656,7 @@ const MyHotels = () => {
                       </div>
                       {touched.productTitle &&
                         typeof errors.productTitle === "string" && (
-                          <span className="text-red-500 font-semibold">
+                          <span className="text-red-500 text-sm">
                             {errors.productTitle}
                           </span>
                         )}
@@ -1061,9 +1104,7 @@ const MyHotels = () => {
         >
           Add Hotel
         </Link>
-        <Button
-          onClick={() => setModal((prev) => ({ ...prev, state: true }))}
-        >
+        <Button onClick={() => setModal((prev) => ({ ...prev, state: true }))}>
           Add Hotel
         </Button>
       </span>
@@ -1096,14 +1137,14 @@ const MyHotels = () => {
             </div>
             <span className="flex justify-end">
               <Button
-                onClick={() =>{
+                onClick={() => {
                   setModal((prev) => ({
                     ...prev,
-                    id: hotel._id || '',
+                    id: hotel._id || "",
                     state: true,
                     data: hotel,
-                  }))}
-                }
+                  }));
+                }}
               >
                 View Details
               </Button>

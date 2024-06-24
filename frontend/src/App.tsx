@@ -3,6 +3,7 @@ import {
   Route,
   Routes,
   useNavigate,
+  useLocation,
 } from "react-router-dom";
 import Layout from "./layouts/Layout";
 import Register from "./pages/Register";
@@ -25,6 +26,8 @@ import PrivacyPolicy from "./pages/PrivacyandPolicy";
 import Support from "./pages/Support";
 import CookiePolicy from "./pages/CookiePolicy";
 import Login from "./pages/LoginandSignup";
+import { Bounce, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AccessControl = ({ children, requiredRoles }: any) => {
   const auth_token = Cookies.get("authentication") || "null";
@@ -70,9 +73,19 @@ const AuthRedirect = ({ children }: any) => {
   return auth_token ? null : children;
 };
 
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+};
+
 const App = () => {
   return (
     <Router>
+      <ScrollToTop />
+      <ToastContainer position="top-center" autoClose={1000} transition={Bounce} />
       <Routes>
         <Route
           path="/"
