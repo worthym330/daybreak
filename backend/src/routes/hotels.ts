@@ -241,20 +241,8 @@ const constructSearchQuery = (queryParams: any) => {
   if (queryParams.destination) {
     constructedQuery.$or = [
       { city: new RegExp(queryParams.destination, "i") },
-      { country: new RegExp(queryParams.destination, "i") },
+      { state: new RegExp(queryParams.destination, "i") },
     ];
-  }
-
-  if (queryParams.adultCount) {
-    constructedQuery.adultCount = {
-      $gte: parseInt(queryParams.adultCount),
-    };
-  }
-
-  if (queryParams.childCount) {
-    constructedQuery.childCount = {
-      $gte: parseInt(queryParams.childCount),
-    };
   }
 
   if (queryParams.facilities) {
@@ -266,7 +254,7 @@ const constructSearchQuery = (queryParams: any) => {
   }
 
   if (queryParams.types) {
-    constructedQuery.type = {
+    constructedQuery.hotelType = {
       $in: Array.isArray(queryParams.types)
         ? queryParams.types
         : [queryParams.types],
@@ -278,7 +266,7 @@ const constructSearchQuery = (queryParams: any) => {
       ? queryParams.stars.map((star: string) => parseInt(star))
       : parseInt(queryParams.stars);
 
-    constructedQuery.starRating = { $in: starRatings };
+    constructedQuery.star = { $in: starRatings };
   }
 
   if (queryParams.maxPrice) {

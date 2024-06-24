@@ -16,7 +16,7 @@ const SearchResultsCard = ({ hotel }: Props) => {
 
   const handleButtonClick = (id: string) => {
     if (isLoggedIn === null) {
-      navigate("/partner/sign-in");
+      navigate("/login");
     } else {
       navigate(`/detail/${id}`);
     }
@@ -34,7 +34,7 @@ const SearchResultsCard = ({ hotel }: Props) => {
             />
           </div>
           <div className="grid gap-1.5 grid-cols-4 w-full md:w-[239px] cursor-pointer">
-            {hotel.imageUrls.map((image, index) => (
+            {hotel.imageUrls.slice(0, 4).map((image, index) => (
               <span
                 key={index}
                 className="relative"
@@ -56,10 +56,10 @@ const SearchResultsCard = ({ hotel }: Props) => {
         <div className="flex flex-col gap-3 max-w-[460px]">
           <div>
             <div className="flex items-center gap-2">
-              <span className="ml-1 text-sm">{hotel.type}</span>
+              <span className="ml-1 text-sm">{hotel.hotelType}</span>
               {/* <span className="text-sm py-1 px-2 text-white bg-btnColor rounded-md">{hotel.starRating}</span> */}
               <span className="flex">
-                {Array.from({ length: hotel.starRating }).map((_, index) => (
+                {Array.from({ length: hotel.star }).map((_, index) => (
                   <AiFillStar key={index} className="fill-yellow-400" />
                 ))}
               </span>
@@ -96,10 +96,10 @@ const SearchResultsCard = ({ hotel }: Props) => {
         {/* Content Section End */}
       </div>
       <div className="flex flex-col justify-between items-end gap-2">
-        <span className="text-btnColor font-bold">
+        {/* <span className="text-btnColor font-bold">
           ₹ {hotel.pricePerNight}{" "}
           <span className="text-gray-700 font-medium">per night</span>
-        </span>
+        </span> */}
         <button
           className="bg-goldColor text-white rounded-md p-4 font-medium text-sm lg:text-sm"
           onClick={() => handleButtonClick(hotel._id)}

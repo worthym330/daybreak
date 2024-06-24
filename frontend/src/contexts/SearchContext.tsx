@@ -52,7 +52,13 @@ export const SearchContextProvider = ({
       setHotelId(hotelId);
     }
 
-    sessionStorage.setItem("destination", destination);
+    console.log('destination',destination)
+
+    if(destination){
+      sessionStorage.setItem("destination", destination);
+    }else{
+      sessionStorage.removeItem("destination")
+    }
     sessionStorage.setItem("checkIn", checkIn.toISOString());
 
     if (checkOut) {

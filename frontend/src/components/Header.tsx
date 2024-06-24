@@ -221,10 +221,12 @@ const Header = () => {
   const mutation = useMutation(apiClient.signOut, {
     onSuccess: async () => {
       Cookies.remove("authentication");
-      showToast({ message: "Signed Out!", type: "SUCCESS" });
+      // showToast({ message: "Signed Out!", type: "SUCCESS" });
+      navigate('/')
     },
     onError: (error: Error) => {
-      showToast({ message: error.message, type: "ERROR" });
+      // showToast({ message: error.message, type: "ERROR" });
+      console.log(error.message)
     },
   });
 
