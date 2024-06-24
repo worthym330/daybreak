@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { BookingType, HotelType, FavouriteList } from "../shared/types";
+import { BookingType, HotelType, FavouriteList, ProductType } from "../shared/types";
 
 const bookingSchema = new mongoose.Schema<BookingType>({
   _id: mongoose.Schema.Types.ObjectId,
@@ -22,23 +22,40 @@ const favouriteListSchema = new mongoose.Schema<FavouriteList>({
   email: { type: String },
 });
 
+const productSchema = new mongoose.Schema<ProductType>({
+  title: { type: String},
+  description: { type: String},
+  adultPrice: { type: Number},
+  childPrice: { type: Number},
+  otherpoints: { type: String},
+  notes: { type: String},
+  maxPeople: { type: String},
+  selectedDates: [{ type: Date}],
+  slotTime: { type: String},
+  startTime: { type: String},
+  endTime: { type: String},
+  isChildPrice: { type: Boolean},
+  maxGuestsperDay: { type: Number},
+});
+
 const hotelSchema = new mongoose.Schema<HotelType>({
-  userId: { type: String, required: true },
-  name: { type: String, required: true },
-  city: { type: String, required: true },
-  country: { type: String, required: true },
-  description: { type: String, required: true },
-  type: { type: String, required: true },
-  adultCount: { type: Number, required: true },
-  childCount: { type: Number, required: true },
-  facilities: [{ type: String, required: true }],
-  pricePerNight: { type: Number, required: true },
-  starRating: { type: Number, required: true, min: 1, max: 5 },
-  imageUrls: [{ type: String, required: true }],
-  lastUpdated: { type: Date, required: true },
+  userId: { type: String },
+  name: { type: String },
+  city: { type: String },
+  state: { type: String },
+  description: { type: String },
+  cancellationPolicy: { type: String },
+  facilities: [{ type: String }],
+  hotelType: [{ type: String }],
+  imageUrls: [{ type: String }],
+  productTitle: [productSchema],
+  star: { type: Number, min: 1, max: 5 },
+  lastUpdated: { type: Date },
+  mapurl:{type:String},
+  pincode:{type:String},
   bookings: [bookingSchema],
   favourites: [favouriteListSchema],
-});
+}, { timestamps: true });
 
 const Hotel = mongoose.model<HotelType>("Hotel", hotelSchema);
 export default Hotel;

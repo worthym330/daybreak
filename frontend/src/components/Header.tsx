@@ -16,7 +16,7 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { HiXMark } from "react-icons/hi2";
 import * as apiClient from "../api-client";
 import Cookies from "js-cookie";
-import Button from "./Button";
+import { toast } from "react-toastify";
 
 const initialModalState = {
   type: "add",
@@ -28,6 +28,7 @@ const initialModalState = {
     email: "",
     password: "",
     loginThrough: "password",
+    userType:"customer",
   },
 };
 
@@ -257,14 +258,14 @@ const Header = () => {
               throw new Error(body.message);
             }
 
-            showToast({ message: "Sign in Successful!", type: "SUCCESS" });
+            toast.success('Logined Successfully!')
             setShowDropdown(false);
             Cookies.set("authentication", JSON.stringify(body.user), {
               expires: 1,
             });
           } catch (error: any) {
             console.error("Error during sign in:", error);
-            setModal((prev) => ({ ...prev, state: false, loading: false }));
+            setModal(initialModalState);
             showToast({
               message: error.message || "An error occurred during sign in",
               type: "ERROR",
@@ -278,7 +279,6 @@ const Header = () => {
           isSubmitting,
           errors,
           touched,
-          handleBlur,
           handleChange,
         }) => (
           <Modal
@@ -291,12 +291,12 @@ const Header = () => {
             <form onSubmit={handleSubmit} noValidate>
               <h1 className="text-center text-2xl font-light text-gray-800 mb-5">
                 Welcome to{" "}
-                <span className="text-goldColor font-bold">DayBreak</span>
+                <span className="text-goldColor font-bold">DayBreakPass</span>
               </h1>
 
               <div className="text-left">
                 <label className="text-gray-700 text-sm font-bold flex-1">
-                  {/* Email */}
+                  Email
                 </label>
                 <input
                   type="email"
@@ -305,18 +305,17 @@ const Header = () => {
                   placeholder="Email address"
                   className="border rounded w-full px-2 py-3 font-normal mb-3 mt-3"
                   onChange={handleChange}
-                  onBlur={handleBlur}
                 />
                 {touched.email && (
                   <span className="text-red-500 font-normal">
-                    *{errors.email}
+                    {errors.email}
                   </span>
                 )}
               </div>
 
               <div className="text-left">
                 <label className="text-gray-700 text-sm font-bold flex-1">
-                  {/* Password */}
+                  Password
                 </label>
                 <input
                   type="password"
@@ -325,23 +324,47 @@ const Header = () => {
                   placeholder="Password"
                   className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
                   onChange={handleChange}
-                  onBlur={handleBlur}
                 />
                 {touched.password && (
-                  <span className="text-red-500">*{errors.password}</span>
+                  <span className="text-red-500">{errors.password}</span>
                 )}
               </div>
 
               <div className="flex flex-col justify-center gap-5">
                 <span className="flex items-center justify-between mt-5">
-                  <Button
+                  <button
                     type="submit"
                     className="bg-black mx-auto w-full text-white px-4 py-3 rounded-xl font-bold hover:bg-btnColor"
                     disabled={isSubmitting}
-                    loading={isSubmitting}
                   >
-                    {isSubmitting ? "Logging in..." : "Login"}
-                  </Button>
+                    {isSubmitting ? (
+                      <>
+                        <svg
+                          className="animate-spin h-5 w-5 text-white mr-3"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291l2.12-2.122A5 5 0 016 12H2c0 1.795.703 3.432 1.757 4.686L6 17.291z"
+                          ></path>
+                        </svg>
+                        <span>Logging in...</span>
+                      </>
+                    ) : (
+                      "Login"
+                    )}
+                  </button>
                 </span>
                 <span className="text-center text-gray-800">
                   Don't have an account yet?{" "}
@@ -435,7 +458,6 @@ const Header = () => {
           isSubmitting,
           errors,
           touched,
-          handleBlur,
           handleChange,
         }) => (
           <Modal
@@ -448,7 +470,7 @@ const Header = () => {
             <form onSubmit={handleSubmit} noValidate>
               <h1 className="text-center text-2xl font-light text-gray-800 mb-3">
                 Create{" "}
-                <span className="text-goldColor font-bold">DayBreak</span>{" "}
+                <span className="text-goldColor font-bold">DayBreakPass</span>{" "}
                 Account
               </h1>
 
@@ -463,7 +485,6 @@ const Header = () => {
                   placeholder="First Name"
                   className="border rounded w-full px-2 py-3 font-normal mb-3 mt-3"
                   onChange={handleChange}
-                  onBlur={handleBlur}
                 />
                 {touched.firstName && (
                   <span className="text-red-500">{errors.firstName}</span>
@@ -481,7 +502,6 @@ const Header = () => {
                   placeholder="Last Name"
                   className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
                   onChange={handleChange}
-                  onBlur={handleBlur}
                 />
                 {touched.lastName && (
                   <span className="text-red-500 font-semibold">
@@ -501,7 +521,6 @@ const Header = () => {
                   placeholder="Email address"
                   className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
                   onChange={handleChange}
-                  onBlur={handleBlur}
                 />
                 {touched.email && (
                   <span className="text-red-500">{errors.email}</span>
@@ -519,7 +538,6 @@ const Header = () => {
                   placeholder="Password"
                   className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
                   onChange={handleChange}
-                  onBlur={handleBlur}
                 />
                 {touched.password && (
                   <span className="text-red-500">{errors.password}</span>
@@ -537,7 +555,6 @@ const Header = () => {
                   placeholder="Confirm Password"
                   className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
                   onChange={handleChange}
-                  onBlur={handleBlur}
                 />
                 {touched.confirmpassword && (
                   <span className="text-red-500">{errors.confirmpassword}</span>
@@ -546,13 +563,13 @@ const Header = () => {
 
               <div className="flex flex-col justify-center gap-5 mt-5">
                 <span className="flex items-center justify-between">
-                  <Button
+                  <button
                     type="submit"
                     className="bg-black mx-auto w-full text-white px-4 py-3 rounded-xl font-bold hover:bg-btnColor"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? "Registering..." : "Register"}
-                  </Button>
+                  </button>
                 </span>
                 <span className="text-center text-gray-800">
                   Already have an account?
@@ -616,7 +633,7 @@ const Header = () => {
                         onClick={() => setShowNav(!showNav)}
                       />
                     </span>
-                    <Link to="/">DayBreak</Link>
+                    <Link to="/">DayBreakPass</Link>
                   </span>
                   <span className="flex space-x-2">
                     {userLogined !== null ? (
@@ -636,7 +653,7 @@ const Header = () => {
                             My Hotels
                           </Link>
                         )}
-                        <SignOutButton classNames="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-goldColor hover:text-white hidden lg:block" />
+                        <SignOutButton classNames="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-goldColor hover:text-white hidden md:block" />
                       </>
                     ) : (
                       <button
@@ -717,7 +734,7 @@ const Header = () => {
                       className="py-3 text-fontSecondaryColor"
                       to="/about-us"
                     >
-                      About DayBreak
+                      About DayBreakPass
                     </Link>
                   </div>
                   <div className="flex gap-20 md:w-1/2 justify-center">
@@ -846,7 +863,7 @@ const Header = () => {
                     onClick={() => setShowNav(!showNav)}
                   />
                 </span>
-                <Link to="/">DayBreak</Link>
+                <Link to="/">DayBreakPass</Link>
               </span>
               <span className="flex space-x-2">
                 {userLogined !== null ? (
@@ -866,7 +883,7 @@ const Header = () => {
                         My Hotels
                       </Link>
                     )}
-                    <SignOutButton classNames="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-goldColor hover:text-white hidden lg:block" />
+                    <SignOutButton classNames="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-goldColor hover:text-white hidden md:block" />
                   </>
                 ) : (
                   <button
@@ -954,7 +971,7 @@ const Header = () => {
                     onClick={() => setShowNav(!showNav)}
                   />
                 </span>
-                <Link to="/">DayBreak</Link>
+                <Link to="/">DayBreakPass</Link>
               </span>
               <span className="flex space-x-2">
                 {userLogined !== null ? (
@@ -974,7 +991,7 @@ const Header = () => {
                         My Hotels
                       </Link>
                     )}
-                    <SignOutButton classNames="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-darkGold hover:bg-goldColor hover:text-white hover:border-black hidden lg:block" />
+                    <SignOutButton classNames="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-darkGold hover:bg-goldColor hover:text-white hover:border-black hidden md:block" />
                   </>
                 ) : (
                   <button
@@ -1052,7 +1069,7 @@ const Header = () => {
                   Unforgettable resorts and memories await
                 </span>
                 <Link className="py-3 text-fontSecondaryColor" to="/about-us">
-                  About DayBreak
+                  About DayBreakPass
                 </Link>
               </div>
               <div className="flex gap-20 md:w-1/2 justify-center">
@@ -1181,7 +1198,7 @@ const Header = () => {
               />
             </span>
             <Link to="/" className="">
-              DayBreak
+              DayBreakPass
             </Link>
           </span>
           <span className="flex space-x-2">
@@ -1202,7 +1219,7 @@ const Header = () => {
                     My Hotels
                   </Link>
                 )}
-                <SignOutButton classNames="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-darkGold hover:bg-goldColor hover:text-white hidden lg:block" />
+                <SignOutButton classNames="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-darkGold hover:bg-goldColor hover:text-white hidden md:block" />
               </>
             ) : (
               <button

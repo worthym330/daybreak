@@ -1,12 +1,60 @@
-import { useState } from "react";
-import { useQuery } from "react-query";
-import * as apiClient from "../api-client";
+import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 const MyBookings = () => {
-  const { data: hotels } = useQuery("fetchMyBookings", apiClient.fetchMyBookings);
+  // const { data: hotels } = useQuery("fetchMyBookings", apiClient.fetchMyBookings);
   const [activeTab, setActiveTab] = useState("bookings");
   const personalInfo = JSON.parse(Cookies.get('authentication')||'[]')
+  const [bookingData, setBookingData] = useState([])
+  const [favourites, setFavourites] = useState([])
+
+  useEffect(()=>{
+    if(activeTab === 'bookings'){
+      getMyBookings()
+    }else if (activeTab === 'favourites'){
+      getFavourites()
+    }else{
+
+    }
+  },[activeTab])
+
+  async function getMyBookings () {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/my-bookings`, {
+        credentials: "include",
+      });
+      const resbody = await response.json()
+    
+      if (response.ok) {
+        setBookingData(resbody)
+      }else{
+        console.log("theow errior")
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  async function getFavourites () {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/hotels/get/favourites/${personalInfo.id}`, {
+        credentials: "include",
+      });
+      const resbody = await response.json()
+    
+      if (response.ok) {
+        setFavourites(resbody)
+      }else{
+        console.log("theow errior")
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  console.log(favourites)
+
 
   return (
     <main className="space-y-5">
@@ -50,7 +98,7 @@ const MyBookings = () => {
                   className={`border capitalize px-4 py-3 rounded-lg ${activeTab === "waitlist" ? "bg-[#fff6ea] text-darkGold border border-goldColor" : ""}`}
                   onClick={() => setActiveTab("waitlist")}
                 >
-                  Waitlist
+                  Cancelled
                 </button>
               </li>
             </ul>
@@ -61,8 +109,8 @@ const MyBookings = () => {
                   My Bookings
                 </h3>
                 <div className="">
-                  {hotels && hotels.length > 0 ? (
-                    hotels.map((hotel) => (
+                  {bookingData && bookingData.length > 0 ? (
+                    bookingData.map((hotel:any) => (
                       <div
                         key={hotel._id}
                         className="grid grid-cols-1 lg:grid-cols-[1fr_3fr] border border-slate-300 rounded-lg p-8 gap-5"
@@ -77,10 +125,10 @@ const MyBookings = () => {
                           <div className="text-2xl font-bold">
                             {hotel.name}
                             <div className="text-xs font-normal">
-                              {hotel.city}, {hotel.country}
+                              {hotel.city}, {hotel.state}, In
                             </div>
                           </div>
-                          {hotel.bookings.map((booking) => (
+                          {hotel.bookings.map((booking:any) => (
                             <div key={booking._id}>
                               <div>
                                 <span className="font-bold mr-2">Dates: </span>

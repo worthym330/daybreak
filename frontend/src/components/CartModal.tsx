@@ -7,6 +7,13 @@ const CartModal = ({ product, hotelId, onClose, date, setCart }: any) => {
   const [childCount, setChildCount] = useState(0);
   const [total, setTotal] = useState(0);
 
+  const [isVisible, setIsVisible] = useState(true);
+
+  const handleClose = () => {
+    setIsVisible(false);
+    setTimeout(onClose, 300);
+  };
+
   useEffect(() => {
     const savedCart = Cookies.get("cart");
     if (savedCart) {
@@ -27,10 +34,11 @@ const CartModal = ({ product, hotelId, onClose, date, setCart }: any) => {
     const adultTotal =
       adultCount *
       (parseFloat(product.priceAdult) + parseFloat(product.feeAdult));
-    const childTotal = product.priceChild
-      ? childCount *
-        (parseFloat(product.priceChild) + parseFloat(product.feeChild))
-      : 0;
+    const childTotal =
+      product.priceChild !== ""
+        ? childCount *
+          (parseFloat(product.priceChild) + parseFloat(product.feeChild))
+        : 0;
     setTotal(adultTotal + childTotal);
   }, [
     adultCount,
@@ -47,6 +55,14 @@ const CartModal = ({ product, hotelId, onClose, date, setCart }: any) => {
       const savedCart = Cookies.get("cart");
       if (savedCart) {
         cart = JSON.parse(savedCart) as any[];
+      }
+
+      // Check if there are products with different hotelId
+      const differentHotelId = cart.some((item) => item.hotelId !== hotelId);
+
+      if (differentHotelId) {
+        console.log("Please select the same hotel.");
+        return;
       }
 
       const existingProductIndex = cart.findIndex(
@@ -69,7 +85,7 @@ const CartModal = ({ product, hotelId, onClose, date, setCart }: any) => {
         cart.push(cartItem);
       }
 
-      Cookies.set("cart", JSON.stringify(cart), { expires: 7 });
+      Cookies.set("cart", JSON.stringify(cart), { expires: 1 });
       setCart(cart);
       onClose();
     }
@@ -151,12 +167,14 @@ const CartModal = ({ product, hotelId, onClose, date, setCart }: any) => {
 
       {/* Small Screen Modal */}
       <div
-        className="bg-white p-6 rounded-t-lg rounded-b-none shadow-lg fixed bottom-0 left-0 right-0 w-full h-[35rem] lg:hidden"
+        className={`bg-white p-6 rounded-t-lg rounded-b-none shadow-lg fixed bottom-0 left-0 right-0 w-full h-[35rem] lg:hidden ${
+          isVisible ? "animate-slide-up" : "animate-slide-down"
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
         <button
           className="absolute top-2 right-2 text-gray-600 rounded-full px-2 py-1 border"
-          onClick={onClose}
+          onClick={handleClose}
         >
           ×
         </button>
@@ -225,6 +243,7 @@ const CartModal = ({ product, hotelId, onClose, date, setCart }: any) => {
           </div>
         </div>
       </div>
+
       {/* Small Screen Modal Ends */}
     </div>
   );

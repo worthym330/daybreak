@@ -56,8 +56,8 @@ const Home = () => {
         <p className="text-center mb-10 text-base md:text-lg text-fontSecondaryColor">
           Most recent destinations added by our hosts
         </p>
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-          {latestDestHotels.map((hotel: any) => (
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 px-4">
+          {latestDestHotels.slice(0, 6).map((hotel: any) => (
             <LatestDestinationCard key={hotel.id} hotel={hotel} />
           ))}
         </div>

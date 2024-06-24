@@ -10,7 +10,7 @@ const InfoSection = () => {
           <CiMap className="text-4xl text-white" />
         </div>
         <div className="flex flex-col md:ml-4">
-          <p className="font-semibold text-base text-goldColor font-LuzuryF3">Discover DayBreak</p>
+          <p className="font-semibold text-base text-goldColor font-LuzuryF3">Discover DayBreakPass</p>
           <p className="leading-5 text-sm text-darkGold">
             Select a date and explore pool, spa, beach access and more, at 1,000+ top hotels.
           </p>

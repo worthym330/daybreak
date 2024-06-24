@@ -22,7 +22,7 @@ const LatestDestinationCard = ({ hotel }: any) => {
               {hotel.city}, {hotel.country}
             </span>
           </p>
-          <span className="p-2 font-semibold">{hotel.name}</span>
+          <span className="p-2 font-semibold truncate">{hotel.name}</span>
         </div>
         <div className="flex justify-between p-2 mt-4 items-center">
           <span className="flex gap-2 bg-goldColor text-white font-semibold rounded-lg px-3 py-2">

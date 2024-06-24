@@ -18,8 +18,6 @@ import { MdFamilyRestroom, MdSmokeFree } from "react-icons/md";
 import { useAppContext } from "../contexts/AppContext";
 import ProductCard from "../components/ProductCard";
 import { FavouriteList } from "../../../backend/src/shared/types";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import Cookies from "js-cookie";
 import Button from "../components/Button";
 
@@ -63,7 +61,7 @@ const products = [
     feeAdult: "9",
     priceChild: "60",
     feeChild: "5",
-    priceInfant: "FREE",
+    priceInfant: "",
     description:
       "Free admission for children under 5. $50 food and beverage minimum at Kona Pool Bar or Orchid Marketplace required for complimentary self-parking. No coolers or outside food and beverage allowed.",
   },
@@ -269,16 +267,28 @@ const Detail = () => {
 
   const calculateFees = (items: any) => {
     return items.reduce((total: number, item: any) => {
-      const adultFees = item.adultCount * parseFloat(item.product.feeAdult);
-      const childFees = item.childCount * parseFloat(item.product.feeChild);
+      const adultFees =
+        item.adultCount > 0
+          ? item.adultCount * parseFloat(item.product.feeAdult)
+          : 0;
+      const childFees =
+        item.childCount > 0
+          ? item.childCount * parseFloat(item.product.feeChild)
+          : 0;
       return total + adultFees + childFees;
     }, 0);
   };
 
   const calculateSubtotal = (items: any) => {
     return items.reduce((total: number, item: any) => {
-      const adultTotal = item.adultCount * parseFloat(item.product.priceAdult);
-      const childTotal = item.childCount * parseFloat(item.product.priceChild);
+      const adultTotal =
+        item.adultCount > 0
+          ? item.adultCount * parseFloat(item.product.priceAdult)
+          : 0;
+      const childTotal =
+        item.childCount > 0
+          ? item.childCount * parseFloat(item.product.priceChild)
+          : 0;
       return total + adultTotal + childTotal;
     }, 0);
   };
@@ -341,9 +351,9 @@ const Detail = () => {
 
       {/* Hotel Details Start */}
       <div className="w-full lg:container px-8 pt-10 lg:mx-auto space-y-2">
-        <div className="flex lg:flex-row flex-col-reverse gap-10 space-y-2 justify-between">
+        <div className="flex lg:flex-row flex-col gap-10 space-y-2 justify-between">
           <div className="flex flex-col gap-2 w-full lg:w-2/3">
-            <div className="flex justify-between">
+            <div className="flex justify-between flex-col md:flex-row">
               <div className="flex flex-col gap-2">
                 <span className="text-3xl font-semibold font-LuxuryF1 text-goldColor break-normal">
                   {hotel.name}
@@ -351,10 +361,10 @@ const Detail = () => {
               </div>
               <div className="flex gap-2 items-center">
                 <span className="bg-darkGold py-1 px-3 rounded-lg text-white">
-                  {hotel.starRating}
+                  {hotel.star}
                 </span>
                 <span className="flex">
-                  {Array.from({ length: hotel.starRating }).map((_, i) => (
+                  {Array.from({ length: hotel.star }).map((_, i) => (
                     <AiFillStar key={i} className="fill-yellow-400" />
                   ))}
                 </span>
@@ -397,28 +407,30 @@ const Detail = () => {
             <span className="text-lg font-medium mb-3">Select a Date</span>
             <div className="flex items-center gap-2">
               <MdCalendarMonth className="text-2xl text-btnColor" />
-              <DatePicker
-                selected={selectedDate}
-                onChange={(date) => {
+              <input
+                type="date"
+                value={
+                  selectedDate ? selectedDate.toISOString().split("T")[0] : ""
+                }
+                onChange={(event) => {
+                  const dateString = event.target.value;
+                  const date = new Date(dateString);
                   setSelectedDate(date);
-                  Cookies.set("date", date !== null ? date.toISOString() : "", {
-                    expires: 1,
-                  });
-                  if (selectedDate === null) {
-                    setError(false);
-                  }
+                  Cookies.set("date", dateString, { expires: 1 });
+                  setError(dateString === "");
                 }}
-                dateFormat="dd/MM/yyyy"
-                minDate={new Date()}
-                placeholderText="Please select the date"
-                className={`px-4 py-2 text-goldColor placeholder:text-goldColor border border-gray-300 rounded`}
+                min={new Date().toISOString().split("T")[0]}
+                placeholder="Please select the date"
+                className={`px-4 py-2 text-goldColor placeholder:text-goldColor border border-gray-300 rounded ${
+                  error ? "border-red-500" : ""
+                }`}
               />
             </div>
             <div className="">
               {error && (
-                <span className="mt-4 text-red-500">
-                  Please Select the date first
-                </span>
+                <p className="text-red-500">
+                  Invalid date. Please select a valid date.
+                </p>
               )}
             </div>
             <hr className="border-gray-200 my-3 w-full" />
@@ -440,7 +452,7 @@ const Detail = () => {
           {/* Hotel Details Start */}
 
           {/* Cart Section */}
-          <div className="w-full lg:w-1/3 md:block">
+          <div className="w-full lg:w-1/3">
             <div className="h-fit sticky top-4">
               <div className="p-4 bg-white rounded-lg shadow-md border border-gray-300">
                 <div className="flex items-center justify-between mb-4">
@@ -478,7 +490,7 @@ const Detail = () => {
                           </p>
                         </div>
                       </div>
-                      
+
                       {cartItems.length > 0 &&
                         cartItems.map((item: any, index: any) => (
                           <div

@@ -22,8 +22,10 @@ const Layout = ({ children }: Props) => {
       )}
       {location.pathname.includes("/detail/") ? (
         <div className="py-10 flex-1">{children}</div>
-      ) : (
+      ) : location?.pathname === "/" ?(
         <div className="lg:container lg:mx-auto py-10 flex-1">{children}</div>
+      ):(
+        <div className="container mx-auto py-10 flex-1">{children}</div>
       )}
       <Footer />
     </div>

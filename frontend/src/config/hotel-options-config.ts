@@ -26,3 +26,14 @@ export const hotelTypes = [
     "Spa",
     "Fitness Center",
   ];
+
+
+  export const hotelProducts = [
+    "Day Pass",
+    "Spa Pass",
+    "Pool Pass",
+    "Medicure & Pedicure Pass",
+    "Cabana",
+    "Luxury Tents",
+    "Other"
+  ]

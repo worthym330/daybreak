@@ -15,12 +15,24 @@ export default {
         'btnColor':"#AD8B3A",
       },
       fontFamily: {
-        'LuzuryF1': ['"Antic Didone"', 'serif'],
-        'LuzuryF2': ['"Raleway"', 'serif'],
-        'LuzuryF3': ['"Roboto Serif"', 'sans-serif'],
+        'LuzuryF1': ["Antic Didone", 'serif'],
+        'LuzuryF2': ["Raleway", 'serif'],
+        'LuzuryF3': ["Roboto Serif", 'sans-serif'],
+        'HKFONT': ["Hanken Grotesk", 'sans-serif'],
       },
       width: {
         '50vw': '50vw',
+        '80vw': '80vw'
+      },
+      animation: {
+        'fade-right': 'fadeRight 0.5s ease-in-out',
+        'twice': 'fadeRight 0.5s ease-in-out 0s 1 normal forwards',
+      },
+      keyframes: {
+        fadeRight: {
+          '0%': { opacity: '0', transform: 'translateX(-20px)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' },
+        },
       },
     },
     container: {
