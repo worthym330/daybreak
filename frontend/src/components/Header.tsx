@@ -28,7 +28,7 @@ const initialModalState = {
     email: "",
     password: "",
     loginThrough: "password",
-    userType:"customer",
+    userType: "customer",
   },
 };
 
@@ -222,11 +222,11 @@ const Header = () => {
     onSuccess: async () => {
       Cookies.remove("authentication");
       // showToast({ message: "Signed Out!", type: "SUCCESS" });
-      navigate('/')
+      navigate("/");
     },
     onError: (error: Error) => {
       // showToast({ message: error.message, type: "ERROR" });
-      console.log(error.message)
+      console.log(error.message);
     },
   });
 
@@ -260,7 +260,7 @@ const Header = () => {
               throw new Error(body.message);
             }
 
-            toast.success('Logined Successfully!')
+            toast.success("Logined Successfully!");
             setShowDropdown(false);
             Cookies.set("authentication", JSON.stringify(body.user), {
               expires: 1,

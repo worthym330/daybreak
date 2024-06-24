@@ -526,12 +526,23 @@ const Detail = () => {
                           <span>Subtotal:</span>
                           <span>₹{subtotal.toFixed(2)}</span>
                         </div>
-                        <Button
-                          className="w-full bg-goldColor text-white py-2 rounded-lg"
-                          onClick={() => navigate(`/hotel/${hotelId}/booking`)}
-                        >
-                          Book Now
-                        </Button>
+                        {userLogined !== null ? (
+                          <Button
+                            className="w-full bg-goldColor text-white py-2 rounded-lg"
+                            onClick={() =>
+                              navigate(`/hotel/${hotelId}/booking`)
+                            }
+                          >
+                            Book Now
+                          </Button>
+                        ) : (
+                          <Button
+                            className="w-full bg-goldColor text-white py-2 rounded-lg"
+                            onClick={() => navigate(`/login`)}
+                          >
+                            Login
+                          </Button>
+                        )}
                       </div>
                     </div>
                   )}

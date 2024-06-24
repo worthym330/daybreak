@@ -4,6 +4,7 @@ import BookingForm from "../forms/BookingForm/BookingForm";
 import { useNavigate, useParams } from "react-router-dom";
 import BookingDetailsSummary from "../components/BookingDetailsSummary";
 import Cookies from "js-cookie";
+import { useEffect, useState } from "react";
 
 const Booking = () => {
   const { hotelId } = useParams();
@@ -13,18 +14,22 @@ const Booking = () => {
   const auth_token = Cookies.get("authentication") || "null";
   const userLogined = JSON.parse(auth_token);
   const navigate = useNavigate();
+  const [paymentIntentData, setPaymentIntentData] = useState(null);
 
-  const { data: paymentIntentData } = useQuery(
-    "createPaymentIntent",
-    () =>
-      apiClient.createPaymentIntent(
-        hotelId as string,
-        cartItems // Pass cartItems to API call
-      ),
-    {
-      enabled: !!hotelId && cartItems.length > 0,
-    }
-  );
+  useEffect(() => {
+    const fetchPaymentIntentData = async () => {
+      if (!!hotelId && cartItems.length > 0) {
+        try {
+          const data = await apiClient.createPaymentIntent(hotelId, cartItems);
+          setPaymentIntentData(data);
+        } catch (error) {
+          console.error('Error creating payment intent:', error);
+        }
+      }
+    };
+
+    fetchPaymentIntentData();
+  }, []);
 
   const { data: hotel } = useQuery("fetchHotelByID", () =>
     apiClient.fetchHotelById(hotelId as string)
@@ -42,8 +47,6 @@ const Booking = () => {
     navigate(-1);
     return null;
   }
-
-  // Function to handle Razorpay payment
 
   return (
     <div className="grid md:grid-cols-[1fr_2fr]">

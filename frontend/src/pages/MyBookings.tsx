@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
+import { Link } from "react-router-dom";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 const MyBookings = () => {
@@ -53,9 +54,6 @@ const MyBookings = () => {
     }
   }
 
-  console.log(favourites)
-
-
   return (
     <main className="space-y-5">
       {/* User Header */}
@@ -93,14 +91,14 @@ const MyBookings = () => {
                   Favourites
                 </button>
               </li>
-              <li>
+              {/* <li>
                 <button
                   className={`border capitalize px-4 py-3 rounded-lg ${activeTab === "waitlist" ? "bg-[#fff6ea] text-darkGold border border-goldColor" : ""}`}
                   onClick={() => setActiveTab("waitlist")}
                 >
                   Cancelled
                 </button>
-              </li>
+              </li> */}
             </ul>
             {/* Content Shown when clicked on Bookings*/}
             {activeTab === "bookings" && (
@@ -165,9 +163,32 @@ const MyBookings = () => {
                   My Favourites
                 </h3>
                 <div className="">
-                  <div className="capitalize font-regular px-4 py-[22px] text-sm">
+                {favourites && favourites.length > 0 ? (
+                    favourites.map((hotel:any) => (
+                      <Link
+                        to={`/detail/${hotel._id}`}
+                        className="grid grid-cols-1 lg:grid-cols-[1fr_3fr] border border-slate-300 rounded-lg p-8 gap-5"
+                      >
+                        <div className="lg:w-full lg:h-[250px]">
+                          <img
+                            src={hotel.imageUrls[0]}
+                            className="w-full h-full object-cover object-center"
+                          />
+                        </div>
+                        <div className="flex flex-col gap-4 overflow-y-auto max-h-[300px]">
+                          <div className="text-2xl font-bold">
+                            {hotel.name}
+                            <div className="text-xs font-normal">
+                              {hotel.city}, {hotel.state}, India
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                    ))
+                  ) :
+                  (<div className="capitalize font-regular px-4 py-[22px] text-sm">
                     You have no favourites to show on this list.
-                  </div>
+                  </div>)}
                 </div>
               </div>
             )}

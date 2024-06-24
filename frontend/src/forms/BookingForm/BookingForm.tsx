@@ -4,12 +4,13 @@ import {
   UserType,
 } from "../../../../backend/src/shared/types";
 import { useSearchContext } from "../../contexts/SearchContext";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useMutation } from "react-query";
 import * as apiClient from "../../api-client";
 import { useAppContext } from "../../contexts/AppContext";
 import Cookies from "js-cookie";
 import Button from "../../components/Button";
+import { toast } from "react-toastify";
 
 type Props = {
   currentUser: UserType;
@@ -33,7 +34,8 @@ const BookingForm = ({ currentUser, paymentIntent }: Props) => {
   const search = useSearchContext();
   const { hotelId } = useParams();
 
-  const { showToast, razorpayOptions } = useAppContext();
+  const { razorpayOptions } = useAppContext();
+  const navigate = useNavigate()
 
   const cart = Cookies.get("cart");
   const parsedCart = cart ? JSON.parse(cart) : [];
@@ -49,10 +51,14 @@ const BookingForm = ({ currentUser, paymentIntent }: Props) => {
     },
     {
       onSuccess: () => {
-        showToast({ message: "Booking Saved!", type: "SUCCESS" });
+        toast.success('Successfully booked!')
+        Cookies.remove('cart')
+        Cookies.remove('date')
+        navigate('/my-bookings')
       },
       onError: () => {
-        showToast({ message: "Error saving booking", type: "ERROR" });
+        toast.error('Failed to mark your payment')
+
       },
     }
   );
