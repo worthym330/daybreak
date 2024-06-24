@@ -49,11 +49,11 @@ const Home = () => {
   return (
     <div className="space-y-10">
       {/* Latest Destinations */}
-      <section className="">
-        <h2 className="text-center text-fontPrimaryColor text-3xl font-bold mb-5 font-LuzuryF1">
+      <section className="containerSpacer md:px-0">
+        <h2 className="text-center text-fontPrimaryColor text-2xl md:text-3xl font-bold mb-3 font-LuzuryF1">
           Popular Destinations
         </h2>
-        <p className="text-center mb-5 text-fontSecondaryColor">
+        <p className="text-center mb-10 text-base md:text-lg text-fontSecondaryColor">
           Most recent destinations added by our hosts
         </p>
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
@@ -68,7 +68,7 @@ const Home = () => {
       {/* Top Destinations */}
       <section className="">
         <div className="flex flex-col">
-          <h2 className="text-center text-fontPrimaryColor text-3xl font-bold font-LuzuryF1">
+          <h2 className="text-center text-fontPrimaryColor text-2xl md:text-3xl font-bold font-LuzuryF1">
             Explore Destinations
           </h2>
           {/* <p className="text-center mb-10">
