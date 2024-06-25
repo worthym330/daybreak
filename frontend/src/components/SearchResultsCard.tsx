@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { HotelType } from "../../../backend/src/shared/types";
 import { AiFillStar } from "react-icons/ai";
 import Cookies from "js-cookie";
+import Button from "./Button";
 
 type Props = {
   hotel: HotelType;
@@ -53,7 +54,7 @@ const SearchResultsCard = ({ hotel }: Props) => {
         {/* Images Section Ends */}
 
         {/* Content Section */}
-        <div className="flex flex-col gap-3 max-w-[460px]">
+        <div className="flex flex-col gap-3 md:max-w-[460px]">
           <div>
             <div className="flex items-center gap-2">
               <span className="ml-1 text-sm">{hotel.hotelType}</span>
@@ -76,7 +77,7 @@ const SearchResultsCard = ({ hotel }: Props) => {
             <div className="line-clamp-4 text-sm">{hotel.description}</div>
           </div>
 
-          <div className="grid grid-cols-2 items-center font-medium">
+          <div className="grid grid-cols-2 items-start font-medium">
             <div className="flex flex-wrap gap-1 text-white">
               {hotel.facilities.slice(0, 3).map((facility, index) => (
                 <span
@@ -91,7 +92,10 @@ const SearchResultsCard = ({ hotel }: Props) => {
                   `+${hotel.facilities.length - 3} more`}
               </span>
             </div>
-            <div className="flex flex-wrap gap-1 text-white">
+          </div>
+          <div className="flex flex-col gap-1 text-white">
+            <span className="text-sm text-black font-bold">Products </span>
+            <span className="flex flex-wrap">
               {hotel.productTitle.slice(0, 3).map((facility, index) => (
                 <span
                   key={index}
@@ -100,26 +104,26 @@ const SearchResultsCard = ({ hotel }: Props) => {
                   {facility.title}
                 </span>
               ))}
-              <span className="text-sm text-black">
-                {hotel.productTitle.length > 3 &&
-                  `+${hotel.productTitle.length - 3} more`}
-              </span>
-            </div>
+            </span>
+            <span className="text-sm text-black">
+              {hotel.productTitle.length > 3 &&
+                `+${hotel.productTitle.length - 3} more`}
+            </span>
           </div>
         </div>
         {/* Content Section End */}
       </div>
-      <div className="flex flex-col justify-between items-end gap-2">
-        {/* <span className="text-btnColor font-bold">
-          ₹ {hotel.pricePerNight}{" "}
-          <span className="text-gray-700 font-medium">per night</span>
-        </span> */}
-        <button
-          className="bg-goldColor text-white rounded-md p-4 font-medium text-sm lg:text-sm"
+      <div className="grid gap-2 content-around ">
+        <span className="text-btnColor font-bold text-nowrap">
+          <span className="text-gray-700 font-medium">Starting from</span> ₹{" "}
+          {hotel?.productTitle[0]?.adultPrice}
+        </span>
+        <Button
+          className="text-sm "
           onClick={() => handleButtonClick(hotel._id)}
         >
           {isLoggedIn === null ? "Login to book now!" : "Book Now"}
-        </button>
+        </Button>
       </div>
     </div>
   );
