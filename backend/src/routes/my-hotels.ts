@@ -148,6 +148,9 @@ router.put(
         })
       );
 
+      const facilitiesMap = facilities.split(",");
+      const HotelTypes = hotelType.split(",");
+
       // Delete the existing images if any new images are uploaded
       console.log(imageFiles);
       if (imageFiles.length > 0) {
@@ -163,11 +166,15 @@ router.put(
       const updatedHotel: HotelType = {
         ...existingHotel.toObject(),
         ...hotelData,
+        facilities:facilitiesMap,
+        hotelType:HotelTypes,
         imageUrls: imageFiles.length > 0 ? imageUrls : existingHotel.imageUrls,
         lastUpdated: new Date(),
         userId: req.userId,
         productTitle: parsedProductTitle,
       };
+
+      console.log(updatedHotel)
 
       // Update the hotel in the database
       await Hotel.findByIdAndUpdate(hotelId, updatedHotel, { new: true });
