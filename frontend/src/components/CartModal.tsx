@@ -1,6 +1,8 @@
 import Cookies from "js-cookie";
 import { useState, useEffect } from "react";
 import Button from "./Button";
+import moment from "moment";
+import { toast } from "react-toastify";
 
 const CartModal = ({ product, hotelId, onClose, date, setCart }: any) => {
   const [adultCount, setAdultCount] = useState(0);
@@ -30,24 +32,17 @@ const CartModal = ({ product, hotelId, onClose, date, setCart }: any) => {
     }
   }, [product.title, hotelId]);
 
+  const GST_RATE = 0.18;
+
   useEffect(() => {
-    const adultTotal =
-      adultCount *
-      (parseFloat(product.priceAdult) + parseFloat(product.feeAdult));
+    const calculateGST = (amount: number) => amount * (1 + GST_RATE);
+    const adultTotal = calculateGST(adultCount * product.adultPrice);
     const childTotal =
-      product.priceChild !== ""
-        ? childCount *
-          (parseFloat(product.priceChild) + parseFloat(product.feeChild))
+      product.childPrice > 0
+        ? calculateGST(childCount * product.childPrice)
         : 0;
     setTotal(adultTotal + childTotal);
-  }, [
-    adultCount,
-    childCount,
-    product.priceAdult,
-    product.feeAdult,
-    product.priceChild,
-    product.feeChild,
-  ]);
+  }, [adultCount, childCount, product.adultPrice, product.childPrice]);
 
   const handleAddToCart = () => {
     if (adultCount > 0 || childCount > 0) {
@@ -61,7 +56,9 @@ const CartModal = ({ product, hotelId, onClose, date, setCart }: any) => {
       const differentHotelId = cart.some((item) => item.hotelId !== hotelId);
 
       if (differentHotelId) {
-        console.log("Please select the same hotel.");
+        toast.warning(
+          "Please select the same hotel or remove the current selection from your cart before booking a new hotel."
+        );
         return;
       }
 
@@ -126,7 +123,7 @@ const CartModal = ({ product, hotelId, onClose, date, setCart }: any) => {
               </button>
             </div>
           </div>
-          {product.priceChild && (
+          {product.childPrice > 0 && (
             <div className="flex justify-between items-center">
               <span>Children (age 3 to 12)</span>
               <div className="flex items-center">
@@ -197,7 +194,7 @@ const CartModal = ({ product, hotelId, onClose, date, setCart }: any) => {
               </button>
             </div>
           </div>
-          {product.priceChild && (
+          {product.childPrice > 0 && (
             <div className="flex justify-between items-center">
               <span>Children (age 3 to 12)</span>
               <div className="flex items-center">
@@ -218,12 +215,36 @@ const CartModal = ({ product, hotelId, onClose, date, setCart }: any) => {
             </div>
           )}
           <div className="overflow-y-auto max-h-[24rem] pb-5">
-            <ul className="text-sm text-gray-600 mt-2 space-y-1 list-disc p-4">
-              {product.features.map((feature: any, index: any) => (
+            <div className="flex text-gray-700 text-sm gap-2">
+              <span>Access till</span>
+              <span>
+                {moment(product.startTime, "HH:mm").format("hh:mm A")} -{" "}
+                {moment(product.endTime, "HH:mm").format("hh:mm A")}
+              </span>
+            </div>
+            <div className="text-sm text-gray-600 mt-2 space-y-1">
+              {/* {product.features.map((feature:any, index:number) => (
                 <li key={index}>{feature}</li>
-              ))}
-            </ul>
-            <span className="text-sm text-gray-500">{product.description}</span>
+              ))} */}
+              <h1 className="text-gray-800 font-semibold">
+                Description of the {product.title}
+              </h1>
+              <span className="px-2">{product.description}</span>
+            </div>
+            <div>
+              <h1 className="text-gray-800 font-semibold">
+                All the points that needs to be mentioned in the product.
+              </h1>
+              <p className="text-sm text-gray-500 px-2">
+                {product.otherpoints}
+              </p>
+            </div>
+            <div className="text-sm text-gray-600 mt-2 space-y-1">
+              <h1 className="text-gray-800 font-semibold">
+                Points to be Noted
+              </h1>
+              <span className="px-2">{product.notes}</span>
+            </div>
           </div>
         </div>
         <div className="fixed bottom-0 left-0 right-0 bg-white p-4 border-t">
