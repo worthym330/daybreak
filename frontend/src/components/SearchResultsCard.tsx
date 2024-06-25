@@ -76,12 +76,12 @@ const SearchResultsCard = ({ hotel }: Props) => {
             <div className="line-clamp-4 text-sm">{hotel.description}</div>
           </div>
 
-          <div className="grid grid-cols-2 items-end font-medium">
-            <div className="flex flex-wrap gap-1 items-center text-white">
+          <div className="grid grid-cols-2 items-center font-medium">
+            <div className="flex flex-wrap gap-1 text-white">
               {hotel.facilities.slice(0, 3).map((facility, index) => (
                 <span
                   key={index}
-                  className="bg-gray-700 p-2 rounded-md text-xs"
+                  className="bg-goldColor p-2 rounded-md text-xs"
                 >
                   {facility}
                 </span>
@@ -89,6 +89,20 @@ const SearchResultsCard = ({ hotel }: Props) => {
               <span className="text-sm text-black">
                 {hotel.facilities.length > 3 &&
                   `+${hotel.facilities.length - 3} more`}
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-1 text-white">
+              {hotel.productTitle.slice(0, 3).map((facility, index) => (
+                <span
+                  key={index}
+                  className="bg-goldColor p-2 rounded-md text-xs"
+                >
+                  {facility.title}
+                </span>
+              ))}
+              <span className="text-sm text-black">
+                {hotel.productTitle.length > 3 &&
+                  `+${hotel.productTitle.length - 3} more`}
               </span>
             </div>
           </div>
