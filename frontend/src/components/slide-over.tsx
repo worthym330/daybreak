@@ -21,7 +21,7 @@ export default function HalfGeneralSlideover(props: any) {
 
         <div className="fixed inset-0 overflow-hidden">
           <div className="absolute inset-0 overflow-hidden">
-            <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full">
+            <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
               <Transition.Child
                 as={Fragment}
                 enter="transform transition ease-in-out duration-500 sm:duration-700"
@@ -53,7 +53,7 @@ export default function HalfGeneralSlideover(props: any) {
                         </div>
                       </div>
                     </div>
-                    <div className="px-6 lg:px-8 p-8 w-full">{children}</div>
+                    <div className="px-4 w-full">{children}</div>
                   </div>
                 </Dialog.Panel>
               </Transition.Child>

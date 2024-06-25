@@ -64,16 +64,15 @@ const BookingDetailsSummary = ({ hotel, cartItems }: Props) => {
                 {cartItem.adultCount} adults & {cartItem.childCount} children
               </div>
             </div>
-            <div className="border-t border-b py-2">
-              Product:
-              <div className="font-bold">{cartItem?.product?.title}</div>
-              <ul className="list-disc ml-5">
-                {cartItem.product.features.map((feature, idx) => (
-                  <li key={idx}>{feature}</li>
-                ))}
-              </ul>
-              <div className="text-sm mt-2">{cartItem.product.description}</div>
+            <div className="overflow-y-auto max-h-[24rem] pb-5">
+
+            <div className="text-sm text-gray-600 mt-2 space-y-1">
+              <h1 className="text-gray-800 font-semibold">
+                Description of the {cartItem?.product?.title}
+              </h1>
+              <span className="px-2">{cartItem.product.description}</span>
             </div>
+          </div>
           </div>
         </details>
       ))}

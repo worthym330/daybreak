@@ -556,7 +556,7 @@ const MyHotels = () => {
                                 <p>
                                   {values.imageUrls.map((s: any) => {
                                     let name;
-                                    if (id) {
+                                    if (!s.name) {
                                       name = s.split("/").pop();
                                     }
                                     return (

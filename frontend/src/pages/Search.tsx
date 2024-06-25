@@ -8,6 +8,11 @@ import StarRatingFilter from "../components/StarRatingFilter";
 import HotelTypesFilter from "../components/HotelTypesFilter";
 import FacilitiesFilter from "../components/FacilitiesFilter";
 import PriceFilter from "../components/PriceFilter";
+import { useLocation } from "react-router-dom";
+
+const useQueryParams = () => {
+  return new URLSearchParams(useLocation().search);
+};
 
 const Search = () => {
   const search = useSearchContext();
@@ -18,9 +23,11 @@ const Search = () => {
   const [selectedPrice, setSelectedPrice] = useState<number | undefined>();
   const [sortOption, setSortOption] = useState<string>("");
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
+  const queryParams = useQueryParams();
+  const city = queryParams.get("city");
 
   const searchParams = {
-    destination: search.destination,
+    destination: city ? city : '',
     checkIn: search.checkIn.toISOString(),
     // checkOut: search.checkOut.toISOString(),
     // adultCount: search.adultCount.toString(),
@@ -68,37 +75,6 @@ const Search = () => {
         : prevFacilities.filter((prevFacility) => prevFacility !== facility)
     );
   };
-
-  // const topRowHotels = [
-  //   {
-  //     _id: 1,
-  //     imageUrls: [hotelImg1, "//r1imghtlak.mmtcdn.com/56d4be4e-3f01-4c60-a5c0-bb28ffd869ae.jpeg?&output-quality=75&downsize=243:162&crop=243:162;0,10&output-format=webp", hotelImg1, "//r1imghtlak.mmtcdn.com/1bd28797-1a31-441e-b3c2-e56bbfd18010.jpg?&output-quality=75&downsize=243:162&crop=243:162;0,10&output-format=webp", hotelImg1],
-  //     name: "Taj Hotel",
-  //     location: "Mumbai, India",
-  //     rating: 4.9,
-  //     price: 1000,
-  //     starRating: 4.2,
-  //     description:
-  //       "Hotels are available for customers and customers with more than one hotel available for customers and customers with more than one hotel available for customers and customers with more than.",
-  //     facilities: ["Swimming Pool", "Fitness Center", "Restaurant", "Parking"],
-  //     pricePerNight: 1000,
-  //     type: "Hotel",
-  //   },
-  //   {
-  //     _id: 2,
-  //     imageUrls: [hotelImg1, "//r1imghtlak.mmtcdn.com/56d4be4e-3f01-4c60-a5c0-bb28ffd869ae.jpeg?&output-quality=75&downsize=243:162&crop=243:162;0,10&output-format=webp", hotelImg1, "//r1imghtlak.mmtcdn.com/1bd28797-1a31-441e-b3c2-e56bbfd18010.jpg?&output-quality=75&downsize=243:162&crop=243:162;0,10&output-format=webp", hotelImg1],
-  //     name: "Taj Hotel",
-  //     location: "Mumbai, India",
-  //     rating: 4.9,
-  //     price: 1000,
-  //     starRating: 4.2,
-  //     description:
-  //       "Hotels are available for customers and customers with more than one hotel",
-  //     facilities: ["Swimming Pool", "Fitness Center", "Restaurant", "Parking"],
-  //     pricePerNight: 1000,
-  //     type: "Hotel",
-  //   },
-  // ];
 
   return (
     <div className="relative grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-5">

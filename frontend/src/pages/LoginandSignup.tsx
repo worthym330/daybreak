@@ -1,7 +1,6 @@
-import { useMutation, useQueryClient } from "react-query";
-import * as apiClient from "../api-client";
+import { useQueryClient } from "react-query";
 import { useAppContext } from "../contexts/AppContext";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
@@ -10,11 +9,13 @@ import Cookies from "js-cookie";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 import loginImage from "../assets/images/pexels-gapeppy1-2373201.jpg";
 import Button from "../components/Button";
+import { toast } from "react-toastify";
 
 interface login {
   email: string;
   password: string;
   loginThrough: string;
+  userType?: string;
 }
 
 interface CustomJwtPayload extends JwtPayload {
@@ -60,8 +61,6 @@ const Login = ({ Login }: any) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const location = useLocation();
-
   const responseLoginGoogle = async (response: any) => {
     const token = response.credential;
     const user = jwtDecode<CustomJwtPayload>(token);
@@ -85,7 +84,7 @@ const Login = ({ Login }: any) => {
         Cookies.set("authentication", JSON.stringify(body.user), {
           expires: 1,
         });
-        navigate(-1)
+        navigate(-1);
       } else {
         showToast({ message: "Failed to Login!", type: "ERROR" });
       }
@@ -121,7 +120,7 @@ const Login = ({ Login }: any) => {
         Cookies.set("authentication", JSON.stringify(body.user), {
           expires: 1,
         });
-        navigate(-1)
+        navigate(-1);
       } else {
         showToast({ message: "Failed to register!", type: "ERROR" });
       }
@@ -129,17 +128,6 @@ const Login = ({ Login }: any) => {
       console.error("Error authenticating with backend:", error);
     }
   };
-
-  const mutation = useMutation(apiClient.signIn, {
-    onSuccess: async () => {
-      showToast({ message: "Sign in Successful!", type: "SUCCESS" });
-      await queryClient.invalidateQueries("validateToken");
-      navigate(location.state?.from?.pathname || "/");
-    },
-    onError: (error: Error) => {
-      showToast({ message: error.message, type: "ERROR" });
-    },
-  });
 
   return Login ? (
     <div className="flex min-h-screen flex-row">
@@ -150,27 +138,44 @@ const Login = ({ Login }: any) => {
               email: "",
               password: "",
               loginThrough: "password",
+              userType: "customer",
             }}
             validationSchema={loginSchema}
-            onSubmit={(values: login, { setSubmitting }) => {
-              mutation.mutate(values, {
-                onSuccess: () => {
-                  navigate(-1)
+            onSubmit={async (values: login, { setSubmitting }) => {
+              try {
+                setSubmitting(true);
+                const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+                  method: "POST",
+                  credentials: "include",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(values),
+                });
+
+                const body = await response.json();
+
+                if (response.ok) {
+                  toast.success("Logined Successfully!");
+                  Cookies.set("authentication", JSON.stringify(body.user), {
+                    expires: 1,
+                  });
                   setSubmitting(false);
-                },
-                onError: () => {
-                  setSubmitting(false);
-                },
-              });
+                  navigate(-1);
+                } else {
+                  toast.error(body.message);
+                  // throw new Error(body.message);
+                }
+              } catch (error: any) {
+                console.error("Error during sign in:", error);
+                showToast({
+                  message: error.message || "An error occurred during sign in",
+                  type: "ERROR",
+                });
+              }
             }}
           >
-            {({
-              isSubmitting,
-              handleChange,
-              touched,
-              errors,
-              values,
-            }) => (
+            {({ isSubmitting, handleChange, touched, errors, values }) => (
               <Form className="flex flex-col gap-5">
                 <h2 className="text-3xl font-bold">Login</h2>
                 <div className="text-left">
@@ -213,7 +218,11 @@ const Login = ({ Login }: any) => {
 
                 <div className="flex flex-col justify-center gap-5">
                   <span className="flex items-center justify-between">
-                    <Button type="submit" disabled={isSubmitting} className="w-full">
+                    <Button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full"
+                    >
                       {isSubmitting ? "Logging in..." : "Login"}
                     </Button>
                   </span>
@@ -295,7 +304,7 @@ const Login = ({ Login }: any) => {
                       expires: 1,
                     }
                   );
-                  navigate(-1)
+                  navigate(-1);
                   showToast({
                     message: "Registered Successful!",
                     type: "SUCCESS",

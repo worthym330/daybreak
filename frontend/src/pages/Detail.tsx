@@ -44,66 +44,6 @@ const facilityIcons = {
   "Fitness Center": <FaDumbbell />,
 };
 
-const products = [
-  {
-    title: "Day Pass",
-    features: [
-      "Kona Pool",
-      "Kohala River Pool with waterslides",
-      "Hot tub",
-      "Saltwater lagoon with white sand beach",
-      "Grab-n-go food and beverages",
-      "Kayaks, paddle-boats, and water bikes",
-      "Complimentary wifi",
-      "Valet parking available for a fee",
-    ],
-    priceAdult: "100",
-    feeAdult: "9",
-    priceChild: "60",
-    feeChild: "5",
-    priceInfant: "",
-    description:
-      "Free admission for children under 5. $50 food and beverage minimum at Kona Pool Bar or Orchid Marketplace required for complimentary self-parking. No coolers or outside food and beverage allowed.",
-  },
-  {
-    title: "Spa Pass",
-    features: [
-      "Indoor Jacuzzi",
-      "Steam room",
-      "Hot tub",
-      "Fitness Center",
-      "Relaxation Lounge",
-      "Men's and Women's lockers and showers",
-      "10% discount at spa retail shop",
-      "Complimentary wifi",
-      "Self Parking and valet parking available for a free",
-    ],
-    priceAdult: "40",
-    feeAdult: "4",
-    priceChild: "",
-    feeChild: "",
-    priceInfant: "",
-    description:
-      "Adults 18+ only. All amenities are unisex unless otherwise specified. Does not include access to property pools.",
-  },
-  {
-    title: "Paradise Pool Daybed",
-    features: [
-      "Day Passes for up to 4 people (all amenities included in the Day Pass)",
-      "Cushioned daybed for up to 4 people with towel service",
-      "Chef's daily fruit selection plate",
-      "Bottled water",
-    ],
-    priceAdult: "250",
-    feeAdult: "22",
-    priceChild: "",
-    feeChild: "",
-    priceInfant: "",
-    description:
-      "Located at the family-friendly Paradise Pool. Memorial Day, 4th of July and Labor Day Weekends - Groove & splash with a DJ performance on Saturday & Sunday, kid-friendly activities & exciting poolside events. Does not include access to the adult-only Saguaro Pool. If not checked in by 12:00pm, the resort reserves the right to cancel the reservation & re-sell the daybed. 20% service fee on the total price of the daybed, plus food and beverage purchased, will be charged at the property on the day of the rental. No outside food and beverages are permitted. Enhance your experience with food & beverage add-ons: Kid's Paradise: 2 non-alcoholic piña coladas or strawberry daiquiris, 2 orders of crispy chicken tenders, 1 pineapple pool float ($70). Sonoran Package: pitcher of skinny margaritas (serves 5-6), one order of chips, salsa, and guacamole ($99). Go Big Package: choice of any two flatbreads, 2 buckets of beer, 1 dessert of choice ($125). To book, select the Add-on at checkout. Does not include service charge. Service charge will be collected on property.",
-  },
-];
-
 const Tooltip = ({ children, text }: any) => {
   const [visible, setVisible] = useState(false);
 
@@ -265,37 +205,27 @@ const Detail = () => {
     return <></>;
   }
 
-  const calculateFees = (items: any) => {
-    return items.reduce((total: number, item: any) => {
-      const adultFees =
-        item.adultCount > 0
-          ? item.adultCount * parseFloat(item.product.feeAdult)
-          : 0;
-      const childFees =
-        item.childCount > 0
-          ? item.childCount * parseFloat(item.product.feeChild)
-          : 0;
-      return total + adultFees + childFees;
-    }, 0);
-  };
-
   const calculateSubtotal = (items: any) => {
+    const GST_RATE = 0.18;
     return items.reduce((total: number, item: any) => {
       const adultTotal =
         item.adultCount > 0
-          ? item.adultCount * parseFloat(item.product.priceAdult)
+          ? item.adultCount * item.product.adultPrice
           : 0;
       const childTotal =
         item.childCount > 0
-          ? item.childCount * parseFloat(item.product.priceChild)
+          ? item.childCount * item.product.childPrice
           : 0;
-      return total + adultTotal + childTotal;
+  
+      // Calculate GST for adult and child totals
+      const adultGST = adultTotal * (1 + GST_RATE);
+      const childGST = childTotal * (1 + GST_RATE);
+  
+      return total + adultGST + childGST;
     }, 0);
   };
-
-  const fees = calculateFees(cartItems);
+  
   const subtotal = calculateSubtotal(cartItems);
-  // const total = fees + subtotal;
 
   function handleRemoveItem(itemId: any) {
     let cart: any[] = [];
@@ -436,7 +366,7 @@ const Detail = () => {
             <hr className="border-gray-200 my-3 w-full" />
             <span className="text-lg font-medium">Select a product</span>
             <div className="mt-5">
-              {products.map((product, index) => (
+              {hotel.productTitle.map((product, index) => (
                 <ProductCard
                   key={index}
                   product={product}
@@ -499,12 +429,7 @@ const Detail = () => {
                           >
                             <div>
                               <h3 className="text-sm">
-                                {item.product.title} - adult (
-                                {item.product.priceAdult})
-                              </h3>
-                              <h3 className="text-sm">
-                                {item.product.title} - child (
-                                {item.product.priceChild})
+                                {item.product.title} 
                               </h3>
                             </div>
                             <button
@@ -519,19 +444,26 @@ const Detail = () => {
                         ))}
                       <div className="mt-4 border-t pt-4">
                         <div className="flex justify-between text-gray-700 mb-2">
-                          <span>Fees:</span>
-                          <span>₹{fees.toFixed(2)}</span>
-                        </div>
-                        <div className="flex justify-between text-gray-700 mb-2">
                           <span>Subtotal:</span>
                           <span>₹{subtotal.toFixed(2)}</span>
                         </div>
-                        <Button
-                          className="w-full bg-goldColor text-white py-2 rounded-lg"
-                          onClick={() => navigate(`/hotel/${hotelId}/booking`)}
-                        >
-                          Book Now
-                        </Button>
+                        {userLogined !== null ? (
+                          <Button
+                            className="w-full bg-goldColor text-white py-2 rounded-lg"
+                            onClick={() =>
+                              navigate(`/hotel/${hotelId}/booking`)
+                            }
+                          >
+                            Book Now
+                          </Button>
+                        ) : (
+                          <Button
+                            className="w-full bg-goldColor text-white py-2 rounded-lg"
+                            onClick={() => navigate(`/login`)}
+                          >
+                            Login
+                          </Button>
+                        )}
                       </div>
                     </div>
                   )}

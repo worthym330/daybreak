@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { HotelType } from "../../../backend/src/shared/types";
 import { AiFillStar } from "react-icons/ai";
 import Cookies from "js-cookie";
+import Button from "./Button";
 
 type Props = {
   hotel: HotelType;
@@ -16,7 +17,7 @@ const SearchResultsCard = ({ hotel }: Props) => {
 
   const handleButtonClick = (id: string) => {
     if (isLoggedIn === null) {
-      navigate("/partner/sign-in");
+      navigate("/login");
     } else {
       navigate(`/detail/${id}`);
     }
@@ -34,7 +35,7 @@ const SearchResultsCard = ({ hotel }: Props) => {
             />
           </div>
           <div className="grid gap-1.5 grid-cols-4 w-full md:w-[239px] cursor-pointer">
-            {hotel.imageUrls.map((image, index) => (
+            {hotel.imageUrls.slice(0, 4).map((image, index) => (
               <span
                 key={index}
                 className="relative"
@@ -53,13 +54,13 @@ const SearchResultsCard = ({ hotel }: Props) => {
         {/* Images Section Ends */}
 
         {/* Content Section */}
-        <div className="flex flex-col gap-3 max-w-[460px]">
+        <div className="flex flex-col gap-3 md:max-w-[460px]">
           <div>
             <div className="flex items-center gap-2">
-              <span className="ml-1 text-sm">{hotel.type}</span>
+              <span className="ml-1 text-sm">{hotel.hotelType}</span>
               {/* <span className="text-sm py-1 px-2 text-white bg-btnColor rounded-md">{hotel.starRating}</span> */}
               <span className="flex">
-                {Array.from({ length: hotel.starRating }).map((_, index) => (
+                {Array.from({ length: hotel.star }).map((_, index) => (
                   <AiFillStar key={index} className="fill-yellow-400" />
                 ))}
               </span>
@@ -76,12 +77,12 @@ const SearchResultsCard = ({ hotel }: Props) => {
             <div className="line-clamp-4 text-sm">{hotel.description}</div>
           </div>
 
-          <div className="grid grid-cols-2 items-end font-medium">
-            <div className="flex flex-wrap gap-1 items-center text-white">
+          <div className="grid grid-cols-2 items-start font-medium">
+            <div className="flex flex-wrap gap-1 text-white">
               {hotel.facilities.slice(0, 3).map((facility, index) => (
                 <span
                   key={index}
-                  className="bg-gray-700 p-2 rounded-md text-xs"
+                  className="bg-goldColor p-2 rounded-md text-xs"
                 >
                   {facility}
                 </span>
@@ -92,20 +93,37 @@ const SearchResultsCard = ({ hotel }: Props) => {
               </span>
             </div>
           </div>
+          <div className="flex flex-col gap-1 text-white">
+            <span className="text-sm text-black font-bold">Products </span>
+            <span className="flex flex-wrap">
+              {hotel.productTitle.slice(0, 3).map((facility, index) => (
+                <span
+                  key={index}
+                  className="bg-goldColor p-2 rounded-md text-xs"
+                >
+                  {facility.title}
+                </span>
+              ))}
+            </span>
+            <span className="text-sm text-black">
+              {hotel.productTitle.length > 3 &&
+                `+${hotel.productTitle.length - 3} more`}
+            </span>
+          </div>
         </div>
         {/* Content Section End */}
       </div>
-      <div className="flex flex-col justify-between items-end gap-2">
-        <span className="text-btnColor font-bold">
-          ₹ {hotel.pricePerNight}{" "}
-          <span className="text-gray-700 font-medium">per night</span>
+      <div className="grid gap-2 content-around ">
+        <span className="text-btnColor font-bold text-nowrap">
+          <span className="text-gray-700 font-medium">Starting from</span> ₹{" "}
+          {hotel?.productTitle[0]?.adultPrice}
         </span>
-        <button
-          className="bg-goldColor text-white rounded-md p-4 font-medium text-sm lg:text-sm"
+        <Button
+          className="text-sm "
           onClick={() => handleButtonClick(hotel._id)}
         >
           {isLoggedIn === null ? "Login to book now!" : "Book Now"}
-        </button>
+        </Button>
       </div>
     </div>
   );

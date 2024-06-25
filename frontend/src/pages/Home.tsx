@@ -21,39 +21,39 @@ const Home = () => {
       imageUrls: [
         "https://images.unsplash.com/photo-1598932982787-f54572e6cde4?q=80&w=1928&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       ],
-      name: "Mumbai",
+      city: "Mumbai",
     },
     {
       _id: 2,
       imageUrls: [
         "https://images.unsplash.com/photo-1598977054780-2dc700fdc9d3?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       ],
-      name: "Delhi",
+      city: "Delhi",
     },
     {
       _id: 3,
       imageUrls: [
         "https://images.unsplash.com/photo-1667300376656-e5d2cc288918?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       ],
-      name: "Jaipur",
+      city: "Jaipur",
     },
     {
       _id: 4,
       imageUrls: [
         "https://images.unsplash.com/photo-1603689200436-b212c976c011?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8S29sa2F0YSUyMGJlYXV0aWZ1bCUyMGltYWdlc3xlbnwwfHwwfHx8MA%3D%3D",
       ],
-      name: "Kolkata",
+      city: "Kolkata",
     },
   ];
 
   return (
     <div className="space-y-10">
       {/* Latest Destinations */}
-      <section className="containerSpacer md:px-0">
+      <section className="">
         <h2 className="text-center text-fontPrimaryColor text-2xl md:text-3xl font-bold mb-3 font-LuzuryF1">
           Popular Destinations
         </h2>
-        <p className="text-center mb-10 text-base md:text-lg text-fontSecondaryColor">
+        <p className="text-center mb-5 text-base md:text-lg text-fontSecondaryColor">
           Most recent destinations added by our hosts
         </p>
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 px-4">

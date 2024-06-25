@@ -18,7 +18,7 @@ import MyBookings from "./pages/MyBookings";
 import Home from "./pages/Home";
 import { NotFound } from "./pages/NotFound";
 import Cookies from "js-cookie";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import WaitList from "./pages/WaitList";
 import AboutUs from "./pages/AboutUs";
 import TermsAndConditions from "./pages/TermAndCondition";
@@ -33,29 +33,15 @@ const AccessControl = ({ children, requiredRoles }: any) => {
   const auth_token = Cookies.get("authentication") || "null";
   const user = JSON.parse(auth_token);
   const navigate = useNavigate();
-  const [unauthenticated, setUnauthenticated] = useState(false);
+  // const [unauthenticated, setUnauthenticated] = useState(false);
   useEffect(() => {
     if (user === null) {
-      setUnauthenticated(true);
-      setTimeout(() => {
         navigate(-1);
-      }, 3000);
     } else if (requiredRoles && !requiredRoles.includes(user.role)) {
       navigate("/");
     }
   }, [user, requiredRoles, navigate]);
 
-  if (user === null || (requiredRoles && !requiredRoles.includes(user.role))) {
-    return (
-      <>
-        {unauthenticated && (
-          <div className="fixed top-4 right-0 transform -translate-x-1/2 bg-red-500 text-white p-4 rounded shadow-lg">
-            Please login and try again.
-          </div>
-        )}
-      </>
-    );
-  }
 
   return <>{children}</>;
 };
