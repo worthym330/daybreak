@@ -83,9 +83,9 @@ const Search = () => {
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } transition-transform duration-300 lg:translate-x-0`}
       >
-        <div className="rounded-lg border border-slate-300 p-5 h-full lg:h-fit lg:sticky lg:top-10 overflow-y-auto">
+        <div className="rounded-lg border border-goldColor p-5 h-full lg:h-fit lg:sticky lg:top-10 overflow-y-auto">
           <div className="space-y-5 h-full flex flex-col">
-            <div className="flex justify-between items-center border-b border-slate-300 pb-5">
+            <div className="flex justify-between items-center border-b border-goldColor pb-5">
               <h3 className="text-lg font-semibold">Filter by:</h3>
               <button
                 className="lg:hidden text-xl"
@@ -133,7 +133,7 @@ const Search = () => {
             <select
               value={sortOption}
               onChange={(event) => setSortOption(event.target.value)}
-              className="p-2 border rounded-md"
+              className="p-2 border rounded-md border-goldColor"
             >
               <option value="">Sort By</option>
               <option value="starRating">Star Rating</option>
