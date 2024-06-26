@@ -1,6 +1,6 @@
 import { useQuery } from "react-query";
 import * as apiClient from "../api-client";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 // import hotelImg1 from "../assets/taj.jpg";
 import LatestDestinationCard from "../components/LatestDestinationCard";
 import TopDestinationCard from "../components/TopDestinationCard";
@@ -58,7 +58,9 @@ const Home = () => {
         </p>
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 px-4">
           {latestDestHotels.slice(0, 6).map((hotel: any) => (
-            <LatestDestinationCard key={hotel.id} hotel={hotel} />
+            <Link to={`/detail/${hotel._id}`}>
+              <LatestDestinationCard key={hotel.id} hotel={hotel} />
+            </Link>
           ))}
         </div>
       </section>

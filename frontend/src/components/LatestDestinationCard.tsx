@@ -27,7 +27,7 @@ const LatestDestinationCard = ({ hotel }: any) => {
         <div className="flex justify-between p-2 mt-4 items-center">
           <span className="flex gap-2 bg-goldColor text-white font-semibold rounded-lg px-3 py-2">
             <AiFillStar className="w-5 h-5 " />
-            {hotel.starRating}
+            {hotel.star}
           </span>
           {/* <Link
             to={`detail/${hotel._id}`}

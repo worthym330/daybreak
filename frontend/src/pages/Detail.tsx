@@ -81,7 +81,7 @@ const Detail = () => {
   const auth_token = Cookies.get("authentication") || "null";
   const userLogined = JSON.parse(auth_token);
   const navigate = useNavigate();
-  const [CartHotel, SetCartHotel] = useState<CartHotel>();
+  const [CartHotel, setCartHotel] = useState<CartHotel>();
 
   useEffect(() => {
     const handleResize = () => {
@@ -195,44 +195,45 @@ const Detail = () => {
     (fav: FavouriteList) => fav?.userId === userLogined?.id
   );
 
-  useEffect(() => {
-    const cart = Cookies.get("cart");
-    const parsedCart = cart ? JSON.parse(cart) : [];
-    setCartItems(parsedCart);
-  }, []);
+  const getCartHotel = async () => {
+    const hotelId = cartItems[0].hotelId;
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/hotels/${hotelId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setCartHotel(data);
+      } else {
+        console.error("Error fetching hotels");
+      }
+    } catch (error) {
+      console.error("Error fetching hotels", error);
+    }
+  };
 
   useEffect(() => {
     const cart = Cookies.get("cart");
     const parsedCart = cart ? JSON.parse(cart) : [];
     setCartItems(parsedCart);
-  }, [carts]);
-
-  useEffect(() => {
+    if(parsedCart.length > 0) {
+      getCartHotel();
+    }
     const storedDate = Cookies.get("date");
     const parsedDate = storedDate ? new Date(storedDate) : null;
     setSelectedDate(parsedDate);
   }, []);
 
+  useEffect(() => {
+    const cart = Cookies.get("cart");
+    const parsedCart = cart ? JSON.parse(cart) : [];
+    setCartItems(parsedCart);
+    if(parsedCart.length > 0) {
+      getCartHotel();
+    }
+  }, [carts]);
+
   if (!hotel) {
     return <></>;
   }
-
-  async function getCartHotel() {
-    const hotelId = cartItems[0].hotelId;
-    const response = await fetch(`${API_BASE_URL}/api/hotels/${hotelId}`);
-    if (response.ok) {
-      const data = await response.json();
-      SetCartHotel(data);
-    } else {
-      console.error("Error fetching Hotels");
-    }
-  }
-
-  useEffect(() => {
-    if (cartItems.length > 0) {
-      getCartHotel();
-    }
-  }, []);
 
   const calculateSubtotal = (items: any) => {
     const GST_RATE = 0.18;
