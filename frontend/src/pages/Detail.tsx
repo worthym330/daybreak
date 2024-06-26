@@ -44,6 +44,11 @@ const facilityIcons = {
   "Fitness Center": <FaDumbbell />,
 };
 
+interface CartHotel {
+  imageUrls: string[];
+  name: string;
+}
+
 const Tooltip = ({ children, text }: any) => {
   const [visible, setVisible] = useState(false);
 
@@ -76,6 +81,7 @@ const Detail = () => {
   const auth_token = Cookies.get("authentication") || "null";
   const userLogined = JSON.parse(auth_token);
   const navigate = useNavigate();
+  const [CartHotel, SetCartHotel] = useState<CartHotel>();
 
   useEffect(() => {
     const handleResize = () => {
@@ -193,6 +199,12 @@ const Detail = () => {
     const cart = Cookies.get("cart");
     const parsedCart = cart ? JSON.parse(cart) : [];
     setCartItems(parsedCart);
+  }, []);
+
+  useEffect(() => {
+    const cart = Cookies.get("cart");
+    const parsedCart = cart ? JSON.parse(cart) : [];
+    setCartItems(parsedCart);
   }, [carts]);
 
   useEffect(() => {
@@ -205,26 +217,39 @@ const Detail = () => {
     return <></>;
   }
 
+  async function getCartHotel() {
+    const hotelId = cartItems[0].hotelId;
+    const response = await fetch(`${API_BASE_URL}/api/hotels/${hotelId}`);
+    if (response.ok) {
+      const data = await response.json();
+      SetCartHotel(data);
+    } else {
+      console.error("Error fetching Hotels");
+    }
+  }
+
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      getCartHotel();
+    }
+  }, []);
+
   const calculateSubtotal = (items: any) => {
     const GST_RATE = 0.18;
     return items.reduce((total: number, item: any) => {
       const adultTotal =
-        item.adultCount > 0
-          ? item.adultCount * item.product.adultPrice
-          : 0;
+        item.adultCount > 0 ? item.adultCount * item.product.adultPrice : 0;
       const childTotal =
-        item.childCount > 0
-          ? item.childCount * item.product.childPrice
-          : 0;
-  
+        item.childCount > 0 ? item.childCount * item.product.childPrice : 0;
+
       // Calculate GST for adult and child totals
       const adultGST = adultTotal * (1 + GST_RATE);
       const childGST = childTotal * (1 + GST_RATE);
-  
+
       return total + adultGST + childGST;
     }, 0);
   };
-  
+
   const subtotal = calculateSubtotal(cartItems);
 
   function handleRemoveItem(itemId: any) {
@@ -406,19 +431,39 @@ const Detail = () => {
                   ) : (
                     <div>
                       <div className="flex items-center space-x-4 mb-4">
-                        <img
-                          src={hotel.imageUrls[0]}
-                          alt={hotel.name}
-                          className="w-16 h-16 rounded-lg"
-                        />
-                        <div>
-                          <h3 className="text-md font-semibold">
-                            {hotel.name}
-                          </h3>
-                          <p className="text-sm text-gray-500">
-                            {/* {moment(selectedDate).format('DD/MM/YYYY')} */}
-                          </p>
-                        </div>
+                        {CartHotel ? (
+                          <>
+                            <img
+                              src={CartHotel?.imageUrls[0]}
+                              alt={CartHotel?.name}
+                              className="w-16 h-16 rounded-lg"
+                            />
+                            <div>
+                              <h3 className="text-md font-semibold">
+                                {CartHotel?.name}
+                              </h3>
+                              <p className="text-sm text-gray-500">
+                                {/* {moment(selectedDate).format('DD/MM/YYYY')} */}
+                              </p>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <img
+                              src={hotel.imageUrls[0]}
+                              alt={hotel.name}
+                              className="w-16 h-16 rounded-lg"
+                            />
+                            <div>
+                              <h3 className="text-md font-semibold">
+                                {hotel.name}
+                              </h3>
+                              <p className="text-sm text-gray-500">
+                                {/* {moment(selectedDate).format('DD/MM/YYYY')} */}
+                              </p>
+                            </div>
+                          </>
+                        )}
                       </div>
 
                       {cartItems.length > 0 &&
@@ -428,9 +473,7 @@ const Detail = () => {
                             className="flex justify-between items-center mb-4"
                           >
                             <div>
-                              <h3 className="text-sm">
-                                {item.product.title} 
-                              </h3>
+                              <h3 className="text-sm">{item.product.title}</h3>
                             </div>
                             <button
                               className="text-gray-500"
