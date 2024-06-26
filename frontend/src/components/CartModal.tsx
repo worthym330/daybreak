@@ -1,14 +1,12 @@
-import Cookies from "js-cookie";
 import { useState, useEffect } from "react";
 import Button from "./Button";
 import moment from "moment";
 import { toast } from "react-toastify";
 
-const CartModal = ({ product, hotelId, onClose, date, setCart }: any) => {
+const CartModal = ({ product, hotel, onClose, date, setCart }: any) => {
   const [adultCount, setAdultCount] = useState(0);
   const [childCount, setChildCount] = useState(0);
   const [total, setTotal] = useState(0);
-
   const [isVisible, setIsVisible] = useState(true);
 
   const handleClose = () => {
@@ -17,12 +15,12 @@ const CartModal = ({ product, hotelId, onClose, date, setCart }: any) => {
   };
 
   useEffect(() => {
-    const savedCart = Cookies.get("cart");
+    const savedCart = localStorage.getItem("cart");
     if (savedCart) {
       const cart = JSON.parse(savedCart) as any[];
       const savedProduct = cart.find(
         (item) =>
-          item.product.title === product.title && item.hotelId === hotelId
+          item.product.title === product.title && item.hotel._id === hotel._id
       );
       if (savedProduct) {
         setAdultCount(savedProduct.adultCount);
@@ -30,7 +28,7 @@ const CartModal = ({ product, hotelId, onClose, date, setCart }: any) => {
         setTotal(savedProduct.total);
       }
     }
-  }, [product.title, hotelId]);
+  }, [product.title, hotel]);
 
   const GST_RATE = 0.18;
 
@@ -47,13 +45,13 @@ const CartModal = ({ product, hotelId, onClose, date, setCart }: any) => {
   const handleAddToCart = () => {
     if (adultCount > 0 || childCount > 0) {
       let cart: any[] = [];
-      const savedCart = Cookies.get("cart");
+      const savedCart = localStorage.getItem("cart");
       if (savedCart) {
         cart = JSON.parse(savedCart) as any[];
       }
 
       // Check if there are products with different hotelId
-      const differentHotelId = cart.some((item) => item.hotelId !== hotelId);
+      const differentHotelId = cart.some((item) => item.hotel._id !== hotel._id);
 
       if (differentHotelId) {
         toast.warning(
@@ -64,12 +62,12 @@ const CartModal = ({ product, hotelId, onClose, date, setCart }: any) => {
 
       const existingProductIndex = cart.findIndex(
         (item) =>
-          item.product.title === product.title && item.hotelId === hotelId
+          item.product.title === product.title && item.hotel._id === hotel._id
       );
 
       const cartItem = {
         product,
-        hotelId,
+        hotel,
         adultCount,
         childCount,
         total,
@@ -82,9 +80,13 @@ const CartModal = ({ product, hotelId, onClose, date, setCart }: any) => {
         cart.push(cartItem);
       }
 
-      Cookies.set("cart", JSON.stringify(cart), { expires: 1 });
-      setCart(cart);
-      onClose();
+      try {
+        localStorage.setItem('cart', JSON.stringify(cart));
+        setCart(cart);
+        onClose();
+      } catch (error) {
+        console.error("Error setting local storage: ", error);
+      }
     }
   };
 

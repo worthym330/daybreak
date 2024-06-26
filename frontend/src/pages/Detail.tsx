@@ -44,11 +44,6 @@ const facilityIcons = {
   "Fitness Center": <FaDumbbell />,
 };
 
-interface CartHotel {
-  imageUrls: string[];
-  name: string;
-}
-
 const Tooltip = ({ children, text }: any) => {
   const [visible, setVisible] = useState(false);
 
@@ -81,7 +76,6 @@ const Detail = () => {
   const auth_token = Cookies.get("authentication") || "null";
   const userLogined = JSON.parse(auth_token);
   const navigate = useNavigate();
-  const [CartHotel, setCartHotel] = useState<CartHotel>();
 
   useEffect(() => {
     const handleResize = () => {
@@ -195,40 +189,19 @@ const Detail = () => {
     (fav: FavouriteList) => fav?.userId === userLogined?.id
   );
 
-  const getCartHotel = async () => {
-    const hotelId = cartItems[0].hotelId;
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/hotels/${hotelId}`);
-      if (response.ok) {
-        const data = await response.json();
-        setCartHotel(data);
-      } else {
-        console.error("Error fetching hotels");
-      }
-    } catch (error) {
-      console.error("Error fetching hotels", error);
-    }
-  };
-
   useEffect(() => {
-    const cart = Cookies.get("cart");
+    const cart = localStorage.getItem("cart");
     const parsedCart = cart ? JSON.parse(cart) : [];
     setCartItems(parsedCart);
-    if(parsedCart.length > 0) {
-      getCartHotel();
-    }
     const storedDate = Cookies.get("date");
     const parsedDate = storedDate ? new Date(storedDate) : null;
     setSelectedDate(parsedDate);
   }, []);
 
   useEffect(() => {
-    const cart = Cookies.get("cart");
+    const cart = localStorage.getItem("cart");
     const parsedCart = cart ? JSON.parse(cart) : [];
     setCartItems(parsedCart);
-    if(parsedCart.length > 0) {
-      getCartHotel();
-    }
   }, [carts]);
 
   if (!hotel) {
@@ -255,14 +228,13 @@ const Detail = () => {
 
   function handleRemoveItem(itemId: any) {
     let cart: any[] = [];
-    const savedCart = Cookies.get("cart");
+    const savedCart = localStorage.getItem("cart");
     if (savedCart) {
       cart = JSON.parse(savedCart) as any[];
       cart = cart.filter((item) => item.product.title !== itemId);
-      Cookies.set("cart", JSON.stringify(cart), { expires: 1 });
+      localStorage.setItem("cart", JSON.stringify(cart));
     }
     setCartItems(cart);
-    return cart;
   }
 
   return (
@@ -396,7 +368,7 @@ const Detail = () => {
                 <ProductCard
                   key={index}
                   product={product}
-                  hotelId={hotel._id}
+                  hotel={hotel}
                   date={selectedDate}
                   error={error}
                   setError={setError}
@@ -432,39 +404,19 @@ const Detail = () => {
                   ) : (
                     <div>
                       <div className="flex items-center space-x-4 mb-4">
-                        {CartHotel ? (
-                          <>
-                            <img
-                              src={CartHotel?.imageUrls[0]}
-                              alt={CartHotel?.name}
-                              className="w-16 h-16 rounded-lg"
-                            />
-                            <div>
-                              <h3 className="text-md font-semibold">
-                                {CartHotel?.name}
-                              </h3>
-                              <p className="text-sm text-gray-500">
-                                {/* {moment(selectedDate).format('DD/MM/YYYY')} */}
-                              </p>
-                            </div>
-                          </>
-                        ) : (
-                          <>
-                            <img
-                              src={hotel.imageUrls[0]}
-                              alt={hotel.name}
-                              className="w-16 h-16 rounded-lg"
-                            />
-                            <div>
-                              <h3 className="text-md font-semibold">
-                                {hotel.name}
-                              </h3>
-                              <p className="text-sm text-gray-500">
-                                {/* {moment(selectedDate).format('DD/MM/YYYY')} */}
-                              </p>
-                            </div>
-                          </>
-                        )}
+                        <img
+                          src={cartItems[0].hotel.imageUrls[0]}
+                          alt={cartItems[0].hotel.name}
+                          className="w-16 h-16 rounded-lg"
+                        />
+                        <div>
+                          <h3 className="text-md font-semibold">
+                            {cartItems[0].hotel.name}
+                          </h3>
+                          <p className="text-sm text-gray-500">
+                            {/* {moment(selectedDate).format('DD/MM/YYYY')} */}
+                          </p>
+                        </div>
                       </div>
 
                       {cartItems.length > 0 &&

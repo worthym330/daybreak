@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 
 const Booking = () => {
   const { hotelId } = useParams();
-  const cart = Cookies.get("cart");
+  const cart = localStorage.getItem("cart");
   const parsedCart = cart ? JSON.parse(cart) : [];
   const cartItems = parsedCart;
   const auth_token = Cookies.get("authentication") || "null";

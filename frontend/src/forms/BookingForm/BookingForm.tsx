@@ -37,7 +37,7 @@ const BookingForm = ({ currentUser, paymentIntent }: Props) => {
   const { razorpayOptions } = useAppContext();
   const navigate = useNavigate()
 
-  const cart = Cookies.get("cart");
+  const cart = localStorage.getItem("cart");
   const parsedCart = cart ? JSON.parse(cart) : [];
 
   const { mutate: bookRoom, isLoading } = useMutation<
@@ -52,7 +52,7 @@ const BookingForm = ({ currentUser, paymentIntent }: Props) => {
     {
       onSuccess: () => {
         toast.success('Successfully booked!')
-        Cookies.remove('cart')
+        localStorage.removeItem('cart')
         Cookies.remove('date')
         navigate('/my-bookings')
       },

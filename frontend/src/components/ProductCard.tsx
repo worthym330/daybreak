@@ -6,7 +6,7 @@ import moment from 'moment'
 
 interface ProductCardProps {
   product: any;
-  hotelId: string;
+  hotel: any;
   date?: any;
   error?: boolean;
   setError?: any;
@@ -15,7 +15,7 @@ interface ProductCardProps {
 
 const ProductCard = ({
   product,
-  hotelId,
+  hotel,
   date,
   error,
   setError,
@@ -137,7 +137,7 @@ const ProductCard = ({
       {isModalOpen && (
         <CartModal
           product={product}
-          hotelId={hotelId}
+          hotel={hotel}
           onClose={handleCloseModal}
           date={date}
           setCart={setCart}
