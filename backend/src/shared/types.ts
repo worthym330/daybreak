@@ -70,7 +70,7 @@ export type PaymentIntentResponse = {
 
 export interface ProductType {
   title: string;
-  description: string;
+  description: string[];
   adultPrice: number;
   childPrice: number;
   otherpoints: string;

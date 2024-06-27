@@ -2,7 +2,7 @@ import { useState } from "react";
 import CartModal from "./CartModal";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import Button from "./Button";
-import moment from 'moment'
+import moment from "moment";
 
 interface ProductCardProps {
   product: any;
@@ -67,13 +67,21 @@ const ProductCard = ({
             {product.title}
           </h2>
           <div className="flex text-gray-700 text-sm gap-2">
-              <span>Access till</span>
-              <span>{moment(product.startTime, 'HH:mm').format('hh:mm A')} - {moment(product.endTime, 'HH:mm').format('hh:mm A')}
-              </span>
+            <span>Access till</span>
+            <span>
+              {moment(product.startTime, "HH:mm").format("hh:mm A")} -{" "}
+              {moment(product.endTime, "HH:mm").format("hh:mm A")}
+            </span>
           </div>
           <div className="text-sm text-gray-600 mt-2 space-y-1">
-            <h1 className="text-gray-800 font-semibold">Description of the {product.title}</h1>
-            <span className="px-2">{product.description}</span>
+            <h1 className="text-gray-800 font-semibold">
+              Description of the {product.title}
+            </h1>
+            <ul className="text-sm text-gray-600 mt-2 space-y-1 list-disc p-4">
+              {product.description.map((feature: any, index: number) => (
+                <li key={index}>{feature}</li>
+              ))}
+            </ul>
           </div>
           <div>
             <h1 className="text-gray-800 font-semibold">

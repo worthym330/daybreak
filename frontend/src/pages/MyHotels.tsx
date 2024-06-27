@@ -1,6 +1,6 @@
 import { BsBuilding, BsMap } from "react-icons/bs";
 import { BiStar } from "react-icons/bi";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { Formik } from "formik";
 import HalfGeneralSlideover from "../components/slide-over";
 import * as Yup from "yup";
@@ -83,7 +83,9 @@ interface FormTouched {
 
 const productSchema = Yup.object().shape({
   title: Yup.string().required("Product title is required"),
-  description: Yup.string().required("Product description is required"),
+  description: Yup.array()
+    .of(Yup.string().required("Pointer is required"))
+    .required("Product description is required"),
   adultPrice: Yup.number()
     .typeError("Price for Adult must be a number")
     .required("Price for Adult is required")
@@ -155,6 +157,56 @@ const validationSchema = Yup.object().shape({
     .required("Pin Code is required")
     .matches(/^[0-9]{6}$/, "Pin Code must be exactly 6 digits"),
 });
+
+const DynamicInputFields = ({ value, onChange }: any) => {
+  // Ensure the value is an array
+  const values = Array.isArray(value) ? value : [];
+
+  const handleChange = (
+    index: number,
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
+    const newValues = [...values];
+    newValues[index] = event.target.value;
+    onChange(newValues);
+  };
+
+  const handleAddField = () => {
+    onChange([...values, ""]);
+  };
+
+  const handleRemoveField = (index: number) => {
+    const newValues = values.filter((_, i) => i !== index);
+    onChange(newValues);
+  };
+
+  return (
+    <div className="flex flex-col">
+      {values.map((val, index) => (
+        <div key={index} className="mb-2">
+          <div className="relative mt-2 rounded-md shadow-sm">
+        <input
+          type="text"
+          value={val}
+          onChange={(e) => handleChange(index, e)}
+          className="border rounded-md w-full px-2 py-2 font-normal mb-1"
+          placeholder={`Description point ${index + 1}`}
+        />
+        <div className="absolute inset-y-0 right-0 flex items-center pr-3 z-10">
+          <FaCircleXmark className="h-5 w-5 text-red-500 cursor-pointer" aria-hidden="true" onClick={() => handleRemoveField(index)} />
+        </div>
+      </div>
+        </div>
+      ))}
+      <span
+        onClick={handleAddField}
+        className="mt-2 p-2 text-goldColor self-end cursor-pointer"
+      >
+        Add points
+      </span>
+    </div>
+  );
+};
 
 const MyHotels = () => {
   const [modal, setModal] = useState<ModalState>(initialModalState);
@@ -268,7 +320,6 @@ const MyHotels = () => {
           errors,
           touched,
           setValues,
-          handleBlur,
           handleChange,
           resetForm,
         }) => (
@@ -292,7 +343,6 @@ const MyHotels = () => {
                     placeholder="Enter Hotel Name"
                     className="border rounded-md w-full px-2 py-3 font-normal"
                     onChange={handleChange}
-                    onBlur={handleBlur}
                   />
                   {touched.name && typeof errors?.name === "string" && (
                     <span className="text-red-500 text-sm">{errors.name}</span>
@@ -308,7 +358,6 @@ const MyHotels = () => {
                     placeholder="Enter your City"
                     className="border rounded-md w-full px-2 py-3 font-normal"
                     onChange={handleChange}
-                    onBlur={handleBlur}
                   />
                   {touched.city && typeof errors?.city === "string" && (
                     <span className="text-red-500 text-sm">{errors.city}</span>
@@ -326,7 +375,6 @@ const MyHotels = () => {
                     placeholder="Enter your Pin Code"
                     className="border rounded-md w-full px-2 py-3 font-normal"
                     onChange={handleChange}
-                    // onBlur={handleBlur}
                   />
                   {touched.pincode && typeof errors?.pincode === "string" && (
                     <span className="text-red-500 text-sm">
@@ -344,7 +392,6 @@ const MyHotels = () => {
                     placeholder="Enter your State"
                     className="border rounded-md w-full px-2 py-3 font-normal"
                     onChange={handleChange}
-                    onBlur={handleBlur}
                   />
                   {touched.state && typeof errors?.state === "string" && (
                     <span className="text-red-500 text-sm">{errors.state}</span>
@@ -362,7 +409,6 @@ const MyHotels = () => {
                     placeholder="Enter your Google Map URL"
                     className="border rounded-md w-full px-2 py-3 font-normal"
                     onChange={handleChange}
-                    // onBlur={handleBlur}
                   />
                   {touched.mapurl && (
                     <span className="text-red-500 text-sm">
@@ -377,7 +423,6 @@ const MyHotels = () => {
                     value={values.star}
                     className="border rounded-md w-full px-2 py-3 font-normal"
                     onChange={handleChange}
-                    onBlur={handleBlur}
                   >
                     <option value="" disabled>
                       Select star rating
@@ -404,7 +449,6 @@ const MyHotels = () => {
                     onChange={(e) => {
                       setValues({ ...values, description: e.target.value });
                     }}
-                    onBlur={handleBlur}
                   />
                   {touched.description &&
                     typeof errors?.description === "string" && (
@@ -428,7 +472,6 @@ const MyHotels = () => {
                         cancellationPolicy: e.target.value,
                       });
                     }}
-                    onBlur={handleBlur}
                   />
                   {touched.cancellationPolicy &&
                     typeof errors?.cancellationPolicy === "string" && (
@@ -454,7 +497,6 @@ const MyHotels = () => {
                               name="facilities"
                               value={facility}
                               onChange={handleChange}
-                              onBlur={handleBlur}
                               checked={values.facilities.includes(facility)}
                             />
                             {facility}
@@ -483,7 +525,6 @@ const MyHotels = () => {
                               name="hotelType"
                               value={hotel}
                               onChange={handleChange}
-                              onBlur={handleBlur}
                               checked={values.hotelType.includes(hotel)}
                             />
                             {hotel}
@@ -645,7 +686,6 @@ const MyHotels = () => {
                                     });
                                   }
                                 }}
-                                onBlur={handleBlur}
                                 checked={isChecked}
                               />
                               {hotel}
@@ -682,7 +722,6 @@ const MyHotels = () => {
                                 placeholder="Enter Product Title"
                                 className="border rounded-md w-full px-2 py-3 font-normal"
                                 onChange={handleChange}
-                                onBlur={handleBlur}
                               />
                               {(
                                 touched.productTitle as FormTouched["productTitle"]
@@ -711,13 +750,16 @@ const MyHotels = () => {
                             <label className="text-gray-700 text-sm flex-1">
                               Product Description
                             </label>
-                            <textarea
-                              name={`productTitle.${index}.description`}
+                            <DynamicInputFields
                               value={product.description}
-                              placeholder="Enter your description"
-                              className="border rounded-md w-full px-2 py-3 font-normal"
-                              onChange={handleChange}
-                              onBlur={handleBlur}
+                              onChange={(newDescription: any) =>
+                                handleChange({
+                                  target: {
+                                    name: `productTitle.${index}.description`,
+                                    value: newDescription,
+                                  },
+                                })
+                              }
                             />
                             {(
                               touched.productTitle as FormTouched["productTitle"]
@@ -746,7 +788,6 @@ const MyHotels = () => {
                               placeholder="Enter Here"
                               className="border rounded-md w-full px-2 py-3 font-normal"
                               onChange={handleChange}
-                              onBlur={handleBlur}
                             />
                             {(
                               touched.productTitle as FormTouched["productTitle"]
@@ -774,7 +815,6 @@ const MyHotels = () => {
                               placeholder="Enter the Notes"
                               className="border rounded-md w-full px-2 py-3 font-normal"
                               onChange={handleChange}
-                              onBlur={handleBlur}
                             />
                             {(
                               touched.productTitle as FormTouched["productTitle"]
@@ -803,7 +843,6 @@ const MyHotels = () => {
                               placeholder="Enter the Time Slot for each booking"
                               className="border rounded-md w-full px-2 py-3 font-normal"
                               onChange={handleChange}
-                              onBlur={handleBlur}
                               min={1}
                             />
                             {(
@@ -882,7 +921,6 @@ const MyHotels = () => {
                               placeholder="Enter the Time Slot for each booking"
                               className="border rounded-md w-full px-2 py-3 font-normal"
                               onChange={handleChange}
-                              onBlur={handleBlur}
                             />
                             {(
                               touched.productTitle as FormTouched["productTitle"]
@@ -914,7 +952,6 @@ const MyHotels = () => {
                                   placeholder="Enter the Start Time"
                                   className="border rounded-md w-full px-2 py-3 font-normal"
                                   onChange={handleChange}
-                                  onBlur={handleBlur}
                                 />
 
                                 {(
@@ -943,7 +980,6 @@ const MyHotels = () => {
                                   placeholder="Enter the End Time"
                                   className="border rounded-md w-full px-2 py-3 font-normal"
                                   onChange={handleChange}
-                                  onBlur={handleBlur}
                                 />
                                 {(
                                   touched.productTitle as FormTouched["productTitle"]
@@ -974,7 +1010,6 @@ const MyHotels = () => {
                                 placeholder="Enter the Time Slot for each booking"
                                 className="border rounded-md w-full px-2 py-3 font-normal"
                                 onChange={handleChange}
-                                onBlur={handleBlur}
                               />
                               {(
                                 touched.productTitle as FormTouched["productTitle"]
@@ -1004,7 +1039,6 @@ const MyHotels = () => {
                               placeholder="Enter your Price for Adult"
                               className="border rounded-md w-full px-2 py-3 font-normal"
                               onChange={handleChange}
-                              onBlur={handleBlur}
                               min={0}
                             />
                             {(
@@ -1052,7 +1086,6 @@ const MyHotels = () => {
                                 placeholder="Enter your Price for Child"
                                 className="border rounded-md w-full px-2 py-3 font-normal"
                                 onChange={handleChange}
-                                onBlur={handleBlur}
                                 min={0}
                               />
                               {(

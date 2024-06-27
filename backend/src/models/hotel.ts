@@ -24,7 +24,7 @@ const favouriteListSchema = new mongoose.Schema<FavouriteList>({
 
 const productSchema = new mongoose.Schema<ProductType>({
   title: { type: String},
-  description: { type: String},
+  description: [{ type: String}],
   adultPrice: { type: Number},
   childPrice: { type: Number},
   otherpoints: { type: String},

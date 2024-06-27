@@ -81,7 +81,7 @@ const CartModal = ({ product, hotel, onClose, date, setCart }: any) => {
       }
 
       try {
-        localStorage.setItem('cart', JSON.stringify(cart));
+        localStorage.setItem("cart", JSON.stringify(cart));
         setCart(cart);
         onClose();
       } catch (error) {
@@ -231,7 +231,11 @@ const CartModal = ({ product, hotel, onClose, date, setCart }: any) => {
               <h1 className="text-gray-800 font-semibold">
                 Description of the {product.title}
               </h1>
-              <span className="px-2">{product.description}</span>
+              <ul className="text-sm text-gray-600 mt-2 space-y-1 list-disc p-4">
+                {product.description.map((feature: any, index: number) => (
+                  <li key={index}>{feature}</li>
+                ))}
+              </ul>
             </div>
             <div>
               <h1 className="text-gray-800 font-semibold">
