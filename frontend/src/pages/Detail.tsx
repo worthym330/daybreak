@@ -447,7 +447,7 @@ const Detail = () => {
                           <Button
                             className="w-full bg-goldColor text-white py-2 rounded-lg"
                             onClick={() =>
-                              navigate(`/hotel/${hotelId}/booking`)
+                              navigate(`/checkout`)
                             }
                           >
                             Book Now

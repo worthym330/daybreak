@@ -114,8 +114,14 @@ const Header = () => {
   const location = useLocation();
   const [showNav, setShowNav] = useState(false);
   const [tab, setTab] = useState("Guests");
+  const [cartItems, setCartItems] = useState<any[]>([]);
 
   const headerRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const cart = localStorage.getItem("cart");
+    const parsedCart = cart ? JSON.parse(cart) : [];
+    setCartItems(parsedCart);
+  }, []);
 
   const handleClickOutside = (event: MouseEvent) => {
     if (
@@ -672,10 +678,13 @@ const Header = () => {
                     )}
 
                     <Link
-                      className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-goldColor hover:text-white"
-                      to="/"
+                      className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-goldColor hover:text-white relative inline-block"
+                      to="/checkout"
                     >
                       <IoCartOutline className="text-2xl" />
+                      <span className="absolute right-1 top-0 block px-2 py-1 -translate-y-1/2 translate-x-1/2 transform rounded-full bg-goldColor text-white ring-2 ring-white flex items-center justify-center ">
+                        {cartItems.length}{" "}
+                      </span>
                     </Link>
                   </span>
 
@@ -902,10 +911,13 @@ const Header = () => {
                 )}
 
                 <Link
-                  className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-goldColor hover:text-white"
-                  to="/"
+                  className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-goldColor hover:text-white relative"
+                  to="/checkout"
                 >
                   <IoCartOutline className="text-2xl" />
+                  <span className="absolute right-1 top-0 block px-2 py-1 -translate-y-1/2 translate-x-1/2 transform rounded-full bg-goldColor text-white ring-2 ring-white flex items-center justify-center ">
+                    {cartItems.length}{" "}
+                  </span>
                 </Link>
               </span>
 
@@ -1010,10 +1022,13 @@ const Header = () => {
                 )}
 
                 <Link
-                  className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-darkGold hover:bg-goldColor hover:text-white"
-                  to="/"
+                  className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-darkGold hover:bg-goldColor hover:text-white relative"
+                  to="/checkout"
                 >
                   <IoCartOutline className="text-2xl" />
+                  <span className="absolute right-1 top-0 block px-2 py-1 -translate-y-1/2 translate-x-1/2 transform rounded-full bg-goldColor text-white ring-2 ring-white flex items-center justify-center ">
+                    {cartItems.length}{" "}
+                  </span>
                 </Link>
               </span>
 
@@ -1238,10 +1253,13 @@ const Header = () => {
             )}
 
             <Link
-              className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-goldColor hover:text-white"
-              to="/"
+              className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-goldColor hover:text-white relative"
+              to="/checkout"
             >
               <IoCartOutline className="text-2xl" />
+              <span className="absolute right-1 top-0 block px-2 py-1 -translate-y-1/2 translate-x-1/2 transform rounded-full bg-goldColor text-white ring-2 ring-white flex items-center justify-center ">
+                {cartItems.length}{" "}
+              </span>
             </Link>
           </span>
 

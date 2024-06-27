@@ -176,7 +176,7 @@ const App = () => {
         />
         <Route path="/waitlist" element={<WaitList />} />
         <Route
-          path="/hotel/:hotelId/booking"
+          path="/checkout"
           element={
             <AccessControl requiredRoles={["customer"]}>
               <Layout>

@@ -136,7 +136,7 @@ const BookingForm = ({ currentUser, paymentIntent }: Props) => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="grid grid-cols-1 gap-5 rounded-lg border border-slate-300 p-5"
+      className="grid grid-cols-1 gap-5 rounded-lg border border-goldColor p-5"
     >
       <span className="text-3xl font-bold">Confirm Your Details</span>
       <div className="grid grid-cols-2 gap-6">

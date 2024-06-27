@@ -1,13 +1,12 @@
 import { useQuery } from "react-query";
 import * as apiClient from "../api-client";
 import BookingForm from "../forms/BookingForm/BookingForm";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import BookingDetailsSummary from "../components/BookingDetailsSummary";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 
 const Booking = () => {
-  const { hotelId } = useParams();
   const cart = localStorage.getItem("cart");
   const parsedCart = cart ? JSON.parse(cart) : [];
   const cartItems = parsedCart;
@@ -15,6 +14,7 @@ const Booking = () => {
   const userLogined = JSON.parse(auth_token);
   const navigate = useNavigate();
   const [paymentIntentData, setPaymentIntentData] = useState(null);
+  const hotelId = cartItems[0].hotel._id
 
   useEffect(() => {
     const fetchPaymentIntentData = async () => {
@@ -49,7 +49,7 @@ const Booking = () => {
   }
 
   return (
-    <div className="grid md:grid-cols-[1fr_2fr]">
+    <div className="grid md:grid-cols-[1fr_2fr] space-x-2">
       <BookingDetailsSummary cartItems={cartItems} hotel={hotel} />
       {currentUser && paymentIntentData && (
         <div>
