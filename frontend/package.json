@@ -15,6 +15,7 @@
     "@reduxjs/toolkit": "^2.2.5",
     "@stripe/react-stripe-js": "^2.7.0",
     "@stripe/stripe-js": "^3.3.0",
+    "axios": "^1.7.2",
     "formik": "^2.4.6",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",

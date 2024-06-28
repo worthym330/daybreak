@@ -20,6 +20,8 @@ import ProductCard from "../components/ProductCard";
 import { FavouriteList } from "../../../backend/src/shared/types";
 import Cookies from "js-cookie";
 import Button from "../components/Button";
+import axios from "axios";
+import moment from "moment";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
@@ -76,6 +78,8 @@ const Detail = () => {
   const auth_token = Cookies.get("authentication") || "null";
   const userLogined = JSON.parse(auth_token);
   const navigate = useNavigate();
+  const [address, setAddress] = useState("");
+  const [mapSrc, setMapSrc] = useState("");
 
   useEffect(() => {
     const handleResize = () => {
@@ -109,6 +113,42 @@ const Detail = () => {
   );
 
   const hotel = hotelQuery.data || hotelByNameQuery.data;
+
+  useEffect(() => {
+    const getAddressFromUrl = async () => {
+      const apiKey = import.meta.env.GOOGLE_API_KEY; // Replace with your API key
+      const response = hotel?.mapurl && (await axios.get(hotel.mapurl));
+      const expandedUrl = response ? response.request.responseURL : "";
+      const coordinates = extractCoordinatesFromUrl(expandedUrl);
+      if (coordinates) {
+        const response = await fetch(
+          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${coordinates.lat},${coordinates.lng}&key=${apiKey}`
+        );
+        const data = await response.json();
+        if (data.results && data.results[0]) {
+          setAddress(data.results[0].formatted_address);
+        }
+        setMapSrc(
+          `https://www.google.com/maps/embed/v1/view?key=${apiKey}&center=${coordinates.lat},${coordinates.lng}&zoom=14`
+        );
+      }
+    };
+
+    getAddressFromUrl();
+  }, [hotel?.mapurl]);
+
+  const extractCoordinatesFromUrl = (url: any) => {
+    const regex = /@([-0-9.]+),([-0-9.]+),/;
+    const match = url.match(regex);
+    console.log(match, url);
+    if (match) {
+      return {
+        lat: match[1],
+        lng: match[2],
+      };
+    }
+    return null;
+  };
 
   const handleNext = () => {
     if (!hotel?.imageUrls) return;
@@ -209,7 +249,7 @@ const Detail = () => {
   }
 
   const calculateSubtotal = (items: any) => {
-    const GST_RATE = 0.18;
+    // const GST_RATE = 0.18;
     return items.reduce((total: number, item: any) => {
       const adultTotal =
         item.adultCount > 0 ? item.adultCount * item.product.adultPrice : 0;
@@ -217,10 +257,10 @@ const Detail = () => {
         item.childCount > 0 ? item.childCount * item.product.childPrice : 0;
 
       // Calculate GST for adult and child totals
-      const adultGST = adultTotal * (1 + GST_RATE);
-      const childGST = childTotal * (1 + GST_RATE);
+      // const adultGST = adultTotal * (1 + GST_RATE);
+      // const childGST = childTotal * (1 + GST_RATE);
 
-      return total + adultGST + childGST;
+      return total + adultTotal + childTotal;
     }, 0);
   };
 
@@ -349,14 +389,14 @@ const Detail = () => {
                 }}
                 min={new Date().toISOString().split("T")[0]}
                 placeholder="Please select the date"
-                className={`px-4 py-2 text-goldColor placeholder:text-goldColor border border-gray-300 rounded ${
-                  error ? "border-red-500" : ""
+                className={`px-4 py-2 text-goldColor placeholder:text-goldColor border rounded ${
+                  error ? "border-red-500" : "border-goldColor"
                 }`}
               />
             </div>
             <div className="">
               {error && (
-                <p className="text-red-500">
+                <p className="text-red-500 errorMessage">
                   Invalid date. Please select a valid date.
                 </p>
               )}
@@ -376,13 +416,82 @@ const Detail = () => {
                 />
               ))}
             </div>
+            {/* Hours Div */}
+            <div className="mb-8 p-4">
+              <h1 className="text-lg font-medium mb-4">Hours</h1>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {hotel?.productTitle.map((product: any, index: number) => (
+                  <div key={index}>
+                    <p>{product.title}</p>
+                    <p className="text-sm text-gray-400">
+                      {moment(product.startTime, "HH:mm").format("hh:mm A")} -{" "}
+                      {moment(product.endTime, "HH:mm").format("hh:mm A")}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-gray-100 p-4 rounded-lg shadow-md mb-8">
+              <h2 className="text-lg font-medium mb-4">How it works</h2>
+              <ol className="list-decimal list-inside">
+                <li>
+                  Select an available day in the calendar, the number of guests,
+                  and complete booking
+                </li>
+                <li>
+                  Receive booking confirmation with details and instructions
+                </li>
+                <li>Bring valid photo ID and check-in at the front desk</li>
+                <li>Enjoy your daycation!</li>
+              </ol>
+            </div>
+            {/* Hours Div */}
+            <div className="w-full mx-auto px-4 text-justify">
+              <h2 className="text-lg font-medium mb-4">Cancellation Policy</h2>
+              {/* <span className="mb-4 block">
+                Read our full <Link to= '' className="text-blue-500 underline">cancellation policy </Link>
+              </span> */}
+              <h3 className="text-lg font-medium mb-2">Cancel Online</h3>
+              <p className="mb-4">
+                You can cancel your booking online for a full refund back to
+                your original payment method or for DayBreakPass Credit to use
+                another time. Bookings can be cancelled online up until the
+                following times:
+              </p>
+              <ul className="list-disc list-inside space-y-2 mb-8">
+                {hotel?.cancellationPolicy
+                  .split(".")
+                  .map(
+                    (e: any, index) =>
+                      e !== "" && e.trim() !== "" && <li key={index}>{e}.</li>
+                  )}
+              </ul>
+            </div>
+            <div className="w-full mx-auto px-4">
+              <h3 className="text-lg font-medium mb-2">Location</h3>
+              <p className="mb-4">{address}</p>
+              <div className="border rounded-lg overflow-hidden">
+                {mapSrc && (
+                  <iframe
+                    title="Google Map"
+                    src={mapSrc}
+                    width="100%"
+                    height="450"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                  ></iframe>
+                )}
+              </div>
+            </div>
           </div>
           {/* Hotel Details Start */}
 
           {/* Cart Section */}
           <div className="w-full lg:w-1/3">
             <div className="h-fit sticky top-4">
-              <div className="p-4 bg-white rounded-lg shadow-md border border-gray-300">
+              <div className="p-4 bg-white rounded-lg shadow-md border border-goldColor">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-bold">Your Cart</h2>
                 </div>
@@ -426,7 +535,12 @@ const Detail = () => {
                             className="flex justify-between items-center mb-4"
                           >
                             <div>
-                              <h3 className="text-sm">{item.product.title}</h3>
+                              <h3 className="text-sm">
+                                {item.product.title} Adult ({item.adultCount}){" "}
+                                {item.childCount > 0 && (
+                                  <p>Child ({item.childCount})</p>
+                                )}
+                              </h3>
                             </div>
                             <button
                               className="text-gray-500"
@@ -443,12 +557,18 @@ const Detail = () => {
                           <span>Subtotal:</span>
                           <span>₹{subtotal.toFixed(2)}</span>
                         </div>
+                        <div className="flex justify-between text-gray-700 mb-2">
+                          <span>GST:</span>
+                          <span>₹{(subtotal * 0.18).toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between text-gray-700 mb-2">
+                          <span>Total:</span>
+                          <span>₹{(subtotal * (1 + 0.18)).toFixed(2)}</span>
+                        </div>
                         {userLogined !== null ? (
                           <Button
                             className="w-full bg-goldColor text-white py-2 rounded-lg"
-                            onClick={() =>
-                              navigate(`/checkout`)
-                            }
+                            onClick={() => navigate(`/checkout`)}
                           >
                             Book Now
                           </Button>

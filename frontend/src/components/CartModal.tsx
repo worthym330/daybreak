@@ -229,7 +229,7 @@ const CartModal = ({ product, hotel, onClose, date, setCart }: any) => {
                 <li key={index}>{feature}</li>
               ))} */}
               <h1 className="text-gray-800 font-semibold">
-                Description of the {product.title}
+                Description
               </h1>
               <ul className="text-sm text-gray-600 mt-2 space-y-1 list-disc p-4">
                 {product.description.map((feature: any, index: number) => (
@@ -237,17 +237,17 @@ const CartModal = ({ product, hotel, onClose, date, setCart }: any) => {
                 ))}
               </ul>
             </div>
-            <div>
+            {/* <div>
               <h1 className="text-gray-800 font-semibold">
                 All the points that needs to be mentioned in the product.
               </h1>
               <p className="text-sm text-gray-500 px-2">
                 {product.otherpoints}
               </p>
-            </div>
+            </div> */}
             <div className="text-sm text-gray-600 mt-2 space-y-1">
               <h1 className="text-gray-800 font-semibold">
-                Points to be Noted
+                Notes
               </h1>
               <span className="px-2">{product.notes}</span>
             </div>
