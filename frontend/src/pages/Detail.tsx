@@ -151,7 +151,6 @@ const Detail = () => {
   const extractCoordinatesFromUrl = (url: any) => {
     const regex = /@([-0-9.]+),([-0-9.]+),/;
     const match = url.match(regex);
-    console.log(match, url);
     if (match) {
       return {
         lat: match[1],
