@@ -25,7 +25,8 @@ export interface HotelType {
   bookings: BookingType[];
   favourites: FavouriteList[];
   pincode:string,
-  mapurl:string
+  mapurl:string,
+  status:boolean
 }
 
 export type BookingType = {

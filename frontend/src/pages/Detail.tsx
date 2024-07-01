@@ -20,7 +20,6 @@ import ProductCard from "../components/ProductCard";
 import { FavouriteList } from "../../../backend/src/shared/types";
 import Cookies from "js-cookie";
 import Button from "../components/Button";
-import axios from "axios";
 import moment from "moment";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -116,10 +115,9 @@ const Detail = () => {
 
   useEffect(() => {
     const getAddressFromUrl = async () => {
-      const apiKey = import.meta.env.GOOGLE_API_KEY; // Replace with your API key
-      const response = hotel?.mapurl && (await axios.get(hotel.mapurl));
-      const expandedUrl = response ? response.request.responseURL : "";
-      const coordinates = extractCoordinatesFromUrl(expandedUrl);
+      const apiKey = import.meta.env.VITE_GOOGLE_API_KEY; // Replace with your API key
+      const response = await expandUrl(hotel?.mapurl as any);
+      const coordinates = extractCoordinatesFromUrl(response);
       if (coordinates) {
         const response = await fetch(
           `https://maps.googleapis.com/maps/api/geocode/json?latlng=${coordinates.lat},${coordinates.lng}&key=${apiKey}`
@@ -135,7 +133,20 @@ const Detail = () => {
     };
 
     getAddressFromUrl();
-  }, [hotel?.mapurl]);
+  }, []);
+
+  const expandUrl = async (shortUrl: string) => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/expand-url?url=${encodeURIComponent(shortUrl)}`
+      );
+      const data = await response.json();
+      return data.expandedUrl;
+    } catch (error) {
+      console.error("Error expanding URL:", error);
+      return "";
+    }
+  };
 
   const extractCoordinatesFromUrl = (url: any) => {
     const regex = /@([-0-9.]+),([-0-9.]+),/;

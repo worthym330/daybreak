@@ -8,6 +8,8 @@ import { HotelType } from "../shared/types";
 // import AWS from "aws-sdk";
 import fs from "fs";
 import path from "path";
+import { askForPermissionToAddHotel, notifyHotelUserRequestReceived } from "./mail";
+import User from "../models/user";
 
 const router = express.Router();
 
@@ -26,7 +28,6 @@ const upload = multer({
 // });
 
 // export const s3 = new AWS.S3();
-
 router.post(
   "/",
   verifyToken,
@@ -53,6 +54,9 @@ router.post(
       const facilitiesMap = facilities.split(",");
       const HotelTypes = hotelType.split(",");
 
+      const hotelData = await Hotel.find({
+        userId: req.userId,
+      });
       // Create a new hotel object
       const newHotel: HotelType = {
         userId: req.userId,
@@ -87,11 +91,27 @@ router.post(
         lastUpdated: new Date(),
         bookings: [],
         favourites: [],
+        status:hotelData.length > 0 ? false: true
       };
 
       // // Create and save the new hotel document
       const hotel = new Hotel(newHotel);
       await hotel.save();
+
+      const user = await User.findById(req.userId)
+
+      if(hotelData.length > 0){
+        const hotelInfo = {
+          name: hotel.name,
+          city:hotel.city,
+          state:hotel.state,
+          pincode:hotel.pincode,
+          ownerName: `${user?.firstName} ${user?.lastName}`,
+          email:user?.email,
+        }
+        await askForPermissionToAddHotel(hotelInfo)
+        await notifyHotelUserRequestReceived(hotelInfo)
+      }
 
       res.status(201).send(hotel);
     } catch (e) {
@@ -103,7 +123,7 @@ router.post(
 
 router.get("/", verifyToken, async (req: Request, res: Response) => {
   try {
-    const hotels = await Hotel.find({ userId: req.userId });
+    const hotels = await Hotel.find({ userId: req.userId, status:true });
     res.json(hotels);
   } catch (error) {
     res.status(500).json({ message: "Error fetching hotels" });
