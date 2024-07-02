@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import * as apiClient from "./../api-client";
@@ -21,6 +21,11 @@ import { FavouriteList } from "../../../backend/src/shared/types";
 import Cookies from "js-cookie";
 import Button from "../components/Button";
 import moment from "moment";
+// import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+import mapboxgl from "mapbox-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
+
+mapboxgl.accessToken = import.meta.env.VITE_MAP_GL_TOKEN
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
@@ -78,7 +83,8 @@ const Detail = () => {
   const userLogined = JSON.parse(auth_token);
   const navigate = useNavigate();
   const [address, setAddress] = useState("");
-  const [mapSrc, setMapSrc] = useState("");
+  const [coordinates, setCoordinates] = useState({ lat: 0, lng: 0 });
+  const mapContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -115,25 +121,68 @@ const Detail = () => {
 
   useEffect(() => {
     const getAddressFromUrl = async () => {
-      const apiKey = import.meta.env.VITE_GOOGLE_API_KEY; // Replace with your API key
-      const response = await expandUrl(hotel?.mapurl as any);
-      const coordinates = extractCoordinatesFromUrl(response);
-      if (coordinates) {
-        const response = await fetch(
-          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${coordinates.lat},${coordinates.lng}&key=${apiKey}`
-        );
-        const data = await response.json();
-        if (data.results && data.results[0]) {
-          setAddress(data.results[0].formatted_address);
+      const response = hotel?.mapurl && (await expandUrl(hotel.mapurl as any));
+      if (response) {
+        const coords = extractCoordinatesFromUrl(response);
+
+        if (coords) {
+          setCoordinates({
+            lat: parseFloat(coords.lat),
+            lng: parseFloat(coords.lng),
+          });
+          const response = await fetch(
+            `https://api.mapbox.com/geocoding/v5/mapbox.places/${coords.lng},${coords.lat}.json?access_token=${mapboxgl.accessToken}`
+          );
+          const data = await response.json();
+          console.log(data);
+          if (data.features && data.features.length > 0) {
+            setAddress(data.features[0].place_name);
+          }
         }
-        setMapSrc(
-          `https://www.google.com/maps/embed/v1/view?key=${apiKey}&center=${coordinates.lat},${coordinates.lng}&zoom=14`
-        );
       }
     };
 
     getAddressFromUrl();
-  }, []);
+  }, [hotel]);
+
+  // useEffect(() => {
+  //   const getAddressFromUrl = async () => {
+  //     const expandedUrl = await expandUrl(hotel?.mapurl);
+  //     const coords = extractCoordinatesFromUrl(expandedUrl);
+  //     if (coords) {
+  //       setCoordinates({
+  //         lat: parseFloat(coords.lat),
+  //         lng: parseFloat(coords.lng),
+  //       });
+  //       const response = await fetch(
+  //         `https://maps.googleapis.com/maps/api/geocode/json?latlng=${coords.lat},${coords.lng}&key=YOUR_GOOGLE_MAPS_API_KEY`
+  //       );
+  //       const data = await response.json();
+  //       if (data.results && data.results.length > 0) {
+  //         setAddress(data.results[0].formatted_address);
+  //       }
+  //     }
+  //   };
+
+  //   getAddressFromUrl();
+  // }, [hotel]);
+
+  useEffect(() => {
+    if (coordinates) {
+      const map = new mapboxgl.Map({
+        container: mapContainerRef.current!,
+        style: "mapbox://styles/mapbox/streets-v11",
+        center: [coordinates.lng, coordinates.lat],
+        zoom: 10,
+      });
+
+      new mapboxgl.Marker()
+        .setLngLat([coordinates.lng, coordinates.lat])
+        .addTo(map);
+
+      return () => map.remove();
+    }
+  }, [coordinates]);
 
   const expandUrl = async (shortUrl: string) => {
     try {
@@ -148,7 +197,7 @@ const Detail = () => {
     }
   };
 
-  const extractCoordinatesFromUrl = (url: any) => {
+  const extractCoordinatesFromUrl = (url: string) => {
     const regex = /@([-0-9.]+),([-0-9.]+),/;
     const match = url.match(regex);
     if (match) {
@@ -480,19 +529,32 @@ const Detail = () => {
             </div>
             <div className="w-full mx-auto px-4">
               <h3 className="text-lg font-medium mb-2">Location</h3>
-              <p className="mb-4">{address}</p>
-              <div className="border rounded-lg overflow-hidden">
-                {mapSrc && (
-                  <iframe
-                    title="Google Map"
-                    src={mapSrc}
-                    width="100%"
-                    height="450"
-                    style={{ border: 0 }}
-                    allowFullScreen
-                    loading="lazy"
-                  ></iframe>
-                )}
+              <p className="mb-4">
+                <a href={hotel.mapurl} target="_blank">
+                  {address}
+                </a>
+              </p>
+              <div className="border rounded-lg overflow-hidden border-goldColor">
+                <div className="border rounded-lg overflow-hidden">
+                  {coordinates && (
+                    <div
+                      id="map"
+                      ref={mapContainerRef}
+                      style={{ width: "100%", height: "400px" }}
+                    ></div>
+                  )}
+                  {/* {coordinates && (
+                    <LoadScript googleMapsApiKey="YOUR_GOOGLE_MAPS_API_KEY">
+                      <GoogleMap
+                        mapContainerStyle={mapContainerStyle}
+                        center={coordinates}
+                        zoom={13}
+                      >
+                        <Marker position={coordinates} />
+                      </GoogleMap>
+                    </LoadScript>
+                  )} */}
+                </div>
               </div>
             </div>
           </div>

@@ -28,6 +28,7 @@ import CookiePolicy from "./pages/CookiePolicy";
 import Login from "./pages/LoginandSignup";
 import { Bounce, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import CancellationPolicy from "./pages/CancellationPolicy";
 
 const AccessControl = ({ children, requiredRoles }: any) => {
   const auth_token = Cookies.get("authentication") || "null";
@@ -150,6 +151,14 @@ const App = () => {
           element={
             <Layout>
               <CookiePolicy />
+            </Layout>
+          }
+        />
+        <Route
+          path="/cancellation-policy"
+          element={
+            <Layout>
+              <CancellationPolicy />
             </Layout>
           }
         />
