@@ -84,7 +84,7 @@ const Detail = () => {
   const navigate = useNavigate();
   const [address, setAddress] = useState("");
   const [coordinates, setCoordinates] = useState({ lat: 0, lng: 0 });
-  const mapContainerRef = useRef<HTMLDivElement | null>(null);
+  const mapContainerRef = useRef(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -168,18 +168,18 @@ const Detail = () => {
   // }, [hotel]);
 
   useEffect(() => {
-    if (coordinates) {
+    if (coordinates && mapContainerRef.current) {
       const map = new mapboxgl.Map({
-        container: mapContainerRef.current!,
+        container: mapContainerRef.current,
         style: "mapbox://styles/mapbox/streets-v11",
         center: [coordinates.lng, coordinates.lat],
         zoom: 10,
       });
-
+  
       new mapboxgl.Marker()
         .setLngLat([coordinates.lng, coordinates.lat])
         .addTo(map);
-
+  
       return () => map.remove();
     }
   }, [coordinates]);
