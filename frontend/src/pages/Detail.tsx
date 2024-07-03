@@ -24,8 +24,9 @@ import moment from "moment";
 // import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { FaLocationDot } from "react-icons/fa6";
 
-mapboxgl.accessToken = import.meta.env.VITE_MAP_GL_TOKEN
+mapboxgl.accessToken = import.meta.env.VITE_MAP_GL_TOKEN;
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
@@ -134,7 +135,6 @@ const Detail = () => {
             `https://api.mapbox.com/geocoding/v5/mapbox.places/${coords.lng},${coords.lat}.json?access_token=${mapboxgl.accessToken}`
           );
           const data = await response.json();
-          console.log(data);
           if (data.features && data.features.length > 0) {
             setAddress(data.features[0].place_name);
           }
@@ -175,11 +175,11 @@ const Detail = () => {
         center: [coordinates.lng, coordinates.lat],
         zoom: 10,
       });
-  
+
       new mapboxgl.Marker()
         .setLngLat([coordinates.lng, coordinates.lat])
         .addTo(map);
-  
+
       return () => map.remove();
     }
   }, [coordinates]);
@@ -529,9 +529,15 @@ const Detail = () => {
             </div>
             <div className="w-full mx-auto px-4">
               <h3 className="text-lg font-medium mb-2">Location</h3>
-              <p className="mb-4">
-                <a href={hotel.mapurl} target="_blank">
-                  {address}
+              <p className="mb-4 flex justify-between items-center">
+                <span>{address}</span>
+                <a
+                  href={hotel.mapurl}
+                  target="_blank"
+                  className="flex gap-2 items-center"
+                >
+                  <FaLocationDot className="text-goldColor w-6 h-6" />
+                  <span className="underline decoration-blue-600 text-blue-600 hover:text-blue-900">Preview</span>
                 </a>
               </p>
               <div className="border rounded-lg overflow-hidden border-goldColor">
