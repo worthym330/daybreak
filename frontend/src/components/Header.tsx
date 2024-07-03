@@ -629,6 +629,20 @@ const Header = () => {
             className="absolute inset-0 w-full h-full object-cover"
           ></video>
 
+          {/* Hero Section */}
+          <div className="absolute left-0 right-0 top-[24rem] md:top-[28rem] lg:top-[33rem] flex justify-center bg-transparent">
+            <div className="mx-auto max-w-screen-lg px-4 text-center">
+              <h1 className="md:text-5xl text-[2.7rem] text-white font-bold font-LuzuryF1 leading-tight mb-4">
+                Find your next Daycation
+              </h1>
+              <p className="md:text-xl lg:text-2xl text-base px-0 md:px-10 lg:px-20 text-white md:mt-4 mt-0 font-LuzuryF2">
+                Discover luxury by the day: Book Day Passes, Daybeds, Cabanas &
+                Experiences at premier hotels in your city.
+              </p>
+            </div>
+          </div>
+          {/* Hero Section */}
+
           {/* ---------- NavBar Starts ---------- */}
           {showNav ? (
             <div className="absolute w-full top-0 bg-white z-10">
@@ -678,11 +692,11 @@ const Header = () => {
                     )}
 
                     <Link
-                      className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-goldColor hover:text-white relative inline-block"
+                      className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-goldColor hover:text-white relative "
                       to="/checkout"
                     >
                       <IoCartOutline className="text-2xl" />
-                      <span className="absolute right-1 top-0 block px-2 py-1 -translate-y-1/2 translate-x-1/2 transform rounded-full bg-goldColor text-white ring-2 ring-white flex items-center justify-center ">
+                      <span className="absolute right-1 top-0 block px-2 py-1 -translate-y-1/2 translate-x-1/2 transform rounded-full bg-goldColor text-white ring-2 ring-white items-center justify-center ">
                         {cartItems.length}{" "}
                       </span>
                     </Link>
@@ -866,8 +880,8 @@ const Header = () => {
             </div>
           ) : (
             // Home page NavBar
-            <div className="w-full absolute top-4 flex items-center justify-between z-10 px-4 md:px-[10rem] bg-transparent">
-              <span className="text-2xl md:text-3xl text-white font-bold tracking-tight flex gap-2">
+            <div className="w-full absolute top-8 flex items-center justify-between z-10 px-5 lg:px-[10rem] bg-transparent">
+              <span className="text-xl md:text-3xl text-white font-bold tracking-tight flex gap-2">
                 <span className="flex items-center text-center cursor-pointer">
                   <GiHamburgerMenu
                     className="w-8 h-8"
@@ -915,7 +929,7 @@ const Header = () => {
                   to="/checkout"
                 >
                   <IoCartOutline className="text-2xl" />
-                  <span className="absolute right-1 top-0 block px-2 py-1 -translate-y-1/2 translate-x-1/2 transform rounded-full bg-goldColor text-white ring-2 ring-white flex items-center justify-center ">
+                  <span className="absolute right-1 top-0 block px-2 py-1 -translate-y-1/2 translate-x-1/2 transform rounded-full bg-goldColor text-white ring-2 ring-white tems-center justify-center ">
                     {cartItems.length}{" "}
                   </span>
                 </Link>
@@ -1026,7 +1040,7 @@ const Header = () => {
                   to="/checkout"
                 >
                   <IoCartOutline className="text-2xl" />
-                  <span className="absolute right-1 top-0 block px-2 py-1 -translate-y-1/2 translate-x-1/2 transform rounded-full bg-goldColor text-white ring-2 ring-white flex items-center justify-center ">
+                  <span className="absolute right-1 top-0 block px-2 py-1 -translate-y-1/2 translate-x-1/2 transform rounded-full bg-goldColor text-white ring-2 ring-white items-center justify-center ">
                     {cartItems.length}{" "}
                   </span>
                 </Link>
@@ -1257,7 +1271,7 @@ const Header = () => {
               to="/checkout"
             >
               <IoCartOutline className="text-2xl" />
-              <span className="absolute right-1 top-0 block px-2 py-1 -translate-y-1/2 translate-x-1/2 transform rounded-full bg-goldColor text-white ring-2 ring-white flex items-center justify-center ">
+              <span className="absolute right-1 top-0 block px-2 py-1 -translate-y-1/2 translate-x-1/2 transform rounded-full bg-goldColor text-white ring-2 ring-white items-center justify-center ">
                 {cartItems.length}{" "}
               </span>
             </Link>
