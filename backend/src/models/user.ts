@@ -8,14 +8,9 @@ const userSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   role:{ type: String, required: false},
-  status: { type: Boolean, required:false ,default:true}
-});
-
-userSchema.pre("save", async function (next) {
-  if (this.isModified("password")) {
-    this.password = await bcrypt.hash(this.password, 8);
-  }
-  next();
+  status: { type: Boolean, required:false ,default:true},
+  resetPasswordToken: { type: String },
+  resetPasswordExpires: { type: Date },
 });
 
 const User = mongoose.model<UserType>("User", userSchema);

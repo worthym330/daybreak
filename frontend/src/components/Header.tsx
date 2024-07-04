@@ -17,6 +17,7 @@ import { HiXMark } from "react-icons/hi2";
 import * as apiClient from "../api-client";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
+import Button from "./Button";
 
 const initialModalState = {
   type: "add",
@@ -44,6 +45,16 @@ const initialSignupModalState = {
     password: "",
     confirmpassword: "",
     role: "customer",
+  },
+};
+
+const initialResetModal = {
+  type: "add",
+  state: false,
+  index: null,
+  id: "",
+  data: {
+    email: "",
   },
 };
 
@@ -100,6 +111,99 @@ function classNames(...classes: any[]): string {
   return classes.filter(Boolean).join(" ");
 }
 
+export const ResetPassRequest = ({ modal, setModal }: any) => {
+  const { state, data } = modal;
+  const resetPassRequestSchema = Yup.object().shape({
+    email: Yup.string().email("Invalid email").required("Email is required"),
+  });
+  return (
+    <Formik
+      initialValues={data}
+      validationSchema={resetPassRequestSchema}
+      onSubmit={async (values: login, { setSubmitting,resetForm }) => {
+        try {
+          setSubmitting(true);
+          const response = await fetch(`${API_BASE_URL}/api/auth/forgot`, {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(values),
+          });
+
+          const body = await response.json();
+
+          if (!response.ok) {
+            toast.error(body.message);
+          } else {
+            toast.success(body.message);
+            setSubmitting(false);
+            resetForm()
+          }
+          setModal((prev: any) => ({ ...prev, state: false }));
+        } catch (error: any) {
+          console.error("Error during sign in:", error);
+          setSubmitting(false);
+        }
+      }}
+    >
+      {({
+        handleSubmit,
+        values,
+        isSubmitting,
+        errors,
+        touched,
+        handleChange,
+        resetForm
+      }) => (
+        <Modal
+          title="Forgot Password Request"
+          open={state}
+          setOpen={() => {
+            setModal((prev: any) => ({ ...prev, state: false }));
+            resetForm()
+          }}
+        >
+          <form onSubmit={handleSubmit} noValidate>
+            <div className="text-left">
+              <label className="text-gray-700 text-sm font-bold flex-1">
+                Email
+              </label>
+              <input
+                type="email"
+                name="email"
+                value={values.email}
+                placeholder="Email address"
+                className="border rounded w-full px-2 py-3 font-normal mb-3 mt-3"
+                onChange={handleChange}
+              />
+              {touched.email && (
+                <span className="text-red-500 font-normal">
+                  {errors.email as string}
+                </span>
+              )}
+            </div>
+
+            <div className="flex flex-col justify-center gap-5">
+              <span className="flex items-center justify-between">
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={isSubmitting}
+                  loading={isSubmitting}
+                >
+                  Request
+                </Button>
+              </span>
+            </div>
+          </form>
+        </Modal>
+      )}
+    </Formik>
+  );
+};
+
 const Header = () => {
   const { showToast } = useAppContext();
   const [showDropdown, setShowDropdown] = useState(false);
@@ -115,6 +219,7 @@ const Header = () => {
   const [showNav, setShowNav] = useState(false);
   const [tab, setTab] = useState("Guests");
   const [cartItems, setCartItems] = useState<any[]>([]);
+  const [resetModal, setResetModal] = useState(initialResetModal);
 
   const headerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -339,10 +444,19 @@ const Header = () => {
               </div>
 
               <div className="flex flex-col justify-center gap-5">
-                <span className="flex items-center justify-between mt-5">
-                  <button
+                <span
+                  className="cursor-pointer underline text-goldColor flex justify-end hover:text-blue-700"
+                  onClick={() => {
+                    setModal((prev) => ({ ...prev, state: false }));
+                    setResetModal((prev) => ({ ...prev, state: true }));
+                  }}
+                >
+                  Forgot Password?
+                </span>
+                <span className="flex items-center justify-between">
+                  <Button
                     type="submit"
-                    className="bg-black mx-auto w-full text-white px-4 py-3 rounded-xl font-bold hover:bg-btnColor"
+                    className="w-full"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (
@@ -372,7 +486,7 @@ const Header = () => {
                     ) : (
                       "Login"
                     )}
-                  </button>
+                  </Button>
                 </span>
                 <span className="text-center text-gray-800">
                   Don't have an account yet?{" "}
@@ -571,13 +685,13 @@ const Header = () => {
 
               <div className="flex flex-col justify-center gap-5 mt-5">
                 <span className="flex items-center justify-between">
-                  <button
+                  <Button
                     type="submit"
-                    className="bg-black mx-auto w-full text-white px-4 py-3 rounded-xl font-bold hover:bg-btnColor"
+                    className="w-full"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? "Registering..." : "Register"}
-                  </button>
+                  </Button>
                 </span>
                 <span className="text-center text-gray-800">
                   Already have an account?
@@ -618,6 +732,7 @@ const Header = () => {
     <div className="">
       {renderLoginModal()}
       {renderSignUpModal()}
+      <ResetPassRequest modal={resetModal} setModal={setResetModal} />
       {location.pathname === "/" ? (
         <div className="relative w-full h-screen" ref={headerRef}>
           <video

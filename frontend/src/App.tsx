@@ -29,6 +29,7 @@ import Login from "./pages/LoginandSignup";
 import { Bounce, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import CancellationPolicy from "./pages/CancellationPolicy";
+import ResetPass from "./pages/ResetPassword";
 
 const AccessControl = ({ children, requiredRoles }: any) => {
   const auth_token = Cookies.get("authentication") || "null";
@@ -167,9 +168,9 @@ const App = () => {
           path="/register"
           element={
             <AuthRedirect>
-              <Layout>
+              {/* <Layout> */}
                 <Login Login={false} />
-              </Layout>
+              {/* </Layout> */}
             </AuthRedirect>
           }
         />
@@ -177,9 +178,9 @@ const App = () => {
           path="/login"
           element={
             <AuthRedirect>
-              <Layout>
+              {/* <Layout> */}
                 <Login Login={true} />
-              </Layout>
+              {/* </Layout> */}
             </AuthRedirect>
           }
         />
@@ -187,11 +188,11 @@ const App = () => {
         <Route
           path="/checkout"
           element={
-            <AccessControl requiredRoles={["customer"]}>
+            // <AccessControl requiredRoles={["customer"]}>
               <Layout>
                 <Booking />
               </Layout>
-            </AccessControl>
+            // </AccessControl>
           }
         />
 
@@ -236,6 +237,22 @@ const App = () => {
           }
         />
         <Route path="*" element={<NotFound />} />
+        <Route
+          path="/reset-password/:token"
+          element={
+            <Layout>
+              <ResetPass />
+            </Layout>
+          }
+        />
+        <Route
+          path="/review/:hotelId"
+          element={
+            <Layout>
+              <ResetPass />
+            </Layout>
+          }
+        />
       </Routes>
     </Router>
   );

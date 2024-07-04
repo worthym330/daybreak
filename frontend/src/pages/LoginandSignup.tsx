@@ -10,6 +10,8 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 import loginImage from "../assets/images/pexels-gapeppy1-2373201.jpg";
 import Button from "../components/Button";
 import { toast } from "react-toastify";
+import { useState } from "react";
+import { ResetPassRequest } from "../components/Header";
 
 interface login {
   email: string;
@@ -56,10 +58,21 @@ const registerSchema = Yup.object().shape({
   role: Yup.string(),
 });
 
+const initialResetModal = {
+  type: "add",
+  state: false,
+  index: null,
+  id: "",
+  data: {
+    email: "",
+  },
+};
+
 const Login = ({ Login }: any) => {
   const { showToast } = useAppContext();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [resetModal, setResetModal] = useState(initialResetModal);
 
   const responseLoginGoogle = async (response: any) => {
     const token = response.credential;
@@ -131,6 +144,7 @@ const Login = ({ Login }: any) => {
 
   return Login ? (
     <div className="flex min-h-screen flex-row">
+      <ResetPassRequest modal={resetModal} setModal={setResetModal} />
       <div className="flex flex-col justify-center px-4 py-12 sm:px-6 lg:px-20 xl:px-24 w-full md:w-1/2">
         <div className="mx-auto w-full max-w-sm lg:w-96">
           <Formik
@@ -217,6 +231,14 @@ const Login = ({ Login }: any) => {
                 </div>
 
                 <div className="flex flex-col justify-center gap-5">
+                <span
+                  className="cursor-pointer underline text-goldColor flex justify-end hover:text-blue-700"
+                  onClick={() => {
+                    setResetModal((prev) => ({ ...prev, state: true }));
+                  }}
+                >
+                  Forgot Password?
+                </span>
                   <span className="flex items-center justify-between">
                     <Button
                       type="submit"
