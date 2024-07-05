@@ -18,6 +18,8 @@ import * as apiClient from "../api-client";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import Button from "./Button";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
 
 const initialModalState = {
   type: "add",
@@ -218,21 +220,23 @@ const Header = () => {
   const location = useLocation();
   const [showNav, setShowNav] = useState(false);
   const [tab, setTab] = useState("Guests");
-  const [cartItems, setCartItems] = useState<any[]>([]);
+  // const [cartItems, setCartItems] = useState<any[]>([]);
   const [resetModal, setResetModal] = useState(initialResetModal);
+  const cart = useSelector((state: RootState) => state.cart.items);
 
   const headerRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const cart = localStorage.getItem("cart");
-    const parsedCart = cart ? JSON.parse(cart) : [];
-    setCartItems(parsedCart);
-  }, []);
+  // useEffect(() => {
+  //   const cart = localStorage.getItem("cart");
+  //   const parsedCart = cart ? JSON.parse(cart) : [];
+  //   setCartItems(parsedCart);
+  // }, []);
 
   const handleClickOutside = (event: MouseEvent) => {
     if (
       headerRef.current &&
       !headerRef.current.contains(event.target as Node)
     ) {
+      setShowDropdown(false)
       setShowNav(false);
     }
   };
@@ -812,14 +816,14 @@ const Header = () => {
                     >
                       <IoCartOutline className="text-2xl" />
                       <span className="absolute right-1 top-0 block px-2 py-1 -translate-y-1/2 translate-x-1/2 transform rounded-full bg-goldColor text-white ring-2 ring-white items-center justify-center ">
-                        {cartItems.length}{" "}
+                        {cart.length}{" "}
                       </span>
                     </Link>
                   </span>
 
                   {/* Dropdown for Login button */}
                   {showDropdown && (
-                    <div className="absolute bg-gray-100 text-rp-primary-black right-4 top-20 -mt-1 rounded-xl w-56 md:w-72 z-300 flex flex-col items-start shadow-login-card md:top-20 shadow-md">
+                    <div className="absolute bg-gray-100 text-rp-primary-black right-4 top-20 -mt-1 rounded-xl w-56 md:w-72 z-300 flex flex-col items-start shadow-login-card md:top-20 shadow-md" ref={headerRef}>
                       <button
                         type="button"
                         className="pl-5 pb-4 pt-4 cursor-pointer z-10 w-full text-left align-middle rounded-t-xl hover:bg-rp-light-gray-4"
@@ -1045,14 +1049,14 @@ const Header = () => {
                 >
                   <IoCartOutline className="text-2xl" />
                   <span className="absolute right-1 top-0 block px-2 py-1 -translate-y-1/2 translate-x-1/2 transform rounded-full bg-goldColor text-white ring-2 ring-white tems-center justify-center ">
-                    {cartItems.length}{" "}
+                    {cart.length}{" "}
                   </span>
                 </Link>
               </span>
 
               {/* Dropdown for Login button */}
               {showDropdown && (
-                <div className="absolute bg-white text-rp-primary-black right-4 md:right-16 top-20 -mt-1 rounded-xl w-56 md:w-72 z-300 flex flex-col items-start shadow-login-card md:top-24">
+                <div className="absolute bg-white text-rp-primary-black right-4 md:right-16 top-20 -mt-1 rounded-xl w-56 md:w-72 z-300 flex flex-col items-start shadow-login-card md:top-24" ref={headerRef} >
                   <button
                     type="button"
                     className="pl-5 pb-4 pt-4 cursor-pointer z-10 w-full text-left align-middle rounded-t-xl hover:bg-rp-light-gray-4"
@@ -1156,14 +1160,14 @@ const Header = () => {
                 >
                   <IoCartOutline className="text-2xl" />
                   <span className="absolute right-1 top-0 block px-2 py-1 -translate-y-1/2 translate-x-1/2 transform rounded-full bg-goldColor text-white ring-2 ring-white items-center justify-center ">
-                    {cartItems.length}{" "}
+                    {cart.length}{" "}
                   </span>
                 </Link>
               </span>
 
               {/* Dropdown for Login button */}
               {showDropdown && (
-                <div className="absolute bg-gray-100 text-rp-primary-black right-4 top-20 -mt-1 rounded-xl w-56 md:w-72 z-300 flex flex-col items-start shadow-login-card md:top-20 shadow-md">
+                <div className="absolute bg-gray-100 text-rp-primary-black right-4 top-20 -mt-1 rounded-xl w-56 md:w-72 z-300 flex flex-col items-start shadow-login-card md:top-20 shadow-md" ref={headerRef}>
                   <button
                     type="button"
                     className="pl-5 pb-4 pt-4 cursor-pointer text-black z-10 w-full text-left align-middle rounded-t-xl hover:bg-rp-light-gray-4"
@@ -1387,14 +1391,14 @@ const Header = () => {
             >
               <IoCartOutline className="text-2xl" />
               <span className="absolute right-1 top-0 block px-2 py-1 -translate-y-1/2 translate-x-1/2 transform rounded-full bg-goldColor text-white ring-2 ring-white items-center justify-center ">
-                {cartItems.length}{" "}
+                {cart.length}{" "}
               </span>
             </Link>
           </span>
 
           {/* Dropdown for Login button */}
           {showDropdown && (
-            <div className="absolute bg-gray-100 text-rp-primary-black right-4 top-20 -mt-1 rounded-xl w-56 md:w-72 z-50 flex flex-col items-start shadow-login-card md:top-20 shadow-md">
+            <div className="absolute bg-gray-100 text-rp-primary-black right-4 top-20 -mt-1 rounded-xl w-56 md:w-72 z-50 flex flex-col items-start shadow-login-card md:top-20 shadow-md" ref={headerRef}>
               <button
                 type="button"
                 className="pl-5 pb-4 pt-4 cursor-pointer z-10 w-full text-left align-middle rounded-t-xl hover:bg-rp-light-gray-4"

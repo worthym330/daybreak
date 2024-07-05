@@ -2,13 +2,15 @@ import { useState, useEffect } from "react";
 import Button from "./Button";
 import moment from "moment";
 import { toast } from "react-toastify";
+import { addToCart } from "../store/cartSlice";
+import { useDispatch } from "react-redux";
 
 const CartModal = ({ product, hotel, onClose, date, setCart }: any) => {
   const [adultCount, setAdultCount] = useState(0);
   const [childCount, setChildCount] = useState(0);
   const [total, setTotal] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
-
+  const dispatch = useDispatch()
   const handleClose = () => {
     setIsVisible(false);
     setTimeout(onClose, 300);
@@ -71,7 +73,7 @@ const CartModal = ({ product, hotel, onClose, date, setCart }: any) => {
         adultCount,
         childCount,
         total,
-        date,
+        date:date.toISOString(),
       };
 
       if (existingProductIndex !== -1) {
@@ -83,6 +85,8 @@ const CartModal = ({ product, hotel, onClose, date, setCart }: any) => {
       try {
         localStorage.setItem("cart", JSON.stringify(cart));
         setCart(cart);
+        // dispatch(setCart(cart));
+        dispatch(addToCart(cartItem));
         onClose();
       } catch (error) {
         console.error("Error setting local storage: ", error);
