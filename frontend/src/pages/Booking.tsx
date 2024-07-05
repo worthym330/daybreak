@@ -40,7 +40,7 @@ const Booking = () => {
 
   useEffect(() => {
     fetchHotelData();
-  }, [hotelId, userLogined]);
+  }, []);
 
   const fetchHotelData = async () => {
     try {
