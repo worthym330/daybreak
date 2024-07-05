@@ -243,13 +243,12 @@ const Detail = () => {
   };
 
   const toggleFavourite = async () => {
-    console.log(userLogined)
+    console.log(userLogined);
     if (userLogined !== null) {
       const user: FavouriteList = {
         userId: userLogined.id,
         firstName: userLogined.name.split(" ")[0],
-        lastName:
-          userLogined.name.split(" ")[userLogined.name.split(" ").length - 1],
+        lastName: userLogined.name.split(" ").pop(),
         email: userLogined.email,
       };
 
@@ -521,7 +520,7 @@ const Detail = () => {
               </p>
               <ul className="list-disc list-inside space-y-2 mb-8">
                 {hotel?.cancellationPolicy
-                  .split(".")
+                  ?.split(".")
                   .map(
                     (e: any, index) =>
                       e !== "" && e.trim() !== "" && <li key={index}>{e}.</li>
@@ -538,7 +537,9 @@ const Detail = () => {
                   className="flex gap-2 items-center"
                 >
                   <FaLocationDot className="text-goldColor w-6 h-6" />
-                  <span className="underline decoration-blue-600 text-blue-600 hover:text-blue-900">Preview</span>
+                  <span className="underline decoration-blue-600 text-blue-600 hover:text-blue-900">
+                    Preview
+                  </span>
                 </a>
               </p>
               <div className="border rounded-lg overflow-hidden border-goldColor">
