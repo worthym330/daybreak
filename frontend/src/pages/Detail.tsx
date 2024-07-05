@@ -25,6 +25,9 @@ import moment from "moment";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { FaLocationDot } from "react-icons/fa6";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../store/store";
+import { setDate, setError } from "../store/cartSlice";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAP_GL_TOKEN;
 
@@ -76,8 +79,6 @@ const Detail = () => {
   const [slidesToShow, setSlidesToShow] = useState(3);
   const queryClient = useQueryClient();
   const { showToast } = useAppContext();
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [error, setError] = useState(false);
   const [carts, setCart] = useState([]);
   const [cartItems, setCartItems] = useState<any[]>([]);
   const auth_token = Cookies.get("authentication") || "null";
@@ -86,7 +87,9 @@ const Detail = () => {
   const [address, setAddress] = useState("");
   const [coordinates, setCoordinates] = useState({ lat: 0, lng: 0 });
   const mapContainerRef = useRef(null);
-
+  const dispatch = useDispatch();
+  const error = useSelector((state: RootState) => state.cart.error);
+  const date = useSelector((state: RootState) => state.cart.date);
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 1024) {
@@ -294,7 +297,10 @@ const Detail = () => {
     setCartItems(parsedCart);
     const storedDate = Cookies.get("date");
     const parsedDate = storedDate ? new Date(storedDate) : null;
-    setSelectedDate(parsedDate);
+    dispatch(setDate(parsedDate?.toISOString()));
+    if(parsedDate !== null){
+      dispatch(setError(false))
+    }
   }, []);
 
   useEffect(() => {
@@ -335,6 +341,20 @@ const Detail = () => {
     }
     setCartItems(cart);
   }
+
+  const handleDateChange = (event: any) => {
+    const dateString = event.target.value;
+    const selectedDate = new Date(dateString);
+
+    if (!isNaN(selectedDate.getTime())) {
+      dispatch(setError(false))
+      dispatch(setDate(selectedDate.toISOString()));
+      Cookies.set("date", dateString, { expires: 1 });
+    } else {
+      dispatch(setDate(null));
+      Cookies.remove("date");
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -436,16 +456,8 @@ const Detail = () => {
               <MdCalendarMonth className="text-2xl text-btnColor" />
               <input
                 type="date"
-                value={
-                  selectedDate ? selectedDate.toISOString().split("T")[0] : ""
-                }
-                onChange={(event) => {
-                  const dateString = event.target.value;
-                  const date = new Date(dateString);
-                  setSelectedDate(date);
-                  Cookies.set("date", dateString, { expires: 1 });
-                  setError(dateString === "");
-                }}
+                value={date ? date.split("T")[0] : ""}
+                onChange={handleDateChange}
                 min={new Date().toISOString().split("T")[0]}
                 placeholder="Please select the date"
                 className={`px-4 py-2 text-goldColor placeholder:text-goldColor border rounded ${
@@ -468,9 +480,6 @@ const Detail = () => {
                   key={index}
                   product={product}
                   hotel={hotel}
-                  date={selectedDate}
-                  error={error}
-                  setError={setError}
                   setCart={setCart}
                 />
               ))}

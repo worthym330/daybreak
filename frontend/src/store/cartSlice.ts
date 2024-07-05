@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface CartItem {
   product: any;
@@ -11,14 +11,18 @@ interface CartItem {
 
 interface CartState {
   items: CartItem[];
+  error: boolean;
+  date?: any;
 }
 
 const initialState: CartState = {
   items: [],
+  error: false,
+  date: null,
 };
 
 const cartSlice = createSlice({
-  name: 'cart',
+  name: "cart",
   initialState,
   reducers: {
     addToCart: (state, action: PayloadAction<CartItem>) => {
@@ -38,8 +42,14 @@ const cartSlice = createSlice({
     clearCart: (state) => {
       state.items = [];
     },
+    setError(state, action) {
+      state.error = action.payload;
+    },
+    setDate(state, action) {
+      state.date = action.payload;
+    },
   },
 });
 
-export const { addToCart, clearCart } = cartSlice.actions;
+export const { addToCart, clearCart, setError, setDate } = cartSlice.actions;
 export default cartSlice.reducer;

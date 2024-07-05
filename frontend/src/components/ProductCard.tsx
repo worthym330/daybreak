@@ -2,33 +2,31 @@ import { useState } from "react";
 import CartModal from "./CartModal";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import Button from "./Button";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../store/store";
+import { setError } from "../store/cartSlice";
 
 interface ProductCardProps {
   product: any;
   hotel: any;
-  date?: any;
-  error?: boolean;
-  setError?: any;
   setCart?: any;
 }
 
 const ProductCard = ({
   product,
   hotel,
-  date,
-  error,
-  setError,
   setCart,
 }: ProductCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showLess, setShowLess] = useState(false);
-  
+  const dispatch = useDispatch();
+  const error = useSelector((state: RootState) => state.cart.error);
+  const date = useSelector((state: RootState) => state.cart.date);
   const handleSelect = () => {
     console.log(error, date);
-    if (!error || date === null) {
-      setError(true);
-    } else if (error && date !== null) {
-      setError(false);
+    if (date === undefined) {
+      dispatch(setError(true));
+    } else {
       setIsModalOpen(true);
     }
   };
