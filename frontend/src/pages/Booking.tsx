@@ -44,7 +44,7 @@ const Booking = () => {
 
   const fetchHotelData = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/my-hotels/${hotelId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/hotels/${hotelId}`, {
         credentials: "include",
       });
       const data = await response.json();
