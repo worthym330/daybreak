@@ -13,9 +13,10 @@ import { FaCircleXmark } from "react-icons/fa6";
 import { MdPhotoLibrary } from "react-icons/md";
 import Button from "../components/Button";
 import Switch from "react-switch";
+import { toast } from "react-toastify";
 // import DatePicker from "react-datepicker";
 // import "react-datepicker/dist/react-datepicker.css";
-import { useAppContext } from "../contexts/AppContext";
+// import { useAppContext } from "../contexts/AppContext";
 // import { HotelType } from "../../../backend/src/shared/types";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
@@ -210,7 +211,7 @@ const DynamicInputFields = ({ value, onChange }: any) => {
 const MyHotels = () => {
   const [modal, setModal] = useState<ModalState>(initialModalState);
   const [hotelData, setHotelData] = useState([]);
-  const { showToast } = useAppContext();
+  // const { showToast } = useAppContext();
 
   const getData = async () => {
     const response = await fetch(`${API_BASE_URL}/api/my-hotels`, {
@@ -271,16 +272,18 @@ const MyHotels = () => {
               );
 
               if (response.ok) {
-                showToast({ message: "Successfully updated", type: "SUCCESS" });
+                // showToast({ message: "Successfully updated", type: "SUCCESS" });
+                toast.success("Successfully updated")
                 setModal(initialModalState);
                 setSubmitting(false);
                 resetForm();
                 getData();
               } else {
-                showToast({
-                  message: "Failed to update Hotel!",
-                  type: "ERROR",
-                });
+                // showToast({
+                //   message: "Failed to update Hotel!",
+                //   type: "ERROR",
+                // })
+                toast.error("Failed to update Hotel!");
                 setSubmitting(false);
               }
               // return response.json();
@@ -296,13 +299,15 @@ const MyHotels = () => {
               });
 
               if (response.ok) {
-                showToast({ message: "Successfully Added", type: "SUCCESS" });
+                // showToast({ message: "Successfully Added", type: "SUCCESS" });
+                toast.success("Successfully Added")
                 setModal(initialModalState);
                 setSubmitting(false);
                 resetForm();
                 getData();
               } else {
-                showToast({ message: "Failed to Add Hotel!", type: "ERROR" });
+                // showToast({ message: "Failed to Add Hotel!", type: "ERROR" });
+                toast.error("Failed to add Hotel!");
                 setSubmitting(false);
               }
               // return response.json();

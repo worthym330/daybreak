@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useAppContext } from "../contexts/AppContext";
+// import { useAppContext } from "../contexts/AppContext";
 import SignOutButton from "./SignOutButton";
 import videoBg from "../assets/VideoBg.mp4";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
@@ -207,7 +207,7 @@ export const ResetPassRequest = ({ modal, setModal }: any) => {
 };
 
 const Header = () => {
-  const { showToast } = useAppContext();
+  // const { showToast } = useAppContext();
   const [showDropdown, setShowDropdown] = useState(false);
   const [arrowDirection, setArrowDirection] = useState("down");
   const [modal, setModal] = useState(initialModalState);
@@ -273,13 +273,15 @@ const Header = () => {
       const body = await response.json();
       if (response.ok) {
         setModal((prev) => ({ ...prev, state: false, loading: false }));
-        showToast({ message: "Sign in Successful!", type: "SUCCESS" });
+        // showToast({ message: "Sign in Successful!", type: "SUCCESS" });
+        toast.success('Sign in Successful!')
         setShowDropdown(false);
         Cookies.set("authentication", JSON.stringify(body.user), {
           expires: 1,
         });
       } else {
-        showToast({ message: "Failed to Login!", type: "ERROR" });
+        // showToast({ message: "Failed to Login!", type: "ERROR" });
+        toast.error("Failed to Login!")
       }
     } catch (error) {
       console.error("Error authenticating with backend:", error);
@@ -311,13 +313,15 @@ const Header = () => {
       const body = await response.json();
       if (response.ok) {
         setSignupModal(initialSignupModalState);
-        showToast({ message: "Registered Successful!", type: "SUCCESS" });
+        // showToast({ message: "Registered Successful!", type: "SUCCESS" });
+        toast.success('Registered Successful!')
         setShowDropdown(false);
         Cookies.set("authentication", JSON.stringify(body.user), {
           expires: 1,
         });
       } else {
-        showToast({ message: "Failed to register!", type: "ERROR" });
+        // showToast({ message: "Failed to register!", type: "ERROR" });
+        toast.error('Failed to register!')
       }
     } catch (error) {
       console.error("Error authenticating with backend:", error);
@@ -372,22 +376,23 @@ const Header = () => {
             setModal(initialModalState);
 
             if (!response.ok) {
-              showToast({ message: body.message, type: "ERROR" });
-              throw new Error(body.message);
-            }
-
-            toast.success("Logined Successfully!");
+              // showToast({ message: body.message, type: "ERROR" });
+              toast.error(body.message)
+            }else{
+              toast.success("Logined Successfully!");
             setShowDropdown(false);
             Cookies.set("authentication", JSON.stringify(body.user), {
               expires: 1,
             });
+            }            
           } catch (error: any) {
             console.error("Error during sign in:", error);
             setModal(initialModalState);
-            showToast({
-              message: error.message || "An error occurred during sign in",
-              type: "ERROR",
-            });
+            // showToast({
+            //   message: error.message || "An error occurred during sign in",
+            //   type: "ERROR",
+            // });
+            toast.error(error.message)
           }
         }}
       >
@@ -561,21 +566,24 @@ const Header = () => {
               Cookies.set("authentication", JSON.stringify(responseBody.user), {
                 expires: 1,
               });
-              showToast({ message: "Registered Successful!", type: "SUCCESS" });
+              // showToast({ message: "Registered Successful!", type: "SUCCESS" });
+              toast.success("Registered Successful!")
               await queryClient.invalidateQueries("validateToken");
               setSignupModal(initialSignupModalState);
             } else {
-              showToast({
-                message: responseBody.message || "An error occurred",
-                type: "ERROR",
-              });
+              // showToast({
+              //   message: responseBody.message || "An error occurred",
+              //   type: "ERROR",
+              // });
+              toast.error(responseBody.message)
             }
           } catch (error: any) {
             console.log(error);
-            showToast({
-              message: error.message || "An error occurred",
-              type: "ERROR",
-            });
+            // showToast({
+            //   message: error.message || "An error occurred",
+            //   type: "ERROR",
+            // });
+            toast.error(error.message)
           }
         }}
       >

@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "react-query";
 import * as apiClient from "../api-client";
-import { useAppContext } from "../contexts/AppContext";
+// import { useAppContext } from "../contexts/AppContext";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 // import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { Form, Formik } from "formik";
@@ -10,6 +10,7 @@ import * as Yup from "yup";
 // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 import loginImage from "../assets/images/pexels-gapeppy1-2373201.jpg";
 import Button from "../components/Button";
+import { toast } from "react-toastify";
 
 interface login {
   email: string;
@@ -36,7 +37,7 @@ const loginSchema = Yup.object().shape({
 });
 
 const SignIn = () => {
-  const { showToast } = useAppContext();
+  // const { showToast } = useAppContext();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -73,12 +74,14 @@ const SignIn = () => {
 
   const mutation = useMutation(apiClient.signIn, {
     onSuccess: async () => {
-      showToast({ message: "Sign in Successful!", type: "SUCCESS" });
+      // showToast({ message: "Sign in Successful!", type: "SUCCESS" });
+      toast.success("Sign in Successful!")
       await queryClient.invalidateQueries("validateToken");
       navigate(location.state?.from?.pathname || "/");
     },
     onError: (error: Error) => {
-      showToast({ message: error.message, type: "ERROR" });
+      // showToast({ message: error.message, type: "ERROR" });
+      toast.error(error.message)
     },
   });
 

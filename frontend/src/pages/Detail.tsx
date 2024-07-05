@@ -15,7 +15,7 @@ import {
   FaWifi,
 } from "react-icons/fa";
 import { MdFamilyRestroom, MdSmokeFree } from "react-icons/md";
-import { useAppContext } from "../contexts/AppContext";
+// import { useAppContext } from "../contexts/AppContext";
 import ProductCard from "../components/ProductCard";
 import { FavouriteList } from "../../../backend/src/shared/types";
 import Cookies from "js-cookie";
@@ -28,6 +28,7 @@ import { FaLocationDot } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { removeFromCart, setDate, setError } from "../store/cartSlice";
+import { toast } from "react-toastify";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAP_GL_TOKEN;
 
@@ -78,7 +79,7 @@ const Detail = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [slidesToShow, setSlidesToShow] = useState(3);
   const queryClient = useQueryClient();
-  const { showToast } = useAppContext();
+  // const { showToast } = useAppContext();
   const [carts, setCart] = useState([]);
   const [cartItems, setCartItems] = useState<any[]>([]);
   const auth_token = Cookies.get("authentication") || "null";
@@ -273,7 +274,8 @@ const Detail = () => {
         // Handle error if necessary
       }
     } else {
-      showToast({ message: "Please log in to save", type: "ERROR" });
+      // showToast({ message: "Please log in to save", type: "ERROR" });
+      toast.error("Please log in to save")
     }
   };
 

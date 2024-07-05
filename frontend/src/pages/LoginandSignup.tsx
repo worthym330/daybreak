@@ -1,5 +1,5 @@
 import { useQueryClient } from "react-query";
-import { useAppContext } from "../contexts/AppContext";
+// import { useAppContext } from "../contexts/AppContext";
 import { Link, useNavigate } from "react-router-dom";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { Form, Formik } from "formik";
@@ -69,7 +69,7 @@ const initialResetModal = {
 };
 
 const Login = ({ Login }: any) => {
-  const { showToast } = useAppContext();
+  // const { showToast } = useAppContext();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [resetModal, setResetModal] = useState(initialResetModal);
@@ -93,13 +93,16 @@ const Login = ({ Login }: any) => {
       });
       const body = await response.json();
       if (response.ok) {
-        showToast({ message: "Sign in Successful!", type: "SUCCESS" });
+        // showToast({ message: "Sign in Successful!", type: "SUCCESS" });
+        toast.success("Sign in Successful!")
         Cookies.set("authentication", JSON.stringify(body.user), {
           expires: 1,
         });
         navigate(-1);
       } else {
-        showToast({ message: "Failed to Login!", type: "ERROR" });
+        // showToast({ message: "Failed to Login!", type: "ERROR" });
+        toast.error('Failed to Login!')
+
       }
     } catch (error) {
       console.error("Error authenticating with backend:", error);
@@ -129,13 +132,15 @@ const Login = ({ Login }: any) => {
       });
       const body = await response.json();
       if (response.ok) {
-        showToast({ message: "Registered Successful!", type: "SUCCESS" });
+        // showToast({ message: "Registered Successful!", type: "SUCCESS" });
+        toast.success('Registered Successful!')
         Cookies.set("authentication", JSON.stringify(body.user), {
           expires: 1,
         });
         navigate(-1);
       } else {
-        showToast({ message: "Failed to register!", type: "ERROR" });
+        // showToast({ message: "Failed to register!", type: "ERROR" });
+        toast.error('Failed to register!')
       }
     } catch (error) {
       console.error("Error authenticating with backend:", error);
@@ -182,10 +187,11 @@ const Login = ({ Login }: any) => {
                 }
               } catch (error: any) {
                 console.error("Error during sign in:", error);
-                showToast({
-                  message: error.message || "An error occurred during sign in",
-                  type: "ERROR",
-                });
+                // showToast({
+                //   message: error.message || "An error occurred during sign in",
+                //   type: "ERROR",
+                // });
+                toast.error(error.message);
               }
             }}
           >
@@ -327,23 +333,29 @@ const Login = ({ Login }: any) => {
                     }
                   );
                   navigate(-1);
-                  showToast({
-                    message: "Registered Successful!",
-                    type: "SUCCESS",
-                  });
+                  // showToast({
+                  //   message: "Registered Successful!",
+                  //   type: "SUCCESS",
+                  // });
+        toast.success('Registered Successful!')
+
                   await queryClient.invalidateQueries("validateToken");
                 } else {
-                  showToast({
-                    message: responseBody.message || "An error occurred",
-                    type: "ERROR",
-                  });
+                  // showToast({
+                  //   message: responseBody.message || "An error occurred",
+                  //   type: "ERROR",
+                  // });
+        toast.error(responseBody.message)
+
                 }
               } catch (error: any) {
                 console.log(error);
-                showToast({
-                  message: error.message || "An error occurred",
-                  type: "ERROR",
-                });
+                // showToast({
+                //   message: error.message || "An error occurred",
+                //   type: "ERROR",
+                // });
+        toast.error(error.message)
+
               }
             }}
           >

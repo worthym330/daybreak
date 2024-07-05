@@ -1,4 +1,4 @@
-import { useAppContext } from "../contexts/AppContext";
+// import { useAppContext } from "../contexts/AppContext";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
@@ -13,6 +13,7 @@ import Button from "../components/Button";
 import { Formik } from "formik";
 import Modal from "../components/modal";
 import * as Yup from "yup";
+import { toast } from "react-toastify";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 const initialModalState = {
@@ -45,7 +46,7 @@ const validationSchema = Yup.object({
 });
 
 const WaitList = () => {
-  const { showToast } = useAppContext();
+  // const { showToast } = useAppContext();
   const navigate = useNavigate();
   const [submited, setSubmitted] = useState(false);
   const [code, setCode] = useState("");
@@ -54,10 +55,11 @@ const WaitList = () => {
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(`https://www.DayBreakPasspass.com?uid=${code}`);
-    showToast({
-      message: "Referral link copied to clipboard!",
-      type: "SUCCESS",
-    });
+    // showToast({
+    //   message: "Referral link copied to clipboard!",
+    //   type: "SUCCESS",
+    // });
+    toast.success("Referral link copied to clipboard!")
   };
 
   const openSocialMedia = (platform: string) => {
@@ -104,15 +106,17 @@ const WaitList = () => {
             });
             const responseBody = await response.json();
             if (!response.ok) {
-              showToast({
-                message: responseBody.error,
-                type: "ERROR",
-              });
+              // showToast({
+              //   message: responseBody.error,
+              //   type: "ERROR",
+              // });
+              toast.error(responseBody.error)
             } else {
-              showToast({
-                message: "Form submitted successfully",
-                type: "SUCCESS",
-              });
+              // showToast({
+              //   message: "Form submitted successfully",
+              //   type: "SUCCESS",
+              // });
+              toast.success("Form submitted successfully")
               console.log(responseBody)
               setModal(initialModalState);
               setNumber(responseBody.referredNumber);
