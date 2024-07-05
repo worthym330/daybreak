@@ -13,8 +13,8 @@ import { FaCircleXmark } from "react-icons/fa6";
 import { MdPhotoLibrary } from "react-icons/md";
 import Button from "../components/Button";
 import Switch from "react-switch";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+// import DatePicker from "react-datepicker";
+// import "react-datepicker/dist/react-datepicker.css";
 import { useAppContext } from "../contexts/AppContext";
 // import { HotelType } from "../../../backend/src/shared/types";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -860,7 +860,7 @@ const MyHotels = () => {
                                 </div>
                               )}
                           </div>
-                          <div className="text-left flex flex-col gap-2">
+                          {/* <div className="text-left flex flex-col gap-2">
                             <label className="text-gray-700 text-sm flex-1">
                               Select Dates
                             </label>
@@ -909,7 +909,7 @@ const MyHotels = () => {
                                   }
                                 </div>
                               )}
-                          </div>
+                          </div> */}
 
                           <div className="text-left col-span-1 md:col-span-3">
                             <label className="text-gray-700 text-sm flex-1">

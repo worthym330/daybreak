@@ -22,10 +22,12 @@ const ProductCard = ({
 }: ProductCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showLess, setShowLess] = useState(false);
+  
   const handleSelect = () => {
-    if (!error && date === null) {
+    console.log(error, date);
+    if (!error || date === null) {
       setError(true);
-    } else {
+    } else if (error && date !== null) {
       setError(false);
       setIsModalOpen(true);
     }
