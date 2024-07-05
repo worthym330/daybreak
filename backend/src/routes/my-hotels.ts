@@ -78,9 +78,9 @@ router.post(
           otherpoints: product.otherpoints,
           notes: product.notes,
           maxPeople: product.maxPeople,
-          selectedDates: product.selectedDates.map(
-            (date: string) => new Date(date)
-          ),
+          // selectedDates: product.selectedDates.map(
+          //   (date: string) => new Date(date)
+          // ),
           slotTime: product.slotTime,
           startTime: product.startTime,
           endTime: product.endTime,
@@ -159,14 +159,7 @@ router.put(
       }
 
       // Parse productTitle to ensure dates are correct
-      const parsedProductTitle = JSON.parse(productTitle).map(
-        (product: any) => ({
-          ...product,
-          selectedDates: product.selectedDates.map(
-            (date: any) => new Date(date)
-          ),
-        })
-      );
+      const parsedProductTitle = JSON.parse(productTitle)
 
       const facilitiesMap = facilities.split(",");
       const HotelTypes = hotelType.split(",");
