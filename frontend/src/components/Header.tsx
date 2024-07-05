@@ -220,16 +220,16 @@ const Header = () => {
   const location = useLocation();
   const [showNav, setShowNav] = useState(false);
   const [tab, setTab] = useState("Guests");
-  // const [cartItems, setCartItems] = useState<any[]>([]);
+  const [cartItems, setCartItems] = useState<any[]>([]);
   const [resetModal, setResetModal] = useState(initialResetModal);
   const cart = useSelector((state: RootState) => state.cart.items);
 
   const headerRef = useRef<HTMLDivElement>(null);
-  // useEffect(() => {
-  //   const cart = localStorage.getItem("cart");
-  //   const parsedCart = cart ? JSON.parse(cart) : [];
-  //   setCartItems(parsedCart);
-  // }, []);
+  useEffect(() => {
+    const cart = localStorage.getItem("cart");
+    const parsedCart = cart ? JSON.parse(cart) : [];
+    setCartItems(parsedCart);
+  }, [cart]);
 
   const handleClickOutside = (event: MouseEvent) => {
     if (
@@ -816,7 +816,7 @@ const Header = () => {
                     >
                       <IoCartOutline className="text-2xl" />
                       <span className="absolute right-1 top-0 block px-2 py-1 -translate-y-1/2 translate-x-1/2 transform rounded-full bg-goldColor text-white ring-2 ring-white items-center justify-center ">
-                        {cart.length}{" "}
+                        {cartItems.length}{" "}
                       </span>
                     </Link>
                   </span>
@@ -1049,7 +1049,7 @@ const Header = () => {
                 >
                   <IoCartOutline className="text-2xl" />
                   <span className="absolute right-1 top-0 block px-2 py-1 -translate-y-1/2 translate-x-1/2 transform rounded-full bg-goldColor text-white ring-2 ring-white tems-center justify-center ">
-                    {cart.length}{" "}
+                    {cartItems.length}{" "}
                   </span>
                 </Link>
               </span>
@@ -1160,7 +1160,7 @@ const Header = () => {
                 >
                   <IoCartOutline className="text-2xl" />
                   <span className="absolute right-1 top-0 block px-2 py-1 -translate-y-1/2 translate-x-1/2 transform rounded-full bg-goldColor text-white ring-2 ring-white items-center justify-center ">
-                    {cart.length}{" "}
+                    {cartItems.length}{" "}
                   </span>
                 </Link>
               </span>
@@ -1391,7 +1391,7 @@ const Header = () => {
             >
               <IoCartOutline className="text-2xl" />
               <span className="absolute right-1 top-0 block px-2 py-1 -translate-y-1/2 translate-x-1/2 transform rounded-full bg-goldColor text-white ring-2 ring-white items-center justify-center ">
-                {cart.length}{" "}
+                {cartItems.length}{" "}
               </span>
             </Link>
           </span>
