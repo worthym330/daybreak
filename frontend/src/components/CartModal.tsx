@@ -3,13 +3,15 @@ import Button from "./Button";
 import moment from "moment";
 import { toast } from "react-toastify";
 import { addToCart } from "../store/cartSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../store/store";
 
-const CartModal = ({ product, hotel, onClose, date, setCart }: any) => {
+const CartModal = ({ product, hotel, onClose, setCart }: any) => {
   const [adultCount, setAdultCount] = useState(0);
   const [childCount, setChildCount] = useState(0);
   const [total, setTotal] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
+  const date = useSelector((state: RootState) => state.cart.date);
   const dispatch = useDispatch()
   const handleClose = () => {
     setIsVisible(false);
@@ -73,7 +75,7 @@ const CartModal = ({ product, hotel, onClose, date, setCart }: any) => {
         adultCount,
         childCount,
         total,
-        date:date.toISOString(),
+        date
       };
 
       if (existingProductIndex !== -1) {
