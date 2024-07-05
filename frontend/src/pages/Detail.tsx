@@ -298,8 +298,8 @@ const Detail = () => {
     const storedDate = Cookies.get("date");
     const parsedDate = storedDate ? new Date(storedDate) : null;
     dispatch(setDate(parsedDate?.toISOString()));
-    if(parsedDate !== null){
-      dispatch(setError(false))
+    if (parsedDate !== null) {
+      dispatch(setError(false));
     }
   }, []);
 
@@ -348,7 +348,7 @@ const Detail = () => {
     const selectedDate = new Date(dateString);
 
     if (!isNaN(selectedDate.getTime())) {
-      dispatch(setError(false))
+      dispatch(setError(false));
       dispatch(setDate(selectedDate.toISOString()));
       Cookies.set("date", dateString, { expires: 1 });
     } else {
@@ -580,7 +580,85 @@ const Detail = () => {
 
           {/* Cart Section */}
           <div className="w-full lg:w-1/3">
-            <div className="h-fit sticky top-4">
+            {cartItems.length > 0 && (
+              <div className="h-fit sticky top-4 lg:hidden">
+                <div className="p-4 bg-white rounded-lg shadow-md border border-goldColor">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-bold">Your Cart</h2>
+                  </div>
+                  <div className="border-t pt-4">
+                    <div className="flex items-center space-x-4 mb-4">
+                      <img
+                        src={cartItems[0].hotel.imageUrls[0]}
+                        alt={cartItems[0].hotel.name}
+                        className="w-16 h-16 rounded-lg"
+                      />
+                      <div>
+                        <h3 className="text-md font-semibold">
+                          {cartItems[0].hotel.name}
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          {/* {moment(selectedDate).format('DD/MM/YYYY')} */}
+                        </p>
+                      </div>
+                    </div>
+
+                    {cartItems.map((item: any, index: any) => (
+                      <div
+                        key={index}
+                        className="flex justify-between items-center mb-4"
+                      >
+                        <div>
+                          <h3 className="text-sm">
+                            {item.product.title} Adult ({item.adultCount}){" "}
+                            {item.childCount > 0 && (
+                              <p>Child ({item.childCount})</p>
+                            )}
+                          </h3>
+                        </div>
+                        <button
+                          className="text-gray-500"
+                          onClick={() => handleRemoveItem(item.product.title)}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+
+                    <div className="mt-4 border-t pt-4">
+                      <div className="flex justify-between text-gray-700 mb-2">
+                        <span>Subtotal:</span>
+                        <span>₹{subtotal.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between text-gray-700 mb-2">
+                        <span>GST:</span>
+                        <span>₹{(subtotal * 0.18).toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between text-gray-700 mb-2">
+                        <span>Total:</span>
+                        <span>₹{(subtotal * (1 + 0.18)).toFixed(2)}</span>
+                      </div>
+                      {userLogined !== null ? (
+                        <Button
+                          className="w-full bg-goldColor text-white py-2 rounded-lg"
+                          onClick={() => navigate(`/checkout`)}
+                        >
+                          Book Now
+                        </Button>
+                      ) : (
+                        <Button
+                          className="w-full bg-goldColor text-white py-2 rounded-lg"
+                          onClick={() => navigate(`/login`)}
+                        >
+                          Login
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div className="h-fit sticky top-4 hidden lg:block">
               <div className="p-4 bg-white rounded-lg shadow-md border border-goldColor">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-bold">Your Cart</h2>
