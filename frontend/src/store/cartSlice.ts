@@ -1,16 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface CartItem {
-  product: any;
-  hotel: any;
-  adultCount: number;
-  childCount: number;
-  total: number;
-  date: string;
-}
+
 
 interface CartState {
-  items: CartItem[];
+  items: any[];
   error: boolean;
   date?: any;
 }
@@ -25,7 +18,7 @@ const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    addToCart: (state, action: PayloadAction<CartItem>) => {
+    addToCart: (state, action: PayloadAction<any>) => {
       const newItem = action.payload;
       const existingProductIndex = state.items.findIndex(
         (item) =>

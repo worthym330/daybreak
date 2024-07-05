@@ -27,7 +27,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import { FaLocationDot } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
-import { setDate, setError } from "../store/cartSlice";
+import { addToCart, setDate, setError } from "../store/cartSlice";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAP_GL_TOKEN;
 
@@ -339,6 +339,7 @@ const Detail = () => {
       cart = cart.filter((item) => item.product.title !== itemId);
       localStorage.setItem("cart", JSON.stringify(cart));
     }
+    dispatch(addToCart(cart));
     setCartItems(cart);
   }
 
