@@ -259,6 +259,7 @@ const Header = () => {
       email: user.email,
       loginThrough: "google",
       googleToken: token,
+      userType: "customer",
     };
     try {
       const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
