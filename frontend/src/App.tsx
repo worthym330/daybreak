@@ -195,27 +195,6 @@ const App = () => {
             // </AccessControl>
           }
         />
-
-        <Route
-          path="/add-hotel"
-          element={
-            <AccessControl requiredRoles={["partner"]}>
-              <Layout>
-                <AddHotel />
-              </Layout>
-            </AccessControl>
-          }
-        />
-        <Route
-          path="/edit-hotel/:hotelId"
-          element={
-            <AccessControl requiredRoles={["partner"]}>
-              <Layout>
-                <EditHotel />
-              </Layout>
-            </AccessControl>
-          }
-        />
         <Route
           path="/my-hotels"
           element={

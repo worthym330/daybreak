@@ -32,13 +32,12 @@ export type BookingFormData = {
 
 const BookingForm = ({ currentUser, paymentIntent }: Props) => {
   const search = useSearchContext();
-  const { hotelId } = useParams();
-
   const { razorpayOptions } = useAppContext();
   const navigate = useNavigate()
 
   const cart = localStorage.getItem("cart");
   const parsedCart = cart ? JSON.parse(cart) : [];
+  const hotelId = parsedCart[0]?.hotel?._id;
 
   const { mutate: bookRoom, isLoading } = useMutation<
     void,
