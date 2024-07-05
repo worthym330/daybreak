@@ -97,7 +97,6 @@ const productSchema = Yup.object().shape({
     .nullable(),
   otherpoints: Yup.string().required("Product points are required"),
   notes: Yup.string().required("Notes are required"),
-  selectedDates: Yup.array().required("Please select at least one date."),
   slotTime: Yup.string().required("Time Slot are required"),
   startTime: Yup.string()
     .required("Start Time is required")
