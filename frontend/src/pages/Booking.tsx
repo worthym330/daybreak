@@ -62,7 +62,7 @@ const Booking = () => {
 
   if (!hotel) {
     return (
-      <main className="grid h-screen place-items-center bg-white px-6 py-24 sm:py-32 lg:px-8">
+      <main className="grid place-items-center bg-white px-6 py-24 sm:py-32 lg:px-8">
         <div className="text-center">
           <h1 className="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl">
             Your cart is empty
@@ -94,7 +94,7 @@ const Booking = () => {
           </div>
         )
       ) : (
-        <main className="grid h-screen place-items-center bg-white px-6 py-24 sm:py-32 lg:px-8">
+        <main className="grid place-items-center bg-white px-6 py-24 sm:py-32 lg:px-8">
           <div className="text-center">
             <h1 className="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl">
               Please log in
