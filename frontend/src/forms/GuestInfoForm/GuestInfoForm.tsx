@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import DatePicker from "react-datepicker";
 import { useSearchContext } from "../../contexts/SearchContext";
-import { useAppContext } from "../../contexts/AppContext";
+// import { useAppContext } from "../../contexts/AppContext";
 import { Link, useNavigate } from "react-router-dom";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { Formik } from "formik";
@@ -11,6 +11,7 @@ import { CustomJwtPayload, login, loginSchema } from "../../components/Header";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 import Button from "../../components/Button";
+import { toast } from "react-toastify";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 type Props = {
@@ -42,7 +43,7 @@ const GuestInfoForm = ({ hotelId, pricePerNight }: Props) => {
   const search = useSearchContext();
   const navigate = useNavigate();
   // const location = useLocation();
-  const { showToast } = useAppContext();
+  // const { showToast } = useAppContext();
 
   const auth_token = Cookies.get("authentication");
   const isLoggedIn = auth_token ? JSON.parse(auth_token) : null;
@@ -112,10 +113,12 @@ const GuestInfoForm = ({ hotelId, pricePerNight }: Props) => {
       const body = await response.json();
       if (response.ok) {
         setModal((prev) => ({ ...prev, state: false, loading: false }));
-        showToast({ message: "Sign in Successful!", type: "SUCCESS" });
+        // showToast({ message: "Sign in Successful!", type: "SUCCESS" });
+        toast.success("Sign in Successful!")
         Cookies.set("authentication", JSON.stringify(body.user), { expires: 1 });
       } else {
-        showToast({ message: "Failed to Login!", type: "ERROR" });
+        // showToast({ message: "Failed to Login!", type: "ERROR" });
+        toast.error("Failed to Login!")
       }
     } catch (error) {
       console.error("Error authenticating with backend:", error);
@@ -140,10 +143,13 @@ const GuestInfoForm = ({ hotelId, pricePerNight }: Props) => {
           });
           const body = await response.json();
           setModal((prev) => ({ ...prev, state: false, loading: false }));
-          showToast({ message: "Sign in Successful!", type: "SUCCESS" });
-          Cookies.set("authentication", JSON.stringify(body.user), { expires: 1 });
           if (!response.ok) {
-            throw new Error(body.message);
+            // throw new Error(body.message);
+            toast.error(body.message)
+          }else{
+            // showToast({ message: "Sign in Successful!", type: "SUCCESS" });
+            toast.success("Sign in Successful!")
+            Cookies.set("authentication", JSON.stringify(body.user), { expires: 1 });
           }
         }}
       >

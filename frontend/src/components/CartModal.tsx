@@ -1,28 +1,30 @@
-import Cookies from "js-cookie";
 import { useState, useEffect } from "react";
 import Button from "./Button";
 import moment from "moment";
 import { toast } from "react-toastify";
+import { addToCart } from "../store/cartSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../store/store";
 
-const CartModal = ({ product, hotelId, onClose, date, setCart }: any) => {
+const CartModal = ({ product, hotel, onClose, setCart }: any) => {
   const [adultCount, setAdultCount] = useState(0);
   const [childCount, setChildCount] = useState(0);
   const [total, setTotal] = useState(0);
-
   const [isVisible, setIsVisible] = useState(true);
-
+  const date = useSelector((state: RootState) => state.cart.date);
+  const dispatch = useDispatch()
   const handleClose = () => {
     setIsVisible(false);
     setTimeout(onClose, 300);
   };
 
   useEffect(() => {
-    const savedCart = Cookies.get("cart");
+    const savedCart = localStorage.getItem("cart");
     if (savedCart) {
       const cart = JSON.parse(savedCart) as any[];
       const savedProduct = cart.find(
         (item) =>
-          item.product.title === product.title && item.hotelId === hotelId
+          item.product.title === product.title && item.hotel._id === hotel._id
       );
       if (savedProduct) {
         setAdultCount(savedProduct.adultCount);
@@ -30,7 +32,7 @@ const CartModal = ({ product, hotelId, onClose, date, setCart }: any) => {
         setTotal(savedProduct.total);
       }
     }
-  }, [product.title, hotelId]);
+  }, [product.title, hotel]);
 
   const GST_RATE = 0.18;
 
@@ -47,13 +49,13 @@ const CartModal = ({ product, hotelId, onClose, date, setCart }: any) => {
   const handleAddToCart = () => {
     if (adultCount > 0 || childCount > 0) {
       let cart: any[] = [];
-      const savedCart = Cookies.get("cart");
+      const savedCart = localStorage.getItem("cart");
       if (savedCart) {
         cart = JSON.parse(savedCart) as any[];
       }
 
       // Check if there are products with different hotelId
-      const differentHotelId = cart.some((item) => item.hotelId !== hotelId);
+      const differentHotelId = cart.some((item) => item.hotel._id !== hotel._id);
 
       if (differentHotelId) {
         toast.warning(
@@ -64,16 +66,16 @@ const CartModal = ({ product, hotelId, onClose, date, setCart }: any) => {
 
       const existingProductIndex = cart.findIndex(
         (item) =>
-          item.product.title === product.title && item.hotelId === hotelId
+          item.product.title === product.title && item.hotel._id === hotel._id
       );
 
       const cartItem = {
         product,
-        hotelId,
+        hotel,
         adultCount,
         childCount,
         total,
-        date,
+        date
       };
 
       if (existingProductIndex !== -1) {
@@ -82,9 +84,15 @@ const CartModal = ({ product, hotelId, onClose, date, setCart }: any) => {
         cart.push(cartItem);
       }
 
-      Cookies.set("cart", JSON.stringify(cart), { expires: 1 });
-      setCart(cart);
-      onClose();
+      try {
+        localStorage.setItem("cart", JSON.stringify(cart));
+        setCart(cart);
+        // dispatch(setCart(cart));
+        dispatch(addToCart(cartItem));
+        onClose();
+      } catch (error) {
+        console.error("Error setting local storage: ", error);
+      }
     }
   };
 
@@ -227,21 +235,25 @@ const CartModal = ({ product, hotelId, onClose, date, setCart }: any) => {
                 <li key={index}>{feature}</li>
               ))} */}
               <h1 className="text-gray-800 font-semibold">
-                Description of the {product.title}
+                Description
               </h1>
-              <span className="px-2">{product.description}</span>
+              <ul className="text-sm text-gray-600 mt-2 space-y-1 list-disc p-4">
+                {product.description.map((feature: any, index: number) => (
+                  <li key={index}>{feature}</li>
+                ))}
+              </ul>
             </div>
-            <div>
+            {/* <div>
               <h1 className="text-gray-800 font-semibold">
                 All the points that needs to be mentioned in the product.
               </h1>
               <p className="text-sm text-gray-500 px-2">
                 {product.otherpoints}
               </p>
-            </div>
+            </div> */}
             <div className="text-sm text-gray-600 mt-2 space-y-1">
               <h1 className="text-gray-800 font-semibold">
-                Points to be Noted
+                Notes
               </h1>
               <span className="px-2">{product.notes}</span>
             </div>

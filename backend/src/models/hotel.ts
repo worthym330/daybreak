@@ -24,7 +24,7 @@ const favouriteListSchema = new mongoose.Schema<FavouriteList>({
 
 const productSchema = new mongoose.Schema<ProductType>({
   title: { type: String},
-  description: { type: String},
+  description: [{ type: String}],
   adultPrice: { type: Number},
   childPrice: { type: Number},
   otherpoints: { type: String},
@@ -55,6 +55,7 @@ const hotelSchema = new mongoose.Schema<HotelType>({
   pincode:{type:String},
   bookings: [bookingSchema],
   favourites: [favouriteListSchema],
+  status:{type:Boolean}
 }, { timestamps: true });
 
 const Hotel = mongoose.model<HotelType>("Hotel", hotelSchema);

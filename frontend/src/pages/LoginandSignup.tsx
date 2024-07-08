@@ -1,5 +1,5 @@
 import { useQueryClient } from "react-query";
-import { useAppContext } from "../contexts/AppContext";
+// import { useAppContext } from "../contexts/AppContext";
 import { Link, useNavigate } from "react-router-dom";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { Form, Formik } from "formik";
@@ -10,6 +10,8 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 import loginImage from "../assets/images/pexels-gapeppy1-2373201.jpg";
 import Button from "../components/Button";
 import { toast } from "react-toastify";
+import { useState } from "react";
+import { ResetPassRequest } from "../components/Header";
 
 interface login {
   email: string;
@@ -56,10 +58,21 @@ const registerSchema = Yup.object().shape({
   role: Yup.string(),
 });
 
+const initialResetModal = {
+  type: "add",
+  state: false,
+  index: null,
+  id: "",
+  data: {
+    email: "",
+  },
+};
+
 const Login = ({ Login }: any) => {
-  const { showToast } = useAppContext();
+  // const { showToast } = useAppContext();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [resetModal, setResetModal] = useState(initialResetModal);
 
   const responseLoginGoogle = async (response: any) => {
     const token = response.credential;
@@ -80,13 +93,16 @@ const Login = ({ Login }: any) => {
       });
       const body = await response.json();
       if (response.ok) {
-        showToast({ message: "Sign in Successful!", type: "SUCCESS" });
+        // showToast({ message: "Sign in Successful!", type: "SUCCESS" });
+        toast.success("Sign in Successful!")
         Cookies.set("authentication", JSON.stringify(body.user), {
           expires: 1,
         });
         navigate(-1);
       } else {
-        showToast({ message: "Failed to Login!", type: "ERROR" });
+        // showToast({ message: "Failed to Login!", type: "ERROR" });
+        toast.error('Failed to Login!')
+
       }
     } catch (error) {
       console.error("Error authenticating with backend:", error);
@@ -116,13 +132,15 @@ const Login = ({ Login }: any) => {
       });
       const body = await response.json();
       if (response.ok) {
-        showToast({ message: "Registered Successful!", type: "SUCCESS" });
+        // showToast({ message: "Registered Successful!", type: "SUCCESS" });
+        toast.success('Registered Successful!')
         Cookies.set("authentication", JSON.stringify(body.user), {
           expires: 1,
         });
         navigate(-1);
       } else {
-        showToast({ message: "Failed to register!", type: "ERROR" });
+        // showToast({ message: "Failed to register!", type: "ERROR" });
+        toast.error('Failed to register!')
       }
     } catch (error) {
       console.error("Error authenticating with backend:", error);
@@ -131,6 +149,7 @@ const Login = ({ Login }: any) => {
 
   return Login ? (
     <div className="flex min-h-screen flex-row">
+      <ResetPassRequest modal={resetModal} setModal={setResetModal} />
       <div className="flex flex-col justify-center px-4 py-12 sm:px-6 lg:px-20 xl:px-24 w-full md:w-1/2">
         <div className="mx-auto w-full max-w-sm lg:w-96">
           <Formik
@@ -168,10 +187,11 @@ const Login = ({ Login }: any) => {
                 }
               } catch (error: any) {
                 console.error("Error during sign in:", error);
-                showToast({
-                  message: error.message || "An error occurred during sign in",
-                  type: "ERROR",
-                });
+                // showToast({
+                //   message: error.message || "An error occurred during sign in",
+                //   type: "ERROR",
+                // });
+                toast.error(error.message);
               }
             }}
           >
@@ -217,6 +237,14 @@ const Login = ({ Login }: any) => {
                 </div>
 
                 <div className="flex flex-col justify-center gap-5">
+                <span
+                  className="cursor-pointer underline text-goldColor flex justify-end hover:text-blue-700"
+                  onClick={() => {
+                    setResetModal((prev) => ({ ...prev, state: true }));
+                  }}
+                >
+                  Forgot Password?
+                </span>
                   <span className="flex items-center justify-between">
                     <Button
                       type="submit"
@@ -305,23 +333,29 @@ const Login = ({ Login }: any) => {
                     }
                   );
                   navigate(-1);
-                  showToast({
-                    message: "Registered Successful!",
-                    type: "SUCCESS",
-                  });
+                  // showToast({
+                  //   message: "Registered Successful!",
+                  //   type: "SUCCESS",
+                  // });
+        toast.success('Registered Successful!')
+
                   await queryClient.invalidateQueries("validateToken");
                 } else {
-                  showToast({
-                    message: responseBody.message || "An error occurred",
-                    type: "ERROR",
-                  });
+                  // showToast({
+                  //   message: responseBody.message || "An error occurred",
+                  //   type: "ERROR",
+                  // });
+        toast.error(responseBody.message)
+
                 }
               } catch (error: any) {
                 console.log(error);
-                showToast({
-                  message: error.message || "An error occurred",
-                  type: "ERROR",
-                });
+                // showToast({
+                //   message: error.message || "An error occurred",
+                //   type: "ERROR",
+                // });
+        toast.error(error.message)
+
               }
             }}
           >

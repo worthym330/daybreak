@@ -5,6 +5,8 @@ import "./index.css";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { AppContextProvider } from "./contexts/AppContext.tsx";
 import { SearchContextProvider } from "./contexts/SearchContext.tsx";
+import store from "./store/store.ts";
+import { Provider } from "react-redux";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -15,12 +17,14 @@ const queryClient = new QueryClient({
 });
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <AppContextProvider>
-        <SearchContextProvider>
-          <App />
-        </SearchContextProvider>
-      </AppContextProvider>
-    </QueryClientProvider>
+    <Provider store={store}>
+      <QueryClientProvider client={queryClient}>
+        <AppContextProvider>
+          <SearchContextProvider>
+            <App />
+          </SearchContextProvider>
+        </AppContextProvider>
+      </QueryClientProvider>
+    </Provider>
   </React.StrictMode>
 );

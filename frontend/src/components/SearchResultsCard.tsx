@@ -24,7 +24,7 @@ const SearchResultsCard = ({ hotel }: Props) => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row border border-slate-300 rounded-md p-4 gap-4 lg:gap-8 mx-5 md:mx-0 justify-between">
+    <div className="flex flex-col md:flex-row border border-goldColor rounded-md p-4 gap-4 lg:gap-8 mx-5 md:mx-0 justify-between">
       <div className="flex flex-col md:flex-row gap-7">
         {/* Images Section */}
         <div className="w-full mb-[5px] md:w-[239px]">

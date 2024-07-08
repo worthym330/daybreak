@@ -6,6 +6,7 @@ import Stripe from "stripe";
 import verifyToken from "../middleware/auth";
 import Razorpay from "razorpay";
 import ServiceRecord from "../models/invoice";
+import axios from 'axios';
 
 const razorpayInstance = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID as string,
@@ -323,5 +324,101 @@ router.get("/get/favourites/:userId", async (req, res) => {
     res.status(500).json({ message: "An error occurred", error });
   }
 });
+
+router.post(
+  "/:hotelId/bookings/:bookingId/cancel",
+  verifyToken,
+  async (req: Request, res: Response) => {
+    try {
+      const { paymentIntentId, orderId, refundAmount } = req.body;
+      const { hotelId, bookingId } = req.params;
+
+      // Verify the payment exists
+      const payment = await razorpayInstance.payments.fetch(paymentIntentId);
+
+      if (!payment) {
+        return res.status(400).json({ message: "Payment not found" });
+      }
+
+      if (
+        payment.order_id !== orderId ||
+        payment.notes.hotelId !== hotelId ||
+        payment.notes.userId !== req.userId
+      ) {
+        return res.status(400).json({ message: "Payment details mismatch" });
+      }
+
+      if (payment.status !== "captured") {
+        return res.status(400).json({
+          message: `Payment not captured. Status: ${payment.status}`,
+        });
+      }
+
+      // Initiate the refund process using Razorpay API
+      const refundResponse = await axios.post(
+        `https://api.razorpay.com/v1/payments/${paymentIntentId}/refund`,
+        {
+          amount: refundAmount, // Amount should be in paise
+        },
+        {
+          auth: {
+            username: process.env.RAZORPAY_KEY_ID as string,
+            password: process.env.RAZORPAY_KEY_SECRET as string,
+          },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      const refund = refundResponse.data;
+
+      if (!refund || refund.status !== "processed") {
+        return res.status(400).json({ message: "Refund failed" });
+      }
+
+      // Remove the booking from the hotel's bookings array
+      const hotel = await Hotel.findOneAndUpdate(
+        { _id: hotelId },
+        {
+          $pull: { bookings: { _id: bookingId } },
+        },
+        { new: true }
+      );
+
+      if (!hotel) {
+        return res.status(400).json({ message: "Hotel not found" });
+      }
+
+      await hotel.save();
+
+      // Update the service record with cancellation info
+      const serviceRecord = await ServiceRecord.findOneAndUpdate(
+        {
+          userId: req.userId,
+          hotelId: hotelId,
+          bookingId: bookingId,
+        },
+        {
+          paymentStatus: "refunded",
+        },
+        { new: true }
+      );
+
+      if (!serviceRecord) {
+        return res.status(400).json({ message: "Service record not found" });
+      }
+
+      await serviceRecord.save();
+
+      res.status(200).json({ message: "Booking cancelled and refunded successfully" });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "Something went wrong" });
+    }
+  }
+);
+
+
 
 export default router;

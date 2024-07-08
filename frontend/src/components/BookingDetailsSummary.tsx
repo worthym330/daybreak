@@ -24,14 +24,14 @@ type Props = {
 
 const BookingDetailsSummary = ({ hotel, cartItems }: Props) => {
   return (
-    <div className="grid gap-4 rounded-lg border border-slate-300 p-5 h-fit">
+    <div className="grid gap-4 rounded-lg border border-goldColor p-5 h-fit">
       <h2 className="text-xl font-bold">Your Booking Details</h2>
       <div>
         Hotel Name:
         <div className="font-bold">{`${hotel.name}, ${hotel.city}, India`}</div>
       </div>
       {cartItems.map((cartItem, index) => (
-        <details key={index} className="border-b py-2 px-2">
+        <details key={index} className="border-b border-goldColor py-2 px-2">
           <summary className="cursor-pointer font-bold flex justify-between">
             {" "}
             <span className="flex items-center gap-2">
@@ -46,7 +46,7 @@ const BookingDetailsSummary = ({ hotel, cartItems }: Props) => {
             </span>
             <span className="flex gap-2 items-center">
               <span>Total Cost:</span>
-              <span>₹{cartItem.total}</span>
+              <span>₹{cartItem.total.toFixed(2)}</span>
             </span>
           </summary>
           <div className="px-4 mt-2">
@@ -58,7 +58,7 @@ const BookingDetailsSummary = ({ hotel, cartItems }: Props) => {
                 </div>
               </div>
             </div>
-            <div className="border-t border-b py-2">
+            <div className="border-t border-b border-goldColor py-2">
               Guests
               <div className="font-bold">
                 {cartItem.adultCount} adults & {cartItem.childCount} children

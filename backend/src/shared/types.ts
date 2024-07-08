@@ -6,6 +6,8 @@ export type UserType = {
   lastName: string;
   role: string;
   status: boolean;
+  resetPasswordToken: any;
+  resetPasswordExpires: any;
 };
 
 export interface HotelType {
@@ -24,8 +26,9 @@ export interface HotelType {
   lastUpdated: Date;
   bookings: BookingType[];
   favourites: FavouriteList[];
-  pincode:string,
-  mapurl:string
+  pincode: string;
+  mapurl: string;
+  status: boolean;
 }
 
 export type BookingType = {
@@ -67,10 +70,9 @@ export type PaymentIntentResponse = {
   totalCost: number;
 };
 
-
 export interface ProductType {
   title: string;
-  description: string;
+  description: string[];
   adultPrice: number;
   childPrice: number;
   otherpoints: string;
