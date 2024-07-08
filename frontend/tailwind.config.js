@@ -22,6 +22,7 @@ export default {
       },
       width: {
         '50vw': '50vw',
+        '80vw': '80vw'
       },
       animation: {
         'fade-right': 'fadeRight 0.5s ease-in-out',

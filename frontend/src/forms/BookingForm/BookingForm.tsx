@@ -4,12 +4,13 @@ import {
   UserType,
 } from "../../../../backend/src/shared/types";
 import { useSearchContext } from "../../contexts/SearchContext";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useMutation } from "react-query";
 import * as apiClient from "../../api-client";
 import { useAppContext } from "../../contexts/AppContext";
 import Cookies from "js-cookie";
 import Button from "../../components/Button";
+import { toast } from "react-toastify";
 
 type Props = {
   currentUser: UserType;
@@ -31,12 +32,12 @@ export type BookingFormData = {
 
 const BookingForm = ({ currentUser, paymentIntent }: Props) => {
   const search = useSearchContext();
-  const { hotelId } = useParams();
+  const { razorpayOptions } = useAppContext();
+  const navigate = useNavigate()
 
-  const { showToast, razorpayOptions } = useAppContext();
-
-  const cart = Cookies.get("cart");
+  const cart = localStorage.getItem("cart");
   const parsedCart = cart ? JSON.parse(cart) : [];
+  const hotelId = parsedCart[0]?.hotel?._id;
 
   const { mutate: bookRoom, isLoading } = useMutation<
     void,
@@ -49,10 +50,14 @@ const BookingForm = ({ currentUser, paymentIntent }: Props) => {
     },
     {
       onSuccess: () => {
-        showToast({ message: "Booking Saved!", type: "SUCCESS" });
+        toast.success('Successfully booked!')
+        localStorage.removeItem('cart')
+        Cookies.remove('date')
+        navigate('/my-bookings')
       },
       onError: () => {
-        showToast({ message: "Error saving booking", type: "ERROR" });
+        toast.error('Failed to mark your payment')
+
       },
     }
   );
@@ -130,7 +135,7 @@ const BookingForm = ({ currentUser, paymentIntent }: Props) => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="grid grid-cols-1 gap-5 rounded-lg border border-slate-300 p-5"
+      className="grid grid-cols-1 gap-5 rounded-lg border border-goldColor p-5"
     >
       <span className="text-3xl font-bold">Confirm Your Details</span>
       <div className="grid grid-cols-2 gap-6">

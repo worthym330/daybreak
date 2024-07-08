@@ -1,7 +1,7 @@
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { useQueryClient } from "react-query";
-import { useAppContext } from "../contexts/AppContext";
+// import { useAppContext } from "../contexts/AppContext";
 import { Link, useNavigate } from "react-router-dom";
 // import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 // import { jwtDecode, JwtPayload } from "jwt-decode";
@@ -9,6 +9,7 @@ import { Link, useNavigate } from "react-router-dom";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 import HotelPartnerRegistration from "../assets/images/HotelPartnerRegistration.png";
 import Button from "../components/Button";
+import { toast } from "react-toastify";
 
 export type RegisterFormData = {
   firstName: string;
@@ -25,7 +26,7 @@ export type RegisterFormData = {
 
 const Register = () => {
   const queryClient = useQueryClient();
-  const { showToast } = useAppContext();
+  // const { showToast } = useAppContext();
   const navigate = useNavigate();
 
   const validationSchema = Yup.object().shape({
@@ -104,31 +105,34 @@ const Register = () => {
                 console.log("response data", responseBody);
 
                 if (response.ok) {
-                  showToast({
-                    message: "Our Team will contact you in 3 working days!",
-                    type: "SUCCESS",
-                  });
+                  // showToast({
+                  //   message: "Our Team will contact you in 3 working days!",
+                  //   type: "SUCCESS",
+                  // });
+                  toast.success("Our Team will contact you in 3 working days!")
                   navigate("/")
                   setSubmitting(false);
                   await queryClient.invalidateQueries("validateToken");
                 } else {
-                  showToast({
-                    message: "Failed to create account!",
-                    type: "ERROR",
-                  });
+                  // showToast({
+                  //   message: "Failed to create account!",
+                  //   type: "ERROR",
+                  // });
+                  toast.error("Failed to create account!")
                   setSubmitting(false);
                 }
               } catch (error) {
                 console.error("Error creating account:", error);
-                showToast({
-                  message: "An error occurred while creating the account!",
-                  type: "ERROR",
-                });
+                // showToast({
+                //   message: "An error occurred while creating the account!",
+                //   type: "ERROR",
+                // });
+                toast.error("An error occurred while creating the account!")
                 setSubmitting(false);
               }
             }}
           >
-            {({ isSubmitting, handleChange, handleBlur, touched, errors }) => (
+            {({ isSubmitting, handleChange, touched, errors }) => (
               <Form className="flex flex-col gap-5">
                 <div className="flex flex-col gap-2">
                   <h2 className="text-2xl font-bold">
@@ -142,7 +146,6 @@ const Register = () => {
                     name="fullName"
                     type="text"
                     onChange={handleChange}
-                    onBlur={handleBlur}
                     placeholder="Enter your full name"
                   />
                   {touched.fullName && (
@@ -156,7 +159,6 @@ const Register = () => {
                     name="email"
                     type="email"
                     onChange={handleChange}
-                    onBlur={handleBlur}
                     placeholder="Enter your work email"
                   />
                   {touched.email && (
@@ -170,7 +172,6 @@ const Register = () => {
                     name="contactNo"
                     type="contactNo"
                     onChange={handleChange}
-                    onBlur={handleBlur}
                     placeholder="Enter your Contact Number"
                   />
                   {touched.contactNo && (
@@ -185,7 +186,7 @@ const Register = () => {
                       name="hotelName"
                       type="text"
                       onChange={handleChange}
-                      onBlur={handleBlur}
+
                       placeholder="Enter your Hotel Name"
                     />
                   </div>
@@ -200,7 +201,6 @@ const Register = () => {
                     name="designation"
                     type="designation"
                     onChange={handleChange}
-                    onBlur={handleBlur}
                     placeholder="Enter your role"
                   />
                   {touched.designation && (

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import * as apiClient from "./../api-client";
@@ -15,13 +15,22 @@ import {
   FaWifi,
 } from "react-icons/fa";
 import { MdFamilyRestroom, MdSmokeFree } from "react-icons/md";
-import { useAppContext } from "../contexts/AppContext";
+// import { useAppContext } from "../contexts/AppContext";
 import ProductCard from "../components/ProductCard";
 import { FavouriteList } from "../../../backend/src/shared/types";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import Cookies from "js-cookie";
 import Button from "../components/Button";
+import moment from "moment";
+// import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+import mapboxgl from "mapbox-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
+import { FaLocationDot } from "react-icons/fa6";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../store/store";
+import { removeFromCart, setDate, setError } from "../store/cartSlice";
+import { toast } from "react-toastify";
+
+mapboxgl.accessToken = import.meta.env.VITE_MAP_GL_TOKEN;
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
@@ -45,66 +54,6 @@ const facilityIcons = {
   Spa: <FaSpa />,
   "Fitness Center": <FaDumbbell />,
 };
-
-const products = [
-  {
-    title: "Day Pass",
-    features: [
-      "Kona Pool",
-      "Kohala River Pool with waterslides",
-      "Hot tub",
-      "Saltwater lagoon with white sand beach",
-      "Grab-n-go food and beverages",
-      "Kayaks, paddle-boats, and water bikes",
-      "Complimentary wifi",
-      "Valet parking available for a fee",
-    ],
-    priceAdult: "100",
-    feeAdult: "9",
-    priceChild: "60",
-    feeChild: "5",
-    priceInfant: "",
-    description:
-      "Free admission for children under 5. $50 food and beverage minimum at Kona Pool Bar or Orchid Marketplace required for complimentary self-parking. No coolers or outside food and beverage allowed.",
-  },
-  {
-    title: "Spa Pass",
-    features: [
-      "Indoor Jacuzzi",
-      "Steam room",
-      "Hot tub",
-      "Fitness Center",
-      "Relaxation Lounge",
-      "Men's and Women's lockers and showers",
-      "10% discount at spa retail shop",
-      "Complimentary wifi",
-      "Self Parking and valet parking available for a free",
-    ],
-    priceAdult: "40",
-    feeAdult: "4",
-    priceChild: "",
-    feeChild: "",
-    priceInfant: "",
-    description:
-      "Adults 18+ only. All amenities are unisex unless otherwise specified. Does not include access to property pools.",
-  },
-  {
-    title: "Paradise Pool Daybed",
-    features: [
-      "Day Passes for up to 4 people (all amenities included in the Day Pass)",
-      "Cushioned daybed for up to 4 people with towel service",
-      "Chef's daily fruit selection plate",
-      "Bottled water",
-    ],
-    priceAdult: "250",
-    feeAdult: "22",
-    priceChild: "",
-    feeChild: "",
-    priceInfant: "",
-    description:
-      "Located at the family-friendly Paradise Pool. Memorial Day, 4th of July and Labor Day Weekends - Groove & splash with a DJ performance on Saturday & Sunday, kid-friendly activities & exciting poolside events. Does not include access to the adult-only Saguaro Pool. If not checked in by 12:00pm, the resort reserves the right to cancel the reservation & re-sell the daybed. 20% service fee on the total price of the daybed, plus food and beverage purchased, will be charged at the property on the day of the rental. No outside food and beverages are permitted. Enhance your experience with food & beverage add-ons: Kid's Paradise: 2 non-alcoholic piña coladas or strawberry daiquiris, 2 orders of crispy chicken tenders, 1 pineapple pool float ($70). Sonoran Package: pitcher of skinny margaritas (serves 5-6), one order of chips, salsa, and guacamole ($99). Go Big Package: choice of any two flatbreads, 2 buckets of beer, 1 dessert of choice ($125). To book, select the Add-on at checkout. Does not include service charge. Service charge will be collected on property.",
-  },
-];
 
 const Tooltip = ({ children, text }: any) => {
   const [visible, setVisible] = useState(false);
@@ -130,15 +79,18 @@ const Detail = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [slidesToShow, setSlidesToShow] = useState(3);
   const queryClient = useQueryClient();
-  const { showToast } = useAppContext();
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [error, setError] = useState(false);
+  // const { showToast } = useAppContext();
   const [carts, setCart] = useState([]);
   const [cartItems, setCartItems] = useState<any[]>([]);
   const auth_token = Cookies.get("authentication") || "null";
   const userLogined = JSON.parse(auth_token);
   const navigate = useNavigate();
-
+  const [address, setAddress] = useState("");
+  const [coordinates, setCoordinates] = useState({ lat: 0, lng: 0 });
+  const mapContainerRef = useRef(null);
+  const dispatch = useDispatch();
+  const error = useSelector((state: RootState) => state.cart.error);
+  const date = useSelector((state: RootState) => state.cart.date);
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 1024) {
@@ -171,6 +123,95 @@ const Detail = () => {
   );
 
   const hotel = hotelQuery.data || hotelByNameQuery.data;
+
+  useEffect(() => {
+    const getAddressFromUrl = async () => {
+      const response = hotel?.mapurl && (await expandUrl(hotel.mapurl as any));
+      if (response) {
+        const coords = extractCoordinatesFromUrl(response);
+
+        if (coords) {
+          setCoordinates({
+            lat: parseFloat(coords.lat),
+            lng: parseFloat(coords.lng),
+          });
+          const response = await fetch(
+            `https://api.mapbox.com/geocoding/v5/mapbox.places/${coords.lng},${coords.lat}.json?access_token=${mapboxgl.accessToken}`
+          );
+          const data = await response.json();
+          if (data.features && data.features.length > 0) {
+            setAddress(data.features[0].place_name);
+          }
+        }
+      }
+    };
+
+    getAddressFromUrl();
+  }, [hotel]);
+
+  // useEffect(() => {
+  //   const getAddressFromUrl = async () => {
+  //     const expandedUrl = await expandUrl(hotel?.mapurl);
+  //     const coords = extractCoordinatesFromUrl(expandedUrl);
+  //     if (coords) {
+  //       setCoordinates({
+  //         lat: parseFloat(coords.lat),
+  //         lng: parseFloat(coords.lng),
+  //       });
+  //       const response = await fetch(
+  //         `https://maps.googleapis.com/maps/api/geocode/json?latlng=${coords.lat},${coords.lng}&key=YOUR_GOOGLE_MAPS_API_KEY`
+  //       );
+  //       const data = await response.json();
+  //       if (data.results && data.results.length > 0) {
+  //         setAddress(data.results[0].formatted_address);
+  //       }
+  //     }
+  //   };
+
+  //   getAddressFromUrl();
+  // }, [hotel]);
+
+  useEffect(() => {
+    if (coordinates && mapContainerRef.current) {
+      const map = new mapboxgl.Map({
+        container: mapContainerRef.current,
+        style: "mapbox://styles/mapbox/streets-v11",
+        center: [coordinates.lng, coordinates.lat],
+        zoom: 10,
+      });
+
+      new mapboxgl.Marker()
+        .setLngLat([coordinates.lng, coordinates.lat])
+        .addTo(map);
+
+      return () => map.remove();
+    }
+  }, [coordinates]);
+
+  const expandUrl = async (shortUrl: string) => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/expand-url?url=${encodeURIComponent(shortUrl)}`
+      );
+      const data = await response.json();
+      return data.expandedUrl;
+    } catch (error) {
+      console.error("Error expanding URL:", error);
+      return "";
+    }
+  };
+
+  const extractCoordinatesFromUrl = (url: string) => {
+    const regex = /@([-0-9.]+),([-0-9.]+),/;
+    const match = url.match(regex);
+    if (match) {
+      return {
+        lat: match[1],
+        lng: match[2],
+      };
+    }
+    return null;
+  };
 
   const handleNext = () => {
     if (!hotel?.imageUrls) return;
@@ -206,12 +247,12 @@ const Detail = () => {
   };
 
   const toggleFavourite = async () => {
+    console.log(userLogined);
     if (userLogined !== null) {
       const user: FavouriteList = {
         userId: userLogined.id,
         firstName: userLogined.name.split(" ")[0],
-        lastName:
-          userLogined.name.split(" ")[userLogined.name.split(" ").length - 1],
+        lastName: userLogined.name.split(" ").pop(),
         email: userLogined.email,
       };
 
@@ -233,7 +274,8 @@ const Detail = () => {
         // Handle error if necessary
       }
     } else {
-      showToast({ message: "Please log in to save", type: "ERROR" });
+      // showToast({ message: "Please log in to save", type: "ERROR" });
+      toast.error("Please log in to save")
     }
   };
 
@@ -252,52 +294,70 @@ const Detail = () => {
   );
 
   useEffect(() => {
-    const cart = Cookies.get("cart");
+    const cart = localStorage.getItem("cart");
+    const parsedCart = cart ? JSON.parse(cart) : [];
+    setCartItems(parsedCart);
+    const storedDate = Cookies.get("date");
+    const parsedDate = storedDate ? new Date(storedDate) : null;
+    dispatch(setDate(parsedDate?.toISOString()));
+    if (parsedDate !== null) {
+      dispatch(setError(false));
+    }
+  }, []);
+
+  useEffect(() => {
+    const cart = localStorage.getItem("cart");
     const parsedCart = cart ? JSON.parse(cart) : [];
     setCartItems(parsedCart);
   }, [carts]);
-
-  useEffect(() => {
-    const storedDate = Cookies.get("date");
-    const parsedDate = storedDate ? new Date(storedDate) : null;
-    setSelectedDate(parsedDate);
-  }, []);
 
   if (!hotel) {
     return <></>;
   }
 
-  const calculateFees = (items: any) => {
-    return items.reduce((total: number, item: any) => {
-      const adultFees = item.adultCount * parseFloat(item.product.feeAdult);
-      const childFees = item.childCount * parseFloat(item.product.feeChild);
-      return total + adultFees + childFees;
-    }, 0);
-  };
-
   const calculateSubtotal = (items: any) => {
+    // const GST_RATE = 0.18;
     return items.reduce((total: number, item: any) => {
-      const adultTotal = item.adultCount * parseFloat(item.product.priceAdult);
-      const childTotal = item.childCount * parseFloat(item.product.priceChild);
+      const adultTotal =
+        item.adultCount > 0 ? item.adultCount * item.product.adultPrice : 0;
+      const childTotal =
+        item.childCount > 0 ? item.childCount * item.product.childPrice : 0;
+
+      // Calculate GST for adult and child totals
+      // const adultGST = adultTotal * (1 + GST_RATE);
+      // const childGST = childTotal * (1 + GST_RATE);
+
       return total + adultTotal + childTotal;
     }, 0);
   };
 
-  const fees = calculateFees(cartItems);
   const subtotal = calculateSubtotal(cartItems);
-  // const total = fees + subtotal;
 
   function handleRemoveItem(itemId: any) {
     let cart: any[] = [];
-    const savedCart = Cookies.get("cart");
+    const savedCart = localStorage.getItem("cart");
     if (savedCart) {
       cart = JSON.parse(savedCart) as any[];
       cart = cart.filter((item) => item.product.title !== itemId);
-      Cookies.set("cart", JSON.stringify(cart), { expires: 1 });
+      localStorage.setItem("cart", JSON.stringify(cart));
     }
+    dispatch(removeFromCart(itemId));
     setCartItems(cart);
-    return cart;
   }
+
+  const handleDateChange = (event: any) => {
+    const dateString = event.target.value;
+    const selectedDate = new Date(dateString);
+
+    if (!isNaN(selectedDate.getTime())) {
+      dispatch(setError(false));
+      dispatch(setDate(selectedDate.toISOString()));
+      Cookies.set("date", dateString, { expires: 1 });
+    } else {
+      dispatch(setDate(null));
+      Cookies.remove("date");
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -341,9 +401,9 @@ const Detail = () => {
 
       {/* Hotel Details Start */}
       <div className="w-full lg:container px-8 pt-10 lg:mx-auto space-y-2">
-        <div className="flex lg:flex-row flex-col-reverse gap-10 space-y-2 justify-between">
+        <div className="flex lg:flex-row flex-col gap-10 space-y-2 justify-between">
           <div className="flex flex-col gap-2 w-full lg:w-2/3">
-            <div className="flex justify-between">
+            <div className="flex justify-between flex-col md:flex-row">
               <div className="flex flex-col gap-2">
                 <span className="text-3xl font-semibold font-LuxuryF1 text-goldColor break-normal">
                   {hotel.name}
@@ -351,10 +411,10 @@ const Detail = () => {
               </div>
               <div className="flex gap-2 items-center">
                 <span className="bg-darkGold py-1 px-3 rounded-lg text-white">
-                  {hotel.starRating}
+                  {hotel.star}
                 </span>
                 <span className="flex">
-                  {Array.from({ length: hotel.starRating }).map((_, i) => (
+                  {Array.from({ length: hotel.star }).map((_, i) => (
                     <AiFillStar key={i} className="fill-yellow-400" />
                   ))}
                 </span>
@@ -397,52 +457,211 @@ const Detail = () => {
             <span className="text-lg font-medium mb-3">Select a Date</span>
             <div className="flex items-center gap-2">
               <MdCalendarMonth className="text-2xl text-btnColor" />
-              <DatePicker
-                selected={selectedDate}
-                onChange={(date) => {
-                  setSelectedDate(date);
-                  Cookies.set("date", date !== null ? date.toISOString() : "", {
-                    expires: 1,
-                  });
-                  if (selectedDate === null) {
-                    setError(false);
-                  }
-                }}
-                dateFormat="dd/MM/yyyy"
-                minDate={new Date()}
-                placeholderText="Please select the date"
-                className={`px-4 py-2 text-goldColor placeholder:text-goldColor border border-gray-300 rounded`}
+              <input
+                type="date"
+                value={date ? date.split("T")[0] : ""}
+                onChange={handleDateChange}
+                min={new Date().toISOString().split("T")[0]}
+                placeholder="Please select the date"
+                className={`px-4 py-2 text-goldColor placeholder:text-goldColor border rounded ${
+                  error ? "border-red-500" : "border-goldColor"
+                }`}
               />
             </div>
             <div className="">
               {error && (
-                <span className="mt-4 text-red-500">
-                  Please Select the date first
-                </span>
+                <p className="text-red-500 errorMessage">
+                  Invalid date. Please select a valid date.
+                </p>
               )}
             </div>
             <hr className="border-gray-200 my-3 w-full" />
             <span className="text-lg font-medium">Select a product</span>
             <div className="mt-5">
-              {products.map((product, index) => (
+              {hotel.productTitle.map((product, index) => (
                 <ProductCard
                   key={index}
                   product={product}
-                  hotelId={hotel._id}
-                  date={selectedDate}
-                  error={error}
-                  setError={setError}
+                  hotel={hotel}
                   setCart={setCart}
                 />
               ))}
+            </div>
+            {/* Hours Div */}
+            <div className="mb-8 p-4">
+              <h1 className="text-lg font-medium mb-4">Hours</h1>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {hotel?.productTitle.map((product: any, index: number) => (
+                  <div key={index}>
+                    <p>{product.title}</p>
+                    <p className="text-sm text-gray-400">
+                      {moment(product.startTime, "HH:mm").format("hh:mm A")} -{" "}
+                      {moment(product.endTime, "HH:mm").format("hh:mm A")}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-gray-100 p-4 rounded-lg shadow-md mb-8">
+              <h2 className="text-lg font-medium mb-4">How it works</h2>
+              <ol className="list-decimal list-inside">
+                <li>
+                  Select an available day in the calendar, the number of guests,
+                  and complete booking
+                </li>
+                <li>
+                  Receive booking confirmation with details and instructions
+                </li>
+                <li>Bring valid photo ID and check-in at the front desk</li>
+                <li>Enjoy your daycation!</li>
+              </ol>
+            </div>
+            {/* Hours Div */}
+            <div className="w-full mx-auto px-4 text-justify">
+              <h2 className="text-lg font-medium mb-4">Cancellation Policy</h2>
+              {/* <span className="mb-4 block">
+                Read our full <Link to= '' className="text-blue-500 underline">cancellation policy </Link>
+              </span> */}
+              <h3 className="text-lg font-medium mb-2">Cancel Online</h3>
+              <p className="mb-4">
+                You can cancel your booking online for a full refund back to
+                your original payment method or for DayBreakPass Credit to use
+                another time. Bookings can be cancelled online up until the
+                following times:
+              </p>
+              <ul className="list-disc list-inside space-y-2 mb-8">
+                {hotel?.cancellationPolicy
+                  ?.split(".")
+                  .map(
+                    (e: any, index) =>
+                      e !== "" && e.trim() !== "" && <li key={index}>{e}.</li>
+                  )}
+              </ul>
+            </div>
+            <div className="w-full mx-auto px-4">
+              <h3 className="text-lg font-medium mb-2">Location</h3>
+              <p className="mb-4 flex justify-between items-center">
+                <span>{address}</span>
+                <a
+                  href={hotel.mapurl}
+                  target="_blank"
+                  className="flex gap-2 items-center"
+                >
+                  <FaLocationDot className="text-goldColor w-6 h-6" />
+                  <span className="underline decoration-blue-600 text-blue-600 hover:text-blue-900">
+                    Preview
+                  </span>
+                </a>
+              </p>
+              <div className="border rounded-lg overflow-hidden border-goldColor">
+                <div className="border rounded-lg overflow-hidden">
+                  {coordinates && (
+                    <div
+                      id="map"
+                      ref={mapContainerRef}
+                      style={{ width: "100%", height: "400px" }}
+                    ></div>
+                  )}
+                  {/* {coordinates && (
+                    <LoadScript googleMapsApiKey="YOUR_GOOGLE_MAPS_API_KEY">
+                      <GoogleMap
+                        mapContainerStyle={mapContainerStyle}
+                        center={coordinates}
+                        zoom={13}
+                      >
+                        <Marker position={coordinates} />
+                      </GoogleMap>
+                    </LoadScript>
+                  )} */}
+                </div>
+              </div>
             </div>
           </div>
           {/* Hotel Details Start */}
 
           {/* Cart Section */}
           <div className="w-full lg:w-1/3">
-            <div className="h-fit sticky top-4">
-              <div className="p-4 bg-white rounded-lg shadow-md border border-gray-300">
+            {cartItems.length > 0 && (
+              <div className="h-fit sticky top-4 lg:hidden">
+                <div className="p-4 bg-white rounded-lg shadow-md border border-goldColor">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-bold">Your Cart</h2>
+                  </div>
+                  <div className="border-t pt-4">
+                    <div className="flex items-center space-x-4 mb-4">
+                      <img
+                        src={cartItems[0].hotel.imageUrls[0]}
+                        alt={cartItems[0].hotel.name}
+                        className="w-16 h-16 rounded-lg"
+                      />
+                      <div>
+                        <h3 className="text-md font-semibold">
+                          {cartItems[0].hotel.name}
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          {/* {moment(selectedDate).format('DD/MM/YYYY')} */}
+                        </p>
+                      </div>
+                    </div>
+
+                    {cartItems.map((item: any, index: any) => (
+                      <div
+                        key={index}
+                        className="flex justify-between items-center mb-4"
+                      >
+                        <div>
+                          <h3 className="text-sm">
+                            {item.product.title} Adult ({item.adultCount}){" "}
+                            {item.childCount > 0 && (
+                              <p>Child ({item.childCount})</p>
+                            )}
+                          </h3>
+                        </div>
+                        <button
+                          className="text-gray-500"
+                          onClick={() => handleRemoveItem(item.product.title)}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+
+                    <div className="mt-4 border-t pt-4">
+                      <div className="flex justify-between text-gray-700 mb-2">
+                        <span>Subtotal:</span>
+                        <span>₹{subtotal.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between text-gray-700 mb-2">
+                        <span>GST:</span>
+                        <span>₹{(subtotal * 0.18).toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between text-gray-700 mb-2">
+                        <span>Total:</span>
+                        <span>₹{(subtotal * (1 + 0.18)).toFixed(2)}</span>
+                      </div>
+                      {userLogined !== null ? (
+                        <Button
+                          className="w-full bg-goldColor text-white py-2 rounded-lg"
+                          onClick={() => navigate(`/checkout`)}
+                        >
+                          Book Now
+                        </Button>
+                      ) : (
+                        <Button
+                          className="w-full bg-goldColor text-white py-2 rounded-lg"
+                          onClick={() => navigate(`/login`)}
+                        >
+                          Login
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div className="h-fit sticky top-4 hidden lg:block">
+              <div className="p-4 bg-white rounded-lg shadow-md border border-goldColor">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-bold">Your Cart</h2>
                 </div>
@@ -465,20 +684,19 @@ const Detail = () => {
                     <div>
                       <div className="flex items-center space-x-4 mb-4">
                         <img
-                          src={hotel.imageUrls[0]}
-                          alt={hotel.name}
+                          src={cartItems[0].hotel.imageUrls[0]}
+                          alt={cartItems[0].hotel.name}
                           className="w-16 h-16 rounded-lg"
                         />
                         <div>
                           <h3 className="text-md font-semibold">
-                            {hotel.name}
+                            {cartItems[0].hotel.name}
                           </h3>
                           <p className="text-sm text-gray-500">
                             {/* {moment(selectedDate).format('DD/MM/YYYY')} */}
                           </p>
                         </div>
                       </div>
-                      
                       {cartItems.length > 0 &&
                         cartItems.map((item: any, index: any) => (
                           <div
@@ -487,12 +705,10 @@ const Detail = () => {
                           >
                             <div>
                               <h3 className="text-sm">
-                                {item.product.title} - adult (
-                                {item.product.priceAdult})
-                              </h3>
-                              <h3 className="text-sm">
-                                {item.product.title} - child (
-                                {item.product.priceChild})
+                                {item.product.title} Adult ({item.adultCount}){" "}
+                                {item.childCount > 0 && (
+                                  <p>Child ({item.childCount})</p>
+                                )}
                               </h3>
                             </div>
                             <button
@@ -506,10 +722,6 @@ const Detail = () => {
                           </div>
                         ))}
                       <div className="mt-4 border-t pt-4">
-                        <div className="flex justify-between text-gray-700 mb-2">
-                          <span>Fees:</span>
-                          <span>₹{fees.toFixed(2)}</span>
-                        </div>
                         <div className="flex justify-between text-gray-700 mb-2">
                           <span>Subtotal:</span>
                           <span>₹{subtotal.toFixed(2)}</span>

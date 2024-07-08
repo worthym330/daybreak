@@ -1,5 +1,5 @@
 import Header from "../components/Header";
-import Hero from "../components/Hero";
+// import Hero from "../components/Hero";
 import SearchBar from "../components/SearchBar";
 import Info from "../components/InfoSection";
 import Footer from "../components/Footer";
@@ -15,7 +15,7 @@ const Layout = ({ children }: Props) => {
       <Header />
       {location?.pathname === "/" && (
         <div className="lg:container lg:mx-auto">
-          <Hero />
+          {/* <Hero /> */}
           <SearchBar />
           <Info />
         </div>
@@ -25,7 +25,6 @@ const Layout = ({ children }: Props) => {
       ) : location?.pathname === "/" ?(
         <div className="lg:container lg:mx-auto py-10 flex-1">{children}</div>
       ):(
-
         <div className="container mx-auto py-10 flex-1">{children}</div>
       )}
       <Footer />

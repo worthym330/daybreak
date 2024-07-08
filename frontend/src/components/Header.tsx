@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useAppContext } from "../contexts/AppContext";
-// import SignOutButton from "./SignOutButton";
+// import { useAppContext } from "../contexts/AppContext";
+import SignOutButton from "./SignOutButton";
 import videoBg from "../assets/VideoBg.mp4";
-// import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
+import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { IoCartOutline } from "react-icons/io5";
 import { Formik } from "formik";
 import Modal from "./modal";
@@ -11,12 +11,15 @@ import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import * as Yup from "yup";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 import { jwtDecode, JwtPayload } from "jwt-decode";
-import { useQueryClient } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { HiXMark } from "react-icons/hi2";
-// import * as apiClient from "../api-client";
+import * as apiClient from "../api-client";
 import Cookies from "js-cookie";
+import { toast } from "react-toastify";
 import Button from "./Button";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
 
 const initialModalState = {
   type: "add",
@@ -28,6 +31,7 @@ const initialModalState = {
     email: "",
     password: "",
     loginThrough: "password",
+    userType: "customer",
   },
 };
 
@@ -43,6 +47,16 @@ const initialSignupModalState = {
     password: "",
     confirmpassword: "",
     role: "customer",
+  },
+};
+
+const initialResetModal = {
+  type: "add",
+  state: false,
+  index: null,
+  id: "",
+  data: {
+    email: "",
   },
 };
 
@@ -99,28 +113,130 @@ function classNames(...classes: any[]): string {
   return classes.filter(Boolean).join(" ");
 }
 
+export const ResetPassRequest = ({ modal, setModal }: any) => {
+  const { state, data } = modal;
+  const resetPassRequestSchema = Yup.object().shape({
+    email: Yup.string().email("Invalid email").required("Email is required"),
+  });
+  return (
+    <Formik
+      initialValues={data}
+      validationSchema={resetPassRequestSchema}
+      onSubmit={async (values: login, { setSubmitting,resetForm }) => {
+        try {
+          setSubmitting(true);
+          const response = await fetch(`${API_BASE_URL}/api/auth/forgot`, {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(values),
+          });
+
+          const body = await response.json();
+
+          if (!response.ok) {
+            toast.error(body.message);
+          } else {
+            toast.success(body.message);
+            setSubmitting(false);
+            resetForm()
+          }
+          setModal((prev: any) => ({ ...prev, state: false }));
+        } catch (error: any) {
+          console.error("Error during sign in:", error);
+          setSubmitting(false);
+        }
+      }}
+    >
+      {({
+        handleSubmit,
+        values,
+        isSubmitting,
+        errors,
+        touched,
+        handleChange,
+        resetForm
+      }) => (
+        <Modal
+          title="Forgot Password Request"
+          open={state}
+          setOpen={() => {
+            setModal((prev: any) => ({ ...prev, state: false }));
+            resetForm()
+          }}
+        >
+          <form onSubmit={handleSubmit} noValidate>
+            <div className="text-left">
+              <label className="text-gray-700 text-sm font-bold flex-1">
+                Email
+              </label>
+              <input
+                type="email"
+                name="email"
+                value={values.email}
+                placeholder="Email address"
+                className="border rounded w-full px-2 py-3 font-normal mb-3 mt-3"
+                onChange={handleChange}
+              />
+              {touched.email && (
+                <span className="text-red-500 font-normal">
+                  {errors.email as string}
+                </span>
+              )}
+            </div>
+
+            <div className="flex flex-col justify-center gap-5">
+              <span className="flex items-center justify-between">
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={isSubmitting}
+                  loading={isSubmitting}
+                >
+                  Request
+                </Button>
+              </span>
+            </div>
+          </form>
+        </Modal>
+      )}
+    </Formik>
+  );
+};
+
 const Header = () => {
-  const { showToast } = useAppContext();
-  // const [showDropdown, setShowDropdown] = useState(false);
-  // const [arrowDirection, setArrowDirection] = useState("down");
+  // const { showToast } = useAppContext();
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [arrowDirection, setArrowDirection] = useState("down");
   const [modal, setModal] = useState(initialModalState);
   const [signupModal, setSignupModal] = useState(initialSignupModalState);
 
-  // const auth_token = Cookies.get("authentication");
-  // const userLogined = auth_token ? JSON.parse(auth_token) : null;
+  const auth_token = Cookies.get("authentication");
+  const userLogined = auth_token ? JSON.parse(auth_token) : null;
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const location = useLocation();
   const [showNav, setShowNav] = useState(false);
   const [tab, setTab] = useState("Guests");
+  const [cartItems, setCartItems] = useState<any[]>([]);
+  const [resetModal, setResetModal] = useState(initialResetModal);
+  const cart = useSelector((state: RootState) => state.cart.items);
 
   const headerRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const cart = localStorage.getItem("cart");
+    const parsedCart = cart ? JSON.parse(cart) : [];
+    setCartItems(parsedCart);
+  }, [cart]);
 
   const handleClickOutside = (event: MouseEvent) => {
     if (
       headerRef.current &&
       !headerRef.current.contains(event.target as Node)
     ) {
+      setShowDropdown(false)
       setShowNav(false);
     }
   };
@@ -131,10 +247,10 @@ const Header = () => {
     };
   }, []);
 
-  // const handleLoginClick = () => {
-  //   setShowDropdown(!showDropdown);
-  //   setArrowDirection(showDropdown ? "down" : "up");
-  // };
+  const handleLoginClick = () => {
+    setShowDropdown(!showDropdown);
+    setArrowDirection(showDropdown ? "down" : "up");
+  };
 
   const responseLoginGoogle = async (response: any) => {
     const token = response.credential;
@@ -143,6 +259,7 @@ const Header = () => {
       email: user.email,
       loginThrough: "google",
       googleToken: token,
+      userType: "customer",
     };
     try {
       const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
@@ -156,13 +273,15 @@ const Header = () => {
       const body = await response.json();
       if (response.ok) {
         setModal((prev) => ({ ...prev, state: false, loading: false }));
-        showToast({ message: "Sign in Successful!", type: "SUCCESS" });
-        // setShowDropdown(false);
+        // showToast({ message: "Sign in Successful!", type: "SUCCESS" });
+        toast.success('Sign in Successful!')
+        setShowDropdown(false);
         Cookies.set("authentication", JSON.stringify(body.user), {
           expires: 1,
         });
       } else {
-        showToast({ message: "Failed to Login!", type: "ERROR" });
+        // showToast({ message: "Failed to Login!", type: "ERROR" });
+        toast.error("Failed to Login!")
       }
     } catch (error) {
       console.error("Error authenticating with backend:", error);
@@ -194,13 +313,15 @@ const Header = () => {
       const body = await response.json();
       if (response.ok) {
         setSignupModal(initialSignupModalState);
-        showToast({ message: "Registered Successful!", type: "SUCCESS" });
-        // setShowDropdown(false);
+        // showToast({ message: "Registered Successful!", type: "SUCCESS" });
+        toast.success('Registered Successful!')
+        setShowDropdown(false);
         Cookies.set("authentication", JSON.stringify(body.user), {
           expires: 1,
         });
       } else {
-        showToast({ message: "Failed to register!", type: "ERROR" });
+        // showToast({ message: "Failed to register!", type: "ERROR" });
+        toast.error('Failed to register!')
       }
     } catch (error) {
       console.error("Error authenticating with backend:", error);
@@ -217,19 +338,21 @@ const Header = () => {
     setModal((prev) => ({ ...prev, state: true }));
   }
 
-  // const mutation = useMutation(apiClient.signOut, {
-  //   onSuccess: async () => {
-  //     Cookies.remove("authentication");
-  //     showToast({ message: "Signed Out!", type: "SUCCESS" });
-  //   },
-  //   onError: (error: Error) => {
-  //     showToast({ message: error.message, type: "ERROR" });
-  //   },
-  // });
+  const mutation = useMutation(apiClient.signOut, {
+    onSuccess: async () => {
+      Cookies.remove("authentication");
+      // showToast({ message: "Signed Out!", type: "SUCCESS" });
+      navigate("/");
+    },
+    onError: (error: Error) => {
+      // showToast({ message: error.message, type: "ERROR" });
+      console.log(error.message);
+    },
+  });
 
-  // const handleClick = () => {
-  //   mutation.mutate();
-  // };
+  const handleClick = () => {
+    mutation.mutate();
+  };
 
   const renderLoginModal = () => {
     const { state, data } = modal;
@@ -253,22 +376,23 @@ const Header = () => {
             setModal(initialModalState);
 
             if (!response.ok) {
-              showToast({ message: body.message, type: "ERROR" });
-              throw new Error(body.message);
-            }
-
-            showToast({ message: "Sign in Successful!", type: "SUCCESS" });
-            // setShowDropdown(false);
+              // showToast({ message: body.message, type: "ERROR" });
+              toast.error(body.message)
+            }else{
+              toast.success("Logined Successfully!");
+            setShowDropdown(false);
             Cookies.set("authentication", JSON.stringify(body.user), {
               expires: 1,
             });
+            }            
           } catch (error: any) {
             console.error("Error during sign in:", error);
-            setModal((prev) => ({ ...prev, state: false, loading: false }));
-            showToast({
-              message: error.message || "An error occurred during sign in",
-              type: "ERROR",
-            });
+            setModal(initialModalState);
+            // showToast({
+            //   message: error.message || "An error occurred during sign in",
+            //   type: "ERROR",
+            // });
+            toast.error(error.message)
           }
         }}
       >
@@ -278,7 +402,6 @@ const Header = () => {
           isSubmitting,
           errors,
           touched,
-          handleBlur,
           handleChange,
         }) => (
           <Modal
@@ -296,7 +419,7 @@ const Header = () => {
 
               <div className="text-left">
                 <label className="text-gray-700 text-sm font-bold flex-1">
-                  {/* Email */}
+                  Email
                 </label>
                 <input
                   type="email"
@@ -305,18 +428,17 @@ const Header = () => {
                   placeholder="Email address"
                   className="border rounded w-full px-2 py-3 font-normal mb-3 mt-3"
                   onChange={handleChange}
-                  onBlur={handleBlur}
                 />
                 {touched.email && (
                   <span className="text-red-500 font-normal">
-                    *{errors.email}
+                    {errors.email}
                   </span>
                 )}
               </div>
 
               <div className="text-left">
                 <label className="text-gray-700 text-sm font-bold flex-1">
-                  {/* Password */}
+                  Password
                 </label>
                 <input
                   type="password"
@@ -325,22 +447,55 @@ const Header = () => {
                   placeholder="Password"
                   className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
                   onChange={handleChange}
-                  onBlur={handleBlur}
                 />
                 {touched.password && (
-                  <span className="text-red-500">*{errors.password}</span>
+                  <span className="text-red-500">{errors.password}</span>
                 )}
               </div>
 
               <div className="flex flex-col justify-center gap-5">
-                <span className="flex items-center justify-between mt-5">
+                <span
+                  className="cursor-pointer underline text-goldColor flex justify-end hover:text-blue-700"
+                  onClick={() => {
+                    setModal((prev) => ({ ...prev, state: false }));
+                    setResetModal((prev) => ({ ...prev, state: true }));
+                  }}
+                >
+                  Forgot Password?
+                </span>
+                <span className="flex items-center justify-between">
                   <Button
                     type="submit"
-                    className="bg-black mx-auto w-full text-white px-4 py-3 rounded-xl font-bold hover:bg-btnColor"
+                    className="w-full"
                     disabled={isSubmitting}
-                    loading={isSubmitting}
                   >
-                    {isSubmitting ? "Logging in..." : "Login"}
+                    {isSubmitting ? (
+                      <>
+                        <svg
+                          className="animate-spin h-5 w-5 text-white mr-3"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291l2.12-2.122A5 5 0 016 12H2c0 1.795.703 3.432 1.757 4.686L6 17.291z"
+                          ></path>
+                        </svg>
+                        <span>Logging in...</span>
+                      </>
+                    ) : (
+                      "Login"
+                    )}
                   </Button>
                 </span>
                 <span className="text-center text-gray-800">
@@ -411,21 +566,24 @@ const Header = () => {
               Cookies.set("authentication", JSON.stringify(responseBody.user), {
                 expires: 1,
               });
-              showToast({ message: "Registered Successful!", type: "SUCCESS" });
+              // showToast({ message: "Registered Successful!", type: "SUCCESS" });
+              toast.success("Registered Successful!")
               await queryClient.invalidateQueries("validateToken");
               setSignupModal(initialSignupModalState);
             } else {
-              showToast({
-                message: responseBody.message || "An error occurred",
-                type: "ERROR",
-              });
+              // showToast({
+              //   message: responseBody.message || "An error occurred",
+              //   type: "ERROR",
+              // });
+              toast.error(responseBody.message)
             }
           } catch (error: any) {
             console.log(error);
-            showToast({
-              message: error.message || "An error occurred",
-              type: "ERROR",
-            });
+            // showToast({
+            //   message: error.message || "An error occurred",
+            //   type: "ERROR",
+            // });
+            toast.error(error.message)
           }
         }}
       >
@@ -435,7 +593,6 @@ const Header = () => {
           isSubmitting,
           errors,
           touched,
-          handleBlur,
           handleChange,
         }) => (
           <Modal
@@ -463,7 +620,6 @@ const Header = () => {
                   placeholder="First Name"
                   className="border rounded w-full px-2 py-3 font-normal mb-3 mt-3"
                   onChange={handleChange}
-                  onBlur={handleBlur}
                 />
                 {touched.firstName && (
                   <span className="text-red-500">{errors.firstName}</span>
@@ -481,7 +637,6 @@ const Header = () => {
                   placeholder="Last Name"
                   className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
                   onChange={handleChange}
-                  onBlur={handleBlur}
                 />
                 {touched.lastName && (
                   <span className="text-red-500 font-semibold">
@@ -501,7 +656,6 @@ const Header = () => {
                   placeholder="Email address"
                   className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
                   onChange={handleChange}
-                  onBlur={handleBlur}
                 />
                 {touched.email && (
                   <span className="text-red-500">{errors.email}</span>
@@ -519,7 +673,6 @@ const Header = () => {
                   placeholder="Password"
                   className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
                   onChange={handleChange}
-                  onBlur={handleBlur}
                 />
                 {touched.password && (
                   <span className="text-red-500">{errors.password}</span>
@@ -537,7 +690,6 @@ const Header = () => {
                   placeholder="Confirm Password"
                   className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
                   onChange={handleChange}
-                  onBlur={handleBlur}
                 />
                 {touched.confirmpassword && (
                   <span className="text-red-500">{errors.confirmpassword}</span>
@@ -548,7 +700,7 @@ const Header = () => {
                 <span className="flex items-center justify-between">
                   <Button
                     type="submit"
-                    className="bg-black mx-auto w-full text-white px-4 py-3 rounded-xl font-bold hover:bg-btnColor"
+                    className="w-full"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? "Registering..." : "Register"}
@@ -593,6 +745,7 @@ const Header = () => {
     <div className="">
       {renderLoginModal()}
       {renderSignUpModal()}
+      <ResetPassRequest modal={resetModal} setModal={setResetModal} />
       {location.pathname === "/" ? (
         <div className="relative w-full h-screen" ref={headerRef}>
           <video
@@ -603,6 +756,20 @@ const Header = () => {
             muted
             className="absolute inset-0 w-full h-full object-cover"
           ></video>
+
+          {/* Hero Section */}
+          <div className="absolute left-0 right-0 top-[24rem] md:top-[28rem] lg:top-[33rem] flex justify-center bg-transparent">
+            <div className="mx-auto max-w-screen-lg px-4 text-center">
+              <h1 className="md:text-5xl text-[2.7rem] text-white font-bold font-LuzuryF1 leading-tight mb-4">
+                Find your next Daycation
+              </h1>
+              <p className="md:text-xl lg:text-2xl text-base px-0 md:px-10 lg:px-20 text-white md:mt-4 mt-0 font-LuzuryF2">
+                Discover luxury by the day: Book Day Passes, Daybeds, Cabanas &
+                Experiences at premier hotels in your city.
+              </p>
+            </div>
+          </div>
+          {/* Hero Section */}
 
           {/* ---------- NavBar Starts ---------- */}
           {showNav ? (
@@ -659,10 +826,13 @@ const Header = () => {
                     </button>
 
                     <Link
-                      className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-goldColor  hover:border-black hover:bg-goldColor hover:text-white"
-                      to="/"
+                      className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-goldColor hover:text-white relative "
+                      to="/checkout"
                     >
                       <IoCartOutline className="text-2xl" />
+                      <span className="absolute right-1 top-0 block px-2 py-1 -translate-y-1/2 translate-x-1/2 transform rounded-full bg-goldColor text-white ring-2 ring-white items-center justify-center ">
+                        {cartItems.length}{" "}
+                      </span>
                     </Link>
                   </span>
 
@@ -709,7 +879,7 @@ const Header = () => {
                         List My Hotel
                       </button>
                     </div>
-                  )} */}
+                  )}
                   {/* Dropdown End */}
                 </div>
 
@@ -723,9 +893,7 @@ const Header = () => {
                       className="py-3 text-fontSecondaryColor"
                       to="/about-us"
                     >
-                      <span onClick={() => setShowNav(!showNav)}>
-                        About DayBreakPass
-                      </span>
+                      About DayBreakPass
                     </Link>
                   </div>
                   <div className="flex gap-20 md:w-1/2 justify-center">
@@ -900,10 +1068,13 @@ const Header = () => {
                 {/* )} */}
 
                 <Link
-                  className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-goldColor hover:border-white hover:bg-goldColor hover:text-white"
-                  to="/"
+                  className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-goldColor hover:text-white relative"
+                  to="/checkout"
                 >
                   <IoCartOutline className="text-2xl" />
+                  <span className="absolute right-1 top-0 block px-2 py-1 -translate-y-1/2 translate-x-1/2 transform rounded-full bg-goldColor text-white ring-2 ring-white tems-center justify-center ">
+                    {cartItems.length}{" "}
+                  </span>
                 </Link>
               </span>
 
@@ -1020,10 +1191,13 @@ const Header = () => {
                 </button>
 
                 <Link
-                  className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-darkGold hover:bg-goldColor hover:text-white"
-                  to="/"
+                  className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-darkGold hover:bg-goldColor hover:text-white relative"
+                  to="/checkout"
                 >
                   <IoCartOutline className="text-2xl" />
+                  <span className="absolute right-1 top-0 block px-2 py-1 -translate-y-1/2 translate-x-1/2 transform rounded-full bg-goldColor text-white ring-2 ring-white items-center justify-center ">
+                    {cartItems.length}{" "}
+                  </span>
                 </Link>
               </span>
 
@@ -1258,10 +1432,13 @@ const Header = () => {
             </button>
 
             <Link
-              className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-goldColor hover:border-black hover:bg-goldColor hover:text-white"
-              to="/"
+              className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-goldColor hover:text-white relative"
+              to="/checkout"
             >
               <IoCartOutline className="text-2xl" />
+              <span className="absolute right-1 top-0 block px-2 py-1 -translate-y-1/2 translate-x-1/2 transform rounded-full bg-goldColor text-white ring-2 ring-white items-center justify-center ">
+                {cartItems.length}{" "}
+              </span>
             </Link>
           </span>
 

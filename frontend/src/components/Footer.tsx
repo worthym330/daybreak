@@ -34,27 +34,21 @@ const Footer = () => {
               <span className="text-[#81817F] font-bold text-lg mb-2">
                 COMPANY
               </span>
-              <Link to="/about-us" className="text-white font-medium mb-1">
-                About Us
-              </Link>
-              <Link to="/support" className="text-white font-medium mb-1">
-                Support
-              </Link>
-              <Link
-                to="/privacy-and-policy"
-                className="text-white font-medium mb-1"
-              >
-                Privacy & Policy
-              </Link>
-              <Link
-                to="/terms-and-condition"
-                className="text-white font-medium mb-1"
-              >
-                Terms & Conditions
-              </Link>
-              <Link to="/cookie-policy" className="text-white font-medium mb-1">
-                Cookie Policy
-              </Link>
+              <span className="text-white font-medium mb-1">
+                <Link to="/about-us">About Us</Link>
+              </span>
+              <span className="text-white font-medium mb-1">
+                <Link to="/support">Support</Link>
+              </span>
+              <span className="text-white font-medium mb-1">
+                <Link to="/privacy-and-policy">Privacy & Policy</Link>
+              </span>
+              <span className="text-white font-medium mb-1">
+                <Link to="/terms-and-condition">Terms & Conditions</Link>
+              </span>
+              <span className="text-white font-medium mb-1">
+                <Link to="/cookie-policy">Cookie Policy</Link>
+              </span>
             </div>
             <div className="flex flex-col w-full md:w-1/3">
               <span className="text-[#81817F] font-bold text-lg mb-2">
@@ -69,15 +63,12 @@ const Footer = () => {
               <span className="text-[#81817F] font-bold text-lg mb-2">
                 HOTELS
               </span>
-              <Link
-                to="/partner/register"
-                className="text-white font-medium mb-1"
-              >
-                Become Hotel Partner
-              </Link>
-              <Link to="/support" className="text-white font-medium mb-1">
-                Support
-              </Link>
+              <span className="text-white font-medium mb-1">
+                <Link to="/partner/register">Become Hotel Partner</Link>
+              </span>
+              <span className="text-white font-medium mb-1">
+                <Link to="/support">Support</Link>
+              </span>
             </div>
           </div>
         </div>

@@ -1,44 +1,32 @@
-import { useEffect, useState } from 'react';
-import CartModal from './CartModal';
-import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
-import Button from './Button';
-
-interface Product {
-  title: string;
-  features: string[];
-  priceAdult: string;
-  feeAdult: string;
-  priceChild: string;
-  feeChild: string;
-  priceInfant: string;
-  description: string;
-}
+import { useState } from "react";
+import CartModal from "./CartModal";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import Button from "./Button";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../store/store";
+import { setError } from "../store/cartSlice";
 
 interface ProductCardProps {
-  product: Product;
-  hotelId: string;
-  date?: any;
-  error?: boolean;
-  setError?: any;
+  product: any;
+  hotel: any;
   setCart?: any;
 }
 
 const ProductCard = ({
   product,
-  hotelId,
-  date,
-  error,
-  setError,
+  hotel,
   setCart,
 }: ProductCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth <= 768);
-
+  const [showLess, setShowLess] = useState(false);
+  const dispatch = useDispatch();
+  const error = useSelector((state: RootState) => state.cart.error);
+  const date = useSelector((state: RootState) => state.cart.date);
   const handleSelect = () => {
-    if (!error && date === null) {
-      setError(true);
+    console.log(error, date);
+    if (date === undefined) {
+      dispatch(setError(true));
     } else {
-      setError(false);
       setIsModalOpen(true);
     }
   };
@@ -47,23 +35,17 @@ const ProductCard = ({
     setIsModalOpen(false);
   };
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsSmallScreen(window.innerWidth <= 768);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
-
   return (
-    <div className="bg-white rounded-lg md:shadow-xl p-4 md:p-8 mb-4 border border-gray-300">
+    <div
+      className={`bg-white rounded-lg lg:shadow-xl p-4 lg:p-8 mb-4 border border-goldColor`}
+    >
       {/* Conditionally render based on screen size */}
-      {isSmallScreen ? (
-        <div className="flex justify-between items-center">
+      <div className={` ${showLess ? "h-36 overflow-hidden" : "h-fit"}`}>
+        <div className="flex justify-between items-center md:hidden">
           <div className="w-2/3 pr-4">
-            <h2 className="text-lg lg:text-xl font-semibold text-goldColor">{product.title}</h2>
+            <h2 className="text-lg lg:text-xl font-semibold text-goldColor">
+              {product.title}
+            </h2>
           </div>
           <div className="pl-4 ml-4">
             <Button
@@ -81,41 +63,59 @@ const ProductCard = ({
             </Button>
           </div>
         </div>
-      ) : (
-        // Full view for larger screens
-        <div className="flex justify-between">
-          {/* Right Box */}
-          <div className="w-2/3 pr-4">
-            <h2 className="text-xl font-semibold text-goldColor">{product.title}</h2>
-            <ul className="text-sm text-gray-600 mt-2 space-y-1 list-disc p-4">
-              {product.features.map((feature, index) => (
-                <li key={index}>{feature}</li>
-              ))}
-            </ul>
-            <p className="text-sm text-gray-500">{product.description}</p>
-          </div>
+        <div className="md:flex justify-between hidden">
           {/* Left Box */}
+          <div className="w-2/3 pr-4">
+            <h2 className="text-xl font-semibold text-goldColor">
+              {product.title}
+            </h2>
+            <div className="text-sm text-gray-600 mt-2 space-y-1">
+              <h1 className="text-gray-800 font-semibold">Description</h1>
+              <ul className="text-sm text-gray-600 mt-2 space-y-1 list-disc p-4">
+                {product.description.map((feature: any, index: number) => (
+                  <li key={index}>{feature}</li>
+                ))}
+              </ul>
+            </div>
+            {/* <div>
+            <h1 className="text-gray-800 font-semibold">
+              All the points that needs to be mentioned in the product.
+            </h1>
+            <p className="text-sm text-gray-500 px-2">{product.otherpoints}</p>
+          </div> */}
+            <div className="text-sm text-gray-600 mt-2 space-y-1">
+              <h1 className="text-gray-800 font-semibold">Notes</h1>
+              <span className="px-2">{product.notes}</span>
+            </div>
+          </div>
+          {/* Right Box */}
           <div className="border-l-2 border-gray-200 h-auto"></div>
           <div className="w-1/3 pl-4 ml-4">
             <div className="flex justify-between items gap-2 text-gray-500 text-sm">
-              {product.priceAdult !== '' && (
+              {product.adultPrice > 0 && (
                 <div className="flex flex-col gap-2">
                   <span>Adults</span>
-                  <span className="text-xl font-medium text-goldColor">₹ {product.priceAdult} </span>
-                  <span className="text-xs">+{product.feeAdult} in fees</span>
+                  <span className="text-xl font-medium text-goldColor text-nowrap">
+                    ₹ {product.adultPrice}{" "}
+                  </span>
+                  <span className="text-xs">+18 % in GST</span>
                 </div>
               )}
-              {product.priceChild !== '' && (
+              {product.childPrice > 0 && (
                 <div className="flex flex-col gap-2">
                   <span>Children</span>
-                  <span className="text-xl font-medium text-goldColor">₹ {product.priceChild}</span>
-                  <span className="text-xs">+{product.feeChild} in fees</span>
+                  <span className="text-xl font-medium text-goldColor">
+                    ₹ {product.childPrice}
+                  </span>
+                  <span className="text-xs">+18 % in GST</span>
                 </div>
               )}
-              {product.priceInfant !== '' && (
+              {product.priceInfant > 0 && (
                 <div className="flex flex-col gap-2">
                   <span>Infant</span>
-                  <span className="text-xl font-medium text-goldColor">{product.priceInfant}</span>
+                  <span className="text-xl font-medium text-goldColor">
+                    {product.priceInfant}
+                  </span>
                 </div>
               )}
             </div>
@@ -136,16 +136,29 @@ const ProductCard = ({
             </div>
           </div>
         </div>
-      )}
+      </div>
+      <button
+        className="text-goldColor mt-2"
+        onClick={() => setShowLess(!showLess)}
+      >
+        {showLess ? (
+          <span className="flex gap-2 items-center">
+          <FaChevronDown className="w-4 h-4 " /> <span>Show more</span>
+        </span>
+        ) : (
+          <span className="flex gap-2 items-center">
+            <FaChevronUp className="w-4 h-4 " /> <span>Show less</span>
+          </span>
+        )}
+      </button>
       {isModalOpen && (
         <CartModal
           product={product}
-          hotelId={hotelId}
+          hotel={hotel}
           onClose={handleCloseModal}
           date={date}
           setCart={setCart}
-        />
-      )}
+      />)}
     </div>
   );
 };

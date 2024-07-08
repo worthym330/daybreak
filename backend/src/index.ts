@@ -11,6 +11,8 @@ import myHotelRoutes from "./routes/my-hotels";
 import hotelRoutes from "./routes/hotels";
 import bookingRoutes from "./routes/my-bookings";
 import waitlistRoutes from "./routes/waitlist"
+import axios from "axios";
+const url = require("url");
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -48,9 +50,38 @@ app.use("/api/hotels", hotelRoutes);
 app.use("/api/my-bookings", bookingRoutes);
 app.use("/api/waitlist/",waitlistRoutes)
 
-app.get("*", (req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
+app.get("/expand-url", async (req: Request, res: Response) => {
+  const { url } = req.query;
+
+  if (!url || typeof url !== 'string') {
+    return res.status(400).json({ error: "Invalid or missing URL parameter" });
+  }
+
+  try {
+    console.log('called', req.query)
+    const response = await axios.get(`https://unshorten.me/s/${encodeURIComponent(url)}`);
+    console.log(response.request.res)
+    let expandedUrl = response.data;
+    
+    const consentPrefix = "https://consent.google.com/m?continue=";
+    if (expandedUrl.startsWith(consentPrefix)) {
+      expandedUrl = decodeURIComponent(expandedUrl.substring(consentPrefix.length));
+    }
+
+    const parsedUrl = new URL(expandedUrl);
+    parsedUrl.searchParams.set('hl', 'en');
+    expandedUrl = parsedUrl.toString();
+    console.log(expandedUrl)
+
+    res.json({ expandedUrl });
+  } catch (error) {
+    console.error("Error expanding URL:", error);
+    res.status(500).json({ error: "Failed to expand URL" });
+  }
 });
+// app.get("*", (req: Request, res: Response) => {
+//   res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
+// });
 
 app.listen(process.env.PORT, () => {
   console.log(`server running on localhost:${process.env.PORT}`);

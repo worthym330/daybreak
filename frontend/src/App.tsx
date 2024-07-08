@@ -3,6 +3,7 @@ import {
   Route,
   Routes,
   useNavigate,
+  useLocation,
 } from "react-router-dom";
 import Layout from "./layouts/Layout";
 import Register from "./pages/Register";
@@ -17,7 +18,7 @@ import MyBookings from "./pages/MyBookings";
 import Home from "./pages/Home";
 import { NotFound } from "./pages/NotFound";
 import Cookies from "js-cookie";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import WaitList from "./pages/WaitList";
 import AboutUs from "./pages/AboutUs";
 import TermsAndConditions from "./pages/TermAndCondition";
@@ -25,34 +26,24 @@ import PrivacyPolicy from "./pages/PrivacyandPolicy";
 import Support from "./pages/Support";
 import CookiePolicy from "./pages/CookiePolicy";
 import Login from "./pages/LoginandSignup";
+import { Bounce, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import CancellationPolicy from "./pages/CancellationPolicy";
+import ResetPass from "./pages/ResetPassword";
 
 const AccessControl = ({ children, requiredRoles }: any) => {
   const auth_token = Cookies.get("authentication") || "null";
   const user = JSON.parse(auth_token);
   const navigate = useNavigate();
-  const [unauthenticated, setUnauthenticated] = useState(false);
+  // const [unauthenticated, setUnauthenticated] = useState(false);
   useEffect(() => {
     if (user === null) {
-      setUnauthenticated(true);
-      setTimeout(() => {
         navigate(-1);
-      }, 3000);
     } else if (requiredRoles && !requiredRoles.includes(user.role)) {
       navigate("/");
     }
   }, [user, requiredRoles, navigate]);
 
-  if (user === null || (requiredRoles && !requiredRoles.includes(user.role))) {
-    return (
-      <>
-        {unauthenticated && (
-          <div className="fixed top-4 right-0 transform -translate-x-1/2 bg-red-500 text-white p-4 rounded shadow-lg">
-            Please login and try again.
-          </div>
-        )}
-      </>
-    );
-  }
 
   return <>{children}</>;
 };
@@ -70,9 +61,19 @@ const AuthRedirect = ({ children }: any) => {
   return auth_token ? null : children;
 };
 
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+};
+
 const App = () => {
   return (
     <Router>
+      <ScrollToTop />
+      <ToastContainer position="top-center" autoClose={1000} transition={Bounce} />
       <Routes>
         <Route
           path="/"
@@ -154,14 +155,22 @@ const App = () => {
             </Layout>
           }
         />
+        <Route
+          path="/cancellation-policy"
+          element={
+            <Layout>
+              <CancellationPolicy />
+            </Layout>
+          }
+        />
         <Route path="/about-us" element={<AboutUs />} />
         <Route
           path="/register"
           element={
             <AuthRedirect>
-              <Layout>
+              {/* <Layout> */}
                 <Login Login={false} />
-              </Layout>
+              {/* </Layout> */}
             </AuthRedirect>
           }
         />
@@ -169,42 +178,21 @@ const App = () => {
           path="/login"
           element={
             <AuthRedirect>
-              <Layout>
+              {/* <Layout> */}
                 <Login Login={true} />
-              </Layout>
+              {/* </Layout> */}
             </AuthRedirect>
           }
         />
         <Route path="/waitlist" element={<WaitList />} />
         <Route
-          path="/hotel/:hotelId/booking"
+          path="/checkout"
           element={
-            <AccessControl requiredRoles={["customer"]}>
+            // <AccessControl requiredRoles={["customer"]}>
               <Layout>
                 <Booking />
               </Layout>
-            </AccessControl>
-          }
-        />
-
-        <Route
-          path="/add-hotel"
-          element={
-            <AccessControl requiredRoles={["partner"]}>
-              <Layout>
-                <AddHotel />
-              </Layout>
-            </AccessControl>
-          }
-        />
-        <Route
-          path="/edit-hotel/:hotelId"
-          element={
-            <AccessControl requiredRoles={["partner"]}>
-              <Layout>
-                <EditHotel />
-              </Layout>
-            </AccessControl>
+            // </AccessControl>
           }
         />
         <Route
@@ -228,6 +216,22 @@ const App = () => {
           }
         />
         <Route path="*" element={<NotFound />} />
+        <Route
+          path="/reset-password/:token"
+          element={
+            <Layout>
+              <ResetPass />
+            </Layout>
+          }
+        />
+        <Route
+          path="/review/:hotelId"
+          element={
+            <Layout>
+              <ResetPass />
+            </Layout>
+          }
+        />
       </Routes>
     </Router>
   );

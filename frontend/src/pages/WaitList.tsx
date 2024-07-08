@@ -11,6 +11,7 @@ import {
 } from "react-icons/fa";
 import { Formik } from "formik";
 import * as Yup from "yup";
+import { toast } from "react-toastify";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL || "";
 import backgroundImage from "../assets/images/comingsoon.png";

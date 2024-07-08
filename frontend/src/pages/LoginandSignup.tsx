@@ -1,7 +1,6 @@
-import { useMutation, useQueryClient } from "react-query";
-import * as apiClient from "../api-client";
-import { useAppContext } from "../contexts/AppContext";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useQueryClient } from "react-query";
+// import { useAppContext } from "../contexts/AppContext";
+import { Link, useNavigate } from "react-router-dom";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
@@ -10,11 +9,15 @@ import Cookies from "js-cookie";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 import loginImage from "../assets/images/pexels-gapeppy1-2373201.jpg";
 import Button from "../components/Button";
+import { toast } from "react-toastify";
+import { useState } from "react";
+import { ResetPassRequest } from "../components/Header";
 
 interface login {
   email: string;
   password: string;
   loginThrough: string;
+  userType?: string;
 }
 
 interface CustomJwtPayload extends JwtPayload {
@@ -55,12 +58,21 @@ const registerSchema = Yup.object().shape({
   role: Yup.string(),
 });
 
+const initialResetModal = {
+  type: "add",
+  state: false,
+  index: null,
+  id: "",
+  data: {
+    email: "",
+  },
+};
+
 const Login = ({ Login }: any) => {
-  const { showToast } = useAppContext();
+  // const { showToast } = useAppContext();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-
-  const location = useLocation();
+  const [resetModal, setResetModal] = useState(initialResetModal);
 
   const responseLoginGoogle = async (response: any) => {
     const token = response.credential;
@@ -81,13 +93,16 @@ const Login = ({ Login }: any) => {
       });
       const body = await response.json();
       if (response.ok) {
-        showToast({ message: "Sign in Successful!", type: "SUCCESS" });
+        // showToast({ message: "Sign in Successful!", type: "SUCCESS" });
+        toast.success("Sign in Successful!")
         Cookies.set("authentication", JSON.stringify(body.user), {
           expires: 1,
         });
-        navigate(-1)
+        navigate(-1);
       } else {
-        showToast({ message: "Failed to Login!", type: "ERROR" });
+        // showToast({ message: "Failed to Login!", type: "ERROR" });
+        toast.error('Failed to Login!')
+
       }
     } catch (error) {
       console.error("Error authenticating with backend:", error);
@@ -117,32 +132,24 @@ const Login = ({ Login }: any) => {
       });
       const body = await response.json();
       if (response.ok) {
-        showToast({ message: "Registered Successful!", type: "SUCCESS" });
+        // showToast({ message: "Registered Successful!", type: "SUCCESS" });
+        toast.success('Registered Successful!')
         Cookies.set("authentication", JSON.stringify(body.user), {
           expires: 1,
         });
-        navigate(-1)
+        navigate(-1);
       } else {
-        showToast({ message: "Failed to register!", type: "ERROR" });
+        // showToast({ message: "Failed to register!", type: "ERROR" });
+        toast.error('Failed to register!')
       }
     } catch (error) {
       console.error("Error authenticating with backend:", error);
     }
   };
 
-  const mutation = useMutation(apiClient.signIn, {
-    onSuccess: async () => {
-      showToast({ message: "Sign in Successful!", type: "SUCCESS" });
-      await queryClient.invalidateQueries("validateToken");
-      navigate(location.state?.from?.pathname || "/");
-    },
-    onError: (error: Error) => {
-      showToast({ message: error.message, type: "ERROR" });
-    },
-  });
-
   return Login ? (
     <div className="flex min-h-screen flex-row">
+      <ResetPassRequest modal={resetModal} setModal={setResetModal} />
       <div className="flex flex-col justify-center px-4 py-12 sm:px-6 lg:px-20 xl:px-24 w-full md:w-1/2">
         <div className="mx-auto w-full max-w-sm lg:w-96">
           <Formik
@@ -150,28 +157,45 @@ const Login = ({ Login }: any) => {
               email: "",
               password: "",
               loginThrough: "password",
+              userType: "customer",
             }}
             validationSchema={loginSchema}
-            onSubmit={(values: login, { setSubmitting }) => {
-              mutation.mutate(values, {
-                onSuccess: () => {
-                  navigate(-1)
+            onSubmit={async (values: login, { setSubmitting }) => {
+              try {
+                setSubmitting(true);
+                const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+                  method: "POST",
+                  credentials: "include",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(values),
+                });
+
+                const body = await response.json();
+
+                if (response.ok) {
+                  toast.success("Logined Successfully!");
+                  Cookies.set("authentication", JSON.stringify(body.user), {
+                    expires: 1,
+                  });
                   setSubmitting(false);
-                },
-                onError: () => {
-                  setSubmitting(false);
-                },
-              });
+                  navigate(-1);
+                } else {
+                  toast.error(body.message);
+                  // throw new Error(body.message);
+                }
+              } catch (error: any) {
+                console.error("Error during sign in:", error);
+                // showToast({
+                //   message: error.message || "An error occurred during sign in",
+                //   type: "ERROR",
+                // });
+                toast.error(error.message);
+              }
             }}
           >
-            {({
-              isSubmitting,
-              handleChange,
-              handleBlur,
-              touched,
-              errors,
-              values,
-            }) => (
+            {({ isSubmitting, handleChange, touched, errors, values }) => (
               <Form className="flex flex-col gap-5">
                 <h2 className="text-3xl font-bold">Login</h2>
                 <div className="text-left">
@@ -185,7 +209,6 @@ const Login = ({ Login }: any) => {
                     placeholder="Enter your email address"
                     className="border rounded w-full px-2 py-3 font-normal mb-3 mt-3"
                     onChange={handleChange}
-                    onBlur={handleBlur}
                   />
                   {touched.email && (
                     <span className="text-red-500 font-semibold">
@@ -205,7 +228,6 @@ const Login = ({ Login }: any) => {
                     placeholder="Enter your password"
                     className="border rounded w-full px-2 py-3 font-normal mb-3 mt-3"
                     onChange={handleChange}
-                    onBlur={handleBlur}
                   />
                   {touched.password && (
                     <span className="text-red-500 font-semibold">
@@ -215,8 +237,20 @@ const Login = ({ Login }: any) => {
                 </div>
 
                 <div className="flex flex-col justify-center gap-5">
+                <span
+                  className="cursor-pointer underline text-goldColor flex justify-end hover:text-blue-700"
+                  onClick={() => {
+                    setResetModal((prev) => ({ ...prev, state: true }));
+                  }}
+                >
+                  Forgot Password?
+                </span>
                   <span className="flex items-center justify-between">
-                    <Button type="submit" disabled={isSubmitting} className="w-full">
+                    <Button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full"
+                    >
                       {isSubmitting ? "Logging in..." : "Login"}
                     </Button>
                   </span>
@@ -255,14 +289,14 @@ const Login = ({ Login }: any) => {
       </div>
       <div className="relative hidden flex-1 md:block md:w-1/2">
         <img
-          className="absolute h-full w-full rounded-md object-fill object-center"
+          className="absolute h-full w-full rounded-md object-cover object-center"
           src={loginImage}
           alt="Background"
         />
       </div>
     </div>
   ) : (
-    <div className="flex min-h-screen flex-row">
+    <div className="flex min-h-screen flex-row-reverse">
       <div className="flex flex-col justify-center px-4 py-12 sm:px-6 lg:px-20 xl:px-24 w-full md:w-1/2">
         <h2 className="text-3xl font-bold">Register</h2>
         <div className="mx-auto w-full max-w-sm lg:w-96">
@@ -298,24 +332,30 @@ const Login = ({ Login }: any) => {
                       expires: 1,
                     }
                   );
-                  navigate(-1)
-                  showToast({
-                    message: "Registered Successful!",
-                    type: "SUCCESS",
-                  });
+                  navigate(-1);
+                  // showToast({
+                  //   message: "Registered Successful!",
+                  //   type: "SUCCESS",
+                  // });
+        toast.success('Registered Successful!')
+
                   await queryClient.invalidateQueries("validateToken");
                 } else {
-                  showToast({
-                    message: responseBody.message || "An error occurred",
-                    type: "ERROR",
-                  });
+                  // showToast({
+                  //   message: responseBody.message || "An error occurred",
+                  //   type: "ERROR",
+                  // });
+        toast.error(responseBody.message)
+
                 }
               } catch (error: any) {
                 console.log(error);
-                showToast({
-                  message: error.message || "An error occurred",
-                  type: "ERROR",
-                });
+                // showToast({
+                //   message: error.message || "An error occurred",
+                //   type: "ERROR",
+                // });
+        toast.error(error.message)
+
               }
             }}
           >
@@ -325,7 +365,6 @@ const Login = ({ Login }: any) => {
               isSubmitting,
               errors,
               touched,
-              handleBlur,
               handleChange,
             }) => (
               <form onSubmit={handleSubmit} noValidate>
@@ -340,7 +379,6 @@ const Login = ({ Login }: any) => {
                     placeholder="First Name"
                     className="border rounded w-full px-2 py-3 font-normal mb-3 mt-3"
                     onChange={handleChange}
-                    onBlur={handleBlur}
                   />
                   {touched.firstName && (
                     <span className="text-red-500">{errors.firstName}</span>
@@ -358,7 +396,6 @@ const Login = ({ Login }: any) => {
                     placeholder="Last Name"
                     className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
                     onChange={handleChange}
-                    onBlur={handleBlur}
                   />
                   {touched.lastName && (
                     <span className="text-red-500 font-semibold">
@@ -378,7 +415,6 @@ const Login = ({ Login }: any) => {
                     placeholder="Email address"
                     className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
                     onChange={handleChange}
-                    onBlur={handleBlur}
                   />
                   {touched.email && (
                     <span className="text-red-500">{errors.email}</span>
@@ -396,7 +432,6 @@ const Login = ({ Login }: any) => {
                     placeholder="Password"
                     className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
                     onChange={handleChange}
-                    onBlur={handleBlur}
                   />
                   {touched.password && (
                     <span className="text-red-500">{errors.password}</span>
@@ -414,7 +449,6 @@ const Login = ({ Login }: any) => {
                     placeholder="Confirm Password"
                     className="border rounded w-full px-2 py-3 font-normal mb-3 mt-1"
                     onChange={handleChange}
-                    onBlur={handleBlur}
                   />
                   {touched.confirmpassword && (
                     <span className="text-red-500">
@@ -468,7 +502,7 @@ const Login = ({ Login }: any) => {
       </div>
       <div className="relative hidden flex-1 md:block md:w-1/2">
         <img
-          className="absolute h-full w-full rounded-md object-fill object-center"
+          className="absolute h-full w-full rounded-md object-cover object-center"
           src={loginImage}
           alt="Background"
         />

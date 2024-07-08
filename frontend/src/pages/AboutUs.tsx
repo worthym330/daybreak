@@ -43,7 +43,7 @@ const About = () => {
                   having to stay overnight.
                 </p>
                 <p className="text-md md:text-lg mb-6">
-                  At DayBreak we have curated a network of beautiful, on-demand
+                  At DayBreakPass we have curated a network of beautiful, on-demand
                   hotel amenities that you can reserve and unlock via our
                   website. Our goal is to provide you with the feeling of
                   instant vacation, realized through a social and relaxing day
@@ -126,7 +126,7 @@ const About = () => {
                 />
               </div>
             </div> */}
-            <div className="flex justify-center items-center mt-4 text-center gap-2">
+            <div className="flex flex-col justify-center items-center mt-10 text-center">
               <span>Want to Bring Daycation to Your Hotel? </span>
               <Link
                 to="/partner/register"

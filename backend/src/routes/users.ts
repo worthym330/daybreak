@@ -6,6 +6,7 @@ import verifyToken from "../middleware/auth";
 import { OAuth2Client } from "google-auth-library";
 import Lead from "../models/leads";
 import { sendLeadNotification, sendToCustomer } from "./mail";
+import bcrypt from "bcryptjs";
 
 const router = express.Router();
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -54,21 +55,25 @@ router.post(
         if (payload?.email !== email) {
           return res.status(400).json({ message: "Invalid Google token" });
         }
+        const salt = await bcrypt.genSalt(10);
+        const hash = await bcrypt.hash(firstName, salt);
         const googleUser = {
           firstName: firstName,
           lastName: lastName,
           email: email,
           role: role,
-          password:`${firstName}${lastName}`
+          password:hash
         };
         user = new User(googleUser);
       } else {
+        const salt = await bcrypt.genSalt(10);
+        const hash = await bcrypt.hash(password, salt);
         const body = {
           firstName: firstName,
           lastName: lastName,
           email: email,
           role: role,
-          password:password
+          password:hash
         };
         user = new User(body);
       }
