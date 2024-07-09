@@ -10,7 +10,8 @@ import { v2 as cloudinary } from "cloudinary";
 import myHotelRoutes from "./routes/my-hotels";
 import hotelRoutes from "./routes/hotels";
 import bookingRoutes from "./routes/my-bookings";
-import waitlistRoutes from "./routes/waitlist"
+import waitlistRoutes from "./routes/waitlist";
+import contactRoutes from "./routes/contactus";
 import axios from "axios";
 const url = require("url");
 
@@ -40,7 +41,7 @@ app.use(
     credentials: true,
   })
 );
-app.use('/uploads', express.static(path.resolve(__dirname, '../uploads')));
+app.use("/uploads", express.static(path.resolve(__dirname, "../uploads")));
 app.use(express.static(path.join(__dirname, "../../frontend/dist")));
 
 app.use("/api/auth", authRoutes);
@@ -48,30 +49,35 @@ app.use("/api/users", userRoutes);
 app.use("/api/my-hotels", myHotelRoutes);
 app.use("/api/hotels", hotelRoutes);
 app.use("/api/my-bookings", bookingRoutes);
-app.use("/api/waitlist/",waitlistRoutes)
+app.use("/api/waitlist/", waitlistRoutes);
+app.use("/api/contact", contactRoutes);
 
 app.get("/expand-url", async (req: Request, res: Response) => {
   const { url } = req.query;
 
-  if (!url || typeof url !== 'string') {
+  if (!url || typeof url !== "string") {
     return res.status(400).json({ error: "Invalid or missing URL parameter" });
   }
 
   try {
-    console.log('called', req.query)
-    const response = await axios.get(`https://unshorten.me/s/${encodeURIComponent(url)}`);
-    console.log(response.request.res)
+    console.log("called", req.query);
+    const response = await axios.get(
+      `https://unshorten.me/s/${encodeURIComponent(url)}`
+    );
+    console.log(response.request.res);
     let expandedUrl = response.data;
-    
+
     const consentPrefix = "https://consent.google.com/m?continue=";
     if (expandedUrl.startsWith(consentPrefix)) {
-      expandedUrl = decodeURIComponent(expandedUrl.substring(consentPrefix.length));
+      expandedUrl = decodeURIComponent(
+        expandedUrl.substring(consentPrefix.length)
+      );
     }
 
     const parsedUrl = new URL(expandedUrl);
-    parsedUrl.searchParams.set('hl', 'en');
+    parsedUrl.searchParams.set("hl", "en");
     expandedUrl = parsedUrl.toString();
-    console.log(expandedUrl)
+    console.log(expandedUrl);
 
     res.json({ expandedUrl });
   } catch (error) {

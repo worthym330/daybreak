@@ -8,9 +8,7 @@ import {
 import Layout from "./layouts/Layout";
 import Register from "./pages/Register";
 import SignIn from "./pages/SignIn";
-import AddHotel from "./pages/AddHotel";
 import MyHotels from "./pages/MyHotels";
-import EditHotel from "./pages/EditHotel";
 import Search from "./pages/Search";
 import Detail from "./pages/Detail";
 import Booking from "./pages/Booking";
@@ -26,10 +24,11 @@ import PrivacyPolicy from "./pages/PrivacyandPolicy";
 import Support from "./pages/Support";
 import CookiePolicy from "./pages/CookiePolicy";
 import Login from "./pages/LoginandSignup";
-import { Bounce, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { Bounce, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import CancellationPolicy from "./pages/CancellationPolicy";
 import ResetPass from "./pages/ResetPassword";
+import Contact from "./pages/ContactUs";
 
 const AccessControl = ({ children, requiredRoles }: any) => {
   const auth_token = Cookies.get("authentication") || "null";
@@ -38,12 +37,11 @@ const AccessControl = ({ children, requiredRoles }: any) => {
   // const [unauthenticated, setUnauthenticated] = useState(false);
   useEffect(() => {
     if (user === null) {
-        navigate(-1);
+      navigate(-1);
     } else if (requiredRoles && !requiredRoles.includes(user.role)) {
       navigate("/");
     }
   }, [user, requiredRoles, navigate]);
-
 
   return <>{children}</>;
 };
@@ -73,7 +71,11 @@ const App = () => {
   return (
     <Router>
       <ScrollToTop />
-      <ToastContainer position="top-center" autoClose={1000} transition={Bounce} />
+      <ToastContainer
+        position="top-center"
+        autoClose={1000}
+        transition={Bounce}
+      />
       <Routes>
         <Route
           path="/"
@@ -165,11 +167,19 @@ const App = () => {
         />
         <Route path="/about-us" element={<AboutUs />} />
         <Route
+          path="/contact-us"
+          element={
+            <Layout>
+              <Contact />
+            </Layout>
+          }
+        />
+        <Route
           path="/register"
           element={
             <AuthRedirect>
               {/* <Layout> */}
-                <Login Login={false} />
+              <Login Login={false} />
               {/* </Layout> */}
             </AuthRedirect>
           }
@@ -179,7 +189,7 @@ const App = () => {
           element={
             <AuthRedirect>
               {/* <Layout> */}
-                <Login Login={true} />
+              <Login Login={true} />
               {/* </Layout> */}
             </AuthRedirect>
           }
@@ -189,9 +199,9 @@ const App = () => {
           path="/checkout"
           element={
             // <AccessControl requiredRoles={["customer"]}>
-              <Layout>
-                <Booking />
-              </Layout>
+            <Layout>
+              <Booking />
+            </Layout>
             // </AccessControl>
           }
         />

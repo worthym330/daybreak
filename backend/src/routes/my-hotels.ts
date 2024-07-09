@@ -8,7 +8,10 @@ import { HotelType } from "../shared/types";
 // import AWS from "aws-sdk";
 import fs from "fs";
 import path from "path";
-import { askForPermissionToAddHotel, notifyHotelUserRequestReceived } from "./mail";
+import {
+  askForPermissionToAddHotel,
+  notifyHotelUserRequestReceived,
+} from "./mail";
 import User from "../models/user";
 
 const router = express.Router();
@@ -46,7 +49,7 @@ router.post(
         productTitle,
         star,
         mapurl,
-        pincode
+        pincode,
       } = req.body;
 
       // Upload images and get URLs
@@ -91,26 +94,26 @@ router.post(
         lastUpdated: new Date(),
         bookings: [],
         favourites: [],
-        status:hotelData.length > 0 ? false: true
+        status: hotelData.length > 0 ? false : true,
       };
 
       // // Create and save the new hotel document
       const hotel = new Hotel(newHotel);
       await hotel.save();
 
-      const user = await User.findById(req.userId)
+      const user = await User.findById(req.userId);
 
-      if(hotelData.length > 0){
+      if (hotelData.length > 0) {
         const hotelInfo = {
           name: hotel.name,
-          city:hotel.city,
-          state:hotel.state,
-          pincode:hotel.pincode,
+          city: hotel.city,
+          state: hotel.state,
+          pincode: hotel.pincode,
           ownerName: `${user?.firstName} ${user?.lastName}`,
-          email:user?.email,
-        }
-        await askForPermissionToAddHotel(hotelInfo)
-        await notifyHotelUserRequestReceived(hotelInfo)
+          email: user?.email,
+        };
+        await askForPermissionToAddHotel(hotelInfo);
+        await notifyHotelUserRequestReceived(hotelInfo);
       }
 
       res.status(201).send(hotel);
@@ -123,7 +126,7 @@ router.post(
 
 router.get("/", verifyToken, async (req: Request, res: Response) => {
   try {
-    const hotels = await Hotel.find({ userId: req.userId, status:true });
+    const hotels = await Hotel.find({ userId: req.userId, status: true });
     res.json(hotels);
   } catch (error) {
     res.status(500).json({ message: "Error fetching hotels" });
@@ -159,7 +162,7 @@ router.put(
       }
 
       // Parse productTitle to ensure dates are correct
-      const parsedProductTitle = JSON.parse(productTitle)
+      const parsedProductTitle = JSON.parse(productTitle);
 
       const facilitiesMap = facilities.split(",");
       const HotelTypes = hotelType.split(",");
@@ -179,15 +182,15 @@ router.put(
       const updatedHotel: HotelType = {
         ...existingHotel.toObject(),
         ...hotelData,
-        facilities:facilitiesMap,
-        hotelType:HotelTypes,
+        facilities: facilitiesMap,
+        hotelType: HotelTypes,
         imageUrls: imageFiles.length > 0 ? imageUrls : existingHotel.imageUrls,
         lastUpdated: new Date(),
         userId: req.userId,
         productTitle: parsedProductTitle,
       };
 
-      console.log(updatedHotel)
+      console.log(updatedHotel);
 
       // Update the hotel in the database
       await Hotel.findByIdAndUpdate(hotelId, updatedHotel, { new: true });
@@ -302,5 +305,58 @@ router.delete("/:id", verifyToken, async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error deleting hotel" });
   }
 });
+
+router.get(
+  "/bookings/hotel",
+  verifyToken,
+  async (req: Request, res: Response) => {
+    try {
+      // Extract query parameters
+      const days =
+        typeof req.query.days === "string" ? parseInt(req.query.days) : 7;
+      const { bookingDate, firstName, lastName, email } = req.query;
+
+      // Build filter object
+      const filter: any = { userId: req.userId };
+
+      // Use $elemMatch to filter bookings array
+
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(endDate.getDate() - days);
+      filter.bookings = {
+        $elemMatch: {
+          checkIn: {
+            $gte: startDate,
+            $lte: endDate,
+          },
+        },
+      };
+
+      // Add other filters if provided
+      if (bookingDate) {
+        filter.bookings.$elemMatch.checkIn = new Date(bookingDate as string);
+      }
+      if (firstName) {
+        filter.bookings.$elemMatch.firstName = firstName;
+      }
+      if (lastName) {
+        filter.bookings.$elemMatch.lastName = lastName;
+      }
+      if (email) {
+        filter.bookings.$elemMatch.email = email;
+      }
+      
+      const hotel = await Hotel.findOne(filter);
+      if (!hotel) {
+        return res.status(404).json({ message: "No bookings found" });
+      }
+
+      res.status(200).json(hotel);
+    } catch (error) {
+      res.status(500).json({ message: "Server error", error: error });
+    }
+  }
+);
 
 export default router;
