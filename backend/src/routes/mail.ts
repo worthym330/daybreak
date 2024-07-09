@@ -1322,6 +1322,87 @@ export const CaReport = async (data: any) => {
   }
 };
 
+export const sendContactNotification = async (data: any) => {
+  try {
+    const { name, email, phone, details } = data;
+    const mailOptions = {
+      to: process.env.MAILTO,
+      subject: `New Contact Us Submission`,
+      html: `
+       <!DOCTYPE html>
+  <html>
+    <head>
+      <style>
+        .container {
+          font-family: Arial, sans-serif;
+          margin: 20px;
+          padding: 20px;
+          border: 1px solid #ccc;
+          border-radius: 10px;
+        }
+        .header {
+          background-color: #B5813F;
+          padding: 10px;
+          text-align: center;
+          border-bottom: 1px solid #ccc;
+        }
+        .content {
+          margin-top: 20px;
+        }
+        .footer {
+          margin-top: 20px;
+          text-align: center;
+          color: #888;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Welcome to DayBreakPass</h1>
+        </div>
+        <ul>
+        <li><strong>Name:</strong> ${name}</li>
+        <li><strong>Email:</strong> ${email}</li>
+        <li><strong>Phone:</strong> ${phone}</li>
+        <li><strong>Message:</strong> ${details}</li>
+      </ul>
+        <div class="footer">
+          <p>&copy; 2024 DayBreakPass. All rights reserved.</p>
+        </div>
+      </div>
+    </body>
+  </html>
+`,
+    };
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error("Error sending request received email:", error);
+  }
+};
+
+// export const sendReferral = async(body:any) =>{
+//   try {
+//     const { email, name, referralCode, waitlistNumber } = body;
+//     const mailOptions = {
+//       to: email,
+//       subject: `Welcome to DayBreakPass!`,
+//       html: `
+//     <h3>Hi ${name},</h3>
+//     <p>Thank you for joining our waitlist. We are excited to have you on board!.</p>
+//     <p>Your referral code is: <strong>${referralCode}</strong></p>
+//     <p>Your waiting list number is: <strong>${waitlistNumber}</strong></p>
+//     <p>Share this code with your friends and help them join our service too.
+//     <a href="${process.env.FRONTEND_URL}/waitlist?uid=${referralCode}">${process.env.FRONTEND_URL}/waitlist?uid=${referralCode}</a></p>
+//     <p>Best regards,<br>DayBreakPass</p>
+// `,
+//     };
+//     await transporter.sendMail(mailOptions);
+//   } catch (error) {
+//     console.error("Error sending lead notification email:", error);
+//   }
+// }
+
 export const sendCredential = async (body: any) => {
   try {
     const { email, firstName, password } = body;
@@ -1343,25 +1424,3 @@ export const sendCredential = async (body: any) => {
     console.error("Error sending lead notification email:", error);
   }
 };
-
-// export const sendReferral = async(body:any) =>{
-//   try {
-//     const { email, name, referralCode, waitlistNumber } = body;
-//     const mailOptions = {
-//       to: email,
-//       subject: `Welcome to DayBreakPass!`,
-//       html: ` 
-//     <h3>Hi ${name},</h3>
-//     <p>Thank you for joining our waitlist. We are excited to have you on board!.</p>
-//     <p>Your referral code is: <strong>${referralCode}</strong></p>
-//     <p>Your waiting list number is: <strong>${waitlistNumber}</strong></p>
-//     <p>Share this code with your friends and help them join our service too. 
-//     <a href="${process.env.FRONTEND_URL}/waitlist?uid=${referralCode}">${process.env.FRONTEND_URL}/waitlist?uid=${referralCode}</a></p>
-//     <p>Best regards,<br>DayBreakPass</p>
-// `,
-//     };
-//     await transporter.sendMail(mailOptions);
-//   } catch (error) {
-//     console.error("Error sending lead notification email:", error);
-//   }
-// }

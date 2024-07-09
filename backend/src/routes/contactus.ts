@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import verifyToken from "../middleware/auth";
 import ContactUs from "../models/contactus";
+import { sendContactNotification } from "./mail";
 
 const router = express.Router();
 
@@ -17,7 +18,7 @@ router.post("/", verifyToken, async (req: Request, res: Response) => {
     });
 
     const data = await contact.save();
-
+    await sendContactNotification(contact)
     res.status(200).send(data);
   } catch (error) {
     console.log(error);
