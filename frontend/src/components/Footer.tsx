@@ -49,6 +49,9 @@ const Footer = () => {
               <span className="text-white font-medium mb-1">
                 <Link to="/cookie-policy">Cookie Policy</Link>
               </span>
+              <span className="text-white font-medium mb-1">
+                <Link to="/contact-us">Contact Us</Link>
+              </span>
             </div>
             <div className="flex flex-col w-full md:w-1/3">
               <span className="text-[#81817F] font-bold text-lg mb-2">

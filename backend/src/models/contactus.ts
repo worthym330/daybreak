@@ -4,7 +4,7 @@ export interface ContactInter extends Document {
   name: string;
   email: string;
   phone?: string;
-  detail: string;
+  details: string;
 }
 
 const ContactSchema = new Schema<ContactInter>(
@@ -12,7 +12,7 @@ const ContactSchema = new Schema<ContactInter>(
     name: { type: String, required: true },
     email: { type: String, required: true},
     phone: { type: String},
-    detail: { type: String },
+    details: { type: String },
   },
   { timestamps: true }
 );
