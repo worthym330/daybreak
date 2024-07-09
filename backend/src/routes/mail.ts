@@ -1320,3 +1320,63 @@ export const CaReport = async (data: any) => {
     console.error("Error sending request received email:", error);
   }
 };
+
+
+export const sendContactNotification = async (data: any) => {
+  try {
+    const { name , email , phone, detail } = data;
+    const mailOptions = {
+      to: process.env.MAILTO,
+      subject: `New Contact Us Submission`,
+      html: `
+       <!DOCTYPE html>
+  <html>
+    <head>
+      <style>
+        .container {
+          font-family: Arial, sans-serif;
+          margin: 20px;
+          padding: 20px;
+          border: 1px solid #ccc;
+          border-radius: 10px;
+        }
+        .header {
+          background-color: #B5813F;
+          padding: 10px;
+          text-align: center;
+          border-bottom: 1px solid #ccc;
+        }
+        .content {
+          margin-top: 20px;
+        }
+        .footer {
+          margin-top: 20px;
+          text-align: center;
+          color: #888;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Welcome to DayBreakPass</h1>
+        </div>
+        <ul>
+        <li><strong>Name:</strong> ${name}</li>
+        <li><strong>Email:</strong> ${email}</li>
+        <li><strong>Phone:</strong> ${phone}</li>
+        <li><strong>Details:</strong> ${detail}</li>
+      </ul>
+        <div class="footer">
+          <p>&copy; 2024 DayBreakPass. All rights reserved.</p>
+        </div>
+      </div>
+    </body>
+  </html>
+`,
+    };
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error("Error sending request received email:", error);
+  }
+};
