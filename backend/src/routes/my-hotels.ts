@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import multer from "multer";
 import cloudinary from "cloudinary";
 import Hotel from "../models/hotel";
-import verifyToken from "../middleware/auth";
+import verifyToken, { verifyAdminToken } from "../middleware/auth";
 import { body } from "express-validator";
 import { HotelType } from "../shared/types";
 // import AWS from "aws-sdk";
@@ -307,8 +307,8 @@ router.delete("/:id", verifyToken, async (req: Request, res: Response) => {
 });
 
 router.get(
-  "/bookings/hotel",
-  verifyToken,
+  "/reservations/hotel",
+  verifyAdminToken,
   async (req: Request, res: Response) => {
     try {
       // Extract query parameters
@@ -348,10 +348,54 @@ router.get(
       }
       
       const hotel = await Hotel.findOne(filter);
-      if (!hotel) {
-        return res.status(404).json({ message: "No bookings found" });
-      }
 
+      res.status(200).json(hotel);
+    } catch (error) {
+      res.status(500).json({ message: "Server error", error: error });
+    }
+  }
+);
+
+router.get(
+  "/bookings/hotel",
+  verifyAdminToken,
+  async (req: Request, res: Response) => {
+    try {
+      // Extract query parameters
+      // const days = typeof req.query.days === "string" ? parseInt(req.query.days) : 7;
+      const { bookingDate, firstName, lastName, email } = req.query;
+
+      // Build filter object
+      const filter: any = { userId: req.userId };
+
+      // Use $elemMatch to filter bookings array
+
+      const endDate = new Date();
+      const startDate = new Date();
+      // startDate.setDate(endDate.getDate() - days);
+      // filter.bookings = {
+      //   $elemMatch: {
+      //     checkIn: {
+      //       $gte: startDate,
+      //       $lte: endDate,
+      //     },
+      //   },
+      // };
+
+      // Add other filters if provided
+      if (bookingDate) {
+        filter.bookings.$elemMatch.checkIn = new Date(bookingDate as string);
+      }
+      if (firstName) {
+        filter.bookings.$elemMatch.firstName = firstName;
+      }
+      if (lastName) {
+        filter.bookings.$elemMatch.lastName = lastName;
+      }
+      if (email) {
+        filter.bookings.$elemMatch.email = email;
+      }
+      const hotel = await Hotel.findOne(filter)
       res.status(200).json(hotel);
     } catch (error) {
       res.status(500).json({ message: "Server error", error: error });
