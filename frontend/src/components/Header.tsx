@@ -855,16 +855,17 @@ const Header = () => {
                         Sign Up
                       </button>
 
-                      <button
-                        type="button"
+                      <a
+                        // type="button"
                         className="pl-5 pb-4 cursor-pointer z-10 w-full text-left align-middle pt-3 hover:bg-rp-light-gray-4"
+                        href="https://partner.daybreakpass.com/login"
                         onClick={() => {
                           setShowDropdown(false);
-                          window.location.href = "https://partner.daybreakpass.com/login"
+                          // window.location.href = ""
                         }}
                       >
                         Hotel Login
-                      </button>
+                      </a>
 
                       <button
                         type="button"
