@@ -749,7 +749,7 @@ const Header = () => {
       {location.pathname === "/" ? (
         <div className="relative w-full h-screen" ref={headerRef}>
           <video
-            src={videoBg}
+            src={'https://ixnyqungcmjgqzmlzyka.supabase.co/storage/v1/object/public/daybreakpass/bgimage.mp4?t=2024-07-15T12%3A51%3A18.983Z'}
             playsInline
             autoPlay
             loop
