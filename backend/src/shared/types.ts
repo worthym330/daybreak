@@ -71,6 +71,7 @@ export type PaymentIntentResponse = {
 };
 
 export interface ProductType {
+  _id?: any;
   title: string;
   description: string[];
   adultPrice: number;
@@ -78,7 +79,7 @@ export interface ProductType {
   otherpoints: string;
   notes: string;
   maxPeople: string;
-  selectedDates: Date[];
+  selectedDates?: Date[];
   slotTime: string;
   startTime: string;
   endTime: string;
