@@ -122,7 +122,7 @@ export const ResetPassRequest = ({ modal, setModal }: any) => {
     <Formik
       initialValues={data}
       validationSchema={resetPassRequestSchema}
-      onSubmit={async (values: login, { setSubmitting,resetForm }) => {
+      onSubmit={async (values: login, { setSubmitting, resetForm }) => {
         try {
           setSubmitting(true);
           const response = await fetch(`${API_BASE_URL}/api/auth/forgot`, {
@@ -141,7 +141,7 @@ export const ResetPassRequest = ({ modal, setModal }: any) => {
           } else {
             toast.success(body.message);
             setSubmitting(false);
-            resetForm()
+            resetForm();
           }
           setModal((prev: any) => ({ ...prev, state: false }));
         } catch (error: any) {
@@ -157,14 +157,14 @@ export const ResetPassRequest = ({ modal, setModal }: any) => {
         errors,
         touched,
         handleChange,
-        resetForm
+        resetForm,
       }) => (
         <Modal
           title="Forgot Password Request"
           open={state}
           setOpen={() => {
             setModal((prev: any) => ({ ...prev, state: false }));
-            resetForm()
+            resetForm();
           }}
         >
           <form onSubmit={handleSubmit} noValidate>
@@ -236,7 +236,7 @@ const Header = () => {
       headerRef.current &&
       !headerRef.current.contains(event.target as Node)
     ) {
-      setShowDropdown(false)
+      setShowDropdown(false);
       setShowNav(false);
     }
   };
@@ -274,14 +274,14 @@ const Header = () => {
       if (response.ok) {
         setModal((prev) => ({ ...prev, state: false, loading: false }));
         // showToast({ message: "Sign in Successful!", type: "SUCCESS" });
-        toast.success('Sign in Successful!')
+        toast.success("Sign in Successful!");
         setShowDropdown(false);
         Cookies.set("authentication", JSON.stringify(body.user), {
           expires: 1,
         });
       } else {
         // showToast({ message: "Failed to Login!", type: "ERROR" });
-        toast.error("Failed to Login!")
+        toast.error("Failed to Login!");
       }
     } catch (error) {
       console.error("Error authenticating with backend:", error);
@@ -314,14 +314,14 @@ const Header = () => {
       if (response.ok) {
         setSignupModal(initialSignupModalState);
         // showToast({ message: "Registered Successful!", type: "SUCCESS" });
-        toast.success('Registered Successful!')
+        toast.success("Registered Successful!");
         setShowDropdown(false);
         Cookies.set("authentication", JSON.stringify(body.user), {
           expires: 1,
         });
       } else {
         // showToast({ message: "Failed to register!", type: "ERROR" });
-        toast.error('Failed to register!')
+        toast.error("Failed to register!");
       }
     } catch (error) {
       console.error("Error authenticating with backend:", error);
@@ -377,14 +377,14 @@ const Header = () => {
 
             if (!response.ok) {
               // showToast({ message: body.message, type: "ERROR" });
-              toast.error(body.message)
-            }else{
+              toast.error(body.message);
+            } else {
               toast.success("Logined Successfully!");
-            setShowDropdown(false);
-            Cookies.set("authentication", JSON.stringify(body.user), {
-              expires: 1,
-            });
-            }            
+              setShowDropdown(false);
+              Cookies.set("authentication", JSON.stringify(body.user), {
+                expires: 1,
+              });
+            }
           } catch (error: any) {
             console.error("Error during sign in:", error);
             setModal(initialModalState);
@@ -392,7 +392,7 @@ const Header = () => {
             //   message: error.message || "An error occurred during sign in",
             //   type: "ERROR",
             // });
-            toast.error(error.message)
+            toast.error(error.message);
           }
         }}
       >
@@ -567,7 +567,7 @@ const Header = () => {
                 expires: 1,
               });
               // showToast({ message: "Registered Successful!", type: "SUCCESS" });
-              toast.success("Registered Successful!")
+              toast.success("Registered Successful!");
               await queryClient.invalidateQueries("validateToken");
               setSignupModal(initialSignupModalState);
             } else {
@@ -575,7 +575,7 @@ const Header = () => {
               //   message: responseBody.message || "An error occurred",
               //   type: "ERROR",
               // });
-              toast.error(responseBody.message)
+              toast.error(responseBody.message);
             }
           } catch (error: any) {
             console.log(error);
@@ -583,7 +583,7 @@ const Header = () => {
             //   message: error.message || "An error occurred",
             //   type: "ERROR",
             // });
-            toast.error(error.message)
+            toast.error(error.message);
           }
         }}
       >
@@ -749,7 +749,9 @@ const Header = () => {
       {location.pathname === "/" ? (
         <div className="relative w-full h-screen" ref={headerRef}>
           <video
-            src={'https://ixnyqungcmjgqzmlzyka.supabase.co/storage/v1/object/public/daybreakpass/bgimage.mp4?t=2024-07-15T12%3A51%3A18.983Z'}
+            src={
+              "https://ixnyqungcmjgqzmlzyka.supabase.co/storage/v1/object/public/daybreakpass/bgimage.mp4?t=2024-07-15T12%3A51%3A18.983Z"
+            }
             playsInline
             autoPlay
             loop
@@ -832,7 +834,10 @@ const Header = () => {
 
                   {/* Dropdown for Login button */}
                   {showDropdown && (
-                    <div className="absolute bg-gray-100 text-rp-primary-black right-4 top-20 -mt-1 rounded-xl w-56 md:w-72 z-300 flex flex-col items-start shadow-login-card md:top-20 shadow-md" ref={headerRef}>
+                    <div
+                      className="absolute bg-gray-100 text-rp-primary-black right-4 top-20 -mt-1 rounded-xl w-56 md:w-72 z-300 flex flex-col items-start shadow-login-card md:top-20 shadow-md"
+                      ref={headerRef}
+                    >
                       <button
                         type="button"
                         className="pl-5 pb-4 pt-4 cursor-pointer z-10 w-full text-left align-middle rounded-t-xl hover:bg-rp-light-gray-4"
@@ -1066,7 +1071,10 @@ const Header = () => {
 
               {/* Dropdown for Login button */}
               {showDropdown && (
-                <div className="absolute bg-white text-rp-primary-black right-4 md:right-16 top-20 -mt-1 rounded-xl w-56 md:w-72 z-300 flex flex-col items-start shadow-login-card md:top-24" ref={headerRef} >
+                <div
+                  className="absolute bg-white text-rp-primary-black right-4 md:right-16 top-20 -mt-1 rounded-xl w-56 md:w-72 z-300 flex flex-col items-start shadow-login-card md:top-24"
+                  ref={headerRef}
+                >
                   <button
                     type="button"
                     className="pl-5 pb-4 pt-4 cursor-pointer z-10 w-full text-left align-middle rounded-t-xl hover:bg-rp-light-gray-4"
@@ -1089,16 +1097,17 @@ const Header = () => {
                     Sign Up
                   </button>
 
-                  <button
-                    type="button"
+                  <a
+                    // type="button"
                     className="pl-5 pb-4 cursor-pointer z-10 w-full text-left align-middle pt-3 hover:bg-rp-light-gray-4"
+                    href="https://partner.daybreakpass.com/login"
                     onClick={() => {
                       setShowDropdown(false);
-                      navigate("/partner/sign-in");
+                      // window.location.href = ""
                     }}
                   >
                     Hotel Login
-                  </button>
+                  </a>
 
                   <button
                     type="button"
@@ -1177,7 +1186,10 @@ const Header = () => {
 
               {/* Dropdown for Login button */}
               {showDropdown && (
-                <div className="absolute bg-gray-100 text-rp-primary-black right-4 top-20 -mt-1 rounded-xl w-56 md:w-72 z-300 flex flex-col items-start shadow-login-card md:top-20 shadow-md" ref={headerRef}>
+                <div
+                  className="absolute bg-gray-100 text-rp-primary-black right-4 top-20 -mt-1 rounded-xl w-56 md:w-72 z-300 flex flex-col items-start shadow-login-card md:top-20 shadow-md"
+                  ref={headerRef}
+                >
                   <button
                     type="button"
                     className="pl-5 pb-4 pt-4 cursor-pointer text-black z-10 w-full text-left align-middle rounded-t-xl hover:bg-rp-light-gray-4"
@@ -1200,16 +1212,17 @@ const Header = () => {
                     Sign Up
                   </button>
 
-                  <button
-                    type="button"
-                    className="pl-5 pb-4 cursor-pointer text-black z-10 w-full text-left align-middle pt-3 hover:bg-rp-light-gray-4"
+                  <a
+                    // type="button"
+                    className="pl-5 pb-4 cursor-pointer z-10 w-full text-left align-middle pt-3 hover:bg-rp-light-gray-4"
+                    href="https://partner.daybreakpass.com/login"
                     onClick={() => {
                       setShowDropdown(false);
-                      navigate("/partner/sign-in");
+                      // window.location.href = ""
                     }}
                   >
                     Hotel Login
-                  </button>
+                  </a>
 
                   <button
                     type="button"
@@ -1408,7 +1421,10 @@ const Header = () => {
 
           {/* Dropdown for Login button */}
           {showDropdown && (
-            <div className="absolute bg-gray-100 text-rp-primary-black right-4 top-20 -mt-1 rounded-xl w-56 md:w-72 z-50 flex flex-col items-start shadow-login-card md:top-20 shadow-md" ref={headerRef}>
+            <div
+              className="absolute bg-gray-100 text-rp-primary-black right-4 top-20 -mt-1 rounded-xl w-56 md:w-72 z-50 flex flex-col items-start shadow-login-card md:top-20 shadow-md"
+              ref={headerRef}
+            >
               <button
                 type="button"
                 className="pl-5 pb-4 pt-4 cursor-pointer z-10 w-full text-left align-middle rounded-t-xl hover:bg-rp-light-gray-4"
@@ -1431,16 +1447,17 @@ const Header = () => {
                 Sign Up
               </button>
 
-              <button
-                type="button"
+              <a
+                // type="button"
                 className="pl-5 pb-4 cursor-pointer z-10 w-full text-left align-middle pt-3 hover:bg-rp-light-gray-4"
+                href="https://partner.daybreakpass.com/login"
                 onClick={() => {
                   setShowDropdown(false);
-                  navigate("/partner/sign-in");
+                  // window.location.href = ""
                 }}
               >
                 Hotel Login
-              </button>
+              </a>
 
               <button
                 type="button"
