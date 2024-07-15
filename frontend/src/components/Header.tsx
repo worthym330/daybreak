@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 // import { useAppContext } from "../contexts/AppContext";
 import SignOutButton from "./SignOutButton";
-import videoBg from "../assets/bgvideo.mp4";
+import videoBg from "../assets/videobg.mp4";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { IoCartOutline } from "react-icons/io5";
 import { Formik } from "formik";
@@ -749,7 +749,7 @@ const Header = () => {
       {location.pathname === "/" ? (
         <div className="relative w-full h-screen" ref={headerRef}>
           <video
-            src={"https://ixnyqungcmjgqzmlzyka.supabase.co/storage/v1/object/public/daybreakpass/WhatsApp_Video_2024_07_11_at_12.21.52_237a5296.mp4?t=2024-07-11T12%3A45%3A28.558Z"}
+            src={videoBg}
             playsInline
             autoPlay
             loop
@@ -860,7 +860,7 @@ const Header = () => {
                         className="pl-5 pb-4 cursor-pointer z-10 w-full text-left align-middle pt-3 hover:bg-rp-light-gray-4"
                         onClick={() => {
                           setShowDropdown(false);
-                          navigate("/partner/sign-in");
+                          window.location.href = "https://partner.daybreakpass.com/login"
                         }}
                       >
                         Hotel Login
