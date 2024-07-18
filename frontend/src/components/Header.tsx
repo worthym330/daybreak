@@ -863,7 +863,7 @@ const Header = () => {
                       <a
                         // type="button"
                         className="pl-5 pb-4 cursor-pointer z-10 w-full text-left align-middle pt-3 hover:bg-rp-light-gray-4"
-                        href="https://partner.daybreakpass.com/login"
+                        href={import.meta.env.VITE_ADMIN_REDIRECT}
                         onClick={() => {
                           setShowDropdown(false);
                           // window.location.href = ""
@@ -1100,7 +1100,7 @@ const Header = () => {
                   <a
                     // type="button"
                     className="pl-5 pb-4 cursor-pointer z-10 w-full text-left align-middle pt-3 hover:bg-rp-light-gray-4"
-                    href="https://partner.daybreakpass.com/login"
+                    href={import.meta.env.VITE_ADMIN_REDIRECT}
                     onClick={() => {
                       setShowDropdown(false);
                       // window.location.href = ""
@@ -1215,7 +1215,7 @@ const Header = () => {
                   <a
                     // type="button"
                     className="pl-5 pb-4 cursor-pointer z-10 w-full text-left align-middle pt-3 hover:bg-rp-light-gray-4"
-                    href="https://partner.daybreakpass.com/login"
+                    href={import.meta.env.VITE_ADMIN_REDIRECT}
                     onClick={() => {
                       setShowDropdown(false);
                       // window.location.href = ""
@@ -1450,7 +1450,7 @@ const Header = () => {
               <a
                 // type="button"
                 className="pl-5 pb-4 cursor-pointer z-10 w-full text-left align-middle pt-3 hover:bg-rp-light-gray-4"
-                href="https://partner.daybreakpass.com/login"
+                href={import.meta.env.VITE_ADMIN_REDIRECT}
                 onClick={() => {
                   setShowDropdown(false);
                   // window.location.href = ""
