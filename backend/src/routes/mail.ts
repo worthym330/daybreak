@@ -255,7 +255,7 @@ export const notifyHotelUserRequestReceived = async (data: any) => {
 
 export const sendCredentials = async (data: any) => {
   try {
-    const { email, password } = data;
+    const { email, password, name } = data;
     const mailOptions = {
       to: email,
       subject: `Your DayBreakPass Account Credentials`,
@@ -293,7 +293,7 @@ export const sendCredentials = async (data: any) => {
           <h1>Welcome to DayBreakPass</h1>
         </div>
         <div class="content">
-          <p>Hello,</p>
+          <p>Hello ${name},</p>
           <p>Thank you for registering with us. Here are your credentials:</p>
           <p><strong>Email Id:</strong> ${email}</p>
           <p><strong>Password:</strong> ${password}</p>
