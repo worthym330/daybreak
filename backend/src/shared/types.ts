@@ -16,6 +16,7 @@ export interface HotelType {
   name: string;
   city: string;
   state: string;
+  address?: string;
   description: string;
   cancellationPolicy: string;
   facilities: string[];

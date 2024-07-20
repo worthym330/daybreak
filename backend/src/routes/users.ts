@@ -204,8 +204,8 @@ router.post(
   async (req: Request, res: Response) => {
     try {
       const { email, firstName, lastName, role, status } = req.body;
-      const existingUser = await User.findOne({email})
-      if(!existingUser){
+      const existingUser = await User.findOne({ email });
+      if (!existingUser) {
         let user, password;
         password = generateRandomPassword(10);
         const salt = await bcrypt.genSalt(10);
@@ -216,28 +216,28 @@ router.post(
           email: email,
           role: role,
           password: hash,
-          status:status
+          status: status,
         };
         user = new User(body);
-        await user.save()
-        const data ={
+        await user.save();
+        const data = {
           name: `${firstName} ${lastName}`,
           email,
-          password
-        }
-        await sendCredentials(data)
-        return res.status(200).send(user)
-      }else{
-        return res.status(424).send("Duplicate Entry")
+          password,
+        };
+        await sendCredentials(data);
+        return res.status(200).send(user);
+      } else {
+        return res.status(424).send("Duplicate Entry");
       }
     } catch (error) {
-      console.log(error)
-      res.status(500).send({message:"Something went wrong"})
+      console.log(error);
+      res.status(500).send({ message: "Something went wrong" });
     }
   }
 );
 
-function generateRandomPassword(length: number = 12): string {
+export function generateRandomPassword(length: number = 12): string {
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+[]{}|;:,.<>?";
   let password = "";
@@ -266,4 +266,58 @@ function generateRandomPassword(length: number = 12): string {
 
   return password;
 }
+
+router.put(
+  "/update/user/:id",
+  verifyAdminToken,
+  async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+      const user = await User.findById(id);
+      if (user) {
+        user.status = status;
+      }
+      await user?.save();
+      res.status(200).send(user);
+    } catch (error) {
+      res.status(500).send({ message: "Something went wrong" });
+    }
+  }
+);
+
+router.put(
+  "/create-account/:id",
+  verifyAdminToken,
+  async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { email, firstName, lastName, role, status } = req.body;
+
+      const existingUser = await User.findById(id);
+
+      if (!existingUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const emailInUse = await User.findOne({ email, _id: { $ne: id } });
+      if (emailInUse) {
+        return res.status(409).json({ message: "Email is already in use" });
+      }
+
+      // Update the user information
+      existingUser.firstName = firstName;
+      existingUser.lastName = lastName;
+      existingUser.email = email;
+      existingUser.role = role;
+      existingUser.status = status;
+
+      await existingUser.save();
+
+      return res.status(200).send(existingUser);
+    } catch (error) {
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+);
 export default router;

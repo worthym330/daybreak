@@ -11,8 +11,11 @@ import path from "path";
 import {
   askForPermissionToAddHotel,
   notifyHotelUserRequestReceived,
+  sendCredentials,
 } from "./mail";
 import User from "../models/user";
+import { generateRandomPassword } from "./users";
+import bcrypt from "bcryptjs";
 
 const router = express.Router();
 
@@ -563,7 +566,7 @@ router.put(
 );
 
 router.get(
-  "/product-titles",
+  "/product/titles",
   verifyAdminToken,
   async (req: Request, res: Response) => {
     try {
@@ -639,4 +642,77 @@ router.get(
   }
 );
 
+router.post(
+  "/add/hotel",
+  verifyAdminToken,
+  upload.array("imageFiles", 10),
+  async (req: Request, res: Response) => {
+    try {
+      const imageFiles = req.files as Express.Multer.File[];
+      const {
+        userId,
+        name,
+        address,
+        city,
+        state,
+        description,
+        cancellationPolicy,
+        facilities,
+        hotelType,
+        star,
+        mapurl,
+        pincode,
+        status,
+      } = req.body;
+
+      // Upload images and get URLs
+      const imageUrls = await uploadImages(imageFiles);
+      const facilitiesMap = facilities.split(",");
+      const HotelTypes = hotelType.split(",");
+
+      // Create a new hotel object
+      const newHotel = {
+        userId,
+        name,
+        city,
+        address,
+        state,
+        description,
+        cancellationPolicy,
+        facilities: facilitiesMap,
+        hotelType: HotelTypes,
+        imageUrls: imageUrls,
+        pincode,
+        mapurl,
+        star: Number(star),
+        lastUpdated: new Date(),
+        status,
+      };
+
+      // // Create and save the new hotel document
+      const hotel = new Hotel(newHotel);
+      await hotel.save();
+      const userInfo = await User.findById(userId);
+      if (userInfo) {
+        const password = await generateRandomPassword(10);
+        const salt = await bcrypt.genSalt(10);
+        const hash = await bcrypt.hash(password, salt);
+        userInfo.password = hash;
+        userInfo.status = true;
+        await userInfo.save();
+        const data = {
+          name: `${userInfo.firstName} ${userInfo.lastName}`,
+          email: userInfo.email,
+          password,
+        };
+        await sendCredentials(data);
+      }
+
+      res.status(201).send(hotel);
+    } catch (e) {
+      console.log(e);
+      res.status(500).json({ message: "Something went wrong" });
+    }
+  }
+);
 export default router;
