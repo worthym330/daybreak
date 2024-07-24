@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 // import { useAppContext } from "../contexts/AppContext";
 import SignOutButton from "./SignOutButton";
@@ -20,6 +20,12 @@ import { toast } from "react-toastify";
 import Button from "./Button";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
+import { MdCalendarMonth } from "react-icons/md";
+import { FaSearch } from "react-icons/fa";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { FaLocationDot } from "react-icons/fa6";
+import { useSearchContext } from "../contexts/SearchContext";
 
 const initialModalState = {
   type: "add",
@@ -30,7 +36,7 @@ const initialModalState = {
   data: {
     email: "",
     password: "",
-    loginThrough: "password",
+  loginThrough: "password",
     userType: "customer",
   },
 };
@@ -225,6 +231,20 @@ const Header = () => {
   const cart = useSelector((state: RootState) => state.cart.items);
 
   const headerRef = useRef<HTMLDivElement>(null);
+  const search = useSearchContext();
+
+  const [destination, setDestination] = useState<string>("");
+  const [checkIn, setCheckIn] = useState<Date>(search.checkIn);
+
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault();
+    search.saveSearchValues(destination, checkIn);
+    navigate("/search");
+  };
+
+  const minDate = new Date();
+  const maxDate = new Date();
+  maxDate.setFullYear(maxDate.getFullYear() + 1);
   useEffect(() => {
     const cart = localStorage.getItem("cart");
     const parsedCart = cart ? JSON.parse(cart) : [];
@@ -747,31 +767,72 @@ const Header = () => {
       {renderSignUpModal()}
       <ResetPassRequest modal={resetModal} setModal={setResetModal} />
       {location.pathname === "/" ? (
-        <div className="relative w-full h-screen" ref={headerRef}>
-          <video
-            src={
-              "https://ixnyqungcmjgqzmlzyka.supabase.co/storage/v1/object/public/daybreakpass/bgimage.mp4?t=2024-07-15T12%3A51%3A18.983Z"
-            }
-            playsInline
-            autoPlay
-            loop
-            muted
-            className="absolute inset-0 w-full h-full object-cover"
-          ></video>
+        <div className="relative w-full h-screen overflow-hidden" ref={headerRef}>
+        <video
+          src={
+            "https://ixnyqungcmjgqzmlzyka.supabase.co/storage/v1/object/public/daybreakpass/bgimage.mp4?t=2024-07-15T12%3A51%3A18.983Z"
+          }
+          playsInline
+          autoPlay
+          loop
+          muted
+          className="absolute inset-0 w-full h-[95%] object-cover"
+        ></video>
+      
+        {/* Hero Section */}
+        <div className="absolute bottom-0 w-full flex flex-col justify-center items-center bg-transparent text-center p-4">
+        <div className="max-w-screen-lg">
+          <h1 className="text-4xl md:text-5xl text-white font-bold leading-tight mb-2">
+            FIND YOUR NEXT DAYCATION
+          </h1>
+          <p className="text-lg md:text-xl text-white mb-4">
+            Discover luxury by the day: Book Day Passes, Daybeds, Cabanas & Experiences at premier hotels in your city.
+          </p>
+        </div>
 
-          {/* Hero Section */}
-          <div className="absolute left-0 right-0 top-[24rem] md:top-[28rem] lg:top-[33rem] flex justify-center bg-transparent">
-            <div className="mx-auto max-w-screen-lg px-4 text-center">
-              <h1 className="md:text-5xl text-[2.7rem] text-white font-bold font-LuzuryF1 leading-tight mb-4">
-                Find your next Daycation
-              </h1>
-              <p className="md:text-xl lg:text-2xl text-base px-0 md:px-10 lg:px-20 text-white md:mt-4 mt-0 font-LuzuryF2">
-                Discover luxury by the day: Book Day Passes, Daybeds, Cabanas &
-                Experiences at premier hotels in your city.
-              </p>
+        <div className="w-full md:w-2/3 lg:w-1/2">
+          <form
+            onSubmit={handleSubmit}
+            className="p-4 bg-white rounded-full shadow-md h-14 flex items-center justify-between"
+          >
+            <div className="w-2/5 md:w-1/3 flex items-center border-r-2 h-full relative border-dark-200">
+              <FaLocationDot className="text-xl mr-2 text-[#02596c]" />
+              <input
+                placeholder="Where are you going?"
+                className="text-md md:text-lg w-full focus:outline-none text-[#02596c] placeholder:text-[#02596c]"
+                value={destination}
+                onChange={(event) => setDestination(event.target.value)}
+              />
             </div>
-          </div>
-          {/* Hero Section */}
+
+            <div className="flex-1 flex items-center h-full pl-2 text-fontSecondaryColor">
+              <MdCalendarMonth className="text-xl mr-2 text-[#02596c]" />
+              <div className="w-full">
+                <DatePicker
+                  selected={checkIn}
+                  onChange={(date) => setCheckIn(date as Date)}
+                  selectsStart
+                  startDate={checkIn}
+                  minDate={minDate}
+                  maxDate={maxDate}
+                  placeholderText="Check-in Date"
+                  className="w-full bg-white focus:outline-none text-[#02596c] placeholder:text-[#02596c]"
+                  wrapperClassName="w-full"
+                />
+              </div>
+            </div>
+            <button
+              className="h-10 w-10 md:w-24 text-white text-sm font-medium rounded-full bg-orange-500 flex items-center justify-center"
+              type="submit"
+            >
+              <FaSearch className="sm:mr-2" />
+              <span className="hidden md:inline-block">Search</span>
+            </button>
+          </form>
+        </div>
+      </div>
+        {/* Hero Section */} 
+      
 
           {/* ---------- NavBar Starts ---------- */}
           {showNav ? (
