@@ -41,7 +41,7 @@ const LatestDestinationCard = ({ hotel }: any) => {
                 </span>
               ))}
           </span>
-          <span className="text-sm text-black">
+          <span className="text-sm ">
             {hotel?.productTitle?.length > 3 &&
               `+${hotel?.productTitle?.length - 3} more`}
           </span>
