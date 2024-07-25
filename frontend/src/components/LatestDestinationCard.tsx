@@ -31,15 +31,21 @@ const LatestDestinationCard = ({ hotel }: any) => {
           </div>
           <span className="ml-2">{hotel.star}.0</span>
         </div>
-        <ul className="list-disc list-inside text-base flex">
-          {hotel.productTitle
-            .slice(0, 3)
-            .map((facility: any, index: number) => (
-              <li key={index} className="rounded-md text-base mr-2">
-                {facility.title}
-              </li>
-            ))}
-        </ul>
+        <div className="flex flex-wrap gap-1 text-white items-center">
+          <span>
+            {hotel?.productTitle
+              ?.slice(0, 3)
+              ?.map((facility: any, index: number) => (
+                <span key={index} className="pr-2 rounded-md text-sm">
+                  {facility.title}
+                </span>
+              ))}
+          </span>
+          <span className="text-sm ">
+            {hotel?.productTitle?.length > 3 &&
+              `+${hotel?.productTitle?.length - 3} more`}
+          </span>
+        </div>
         <p className="text-base font-bold">
           Starting at ₹ {hotel?.productTitle[0]?.adultPrice || 2999}
         </p>
