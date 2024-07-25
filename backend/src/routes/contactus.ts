@@ -6,7 +6,7 @@ import { sendContactNotification } from "./mail";
 const router = express.Router();
 
 // /api/my-bookings
-router.post("/", verifyToken, async (req: Request, res: Response) => {
+router.post("/", async (req: Request, res: Response) => {
   try {
     const { name, email, phone, details } = req.body;
     

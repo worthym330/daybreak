@@ -20,6 +20,7 @@ export default {
         'LuzuryF3': ["Roboto Serif", 'sans-serif'],
         'HKFONT': ["Hanken Grotesk", 'sans-serif'],
         poppins: ['Poppins', 'sans-serif'],
+        inter: ['Inter', 'sans-serif'],
       },
       width: {
         '50vw': '50vw',

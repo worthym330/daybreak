@@ -13,14 +13,7 @@ const Layout = ({ children }: Props) => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      {location?.pathname === "/" && (
-        <div className="lg:container lg:mx-auto">
-          {/* <Hero /> */}
-          {/* <SearchBar /> */}
-          <Info />
-        </div>
-      )}
-      {location.pathname.includes("/detail/") ? (
+      {location.pathname.includes("/hotel-detail/") ? (
         <div className="py-10 flex-1">{children}</div>
       ) : location?.pathname === "/" ?(
         <div className="py-10 flex-1">{children}</div>

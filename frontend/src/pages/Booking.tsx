@@ -6,6 +6,14 @@ import BookingDetailsSummary from "../components/BookingDetailsSummary";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import Button from "../components/Button";
+import {
+  initialModalState,
+  initialResetModal,
+  initialSignupModalState,
+  RenderLoginModal,
+  RenderSignUpModal,
+  ResetPassRequest,
+} from "../components/Header";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 const Booking = () => {
@@ -18,19 +26,22 @@ const Booking = () => {
   const [paymentIntentData, setPaymentIntentData] = useState(null);
   const hotelId = cartItems[0]?.hotel?._id;
   const [hotel, setHotel] = useState();
+  const [modal, setModal] = useState(initialModalState);
+  const [resetModal, setResetModal] = useState(initialResetModal);
+  const [signupModal, setSignupModal] = useState(initialSignupModalState);
+
+  const fetchPaymentIntentData = async () => {
+    if (!!hotelId && cartItems.length > 0) {
+      try {
+        const data = await apiClient.createPaymentIntent(hotelId, cartItems);
+        setPaymentIntentData(data);
+      } catch (error) {
+        console.error("Error creating payment intent:", error);
+      }
+    }
+  };
 
   useEffect(() => {
-    const fetchPaymentIntentData = async () => {
-      if (!!hotelId && cartItems.length > 0) {
-        try {
-          const data = await apiClient.createPaymentIntent(hotelId, cartItems);
-          setPaymentIntentData(data);
-        } catch (error) {
-          console.error("Error creating payment intent:", error);
-        }
-      }
-    };
-
     fetchPaymentIntentData();
   }, []);
 
@@ -71,7 +82,7 @@ const Booking = () => {
             It looks like you haven't added anything to your cart yet.
           </p>
           <div className="mt-10 flex items-center justify-center gap-x-6">
-            <Button onClick={() => navigate("/search")}>Go to Shop</Button>
+            <Button onClick={() => navigate("/listings")}>Go to Hotels</Button>
           </div>
         </div>
       </main>
@@ -80,6 +91,23 @@ const Booking = () => {
 
   return (
     <div className="grid md:grid-cols-[1fr_2fr] space-x-2">
+      <RenderLoginModal
+        modal={modal}
+        setModal={setModal}
+        setResetModal={setResetModal}
+        setSignupModal={setSignupModal}
+        isHeader={false}
+        isBooking={true}
+        paymentIntent={fetchPaymentIntentData}
+      />
+      <RenderSignUpModal
+        modal={signupModal}
+        setModal={setSignupModal}
+        initialModalState={initialSignupModalState}
+        setLoginModal={setModal}
+        isHeader={false}
+      />
+      <ResetPassRequest modal={resetModal} setModal={setResetModal} />
       <BookingDetailsSummary cartItems={cartItems} hotel={hotel} />
       {userLogined ? (
         currentUser &&
@@ -104,7 +132,13 @@ const Booking = () => {
               with payment.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
-              <Button onClick={() => navigate("/login")}>Go to Login</Button>
+              <Button
+                onClick={() =>
+                  setModal((prev: any) => ({ ...prev, state: true }))
+                }
+              >
+                Go to Login
+              </Button>
             </div>
           </div>
         </main>

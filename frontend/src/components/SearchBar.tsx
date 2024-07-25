@@ -21,7 +21,7 @@ const SearchBar = () => {
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
     search.saveSearchValues(destination, checkIn);
-    navigate("/search");
+    navigate(`/listings?location=${destination}`);
   };
 
   const minDate = new Date();

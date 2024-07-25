@@ -1,16 +1,24 @@
 // import { Link } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { HotelType } from "../../../backend/src/shared/types";
+import { useSearchContext } from "../contexts/SearchContext";
+import { FormEvent, useState } from "react";
 
 type Props = {
   hotel: HotelType;
 };
 
 const TopDestinationCard = ({ hotel }: Props) => {
+  const search = useSearchContext();
   return (
-    <div className="flex flex-wrap justify-center lg:justify-start mt-3 px-2 lg:px-0">
+    <div
+      className="flex flex-wrap justify-center lg:justify-start mt-3 px-2 lg:px-0"
+      onClick={() => {
+        search.saveSearchValues(hotel.city, search.checkIn);
+      }}
+    >
       <Link
-        to={`/search?city=${hotel.city}`}
+        to={`/listings?city=${hotel.city}`}
         className="flex-1 lg:w-1/4 px-2 mb-4 lg:mb-0"
       >
         <div className="relative group overflow-hidden ">

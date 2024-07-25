@@ -52,8 +52,6 @@ export const SearchContextProvider = ({
       setHotelId(hotelId);
     }
 
-    console.log('destination',destination)
-
     if(destination){
       sessionStorage.setItem("destination", destination);
     }else{

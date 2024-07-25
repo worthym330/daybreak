@@ -19,7 +19,7 @@ const SearchResultsCard = ({ hotel }: Props) => {
     if (isLoggedIn === null) {
       navigate("/login");
     } else {
-      navigate(`/detail/${id}`);
+      navigate(`/hotel-detail/${id}`);
     }
   };
 
@@ -66,7 +66,7 @@ const SearchResultsCard = ({ hotel }: Props) => {
               </span>
             </div>
             <Link
-              to={`/detail/${hotel._id}`}
+              to={`/hotel-detail/${hotel._id}`}
               className="text-lg lg:text-xl font-bold cursor-pointer"
             >
               {hotel.name}

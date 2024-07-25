@@ -86,7 +86,7 @@ const App = () => {
           }
         />
         <Route
-          path="/search"
+          path="/listings"
           element={
             <Layout>
               <Search />
@@ -94,7 +94,7 @@ const App = () => {
           }
         />
         <Route
-          path="/detail/:hotelId"
+          path="/hotel-detail/:hotelId"
           element={
             <Layout>
               <Detail />

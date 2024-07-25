@@ -48,9 +48,9 @@ const LatestDestinationCard = ({ hotel }: any) => {
           <Button
             type="button"
             onClick={() => {
-              navigate(`/detail/${hotel._id}`);
+              navigate(`/hotel-detail/${hotel._id}`);
             }}
-            className="w-52"
+            className="w-32"
           >
             Book Now
           </Button>
