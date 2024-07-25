@@ -913,7 +913,7 @@ const Header = () => {
                       </>
                     ) : ( */}
                     <button
-                      className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-goldColor  hover:border-black hover:bg-btnColor hover:text-white"
+                      className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black  hover:border-black hover:bg-btnColor hover:text-white"
                       onClick={() => navigate("/partner/sign-in")}
                     >
                       Hotel Login{" "}
@@ -925,14 +925,14 @@ const Header = () => {
                     </button>
                     {/* )} */}
                     <button
-                      className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-goldColor hover:border-black hover:bg-btnColor hover:text-white"
+                      className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:border-black hover:bg-btnColor hover:text-white"
                       onClick={() => navigate("/waitlist")}
                     >
                       Join WaitList{" "}
                     </button>
 
                     <Link
-                      className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-goldColor hover:text-white relative "
+                      className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-btnColor hover:text-white relative "
                       to="/checkout"
                     >
                       <IoCartOutline className="text-2xl" />
@@ -1155,7 +1155,7 @@ const Header = () => {
                   </>
                 ) : ( */}
                 <button
-                  className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-goldColor hover:border-white hover:bg-btnColor hover:text-white"
+                  className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-white hover:border-white hover:bg-btnColor hover:text-white"
                   onClick={() => navigate("/partner/sign-in")}
                 >
                   Hotel Login{" "}
@@ -1167,7 +1167,7 @@ const Header = () => {
                 </button>
 
                 <button
-                  className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-goldColor hover:border-white hover:bg-btnColor hover:text-white"
+                  className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-white hover:border-white hover:bg-btnColor hover:text-white"
                   onClick={() => navigate("/waitlist")}
                 >
                   Join Waitlist
@@ -1175,7 +1175,7 @@ const Header = () => {
                 {/* )} */}
 
                 <Link
-                  className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-goldColor hover:text-white relative"
+                  className="flex bg-transparent items-center text-white px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-btnColor hover:text-white relative"
                   to="/checkout"
                 >
                   <IoCartOutline className="text-2xl" />
@@ -1522,7 +1522,7 @@ const Header = () => {
               </>
             ) : ( */}
             <button
-              className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-goldColor hover:border-black hover:bg-btnColor hover:text-white"
+              className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:border-black hover:bg-btnColor hover:text-white"
               onClick={() => navigate("/partner/sign-in")}
             >
               Hotel Login{" "}
@@ -1534,14 +1534,14 @@ const Header = () => {
             </button>
             {/* )} */}
             <button
-              className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-goldColor hover:border-black hover:bg-btnColor hover:text-white"
+              className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:border-black hover:bg-btnColor hover:text-white"
               onClick={() => navigate("/waitlist")}
             >
               Join Waitlist{" "}
             </button>
 
             <Link
-              className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-goldColor hover:text-white relative"
+              className="flex bg-transparent items-center text-black px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 border-black hover:bg-btnColor hover:text-white relative"
               to="/checkout"
             >
               <IoCartOutline className="text-2xl" />
