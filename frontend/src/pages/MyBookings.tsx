@@ -33,6 +33,7 @@ const MyBookings = () => {
 
       if (response.ok) {
         setBookingData(resbody);
+        console.log(resbody);
       } else {
         console.log("theow errior");
       }
@@ -158,30 +159,40 @@ const MyBookings = () => {
                 <div className="space-y-5 rounded-xl shadow-lg">
                   {bookingData && bookingData.length > 0 ? (
                     bookingData.map((hotel: any) => (
-                      <div
-                        key={hotel._id}
-                        className="grid grid-cols-1 lg:grid-cols-[1fr_3fr] border border-goldColor rounded-lg p-8 gap-5"
-                      >
-                        <div className="lg:w-full lg:h-[250px]">
-                          <img
-                            src={hotel.imageUrls[0]}
-                            className="w-full h-full object-cover object-center"
-                          />
-                        </div>
-                        <div className="flex flex-col gap-4 overflow-y-auto max-h-[300px]">
-                          <div className="text-2xl font-bold">
-                            {hotel.name}
-                            <div className="text-xs font-normal">
-                              {hotel.city}, {hotel.state}, India
+                      <div key={hotel._id} className="">
+                        {hotel.bookings.map((booking: any) => (
+                          <div
+                            key={booking._id}
+                            className="grid grid-cols-1 lg:grid-cols-2 border border-goldColor rounded-lg p-4 gap-5"
+                          >
+                            <div className="lg:w-full lg:h-[250px]">
+                              <img
+                                src={hotel.imageUrls[0]}
+                                className="h-[250px] object-cover border border-[#00c0cb] rounded-lg"
+                              />
                             </div>
-                          </div>
-                          {hotel.bookings.map((booking: any) => (
-                            <div key={booking._id}>
+                            <div className="flex flex-col gap-4 overflow-y-auto max-h-[300px]">
+                              <div className="text-2xl font-bold">
+                                {hotel.name}
+                                <div className="text-xs font-normal">
+                                  {hotel.city}, {hotel.state}, India
+                                </div>
+                              </div>
+                              <div className="">
+                                {booking.cart.map((e: any) => (
+                                  <span
+                                    key={e}
+                                    className="bg-goldColor p-2 rounded-md text-xs text-white"
+                                  >
+                                    {console.log(e)}
+                                    {e.product.title}
+                                  </span>
+                                ))}
+                              </div>
                               <div>
                                 <span className="font-bold mr-2">Dates: </span>
                                 <span>
-                                  {/* {new Date(booking.checkIn).toDateString()} -{" "}
-                                  {new Date(booking.checkOut).toDateString()} */}
+                                  {new Date(booking.checkIn).toDateString()}
                                 </span>
                               </div>
                               <div>
@@ -192,8 +203,8 @@ const MyBookings = () => {
                                 </span>
                               </div>
                             </div>
-                          ))}
-                        </div>
+                          </div>
+                        ))}
                       </div>
                     ))
                   ) : (
