@@ -1,57 +1,58 @@
 import { AiFillStar } from "react-icons/ai";
-import { FaLocationDot } from "react-icons/fa6";
-import { Link, useNavigate } from "react-router-dom";
+import { FaMapMarkerAlt } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import Button from "./Button";
 
 const LatestDestinationCard = ({ hotel }: any) => {
   const navigate = useNavigate();
   return (
-    <div
-      className="border border-goldColor pb-5 pt-3 px-3 rounded-xl"
-      key={hotel._id}
-    >
-      <div className="relative max-w-full">
-        <div className="h-[250px]">
-          <img
-            src={hotel.imageUrls[0]}
-            alt="hotel Image"
-            className="rounded-md w-full h-full object-cover object-center"
-          />
+    <div className="max-w-sm rounded-lg overflow-hidden shadow-lg border border-[#00c0cb] font-poppins text-white">
+      <div className="relative">
+        <img
+          src={hotel.imageUrls[0]}
+          alt="Hotel Image"
+          className="w-full h-48 object-cover"
+        />
+        <p className="flex items-center text-sm font-semibold mb-2 absolute bottom-0 px-4">
+          <FaMapMarkerAlt className="font-bold mr-1" />
+          {hotel.city}, {hotel.state}
+        </p>
+      </div>
+      <div className="px-6 py-4 bg-[#00c0cb]">
+        <div className="font-bold text-xl mb-2 truncate">{hotel.name}</div>
+        <div className="flex items-center mb-2">
+          <div className="text-yellow-500 flex">
+            {[...Array(hotel.star)].map((_, i) => (
+              <AiFillStar key={i} className="w-5 h-5" />
+            ))}
+            {[...Array(5 - hotel.star)].map((_, i) => (
+              <AiFillStar key={i} className="w-5 h-5 text-gray-300" />
+            ))}
+          </div>
+          <span className="ml-2">{hotel.star}.0</span>
         </div>
-        <div className="">
-          <p className="flex gap-2 mt-4 text-sm font-semibold items-center">
-            <FaLocationDot className="text-goldColor" />
-            <span className="text-goldColor">
-              {hotel.city}, {hotel.state}, India
-            </span>
-          </p>
-          <span className="p-2 font-semibold truncate">{hotel.name}</span>
-        </div>
-        <div className="flex gap-4 justify-end">
-          {/* <span className="flex flex-wrap w-1/2">
-            {hotel.productTitle
-              .slice(0, 3)
-              .map((facility: any, index: number) => (
-                <span
-                  key={index}
-                  className="bg-goldColor p-2 rounded-md text-xs text-white"
-                >
-                  {facility.title}
-                </span>
-              ))}
-          </span> */}
-          <span className="text-btnColor font-bold text-nowrap">
-            <span className="text-gray-700 font-medium">Starting from</span> ₹{" "}
-            {hotel?.productTitle[0]?.adultPrice}
-          </span>
-        </div>
-        <div className="flex justify-between p-2 mt-4 items-center">
-          <span className="flex gap-2 bg-goldColor text-white rounded px-3 py-2 items-center">
-            <AiFillStar className="w-5 h-5 " />
-            {hotel.star}
-          </span>
-          <Button onClick={() => navigate(`/waitlist`)} type="button">
-            Join Waitlist
+        <ul className="list-disc list-inside text-base flex">
+          {hotel.productTitle
+            .slice(0, 3)
+            .map((facility: any, index: number) => (
+              <li key={index} className="rounded-md text-base mr-2">
+                {facility.title}
+              </li>
+            ))}
+        </ul>
+        <p className="text-base font-bold">
+          Starting at ₹ {hotel?.productTitle[0]?.adultPrice || 2999}
+        </p>
+
+        <div className="flex justify-end pt-4">
+          <Button
+            type="button"
+            onClick={() => {
+              navigate(`/hotel-detail/${hotel._id}`);
+            }}
+            className="w-32"
+          >
+            Book Now
           </Button>
         </div>
       </div>

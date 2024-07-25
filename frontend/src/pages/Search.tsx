@@ -27,7 +27,7 @@ const Search = () => {
   const city = queryParams.get("city");
 
   const searchParams = {
-    destination: city ? city : '',
+    destination: city ? city : "",
     checkIn: search.checkIn.toISOString(),
     // checkOut: search.checkOut.toISOString(),
     // adultCount: search.adultCount.toString(),
@@ -39,6 +39,10 @@ const Search = () => {
     maxPrice: selectedPrice?.toString(),
     sortOption,
   };
+
+  if (queryParams.size === 0) {
+    search.saveSearchValues("", search.checkIn);
+  }
 
   const { data: hotelData } = useQuery(["searchHotels", searchParams], () =>
     apiClient.searchHotels(searchParams)

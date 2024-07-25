@@ -29,12 +29,20 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { removeFromCart, setDate, setError } from "../store/cartSlice";
 import { toast } from "react-toastify";
+import {
+  initialModalState,
+  initialResetModal,
+  initialSignupModalState,
+  RenderLoginModal,
+  RenderSignUpModal,
+  ResetPassRequest,
+} from "../components/Header";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAP_GL_TOKEN;
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
-type FacilityKey =
+export type FacilityKey =
   | "Free WiFi"
   | "Parking"
   | "Airport Shuttle"
@@ -44,7 +52,7 @@ type FacilityKey =
   | "Spa"
   | "Fitness Center";
 
-const facilityIcons = {
+export const facilityIcons = {
   "Free WiFi": <FaWifi />,
   Parking: <FaParking />,
   "Airport Shuttle": <FaShuttleVan />,
@@ -55,7 +63,7 @@ const facilityIcons = {
   "Fitness Center": <FaDumbbell />,
 };
 
-const Tooltip = ({ children, text }: any) => {
+export const Tooltip = ({ children, text }: any) => {
   const [visible, setVisible] = useState(false);
 
   return (
@@ -91,6 +99,9 @@ const Detail = () => {
   const dispatch = useDispatch();
   const error = useSelector((state: RootState) => state.cart.error);
   const date = useSelector((state: RootState) => state.cart.date);
+  const [modal, setModal] = useState(initialModalState);
+  const [resetModal, setResetModal] = useState(initialResetModal);
+  const [signupModal, setSignupModal] = useState(initialSignupModalState);
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 1024) {
@@ -275,7 +286,7 @@ const Detail = () => {
       }
     } else {
       // showToast({ message: "Please log in to save", type: "ERROR" });
-      toast.error("Please log in to save")
+      toast.error("Please log in to save");
     }
   };
 
@@ -361,6 +372,22 @@ const Detail = () => {
 
   return (
     <div className="space-y-6">
+      <RenderLoginModal
+        modal={modal}
+        setModal={setModal}
+        setResetModal={setResetModal}
+        setSignupModal={setSignupModal}
+        isHeader={false}
+        isBooking={false}
+      />
+      <RenderSignUpModal
+        modal={signupModal}
+        setModal={setSignupModal}
+        initialModalState={initialSignupModalState}
+        setLoginModal={setModal}
+        isHeader={false}
+      />
+      <ResetPassRequest modal={resetModal} setModal={setResetModal} />
       {/* Image Slider Starts */}
       <div className="relative">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 overflow-hidden px-2">
@@ -650,7 +677,9 @@ const Detail = () => {
                       ) : (
                         <Button
                           className="w-full bg-goldColor text-white py-2 rounded-lg"
-                          onClick={() => navigate(`/login`)}
+                          onClick={() =>
+                            setModal((prev: any) => ({ ...prev, state: true }))
+                          }
                         >
                           Login
                         </Button>

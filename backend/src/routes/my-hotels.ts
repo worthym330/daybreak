@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import multer from "multer";
 import cloudinary from "cloudinary";
 import Hotel from "../models/hotel";
-import verifyToken from "../middleware/auth";
+import verifyToken, { verifyAdminToken } from "../middleware/auth";
 import { body } from "express-validator";
 import { HotelType } from "../shared/types";
 // import AWS from "aws-sdk";
@@ -11,8 +11,11 @@ import path from "path";
 import {
   askForPermissionToAddHotel,
   notifyHotelUserRequestReceived,
+  sendCredentials,
 } from "./mail";
 import User from "../models/user";
+import { generateRandomPassword } from "./users";
+import bcrypt from "bcryptjs";
 
 const router = express.Router();
 
@@ -307,13 +310,13 @@ router.delete("/:id", verifyToken, async (req: Request, res: Response) => {
 });
 
 router.get(
-  "/bookings/hotel",
-  verifyToken,
+  "/reservations/hotel",
+  verifyAdminToken,
   async (req: Request, res: Response) => {
     try {
       // Extract query parameters
       const days =
-        typeof req.query.days === "string" ? parseInt(req.query.days) : 7;
+        typeof req.query.days === "string" ? parseInt(req.query.days) : 0;
       const { bookingDate, firstName, lastName, email } = req.query;
 
       // Build filter object
@@ -321,17 +324,19 @@ router.get(
 
       // Use $elemMatch to filter bookings array
 
-      const endDate = new Date();
-      const startDate = new Date();
-      startDate.setDate(endDate.getDate() - days);
-      filter.bookings = {
-        $elemMatch: {
-          checkIn: {
-            $gte: startDate,
-            $lte: endDate,
+      if (days > 0) {
+        const endDate = new Date();
+        const startDate = new Date();
+        startDate.setDate(endDate.getDate() - days);
+        filter.bookings = {
+          $elemMatch: {
+            checkIn: {
+              $gte: startDate,
+              $lte: endDate,
+            },
           },
-        },
-      };
+        };
+      }
 
       // Add other filters if provided
       if (bookingDate) {
@@ -346,7 +351,6 @@ router.get(
       if (email) {
         filter.bookings.$elemMatch.email = email;
       }
-      
       const hotel = await Hotel.findOne(filter);
       if (!hotel) {
         return res.status(404).json({ message: "No bookings found" });
@@ -359,4 +363,360 @@ router.get(
   }
 );
 
+
+router.get(
+  "/bookings/hotel",
+  verifyAdminToken,
+  async (req: Request, res: Response) => {
+    try {
+      const { bookingDate, firstName, lastName, email } = req.query;
+
+      // Build filter object
+      const filter: any = { userId: req.userId };
+      // Add other filters if provided
+      if (bookingDate) {
+        filter.bookings.$elemMatch.checkIn = new Date(bookingDate as string);
+      }
+      if (firstName) {
+        filter.bookings.$elemMatch.firstName = firstName;
+      }
+      if (lastName) {
+        filter.bookings.$elemMatch.lastName = lastName;
+      }
+      if (email) {
+        filter.bookings.$elemMatch.email = email;
+      }
+      const hotel = await Hotel.findOne(filter);
+      res.status(200).json(hotel);
+    } catch (error) {
+      res.status(500).json({ message: "Server error", error: error });
+    }
+  }
+);
+
+router.post(
+  "/:hotelId/product-title",
+  verifyAdminToken,
+  async (req: Request, res: Response) => {
+    try {
+      const { hotelId } = req.params;
+      const {
+        title,
+        description,
+        otherpoints,
+        notes,
+        maxGuestsperDay,
+        slotTime,
+        startTime,
+        endTime,
+        maxPeople,
+        adultPrice,
+        childPrice,
+        isChildPrice,
+      } = req.body;
+
+      // Construct productTitle object
+      const productTitle = {
+        title,
+        description: Array.isArray(description) ? description : [description], // Ensure description is an array
+        otherpoints,
+        notes,
+        maxGuestsperDay,
+        slotTime,
+        startTime,
+        endTime,
+        maxPeople,
+        adultPrice,
+        childPrice,
+        isChildPrice,
+      };
+
+      // Find the existing hotel by ID
+      const existingHotel = await Hotel.findById(hotelId);
+      if (!existingHotel) {
+        return res.status(404).json({ message: "Hotel not found" });
+      }
+
+      // Append the new productTitle to the existing productTitles array
+      existingHotel.productTitle.push(productTitle);
+      existingHotel.lastUpdated = new Date();
+      existingHotel.userId = req.userId;
+
+      // Save the updated hotel
+      await existingHotel.save();
+
+      res.status(200).json(existingHotel.productTitle);
+    } catch (e) {
+      console.error(e);
+      res.status(500).json({ message: "Something went wrong" });
+    }
+  }
+);
+
+router.delete(
+  "/:hotelId/product-title/:productTitleId",
+  verifyAdminToken,
+  async (req: Request, res: Response) => {
+    try {
+      const { hotelId, productTitleId } = req.params;
+
+      // Find the existing hotel by ID
+      const existingHotel = await Hotel.findById(hotelId);
+      if (!existingHotel) {
+        return res.status(404).json({ message: "Hotel not found" });
+      }
+
+      // Find the index of the productTitle to be removed
+      const productTitleIndex = existingHotel.productTitle.findIndex(
+        (title) => title._id.toString() === productTitleId
+      );
+
+      if (productTitleIndex === -1) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+
+      // Remove the productTitle from the array
+      existingHotel.productTitle.splice(productTitleIndex, 1);
+      existingHotel.lastUpdated = new Date();
+      existingHotel.userId = req.userId;
+
+      // Save the updated hotel
+      await existingHotel.save();
+
+      res.status(200).json({ message: "Product title deleted successfully" });
+    } catch (e) {
+      console.error(e);
+      res.status(500).json({ message: "Something went wrong" });
+    }
+  }
+);
+
+router.put(
+  "/:hotelId/product-title/:productTitleId",
+  verifyAdminToken,
+  async (req: Request, res: Response) => {
+    try {
+      const { hotelId, productTitleId } = req.params;
+      const {
+        title,
+        description,
+        otherpoints,
+        notes,
+        maxGuestsperDay,
+        slotTime,
+        startTime,
+        endTime,
+        maxPeople,
+        adultPrice,
+        childPrice,
+        isChildPrice,
+      } = req.body;
+
+      // Construct productTitle object
+      const updatedProductTitle = {
+        title,
+        description: Array.isArray(description) ? description : [description], // Ensure description is an array
+        otherpoints,
+        notes,
+        maxGuestsperDay,
+        slotTime,
+        startTime,
+        endTime,
+        maxPeople,
+        adultPrice,
+        childPrice,
+        isChildPrice,
+      };
+
+      // Find the existing hotel by ID
+      const existingHotel = await Hotel.findById(hotelId);
+      if (!existingHotel) {
+        return res.status(404).json({ message: "Hotel not found" });
+      }
+
+      // Find the productTitle to be updated
+      const productTitleToUpdate = existingHotel.productTitle.find(
+        (title) => title._id.toString() === productTitleId
+      );
+
+      if (!productTitleToUpdate) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+
+      // Update the fields of the found productTitle
+      productTitleToUpdate.title = updatedProductTitle.title;
+      productTitleToUpdate.description = updatedProductTitle.description;
+      productTitleToUpdate.otherpoints = updatedProductTitle.otherpoints;
+      productTitleToUpdate.notes = updatedProductTitle.notes;
+      productTitleToUpdate.maxGuestsperDay =
+        updatedProductTitle.maxGuestsperDay;
+      productTitleToUpdate.slotTime = updatedProductTitle.slotTime;
+      productTitleToUpdate.startTime = updatedProductTitle.startTime;
+      productTitleToUpdate.endTime = updatedProductTitle.endTime;
+      productTitleToUpdate.maxPeople = updatedProductTitle.maxPeople;
+      productTitleToUpdate.adultPrice = updatedProductTitle.adultPrice;
+      productTitleToUpdate.childPrice = updatedProductTitle.childPrice;
+      productTitleToUpdate.isChildPrice = updatedProductTitle.isChildPrice;
+      existingHotel.lastUpdated = new Date();
+      // Save the updated hotel
+      await existingHotel.save();
+
+      res.status(200).json(existingHotel.productTitle);
+    } catch (e) {
+      console.error(e);
+      res.status(500).json({ message: "Something went wrong" });
+    }
+  }
+);
+
+router.get(
+  "/product/titles",
+  verifyAdminToken,
+  async (req: Request, res: Response) => {
+    try {
+      const {
+        title,
+        description,
+        adultPrice,
+        childPrice,
+        otherpoints,
+        notes,
+        maxPeople,
+        selectedDates,
+        slotTime,
+        startTime,
+        endTime,
+        isChildPrice,
+        maxGuestsperDay,
+      } = req.query;
+
+      // Build filter object
+      const filter: any = {};
+
+      if (title) {
+        filter["productTitle.title"] = title as string;
+      }
+      if (description) {
+        filter["productTitle.description"] = description as string;
+      }
+      if (adultPrice) {
+        filter["productTitle.adultPrice"] = Number(adultPrice);
+      }
+      if (childPrice) {
+        filter["productTitle.childPrice"] = Number(childPrice);
+      }
+      if (otherpoints) {
+        filter["productTitle.otherpoints"] = otherpoints as string;
+      }
+      if (notes) {
+        filter["productTitle.notes"] = notes as string;
+      }
+      if (maxPeople) {
+        filter["productTitle.maxPeople"] = maxPeople as string;
+      }
+      if (selectedDates) {
+        const datesArray = (selectedDates as string).split(",");
+        const dates = datesArray.map((date) => new Date(date));
+        filter["productTitle.selectedDates"] = { $in: dates };
+      }
+      if (slotTime) {
+        filter["productTitle.slotTime"] = slotTime as string;
+      }
+      if (startTime) {
+        filter["productTitle.startTime"] = startTime as string;
+      }
+      if (endTime) {
+        filter["productTitle.endTime"] = endTime as string;
+      }
+      if (isChildPrice) {
+        filter["productTitle.isChildPrice"] = isChildPrice === "true";
+      }
+      if (maxGuestsperDay) {
+        filter["productTitle.maxGuestsperDay"] = Number(maxGuestsperDay);
+      }
+
+      // Fetch hotels matching the filter
+      const hotels = await Hotel.find(filter);
+
+      res.status(200).json(hotels);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Server error" });
+    }
+  }
+);
+
+router.post(
+  "/add/hotel",
+  verifyAdminToken,
+  upload.array("imageFiles", 10),
+  async (req: Request, res: Response) => {
+    try {
+      const imageFiles = req.files as Express.Multer.File[];
+      const {
+        userId,
+        name,
+        address,
+        city,
+        state,
+        description,
+        cancellationPolicy,
+        facilities,
+        hotelType,
+        star,
+        mapurl,
+        pincode,
+        status,
+      } = req.body;
+
+      // Upload images and get URLs
+      const imageUrls = await uploadImages(imageFiles);
+      const facilitiesMap = facilities.split(",");
+      const HotelTypes = hotelType.split(",");
+
+      // Create a new hotel object
+      const newHotel = {
+        userId,
+        name,
+        city,
+        address,
+        state,
+        description,
+        cancellationPolicy,
+        facilities: facilitiesMap,
+        hotelType: HotelTypes,
+        imageUrls: imageUrls,
+        pincode,
+        mapurl,
+        star: Number(star),
+        lastUpdated: new Date(),
+        status,
+      };
+
+      // // Create and save the new hotel document
+      const hotel = new Hotel(newHotel);
+      await hotel.save();
+      const userInfo = await User.findById(userId);
+      if (userInfo) {
+        const password = await generateRandomPassword(10);
+        const salt = await bcrypt.genSalt(10);
+        const hash = await bcrypt.hash(password, salt);
+        userInfo.password = hash;
+        userInfo.status = true;
+        await userInfo.save();
+        const data = {
+          name: `${userInfo.firstName} ${userInfo.lastName}`,
+          email: userInfo.email,
+          password,
+        };
+        await sendCredentials(data);
+      }
+
+      res.status(201).send(hotel);
+    } catch (e) {
+      console.log(e);
+      res.status(500).json({ message: "Something went wrong" });
+    }
+  }
+);
 export default router;

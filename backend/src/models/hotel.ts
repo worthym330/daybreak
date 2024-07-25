@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import { BookingType, HotelType, FavouriteList, ProductType } from "../shared/types";
 
 const bookingSchema = new mongoose.Schema<BookingType>({
-  _id: mongoose.Schema.Types.ObjectId,
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   email: { type: String, required: true },
@@ -13,14 +12,14 @@ const bookingSchema = new mongoose.Schema<BookingType>({
   userId: { type: String, required: true },
   totalCost: { type: Number, required: true },
   cart: { type: Array },
-});
+},{_id:true});
 
 const favouriteListSchema = new mongoose.Schema<FavouriteList>({
   userId: { type: String },
   firstName: { type: String },
   lastName: { type: String },
   email: { type: String },
-});
+},{_id:true});
 
 const productSchema = new mongoose.Schema<ProductType>({
   title: { type: String},
@@ -36,13 +35,14 @@ const productSchema = new mongoose.Schema<ProductType>({
   endTime: { type: String},
   isChildPrice: { type: Boolean},
   maxGuestsperDay: { type: Number},
-});
+},{_id:true});
 
 const hotelSchema = new mongoose.Schema<HotelType>({
   userId: { type: String },
   name: { type: String },
   city: { type: String },
   state: { type: String },
+  address:{type: String},
   description: { type: String },
   cancellationPolicy: { type: String },
   facilities: [{ type: String }],

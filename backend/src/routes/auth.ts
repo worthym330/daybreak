@@ -271,4 +271,66 @@ router.post("/reset", verifyToken, async (req, res) => {
   }
 });
 
+router.post(
+  "/admin/login",
+  [check("email", "Email is required").isEmail()],
+  async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ message: errors.array() });
+    }
+
+    const { email, password } = req.body;
+
+    try {
+      let user;
+      user = await User.findOne({ email});
+      if (!user) {
+        return res.status(400).json({ message: "Invalid Credentials" });
+      }
+
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ message: "Invalid Credentials" });
+      }
+
+      // Check if the user's status is true
+      if (!user.status) {
+        return res
+          .status(403)
+          .json({
+            message: "Please contact the admin to activate your account",
+          });
+      }
+
+      const token = jwt.sign(
+        { userId: user.id },
+        process.env.JWT_SECRET_KEY as string,
+        {
+          expiresIn: "1d",
+        }
+      );
+
+      const userPayload = {
+        token: token,
+        name: `${user.firstName} ${user.lastName}`,
+        email: user.email,
+        id: user.id,
+        role: user.role,
+      };
+
+      res.cookie("auth_token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 86400000,
+      });
+
+      res.status(200).json({ user: userPayload });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "Something went wrong" });
+    }
+  }
+);
+
 export default router;
