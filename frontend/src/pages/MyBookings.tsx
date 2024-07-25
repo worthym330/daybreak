@@ -178,6 +178,12 @@ const MyBookings = () => {
                                   {hotel.city}, {hotel.state}, India
                                 </div>
                               </div>
+                              <div>
+                                <span className="font-bold mr-2">Dates: </span>
+                                <span>
+                                  {new Date(booking.checkIn).toDateString()}
+                                </span>
+                              </div>
                               <div className="">
                                 {booking.cart.map((e: any) => (
                                   <span
@@ -189,17 +195,12 @@ const MyBookings = () => {
                                   </span>
                                 ))}
                               </div>
-                              <div>
-                                <span className="font-bold mr-2">Dates: </span>
-                                <span>
-                                  {new Date(booking.checkIn).toDateString()}
-                                </span>
-                              </div>
+                              
                               <div>
                                 <span className="font-bold mr-2">Guests:</span>
                                 <span>
-                                  {booking.adultCount} adults,{" "}
-                                  {booking.childCount} children
+                                  {booking.cart[0].adultCount} adults,{" "}
+                                  {booking.cart[0].childCount} children
                                 </span>
                               </div>
                             </div>
