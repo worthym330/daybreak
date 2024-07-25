@@ -31,7 +31,7 @@ const LatestDestinationCard = ({ hotel }: any) => {
           </div>
           <span className="ml-2">{hotel.star}.0</span>
         </div>
-        <div className="flex flex-wrap gap-1 text-white">
+        <div className="flex flex-wrap gap-1 text-white items-center">
           <span>
             {hotel?.productTitle
               ?.slice(0, 3)
