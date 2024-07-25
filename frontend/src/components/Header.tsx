@@ -1,9 +1,6 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 // import { useAppContext } from "../contexts/AppContext";
-import SignOutButton from "./SignOutButton";
-import videoBg from "../assets/videobg.mp4";
-import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { IoCartOutline } from "react-icons/io5";
 import { Formik } from "formik";
 import Modal from "./modal";
