@@ -21,6 +21,7 @@ export default {
         'HKFONT': ["Hanken Grotesk", 'sans-serif'],
         poppins: ['Poppins', 'sans-serif'],
         inter: ['Inter', 'sans-serif'],
+        montserrat: ['Montserrat', 'sans-serif'],
       },
       width: {
         '50vw': '50vw',
