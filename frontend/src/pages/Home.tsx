@@ -62,7 +62,7 @@ const Home = () => {
         <p className="text-center mb-5 text-base md:text-lg text-fontSecondaryColor">
           Most recent destinations added by our hosts
         </p>
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 px-4">
+        <div className="grid gap-4 lg:gap-2 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 px-4 lg:px-0">
           {latestDestHotels.slice(0, 6).map((hotel: any) => (
             <Link to={`/hotel-detail/${hotel._id}`}>
               <LatestDestinationCard key={hotel.id} hotel={hotel} />
@@ -75,14 +75,14 @@ const Home = () => {
 
       <div className="relative py-6 rounded-lg my-8">
         <div className="flex flex-col md:flex-row items-center bg-gradient-to-r from-[#018292] to-[#00bdc8]">
-          <div className="md:w-1/3 w-full">
+          <div className="lg:w-1/3 w-full">
             <img
               src={image}
               alt="Beach scene"
-              className="shadow-md h-full"
+              className="shadow-md h-full w-full"
             />
           </div>
-          <div className="w-full md:w-2/3 md:pl-20 text-white py-4 px-2 md:px-0">
+          <div className="w-full lg:w-2/3 lg:pl-20 text-white py-4 px-2 lg:px-0">
             <h2 className="text-3xl font-bold mb-4">
               Weekday specials: enjoy unbeatable rates!
             </h2>
