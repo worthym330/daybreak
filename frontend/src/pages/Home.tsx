@@ -73,7 +73,7 @@ const Home = () => {
 
       {/* Latest Destinations End */}
 
-      <div className="relative p-6 rounded-lg my-8">
+      <div className="relative py-6 rounded-lg my-8">
         <div className="flex flex-col md:flex-row items-center bg-gradient-to-r from-[#018292] to-[#00bdc8]">
           <div className="md:w-1/3 w-full">
             <img
