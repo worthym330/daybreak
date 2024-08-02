@@ -63,7 +63,7 @@ const Home = () => {
           Most recent destinations added by our hosts
         </p>
         <div className="grid gap-4 lg:gap-2 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 px-4 lg:px-0">
-          {latestDestHotels.slice(0, 6).map((hotel: any) => (
+          {latestDestHotels.slice(0, 6).reverse().map((hotel: any) => (
             <Link to={`/hotel-detail/${hotel._id}`}>
               <LatestDestinationCard key={hotel.id} hotel={hotel} />
             </Link>
