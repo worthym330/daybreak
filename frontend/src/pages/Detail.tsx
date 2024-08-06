@@ -676,12 +676,10 @@ const Detail = () => {
                         </Button>
                       ) : (
                         <Button
-                          className="w-full bg-goldColor text-white py-2 rounded-lg"
-                          onClick={() =>
-                            setModal((prev: any) => ({ ...prev, state: true }))
-                          }
+                          onClick={() => navigate(`/waitlist`)}
+                          className='w-full'
                         >
-                          Login
+                          Join Waitlist
                         </Button>
                       )}
                     </div>
