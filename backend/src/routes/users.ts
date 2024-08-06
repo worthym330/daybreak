@@ -106,6 +106,7 @@ router.post(
           lastName: user.lastName,
           email: user.email,
           token: token,
+          role: user.role
         },
       });
     } catch (error) {
