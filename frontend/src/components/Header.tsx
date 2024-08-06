@@ -771,16 +771,25 @@ const Header = () => {
         isHeader={true}
       />
       <ResetPassRequest modal={resetModal} setModal={setResetModal} />
-
       <div
         className={`w-full 
-        top-2 ${
-          location.pathname === "/"
-            ? "bg-transparent text-white absolute z-10"
-            : "bg-white text-black border-gray-200 border shadow-lg py-4"
-        }`}
+         ${
+           location.pathname === "/"
+             ? "bg-transparent text-white absolute z-10 top-0"
+             : "bg-white text-black border-gray-200 border shadow-lg py-4"
+         }`}
         ref={headerRef}
       >
+        <div
+          className={`flex justify-center items-center gap-2 bg-black py-2 ${
+            location.pathname !== "/" && "-mt-4"
+          }`}
+        >
+          <span className="font-bold text-lg font-montserrat text-white">
+            DayBreakPass is launching on{" "}
+            <span className="text-goldColor">August 15</span>.
+          </span>
+        </div>
         <div className="flex flex-wrap items-center justify-between mx-auto py-2 relative px-2 md:px-5 ">
           <Link
             className={`hidden md:flex items-center px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 `}
