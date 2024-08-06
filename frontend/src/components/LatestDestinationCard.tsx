@@ -6,7 +6,7 @@ import Button from "./Button";
 const LatestDestinationCard = ({ hotel }: any) => {
   const navigate = useNavigate();
   return (
-    <div className="max-w-sm rounded-lg overflow-hidden shadow-lg border border-[#00c0cb] font-poppins text-white">
+    <div className="max-w-sm rounded-lg overflow-hidden shadow-lg font-poppins text-white">
       <div className="relative">
         <img
           src={hotel.imageUrls[0]}
@@ -41,10 +41,10 @@ const LatestDestinationCard = ({ hotel }: any) => {
                 </span>
               ))}
           </span>
-          <span className="text-sm ">
+          {/* <span className="text-sm ">
             {hotel?.productTitle?.length > 3 &&
               `+${hotel?.productTitle?.length - 3} more`}
-          </span>
+          </span> */}
         </div>
         <p className="text-base font-bold">
           Starting at ₹ {hotel?.productTitle[0]?.adultPrice || 2999}

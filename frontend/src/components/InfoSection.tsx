@@ -4,7 +4,7 @@ import { MdOutlineSupportAgent } from "react-icons/md";
 
 const InfoSection = () => {
   return (
-    <div className="py-14 px-16 flex flex-col gap-8 lg:flex-row lg:gap-14 mt-20 bg-[#f8efe6] rounded-3xl">
+    <div className="py-14 px-16 flex flex-col gap-8 lg:flex-row lg:gap-14 bg-[#f8efe6] rounded-3xl mx-4 md:mx-0">
       <div className="flex flex-col items-center gap-4 lg:w-1/3">
         <div className="">
           <FaMap className="text-4xl text-[#02596c]" />
