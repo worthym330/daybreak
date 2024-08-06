@@ -773,14 +773,14 @@ const Header = () => {
       <ResetPassRequest modal={resetModal} setModal={setResetModal} />
       <div
         className={`w-full 
-           z-10 px-5 top-2 ${
+        top-2 ${
              location.pathname === "/"
-               ? "bg-transparent text-white absolute"
-               : "bg-white text-black border-gray-200 border shadow-lg"
+               ? "bg-transparent text-white absolute z-10"
+               : "bg-white text-black border-gray-200 border shadow-lg py-4"
            }`}
         ref={headerRef}
       >
-        <div className="flex flex-wrap items-center justify-between mx-auto py-2 relative px-4 md:px-0 ">
+        <div className="flex flex-wrap items-center justify-between mx-auto py-2 relative px-2 md:px-5 ">
           <Link
             className={`hidden md:flex items-center px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 `}
             to="/list-my-hotel"
@@ -911,7 +911,8 @@ const Header = () => {
                         </span>
                       </li>
                       <li>
-                        <span className="block md:hidden px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white cursor-pointer">
+                        <span className="block md:hidden px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white cursor-pointer"
+                        onClick={()=>navigate("/list-my-hotel")}>
                           List My Hotel
                         </span>
                       </li>
