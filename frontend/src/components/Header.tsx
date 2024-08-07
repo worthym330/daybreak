@@ -785,7 +785,7 @@ const Header = () => {
             location.pathname !== "/" && "-mt-4"
           }`}
         >
-          <span className="font-bold text-lg font-montserrat text-white">
+          <span className="font-bold text-base md:text-lg font-montserrat text-white">
             DayBreakPass is launching on{" "}
             <span className="text-goldColor">August 15</span>.
           </span>
