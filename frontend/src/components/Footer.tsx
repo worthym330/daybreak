@@ -13,9 +13,12 @@ const Footer = () => {
             <div className="flex flex-col items-center">
               <span className="text-gray-400 mb-2">Connect with us</span>
               <div className="flex gap-4">
-                {/* <a href="https://www.facebook.com" target="_blank">
+                <a
+                  href="https://www.facebook.com/profile.php?id=61561046045525"
+                  target="_blank"
+                >
                   <FaFacebook className="w-8 h-8" fill="white" />
-                </a> */}
+                </a>
 
                 <a
                   href="https://www.instagram.com/daybreakpass/"
@@ -23,7 +26,10 @@ const Footer = () => {
                 >
                   <FaInstagram className="w-8 h-8" fill="white" />
                 </a>
-                <a href="https://www.linkedin.com/company/daybreakpass/" target="_blank">
+                <a
+                  href="https://www.linkedin.com/company/daybreakpass/"
+                  target="_blank"
+                >
                   <FaLinkedinIn className="w-8 h-8" fill="white" />
                 </a>
               </div>
@@ -59,7 +65,9 @@ const Footer = () => {
               </span>
               {/* <Link to='/login' className="text-white font-medium mb-1">Sign in</Link>
               <Link to='/register' className="text-white font-medium mb-1">Sign up</Link> */}
-              <Link to='/waitlist' className="text-white font-medium mb-1">Join Waitlist</Link>
+              <Link to="/waitlist" className="text-white font-medium mb-1">
+                Join Waitlist
+              </Link>
               <span className="text-white font-medium mb-1">Help</span>
             </div>
             <div className="flex flex-col w-full md:w-1/3">
@@ -77,9 +85,9 @@ const Footer = () => {
         </div>
       </div>
       <hr className="border-gray-500 my-3 w-full" />
-        <div className="flex justify-center items-center pb-3">
-          <span className="text-white">2024 © DayBreakPass</span>
-        </div>
+      <div className="flex justify-center items-center pb-3">
+        <span className="text-white">2024 © DayBreakPass</span>
+      </div>
     </div>
   );
 };
