@@ -1,12 +1,198 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import { Form, Formik } from "formik";
+import { useQueryClient } from "react-query";
+import { toast } from "react-toastify";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+import * as Yup from "yup";
+import Button from "../components/Button";
+import { useState } from "react";
+import Modal from "../components/modal";
+
+const validationSchema = Yup.object().shape({
+  fullName: Yup.string().required("Full Name is required!"),
+  hotelName: Yup.string().required("Hotel Name is required!"),
+  email: Yup.string()
+    .email("Invalid email address")
+    .required("Work Email is required!"),
+  designation: Yup.string().required("Designation is required!"),
+  contactNo: Yup.string().required("Contact Number is required!"),
+});
+
+export const initialModalState = {
+  type: "add",
+  state: false,
+  index: null,
+  loading: false,
+  id: "",
+  data: {
+    fullName: "",
+    hotelName: "",
+    email: "",
+    role: "partner",
+    designation: "",
+    contactNo: "",
+  },
+};
 
 const ListMyPage = () => {
-  const navigate = useNavigate();
+  const [modal, setModal] = useState(initialModalState);
+  const queryClient = useQueryClient();
+  const renderModal = () => {
+    const { data, state } = modal;
+    return (
+      <Formik
+        initialValues={data}
+        validationSchema={validationSchema}
+        onSubmit={async (values, { setSubmitting }) => {
+          try {
+            setSubmitting(true);
+
+            const response = await fetch(
+              `${API_BASE_URL}/api/users/partner/register`,
+              {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(values),
+              }
+            );
+
+            const responseBody = await response.json();
+            console.log("response data", responseBody);
+
+            if (response.ok) {
+              toast.success("Our Team will contact you in 3 working days!");
+              setModal(initialModalState);
+              setSubmitting(false);
+              await queryClient.invalidateQueries("validateToken");
+            } else {
+              toast.error("Failed to create account!");
+              setSubmitting(false);
+            }
+          } catch (error) {
+            console.error("Error creating account:", error);
+            toast.error("An error occurred while creating the account!");
+            setSubmitting(false);
+          }
+        }}
+      >
+        {({
+          handleSubmit,
+          values,
+          isSubmitting,
+          errors,
+          touched,
+          handleChange,
+        }) => (
+          <Modal
+            title=""
+            open={state}
+            setOpen={() => {
+              setModal(initialModalState);
+            }}
+          >
+            <form
+              className="flex flex-col gap-5 text-left"
+              onSubmit={handleSubmit}
+            >
+              <div className="flex flex-col gap-2 text-center">
+                <h2 className="text-2xl font-bold">
+                  Bring Daycation to your hotel
+                </h2>
+              </div>
+              <label className="text-gray-700 text-sm font-bold flex-1">
+                Full Name
+                <input
+                  className="border rounded w-full px-2 py-3 mt-3 font-normal"
+                  name="fullName"
+                  type="text"
+                  onChange={handleChange}
+                  placeholder="Enter your full name"
+                />
+                {touched.fullName && (
+                  <p className="text-red-700 error_msg">{errors.fullName}</p>
+                )}
+              </label>
+              <label className="text-gray-700 text-sm font-bold flex-1">
+                Work Email
+                <input
+                  className="border rounded w-full px-2 py-3 mt-2 font-normal"
+                  name="email"
+                  type="email"
+                  onChange={handleChange}
+                  placeholder="Enter your work email"
+                />
+                {touched.email && (
+                  <p className="text-red-700 error_msg">{errors.email}</p>
+                )}
+              </label>
+              <label className="text-gray-700 text-sm font-bold flex-1">
+                Contact Number
+                <input
+                  className="border rounded w-full px-2 py-3 mt-2 font-normal"
+                  name="contactNo"
+                  type="contactNo"
+                  onChange={handleChange}
+                  placeholder="Enter your Contact Number"
+                />
+                {touched.contactNo && (
+                  <p className="text-red-700 error_msg">{errors.contactNo}</p>
+                )}
+              </label>
+              <label className="text-gray-700 text-sm font-bold flex-1">
+                Hotel Name
+                <div>
+                  <input
+                    className="border rounded w-full px-2 py-3 mt-2 font-normal"
+                    name="hotelName"
+                    type="text"
+                    onChange={handleChange}
+                    placeholder="Enter your Hotel Name"
+                  />
+                </div>
+                {touched.hotelName && (
+                  <p className="text-red-700 error_msg">{errors.hotelName}</p>
+                )}
+              </label>
+              <label className="text-gray-700 text-sm font-bold flex-1">
+                Role
+                <input
+                  className="border rounded w-full px-2 py-3 mt-2 font-normal"
+                  name="designation"
+                  type="designation"
+                  onChange={handleChange}
+                  placeholder="Enter your role"
+                />
+                {touched.designation && (
+                  <p className="text-red-700 error_msg">{errors.designation}</p>
+                )}
+              </label>
+              <div className="flex flex-col justify-center gap-5">
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  loading={isSubmitting}
+                >
+                  {isSubmitting
+                    ? "Registering in..."
+                    : "Sign up for Hotel Partner"}
+                </Button>
+              </div>
+            </form>
+          </Modal>
+        )}
+      </Formik>
+    );
+  };
+
   return (
     <div className="font-poppins">
       <Header />
+      {renderModal()}
 
       {/* Hero Section */}
       <section className="bg-[#c2ffff] flex flex-col md:flex-row gap-4 md:gap-0">
@@ -25,7 +211,7 @@ const ListMyPage = () => {
             <button
               className="mt-8 px-6 py-3 bg-orange-500 text-white uppercase rounded-xl text-left font-inter hover:text-orange-500 hover:bg-white border border-white hover:border-orange-500 duration-500"
               onClick={() => {
-                navigate("/partner/register");
+                setModal((prev: any) => ({ ...prev, state: true }));
               }}
             >
               Register Now
@@ -60,9 +246,9 @@ const ListMyPage = () => {
                   Untapped Revenue Opportunities in Hospitality
                 </h3>
                 <ul className="mt-4 text-base sm:text-xl md:text-lg list-disc list-inside space-y-2 text-[#02596c]">
-                  <li>Underutilized amenities during off-peak hours</li>
-                  <li>Missed chances to attract local customers</li>
-                  <li>Difficulty in managing non-room assets</li>
+                  <li className="custom-list-item">Underutilized amenities during off-peak hours</li>
+                  <li className="custom-list-item">Missed chances to attract local customers</li>
+                  <li className="custom-list-item">Difficulty in managing non-room assets</li>
                 </ul>
               </div>
             </div>
@@ -80,8 +266,8 @@ const ListMyPage = () => {
                   Your Gateway to Maximizing Property Revenue
                 </h3>
                 <ul className="mt-4 text-base sm:text-xl md:text-lg list-disc list-inside space-y-2 text-[#02596c]">
-                  <li>Make the most of existing amenities</li>
-                  <li>20% increase in annual ancillary revenue</li>
+                  <li className="custom-list-item">Make the most of existing amenities</li>
+                  <li className="custom-list-item">20% increase in annual ancillary revenue</li>
                 </ul>
               </div>
             </div>
@@ -112,8 +298,8 @@ const ListMyPage = () => {
                   Generate New Revenue Streams
                 </h3>
                 <ul className="mt-4 text-base sm:text-xl md:text-lg list-disc list-inside space-y-2 text-[#02596c] text-left">
-                  <li>Make the most of existing amenities</li>
-                  <li>20% increase in annual ancillary revenue</li>
+                  <li className="custom-list-item">Make the most of existing amenities</li>
+                  <li className="custom-list-item">20% increase in annual ancillary revenue</li>
                 </ul>
               </div>
             </div>
@@ -131,8 +317,8 @@ const ListMyPage = () => {
                   Expanded Customer Base
                 </h3>
                 <ul className="mt-4 text-base sm:text-xl md:text-lg list-disc list-inside space-y-2 text-[#02596c]">
-                  <li>Attract local and visiting day guests</li>
-                  <li>Convert day guests into future overnight stays</li>
+                  <li className="custom-list-item">Attract local and visiting day guests</li>
+                  <li className="custom-list-item">Convert day guests into future overnight stays</li>
                 </ul>
               </div>
             </div>
@@ -164,8 +350,8 @@ const ListMyPage = () => {
                   Easy-to-Use Tools
                 </h3>
                 <ul className="mt-4 text-base sm:text-xl md:text-lg list-disc list-inside space-y-2 text-[#02596c]">
-                  <li>User-friendly platform accessible on multiple devices</li>
-                  <li>Real-time inventory and pricing management</li>
+                  <li className="custom-list-item">User-friendly platform accessible on multiple devices</li>
+                  <li className="custom-list-item">Real-time inventory and pricing management</li>
                 </ul>
               </div>
             </div>
@@ -183,9 +369,9 @@ const ListMyPage = () => {
                   Dedicated Support
                 </h3>
                 <ul className="mt-4 text-base sm:text-xl md:text-lg list-disc list-inside space-y-2 text-[#02596c]">
-                  <li>Account management team</li>
-                  <li>24/7 customer support for day guests</li>
-                  <li>On-demand resources</li>
+                  <li className="custom-list-item">Account management team</li>
+                  <li className="custom-list-item">24/7 customer support for day guests</li>
+                  <li className="custom-list-item">On-demand resources</li>
                 </ul>
               </div>
             </div>
@@ -261,7 +447,7 @@ const ListMyPage = () => {
           <button
             className="mt-8 px-6 py-3 bg-orange-500 text-white uppercase rounded-xl text-left font-inter hover:text-orange-500 hover:bg-white border border-white hover:border-orange-500 duration-500 shadow-lg shadow-black"
             onClick={() => {
-              navigate("/partner/register");
+              setModal((prev: any) => ({ ...prev, state: true }));
             }}
           >
             JOIN US

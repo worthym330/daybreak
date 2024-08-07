@@ -733,12 +733,12 @@ const Header = () => {
     onSuccess: async () => {
       Cookies.remove("authentication");
       // showToast({ message: "Signed Out!", type: "SUCCESS" });
-      toast.success("Successfully logout")
+      toast.success("Successfully logout");
       navigate("/");
     },
     onError: (error: Error) => {
       // showToast({ message: error.message, type: "ERROR" });
-      toast.error("Failed to logout")
+      toast.error("Failed to logout");
       console.log(error.message);
     },
   });
@@ -774,12 +774,22 @@ const Header = () => {
       <div
         className={`w-full 
         top-2 ${
-             location.pathname === "/"
-               ? "bg-transparent text-white absolute z-10"
-               : "bg-white text-black border-gray-200 border shadow-lg py-4"
-           }`}
+          location.pathname === "/"
+            ? "bg-transparent text-white absolute z-10"
+            : "bg-white text-black border-gray-200 border shadow-lg py-4"
+        }`}
         ref={headerRef}
       >
+        <div
+          className={`flex justify-center items-center gap-2 bg-black py-2 ${
+            location.pathname !== "/" && "-mt-4"
+          }`}
+        >
+          <span className="font-bold text-lg font-montserrat text-white">
+            DayBreakPass is launching on{" "}
+            <span className="text-goldColor">August 15</span>.
+          </span>
+        </div>
         <div className="flex flex-wrap items-center justify-between mx-auto py-2 relative px-2 md:px-5 ">
           <Link
             className={`hidden md:flex items-center px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 `}
@@ -856,7 +866,12 @@ const Header = () => {
                         </a>
                       </li>
                       <li>
-                        <span className="block px-4 py-2 text-sm text-white bg-goldColor cursor-pointer" onClick={()=>{handleClick()}}>
+                        <span
+                          className="block px-4 py-2 text-sm text-white bg-goldColor cursor-pointer"
+                          onClick={() => {
+                            handleClick();
+                          }}
+                        >
                           Logout
                         </span>
                       </li>
@@ -911,8 +926,10 @@ const Header = () => {
                         </span>
                       </li>
                       <li>
-                        <span className="block md:hidden px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white cursor-pointer"
-                        onClick={()=>navigate("/list-my-hotel")}>
+                        <span
+                          className="block md:hidden px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white cursor-pointer"
+                          onClick={() => navigate("/list-my-hotel")}
+                        >
                           List My Hotel
                         </span>
                       </li>
