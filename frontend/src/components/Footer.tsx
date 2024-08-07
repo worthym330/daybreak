@@ -13,9 +13,9 @@ const Footer = () => {
             <div className="flex flex-col items-center">
               <span className="text-gray-400 mb-2">Connect with us</span>
               <div className="flex gap-4">
-                <a href="https://www.facebook.com" target="_blank">
+                {/* <a href="https://www.facebook.com" target="_blank">
                   <FaFacebook className="w-8 h-8" fill="white" />
-                </a>
+                </a> */}
 
                 <a
                   href="https://www.instagram.com/daybreakpass/"
@@ -23,7 +23,7 @@ const Footer = () => {
                 >
                   <FaInstagram className="w-8 h-8" fill="white" />
                 </a>
-                <a href="https://www.linkedin.com" target="_blank">
+                <a href="https://www.linkedin.com/company/daybreakpass/" target="_blank">
                   <FaLinkedinIn className="w-8 h-8" fill="white" />
                 </a>
               </div>

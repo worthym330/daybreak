@@ -82,3 +82,9 @@ body {
         animation: slide-down 0.5s ease-out;
     }
 }
+
+
+.custom-list-item {
+    padding-left: 1.25em; /* Adjust as needed */
+    text-indent: -1.25em; /* Match the padding-left value */
+  }

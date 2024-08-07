@@ -246,9 +246,9 @@ const ListMyPage = () => {
                   Untapped Revenue Opportunities in Hospitality
                 </h3>
                 <ul className="mt-4 text-base sm:text-xl md:text-lg list-disc list-inside space-y-2 text-[#02596c]">
-                  <li>Underutilized amenities during off-peak hours</li>
-                  <li>Missed chances to attract local customers</li>
-                  <li>Difficulty in managing non-room assets</li>
+                  <li className="custom-list-item">Underutilized amenities during off-peak hours</li>
+                  <li className="custom-list-item">Missed chances to attract local customers</li>
+                  <li className="custom-list-item">Difficulty in managing non-room assets</li>
                 </ul>
               </div>
             </div>
@@ -266,8 +266,8 @@ const ListMyPage = () => {
                   Your Gateway to Maximizing Property Revenue
                 </h3>
                 <ul className="mt-4 text-base sm:text-xl md:text-lg list-disc list-inside space-y-2 text-[#02596c]">
-                  <li>Make the most of existing amenities</li>
-                  <li>20% increase in annual ancillary revenue</li>
+                  <li className="custom-list-item">Make the most of existing amenities</li>
+                  <li className="custom-list-item">20% increase in annual ancillary revenue</li>
                 </ul>
               </div>
             </div>
@@ -298,8 +298,8 @@ const ListMyPage = () => {
                   Generate New Revenue Streams
                 </h3>
                 <ul className="mt-4 text-base sm:text-xl md:text-lg list-disc list-inside space-y-2 text-[#02596c] text-left">
-                  <li>Make the most of existing amenities</li>
-                  <li>20% increase in annual ancillary revenue</li>
+                  <li className="custom-list-item">Make the most of existing amenities</li>
+                  <li className="custom-list-item">20% increase in annual ancillary revenue</li>
                 </ul>
               </div>
             </div>
@@ -317,8 +317,8 @@ const ListMyPage = () => {
                   Expanded Customer Base
                 </h3>
                 <ul className="mt-4 text-base sm:text-xl md:text-lg list-disc list-inside space-y-2 text-[#02596c]">
-                  <li>Attract local and visiting day guests</li>
-                  <li>Convert day guests into future overnight stays</li>
+                  <li className="custom-list-item">Attract local and visiting day guests</li>
+                  <li className="custom-list-item">Convert day guests into future overnight stays</li>
                 </ul>
               </div>
             </div>
@@ -350,8 +350,8 @@ const ListMyPage = () => {
                   Easy-to-Use Tools
                 </h3>
                 <ul className="mt-4 text-base sm:text-xl md:text-lg list-disc list-inside space-y-2 text-[#02596c]">
-                  <li>User-friendly platform accessible on multiple devices</li>
-                  <li>Real-time inventory and pricing management</li>
+                  <li className="custom-list-item">User-friendly platform accessible on multiple devices</li>
+                  <li className="custom-list-item">Real-time inventory and pricing management</li>
                 </ul>
               </div>
             </div>
@@ -369,9 +369,9 @@ const ListMyPage = () => {
                   Dedicated Support
                 </h3>
                 <ul className="mt-4 text-base sm:text-xl md:text-lg list-disc list-inside space-y-2 text-[#02596c]">
-                  <li>Account management team</li>
-                  <li>24/7 customer support for day guests</li>
-                  <li>On-demand resources</li>
+                  <li className="custom-list-item">Account management team</li>
+                  <li className="custom-list-item">24/7 customer support for day guests</li>
+                  <li className="custom-list-item">On-demand resources</li>
                 </ul>
               </div>
             </div>
