@@ -772,10 +772,9 @@ const Header = () => {
       />
       <ResetPassRequest modal={resetModal} setModal={setResetModal} />
       <div
-        className={`w-full 
-        top-2 ${
+        className={`w-full ${
           location.pathname === "/"
-            ? "bg-transparent text-white absolute z-10"
+            ? "bg-transparent text-white absolute z-10 top-0"
             : "bg-white text-black border-gray-200 border shadow-lg py-4"
         }`}
         ref={headerRef}
