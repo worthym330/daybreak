@@ -4,7 +4,7 @@ import {
   UserType,
 } from "../../../../backend/src/shared/types";
 import { useSearchContext } from "../../contexts/SearchContext";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useMutation } from "react-query";
 import * as apiClient from "../../api-client";
 import { useAppContext } from "../../contexts/AppContext";

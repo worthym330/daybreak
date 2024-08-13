@@ -3,7 +3,6 @@ import Cookies from "js-cookie";
 import { Link } from "react-router-dom";
 import { facilityIcons, FacilityKey, Tooltip } from "./Detail";
 import { FaHeart } from "react-icons/fa";
-import { useMutation, useQueryClient } from "react-query";
 import { toast } from "react-toastify";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
@@ -13,7 +12,6 @@ const MyBookings = () => {
   const personalInfo = JSON.parse(Cookies.get("authentication") || "[]");
   const [bookingData, setBookingData] = useState([]);
   const [favourites, setFavourites] = useState([]);
-  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (activeTab === "bookings") {

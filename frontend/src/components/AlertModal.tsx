@@ -1,5 +1,5 @@
 import { Dialog, Transition } from "@headlessui/react";
-import React, { Fragment, useRef } from "react";
+import { Fragment, useRef } from "react";
 import { BsExclamation } from "react-icons/bs";
 
 const ConfirmationModal = (props: any) => {

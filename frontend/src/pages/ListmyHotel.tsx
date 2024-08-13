@@ -1,7 +1,6 @@
-import { Link, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { Form, Formik } from "formik";
+import { Formik } from "formik";
 import { useQueryClient } from "react-query";
 import { toast } from "react-toastify";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -110,6 +109,7 @@ const ListMyPage = () => {
                   className="border rounded w-full px-2 py-3 mt-3 font-normal"
                   name="fullName"
                   type="text"
+                  value={values.fullName}
                   onChange={handleChange}
                   placeholder="Enter your full name"
                 />
@@ -123,6 +123,7 @@ const ListMyPage = () => {
                   className="border rounded w-full px-2 py-3 mt-2 font-normal"
                   name="email"
                   type="email"
+                  value={values.email}
                   onChange={handleChange}
                   placeholder="Enter your work email"
                 />
@@ -137,6 +138,7 @@ const ListMyPage = () => {
                   name="contactNo"
                   type="contactNo"
                   onChange={handleChange}
+                  value={values.contactNo}
                   placeholder="Enter your Contact Number"
                 />
                 {touched.contactNo && (
@@ -151,6 +153,7 @@ const ListMyPage = () => {
                     name="hotelName"
                     type="text"
                     onChange={handleChange}
+                    value={values.hotelName}
                     placeholder="Enter your Hotel Name"
                   />
                 </div>
@@ -165,6 +168,7 @@ const ListMyPage = () => {
                   name="designation"
                   type="designation"
                   onChange={handleChange}
+                  value={values.designation}
                   placeholder="Enter your role"
                 />
                 {touched.designation && (

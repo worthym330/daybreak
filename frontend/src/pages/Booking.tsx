@@ -23,7 +23,6 @@ import {
 } from "../store/cartSlice";
 import { FaXmark } from "react-icons/fa6";
 import moment from "moment";
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 const Booking = () => {
   const cart = localStorage.getItem("cart");
@@ -34,7 +33,6 @@ const Booking = () => {
   const navigate = useNavigate();
   const [paymentIntentData, setPaymentIntentData] = useState(null);
   const hotelId = cartItems[0]?.hotel?._id;
-  const [hotel, setHotel] = useState();
   const [modal, setModal] = useState(initialModalState);
   const [resetModal, setResetModal] = useState(initialResetModal);
   const [signupModal, setSignupModal] = useState(initialSignupModalState);
@@ -88,23 +86,6 @@ const Booking = () => {
   //   apiClient.fetchHotelById(hotelId as string)
   // );
 
-  useEffect(() => {
-    fetchHotelData();
-  }, []);
-
-  const fetchHotelData = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/hotels/${hotelId}`, {
-        credentials: "include",
-      });
-      const data = await response.json();
-      if (response.ok) {
-        setHotel(data);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const { data: currentUser } = useQuery("fetchCurrentUser", () =>
     apiClient.fetchCurrentUser()

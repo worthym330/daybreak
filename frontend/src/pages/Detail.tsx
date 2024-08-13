@@ -3,8 +3,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import * as apiClient from "./../api-client";
 import { AiFillStar } from "react-icons/ai";
-import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
-import { MdCalendarMonth } from "react-icons/md";
 import {
   FaCalendar,
   FaDumbbell,
@@ -90,8 +88,6 @@ export const Tooltip = ({ children, text }: any) => {
 
 const Detail = () => {
   const { hotelId, name } = useParams();
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [slidesToShow, setSlidesToShow] = useState(3);
   const queryClient = useQueryClient();
   // const { showToast } = useAppContext();
   const [carts, setCart] = useState([]);
@@ -109,20 +105,6 @@ const Detail = () => {
   const [resetModal, setResetModal] = useState(initialResetModal);
   const [signupModal, setSignupModal] = useState(initialSignupModalState);
   const dateRef = useRef<HTMLInputElement>(null);
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 1024) {
-        setSlidesToShow(1);
-      } else {
-        setSlidesToShow(3);
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-    handleResize();
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   const hotelQuery = useQuery(
     ["fetchHotelById", hotelId],

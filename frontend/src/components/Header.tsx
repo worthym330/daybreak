@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-// import { useAppContext } from "../contexts/AppContext";
-import SignOutButton from "./SignOutButton";
 import { Formik } from "formik";
 import Modal from "./modal";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
@@ -9,7 +7,6 @@ import * as Yup from "yup";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import { useMutation, useQueryClient } from "react-query";
-import { GiHamburgerMenu } from "react-icons/gi";
 import * as apiClient from "../api-client";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";

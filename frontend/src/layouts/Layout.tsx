@@ -1,7 +1,4 @@
 import Header from "../components/Header";
-// import Hero from "../components/Hero";
-import SearchBar from "../components/SearchBar";
-import Info from "../components/InfoSection";
 import Footer from "../components/Footer";
 import { useLocation } from "react-router-dom";
 

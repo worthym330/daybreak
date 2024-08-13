@@ -1,6 +1,6 @@
 import { useQuery } from "react-query";
 import * as apiClient from "../api-client";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 // import hotelImg1 from "../assets/taj.jpg";
 import LatestDestinationCard from "../components/LatestDestinationCard";
 import TopDestinationCard from "../components/TopDestinationCard";
@@ -9,7 +9,7 @@ import InfoSection from "../components/InfoSection";
 import image from "../assets/images/image.png";
 import { FaLocationDot } from "react-icons/fa6";
 import { useSearchContext } from "../contexts/SearchContext";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { MdCalendarMonth } from "react-icons/md";
 import DatePicker from "react-datepicker";
 import { FaSearch } from "react-icons/fa";
@@ -58,6 +58,7 @@ const Home = () => {
 
   const [destination, setDestination] = useState<string>("");
   const [checkIn, setCheckIn] = useState<Date>(search.checkIn);
+  const [isLoaded, setIsLoaded] = useState(false);
   const minDate = new Date();
   const maxDate = new Date();
   maxDate.setFullYear(maxDate.getFullYear() + 1);
@@ -68,11 +69,36 @@ const Home = () => {
     navigate(`/listings?city=${destination}`);
   };
 
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setIsLoaded(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (videoRef.current) {
+      observer.observe(videoRef.current);
+    }
+
+    return () => {
+      if (videoRef.current) {
+        observer.unobserve(videoRef.current);
+      }
+    };
+  }, []);
+
   return (
     <div className="space-y-10">
       <section className="relative w-full h-screen overflow-hidden -mt-10">
         <video
-          src={"/DaybreakpassSlides.mp4"}
+          ref={videoRef}
+          src={isLoaded ? "/DaybreakpassSlides.mp4" : ""}
           playsInline
           autoPlay
           loop
@@ -80,7 +106,6 @@ const Home = () => {
           className="absolute inset-0 w-full h-[94%] object-cover"
         ></video>
 
-        {/* Hero Section */}
         <div className="absolute bottom-0 w-full flex flex-col justify-center items-center bg-transparent text-center p-4">
           <div className="max-w-screen-lg mb-16">
             <h1 className="text-4xl md:text-6xl text-white font-normal font-LuzuryF2 tracking-wider mb-6 leading-10">
@@ -219,8 +244,8 @@ const Home = () => {
                 always adding new properties.
               </p>
               <div className="bg-[#00c0cb] text-white py-2 px-4 rounded-md w-full flex flex-col justify-center items-center">
-                <span className="font-bold text-xl">150,000+ </span>
-                <span>Happy Daycationers</span>
+                <span className="font-bold text-xl">Delighted </span>
+                <span>Daycationers</span>
               </div>
             </div>
 
