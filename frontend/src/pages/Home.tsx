@@ -71,69 +71,67 @@ const Home = () => {
   return (
     <div className="space-y-10">
       <section className="relative w-full h-screen overflow-hidden -mt-10">
-      <video
-            src={
-              "https://ixnyqungcmjgqzmlzyka.supabase.co/storage/v1/object/public/daybreakpass/bgimage.mp4?t=2024-07-15T12%3A51%3A18.983Z"
-            }
-            playsInline
-            autoPlay
-            loop
-            muted
-            className="absolute inset-0 w-full h-[94%] object-cover"
-          ></video>
+        <video
+          src={"/DaybreakpassSlides.mp4"}
+          playsInline
+          autoPlay
+          loop
+          muted
+          className="absolute inset-0 w-full h-[94%] object-cover"
+        ></video>
 
-          {/* Hero Section */}
-          <div className="absolute bottom-0 w-full flex flex-col justify-center items-center bg-transparent text-center p-4">
-            <div className="max-w-screen-lg mb-16">
-              <h1 className="text-4xl md:text-6xl text-white font-normal font-LuzuryF2 tracking-wider mb-6 leading-10">
-                FIND YOUR NEXT DAYCATION
-              </h1>
-              <p className="text-lg md:text-2xl text-white mb-4 font-poppins">
-                Discover luxury by the day: Book Day Passes, Daybeds, Cabanas &
-                Experiences at premier hotels in your city.
-              </p>
-            </div>
+        {/* Hero Section */}
+        <div className="absolute bottom-0 w-full flex flex-col justify-center items-center bg-transparent text-center p-4">
+          <div className="max-w-screen-lg mb-16">
+            <h1 className="text-4xl md:text-6xl text-white font-normal font-LuzuryF2 tracking-wider mb-6 leading-10">
+              FIND YOUR NEXT DAYCATION
+            </h1>
+            <p className="text-lg md:text-2xl text-white mb-4 font-poppins">
+              Discover luxury by the day: Book Day Passes, Daybeds, Cabanas &
+              Experiences at premier hotels in your city.
+            </p>
+          </div>
 
-            <div className="w-full md:w-2/3 lg:w-1/2">
-              <form
-                onSubmit={handleSubmit}
-                className="px-8 py-8 bg-white rounded-full shadow-lg h-14 flex items-center justify-between"
-              >
-                <div className="w-2/5 md:w-1/3 flex items-center h-full relative border-r-2 border-gray-800">
-                  <FaLocationDot className="text-xl mr-2 text-[#02596c]" />
-                  <input
-                    placeholder="Where are you going?"
-                    className="text-sm md:text-lg w-full focus:outline-none text-[#02596c] placeholder:text-[#02596c]"
-                    value={destination}
-                    onChange={(event) => setDestination(event.target.value)}
+          <div className="w-full md:w-2/3 lg:max-w-screen-lg">
+            <form
+              onSubmit={handleSubmit}
+              className="px-8 py-8 bg-white rounded-full shadow-lg h-14 flex items-center justify-between"
+            >
+              <div className="w-2/5 md:w-1/3 flex items-center h-full relative border-r-2 border-gray-800">
+                <FaLocationDot className="text-xl mr-2 text-[#02596c]" />
+                <input
+                  placeholder="Where are you going?"
+                  className="text-sm md:text-lg w-full focus:outline-none text-[#02596c] placeholder:text-[#02596c]"
+                  value={destination}
+                  onChange={(event) => setDestination(event.target.value)}
+                />
+              </div>
+              <div className="w-3/5 md:w-2/3 flex-1 flex items-center h-full pl-2 text-[#02596c] border-l-2 border-gray-800">
+                <MdCalendarMonth className="text-xl mr-2" />
+                <div className="w-full">
+                  <DatePicker
+                    selected={checkIn}
+                    onChange={(date) => setCheckIn(date as Date)}
+                    selectsStart
+                    startDate={checkIn}
+                    minDate={minDate}
+                    maxDate={maxDate}
+                    placeholderText="Check-in Date"
+                    className="w-full bg-white focus:outline-none placeholder:text-[#02596c]"
+                    wrapperClassName="w-full"
                   />
                 </div>
-                <div className="w-3/5 md:w-2/3 flex-1 flex items-center h-full pl-2 text-[#02596c] border-l-2 border-gray-800">
-                  <MdCalendarMonth className="text-xl mr-2" />
-                  <div className="w-full">
-                    <DatePicker
-                      selected={checkIn}
-                      onChange={(date) => setCheckIn(date as Date)}
-                      selectsStart
-                      startDate={checkIn}
-                      minDate={minDate}
-                      maxDate={maxDate}
-                      placeholderText="Check-in Date"
-                      className="w-full bg-white focus:outline-none placeholder:text-[#02596c]"
-                      wrapperClassName="w-full"
-                    />
-                  </div>
-                </div>
-                <button
-                  className="h-10 w-10 md:w-24 text-white text-sm font-medium rounded-full bg-orange-500 flex items-center justify-center"
-                  type="submit"
-                >
-                  <FaSearch className="sm:mr-2" />
-                  <span className="hidden md:inline-block">Search</span>
-                </button>
-              </form>
-            </div>
+              </div>
+              <button
+                className="h-10 w-10 md:w-24 text-white text-sm font-medium rounded-full bg-orange-500 flex items-center justify-center"
+                type="submit"
+              >
+                <FaSearch className="sm:mr-2" />
+                <span className="hidden md:inline-block">Search</span>
+              </button>
+            </form>
           </div>
+        </div>
       </section>
 
       <section className="container mx-auto">
@@ -149,11 +147,14 @@ const Home = () => {
           Most recent destinations added by our hosts
         </p>
         <div className="grid gap-4 lg:gap-2 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 px-4 lg:px-0">
-          {latestDestHotels.slice(0, 6).reverse().map((hotel: any) => (
-            <Link to={`/hotel-detail/${hotel._id}`}>
+          {latestDestHotels
+            .slice(0, 6)
+            .reverse()
+            .map((hotel: any) => (
+              // <Link to={`/hotel-detail/${hotel._id}`}>
               <LatestDestinationCard key={hotel.id} hotel={hotel} />
-            </Link>
-          ))}
+              // </Link>
+            ))}
         </div>
       </section>
 

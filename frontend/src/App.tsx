@@ -103,7 +103,7 @@ const App = () => {
           }
         />
         <Route
-          path="/hotel/name/:name"
+          path="/hotel-detail/name/:name"
           element={
             <Layout>
               <Detail />

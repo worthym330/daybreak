@@ -6,6 +6,7 @@ import { AiFillStar } from "react-icons/ai";
 import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
 import { MdCalendarMonth } from "react-icons/md";
 import {
+  FaCalendar,
   FaDumbbell,
   FaHeart,
   FaParking,
@@ -37,6 +38,11 @@ import {
   RenderSignUpModal,
   ResetPassRequest,
 } from "../components/Header";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import { Navigation } from "swiper/modules";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAP_GL_TOKEN;
 
@@ -102,6 +108,7 @@ const Detail = () => {
   const [modal, setModal] = useState(initialModalState);
   const [resetModal, setResetModal] = useState(initialResetModal);
   const [signupModal, setSignupModal] = useState(initialSignupModalState);
+  const dateRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 1024) {
@@ -224,38 +231,14 @@ const Detail = () => {
     return null;
   };
 
-  const handleNext = () => {
-    if (!hotel?.imageUrls) return;
-    const isLastSlide = currentIndex === hotel.imageUrls.length - slidesToShow;
-    const newIndex = isLastSlide ? 0 : currentIndex + 1;
-    setCurrentIndex(newIndex);
-  };
-
-  const handlePrev = () => {
-    if (!hotel?.imageUrls) return;
-    const isFirstSlide = currentIndex === 0;
-    const newIndex = isFirstSlide
-      ? hotel.imageUrls.length - slidesToShow
-      : currentIndex - 1;
-    setCurrentIndex(newIndex);
-  };
-
-  const getDisplayedImages = () => {
-    if (!hotel?.imageUrls || hotel.imageUrls.length === 0) {
-      return [];
+  useEffect(() => {
+    if (error && dateRef.current) {
+      dateRef.current.scrollIntoView({ behavior: "smooth" });
+      dispatch(setDate(null));
+      Cookies.remove("date");
+      setError(false);
     }
-
-    const images = hotel.imageUrls;
-    const totalImages = images.length;
-    const displayedImages = [];
-
-    for (let i = 0; i < slidesToShow; i++) {
-      const index = (currentIndex + i) % totalImages;
-      displayedImages.push(images[index]);
-    }
-
-    return displayedImages;
-  };
+  }, [error]);
 
   const toggleFavourite = async () => {
     console.log(userLogined);
@@ -359,11 +342,18 @@ const Detail = () => {
   const handleDateChange = (event: any) => {
     const dateString = event.target.value;
     const selectedDate = new Date(dateString);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
     if (!isNaN(selectedDate.getTime())) {
-      dispatch(setError(false));
-      dispatch(setDate(selectedDate.toISOString()));
-      Cookies.set("date", dateString, { expires: 1 });
+      if (selectedDate < today) {
+        console.error("Selected date cannot be earlier than today.");
+        setError(true);
+      } else {
+        dispatch(setError(false));
+        dispatch(setDate(selectedDate.toISOString()));
+        Cookies.set("date", dateString, { expires: 1 });
+      }
     } else {
       dispatch(setDate(null));
       Cookies.remove("date");
@@ -390,39 +380,46 @@ const Detail = () => {
       <ResetPassRequest modal={resetModal} setModal={setResetModal} />
       {/* Image Slider Starts */}
       <div className="relative">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 overflow-hidden px-2">
-          {getDisplayedImages().map((image, index) => (
-            <div key={index} className="h-[300px] relative">
-              <img
-                src={image}
-                alt={hotel.name}
-                className="rounded-md w-full h-full object-cover object-center border"
-              />
-              {/* Favourite Button for Mobile and Tablet */}
-              <div className="absolute top-2 right-2 lg:hidden">
-                <button onClick={handleToggleFavourite}>
-                  {isFavourite ? (
-                    <FaHeart className="w-6 h-6 text-red-500 fill-current" />
-                  ) : (
-                    <FaHeart className="w-6 h-6 text-gray-300 fill-current" />
-                  )}
-                </button>
+        <Swiper
+          spaceBetween={10}
+          slidesPerView={1}
+          loop={true}
+          breakpoints={{
+            1024: {
+              slidesPerView: 3,
+            },
+          }}
+          navigation={{
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
+          }}
+          modules={[Navigation]}
+        >
+          {hotel.imageUrls.map((image, index) => (
+            <SwiperSlide key={index}>
+              <div className="h-[300px] relative">
+                <img
+                  src={image}
+                  alt={hotel.name}
+                  className="rounded-md w-full h-full object-cover object-center border"
+                />
+                {/* Favourite Button for Mobile and Tablet */}
+                <div className="absolute top-2 right-2 lg:hidden">
+                  <button onClick={handleToggleFavourite}>
+                    {isFavourite ? (
+                      <FaHeart className="w-6 h-6 text-red-500 fill-current" />
+                    ) : (
+                      <FaHeart className="w-6 h-6 text-gray-300 fill-current" />
+                    )}
+                  </button>
+                </div>
               </div>
-            </div>
+            </SwiperSlide>
           ))}
-        </div>
-        <button
-          onClick={handlePrev}
-          className="absolute z-10 top-1/2 left-0 transform -translate-y-1/2 bg-white p-4 rounded-full shadow-md"
-        >
-          <BiChevronLeft className="w-6 h-6" />
-        </button>
-        <button
-          onClick={handleNext}
-          className="absolute z-10 top-1/2 right-0 transform -translate-y-1/2 bg-white p-4 rounded-full shadow-md"
-        >
-          <BiChevronRight className="w-6 h-6" />
-        </button>
+          {/* Custom navigation buttons */}
+          <div className="swiper-button-prev swiper-button-custom w-8 h-8 rounded-full flex items-center justify-center text-white"></div>
+          <div className="swiper-button-next swiper-button-custom w-8 h-8 rounded-full flex items-center justify-center text-white"></div>
+        </Swiper>
       </div>
       {/* Image Slider Ends */}
 
@@ -432,27 +429,36 @@ const Detail = () => {
           <div className="flex flex-col gap-2 w-full lg:w-2/3">
             <div className="flex justify-between flex-col md:flex-row">
               <div className="flex flex-col gap-2">
-                <span className="text-3xl font-semibold font-LuxuryF1 text-goldColor break-normal">
+                <span className="text-3xl font-semibold font-LuxuryF1 text-[#02596C] break-normal">
                   {hotel.name}
                 </span>
               </div>
-              <div className="flex gap-2 items-center">
-                <span className="bg-darkGold py-1 px-3 rounded-lg text-white">
-                  {hotel.star}
-                </span>
-                <span className="flex">
-                  {Array.from({ length: hotel.star }).map((_, i) => (
-                    <AiFillStar key={i} className="fill-yellow-400" />
-                  ))}
-                </span>
+            </div>
+            <div className="text-goldColor flex gap-4 items-center">
+              <div className="flex">
+                {[...Array(hotel.star)].map((_, i) => (
+                  <AiFillStar key={i} className="w-5 h-5" />
+                ))}
+                {[...Array(5 - hotel.star)].map((_, i) => (
+                  <AiFillStar key={i} className="w-5 h-5 text-gray-300" />
+                ))}
               </div>
+              <div>
+                <span className="text-xl ">{hotel.star}</span>
+              </div>
+              {/* <div>
+                <span className="text-xl text-black"> | </span>
+              </div>
+              <div>
+                <span className="text-lg content-center "> {hotel.reviews} Reviews</span>
+              </div> */}
             </div>
             {/* Facilities Section */}
             <div className="flex justify-between mt-3">
               <div className="flex gap-2 flex-wrap">
                 {hotel.facilities.map((facility, index) => (
                   <Tooltip key={index} text={facility}>
-                    <div className="border border-goldColor rounded-md p-2 flex items-center space-x-2 cursor-pointer text-goldColor text-xl">
+                    <div className="rounded-md p-2 flex items-center space-x-2 cursor-pointer text-goldColor text-xl">
                       {facilityIcons[facility as FacilityKey] && (
                         <span>{facilityIcons[facility as FacilityKey]}</span>
                       )}
@@ -461,17 +467,17 @@ const Detail = () => {
                 ))}
               </div>
               {/* Favorite Hotel Button for Desktop */}
-              <div className="hidden lg:flex gap-2 flex-wrap border border-gray-200 px-4 py-2 rounded-full">
+              <div className="hidden lg:flex gap-2 flex-wrap border border-[#02596C] px-4 py-2 rounded-full">
                 <button onClick={handleToggleFavourite}>
                   {isFavourite ? (
                     <span className="flex gap-2">
-                      <FaHeart className="w-6 h-6 text-red-500 fill-current" />
-                      <span>Saved</span>
+                      <FaHeart className="w-6 h-6 text-red-500 fill-current " />
+                      <span className="text-[#02596C]">Saved</span>
                     </span>
                   ) : (
                     <span className="flex gap-2">
-                      <FaHeart className="w-6 h-6 text-gray-300 fill-current" />
-                      <span>Save</span>
+                      <FaHeart className="w-6 h-6 text-gray-300 fill-current " />
+                      <span className="text-[#02596C]">Save</span>
                     </span>
                   )}
                 </button>
@@ -481,19 +487,31 @@ const Detail = () => {
 
             <div className="w-full break-words mb-5">{hotel.description}</div>
 
-            <span className="text-lg font-medium mb-3">Select a Date</span>
+            <span className="text-lg font-medium mb-3">
+              Please Select a Date
+            </span>
             <div className="flex items-center gap-2">
-              <MdCalendarMonth className="text-2xl text-btnColor" />
-              <input
-                type="date"
-                value={date ? date.split("T")[0] : ""}
-                onChange={handleDateChange}
-                min={new Date().toISOString().split("T")[0]}
-                placeholder="Please select the date"
-                className={`px-4 py-2 text-goldColor placeholder:text-goldColor border rounded ${
-                  error ? "border-red-500" : "border-goldColor"
-                }`}
-              />
+              <div className="relative mt-2 rounded-md shadow-sm">
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                  <FaCalendar
+                    aria-hidden="true"
+                    className="h-5 w-5 text-[#02596c]"
+                  />
+                </div>
+                <input
+                  id="date"
+                  name="date"
+                  type="date"
+                  ref={dateRef}
+                  placeholder="dd-mm-yyyy"
+                  value={date ? date.split("T")[0] : ""}
+                  onChange={handleDateChange}
+                  min={new Date().toISOString().split("T")[0]}
+                  className={`pl-10 px-4 py-2 text-[#02596c] placeholder:text-[#02596c] border rounded ${
+                    error ? "border-red-500" : "border-[#02596c]"
+                  }`}
+                />
+              </div>
             </div>
             <div className="">
               {error && (
@@ -545,7 +563,7 @@ const Detail = () => {
               </ol>
             </div>
             {/* Hours Div */}
-            <div className="w-full mx-auto px-4 text-justify">
+            <div className="w-full mx-auto p-4 text-justify bg-gray-100 rounded-lg shadow-md">
               <h2 className="text-lg font-medium mb-4">Cancellation Policy</h2>
               {/* <span className="mb-4 block">
                 Read our full <Link to= '' className="text-blue-500 underline">cancellation policy </Link>
@@ -575,14 +593,14 @@ const Detail = () => {
                   target="_blank"
                   className="flex gap-2 items-center"
                 >
-                  <FaLocationDot className="text-goldColor w-6 h-6" />
-                  <span className="underline decoration-blue-600 text-blue-600 hover:text-blue-900">
+                  <FaLocationDot className="text-[#02596c] w-6 h-6" />
+                  <span className="text-[#02596c] hover:text-[#02596c]">
                     Preview
                   </span>
                 </a>
               </p>
-              <div className="border rounded-lg overflow-hidden border-goldColor">
-                <div className="border rounded-lg overflow-hidden">
+              <div className="rounded-lg overflow-hidden">
+                <div className="rounded-lg overflow-hidden">
                   {coordinates && (
                     <div
                       id="map"
@@ -611,7 +629,7 @@ const Detail = () => {
           <div className="w-full lg:w-1/3">
             {cartItems.length > 0 && (
               <div className="h-fit sticky top-4 lg:hidden">
-                <div className="p-4 bg-white rounded-lg shadow-md border border-goldColor">
+                <div className="p-4 bg-white rounded-lg shadow-md border-2 border-[#00C0CB]">
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="text-lg font-bold">Your Cart</h2>
                   </div>
@@ -659,13 +677,13 @@ const Detail = () => {
                         <span>Subtotal:</span>
                         <span>₹{subtotal.toFixed(2)}</span>
                       </div>
-                      <div className="flex justify-between text-gray-700 mb-2">
+                      {/* <div className="flex justify-between text-gray-700 mb-2">
                         <span>GST:</span>
                         <span>₹{(subtotal * 0.18).toFixed(2)}</span>
-                      </div>
+                      </div> */}
                       <div className="flex justify-between text-gray-700 mb-2">
                         <span>Total:</span>
-                        <span>₹{(subtotal * (1 + 0.18)).toFixed(2)}</span>
+                        <span>₹{subtotal.toFixed(2)}</span>
                       </div>
                       {userLogined !== null ? (
                         <Button
@@ -690,7 +708,7 @@ const Detail = () => {
               </div>
             )}
             <div className="h-fit sticky top-4 hidden lg:block">
-              <div className="p-4 bg-white rounded-lg shadow-md border border-goldColor">
+              <div className="p-4 bg-white rounded-lg shadow-md border-2 border-[#00C0CB]">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-bold">Your Cart</h2>
                 </div>
@@ -752,17 +770,14 @@ const Detail = () => {
                           </div>
                         ))}
                       <div className="mt-4 border-t pt-4">
-                        <div className="flex justify-between text-gray-700 mb-2">
-                          <span>Subtotal:</span>
-                          <span>₹{subtotal.toFixed(2)}</span>
-                        </div>
-                        <div className="flex justify-between text-gray-700 mb-2">
+                        {/* <di. */}
+                        {/* <div className="flex justify-between text-gray-700 mb-2">
                           <span>GST:</span>
                           <span>₹{(subtotal * 0.18).toFixed(2)}</span>
-                        </div>
+                        </div> */}
                         <div className="flex justify-between text-gray-700 mb-2">
                           <span>Total:</span>
-                          <span>₹{(subtotal * (1 + 0.18)).toFixed(2)}</span>
+                          <span>₹{subtotal.toFixed(2)}</span>
                         </div>
                         {userLogined !== null ? (
                           <Button

@@ -791,7 +791,7 @@ const Header = () => {
         </div>
         <div className="flex flex-wrap items-center justify-between mx-auto py-2 relative px-2 md:px-5 ">
           <Link
-            className={`hidden md:flex items-center px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 `}
+            className={`hidden md:flex items-center px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-goldColor hover:text-white `}
             to="/list-my-hotel"
           >
             List My Hotel

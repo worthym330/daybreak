@@ -71,3 +71,25 @@ body {
     padding-left: 1.25em;
     text-indent: -1.25em;
 }
+
+.swiper-button-custom {
+    width: 2rem;
+    height: 2rem;
+    /* color: white; */
+  }
+  .swiper-button-prev:after, .swiper-button-next:after {
+    font-size: 16px;
+  }
+
+  input[type='date']::-webkit-calendar-picker-indicator {
+    background: transparent;
+    bottom: 0;
+    color: transparent;
+    cursor: pointer;
+    height: auto;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: auto;
+}

@@ -34,10 +34,8 @@ const CartModal = ({ product, hotel, onClose, setCart }: any) => {
     }
   }, [product.title, hotel]);
 
-  const GST_RATE = 0.18;
-
   useEffect(() => {
-    const calculateGST = (amount: number) => amount * (1 + GST_RATE);
+    const calculateGST = (amount: number) => amount * (1);
     const adultTotal = calculateGST(adultCount * product.adultPrice);
     const childTotal =
       product.childPrice > 0

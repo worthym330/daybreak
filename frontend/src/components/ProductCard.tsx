@@ -1,6 +1,6 @@
 import { useState } from "react";
 import CartModal from "./CartModal";
-import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { FaChevronDown, FaChevronUp, FaSpa } from "react-icons/fa";
 import Button from "./Button";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
@@ -12,11 +12,14 @@ interface ProductCardProps {
   setCart?: any;
 }
 
-const ProductCard = ({
-  product,
-  hotel,
-  setCart,
-}: ProductCardProps) => {
+type FacilityKey = "SPA PASS" | "DAY PASS";
+
+const facilityIcons = {
+  "SPA PASS": <FaSpa />,
+  "DAY PASS": <FaSpa />,
+};
+
+const ProductCard = ({ product, hotel, setCart }: ProductCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showLess, setShowLess] = useState(false);
   const dispatch = useDispatch();
@@ -37,13 +40,13 @@ const ProductCard = ({
 
   return (
     <div
-      className={`bg-white rounded-lg lg:shadow-xl p-4 lg:p-8 mb-4 border border-goldColor`}
+      className={`bg-white rounded-lg lg:shadow-xl p-4 lg:p-8 mb-4 border-2 hover:border-[#00C0CB]`}
     >
       {/* Conditionally render based on screen size */}
       <div className={` ${showLess ? "h-36 overflow-hidden" : "h-fit"}`}>
         <div className="flex justify-between items-center md:hidden">
           <div className="w-2/3 pr-4">
-            <h2 className="text-lg lg:text-xl font-semibold text-goldColor">
+            <h2 className="text-lg lg:text-xl font-semibold text-[#00C0CB]">
               {product.title}
             </h2>
           </div>
@@ -66,8 +69,17 @@ const ProductCard = ({
         <div className="md:flex justify-between hidden">
           {/* Left Box */}
           <div className="w-2/3 pr-4">
-            <h2 className="text-xl font-semibold text-goldColor">
-              {product.title}
+            <h2 className="text-xl flex">
+              <span className="text-white bg-[#00C0CB] text-center content-center border border-[#00C0CB] p-2 rounded-l-md">
+                {facilityIcons[product.title.toUpperCase() as FacilityKey] && (
+                  <span>
+                    {facilityIcons[product.title.toUpperCase() as FacilityKey]}
+                  </span>
+                )}
+              </span>
+              <span className="font-semibold text-[#00C0CB] border border-[#00C0CB] rounded-r-md p-2">
+                {product.title}
+              </span>
             </h2>
             <div className="text-sm text-gray-600 mt-2 space-y-1">
               <h1 className="text-gray-800 font-semibold">Description</h1>
@@ -93,21 +105,19 @@ const ProductCard = ({
           <div className="w-1/3 pl-4 ml-4">
             <div className="flex justify-between items gap-2 text-gray-500 text-sm">
               {product.adultPrice > 0 && (
-                <div className="flex flex-col gap-2">
-                  <span>Adults</span>
+                <div className="flex flex-col gap-2 text-center">
+                  <span className="text-center">Adults</span>
                   <span className="text-xl font-medium text-goldColor text-nowrap">
                     ₹ {product.adultPrice}{" "}
                   </span>
-                  <span className="text-xs">+18 % in GST</span>
                 </div>
               )}
               {product.childPrice > 0 && (
-                <div className="flex flex-col gap-2">
-                  <span>Children</span>
+                <div className="flex flex-col gap-2 text-center">
+                  <span className="">Children</span>
                   <span className="text-xl font-medium text-goldColor">
                     ₹ {product.childPrice}
                   </span>
-                  <span className="text-xs">+18 % in GST</span>
                 </div>
               )}
               {product.priceInfant > 0 && (
@@ -142,12 +152,14 @@ const ProductCard = ({
         onClick={() => setShowLess(!showLess)}
       >
         {showLess ? (
-          <span className="flex gap-2 items-center">
-          <FaChevronDown className="w-4 h-4 " /> <span>Show more</span>
-        </span>
+          <span className="flex gap-2 items-center text-[#00C0CB]">
+            <span>Show more</span>
+            <FaChevronDown className="w-4 h-4 " />
+          </span>
         ) : (
-          <span className="flex gap-2 items-center">
-            <FaChevronUp className="w-4 h-4 " /> <span>Show less</span>
+          <span className="flex gap-2 items-center text-[#00C0CB]">
+            <span>Show less</span>
+            <FaChevronUp className="w-4 h-4 " />
           </span>
         )}
       </button>
@@ -158,7 +170,8 @@ const ProductCard = ({
           onClose={handleCloseModal}
           date={date}
           setCart={setCart}
-      />)}
+        />
+      )}
     </div>
   );
 };
