@@ -6,8 +6,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import Layout from "./layouts/Layout";
-import Register from "./pages/Register";
-import SignIn from "./pages/SignIn";
+// import SignIn from "./pages/SignIn";
 import MyHotels from "./pages/MyHotels";
 import Search from "./pages/Search";
 import Detail from "./pages/Detail";
@@ -23,7 +22,7 @@ import TermsAndConditions from "./pages/TermAndCondition";
 import PrivacyPolicy from "./pages/PrivacyandPolicy";
 import Support from "./pages/Support";
 import CookiePolicy from "./pages/CookiePolicy";
-import Login from "./pages/LoginandSignup";
+// import Login from "./pages/LoginandSignup";
 import { Bounce, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CancellationPolicy from "./pages/CancellationPolicy";
@@ -47,18 +46,18 @@ const AccessControl = ({ children, requiredRoles }: any) => {
   return <>{children}</>;
 };
 
-const AuthRedirect = ({ children }: any) => {
-  const auth_token = Cookies.get("authentication");
-  const navigate = useNavigate();
+// const AuthRedirect = ({ children }: any) => {
+//   const auth_token = Cookies.get("authentication");
+//   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (auth_token) {
-      navigate("/"); // Redirect to home or any other page
-    }
-  }, [auth_token]);
+//   useEffect(() => {
+//     if (auth_token) {
+//       navigate("/"); // Redirect to home or any other page
+//     }
+//   }, [auth_token]);
 
-  return auth_token ? null : children;
-};
+//   return auth_token ? null : children;
+// };
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -108,22 +107,6 @@ const App = () => {
             <Layout>
               <Detail />
             </Layout>
-          }
-        />
-        <Route
-          path="/partner/register"
-          element={
-            <AuthRedirect>
-              <Register />
-            </AuthRedirect>
-          }
-        />
-        <Route
-          path="/partner/sign-in"
-          element={
-            <AuthRedirect>
-              <SignIn />
-            </AuthRedirect>
           }
         />
         <Route
@@ -183,26 +166,6 @@ const App = () => {
             </Layout>
           }
         />
-        <Route
-          path="/register"
-          element={
-            <AuthRedirect>
-              {/* <Layout> */}
-              <Login Login={false} />
-              {/* </Layout> */}
-            </AuthRedirect>
-          }
-        />
-        <Route
-          path="/login"
-          element={
-            <AuthRedirect>
-              {/* <Layout> */}
-              <Login Login={true} />
-              {/* </Layout> */}
-            </AuthRedirect>
-          }
-        />
         <Route path="/waitlist" element={<WaitList />} />
         <Route
           path="/checkout"
@@ -229,7 +192,17 @@ const App = () => {
           element={
             <AccessControl requiredRoles={["customer"]}>
               <Layout>
-                <MyBookings />
+                <MyBookings tab="bookings" />
+              </Layout>
+            </AccessControl>
+          }
+        />
+         <Route
+          path="/my-favourites"
+          element={
+            <AccessControl requiredRoles={["customer"]}>
+              <Layout>
+                <MyBookings tab="favourites" />
               </Layout>
             </AccessControl>
           }

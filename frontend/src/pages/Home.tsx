@@ -10,9 +10,9 @@ import image from "../assets/images/image.png";
 import { FaLocationDot } from "react-icons/fa6";
 import { useSearchContext } from "../contexts/SearchContext";
 import { FormEvent, useEffect, useRef, useState } from "react";
-import { MdCalendarMonth } from "react-icons/md";
 import DatePicker from "react-datepicker";
-import { FaSearch } from "react-icons/fa";
+import { FaCalendar, FaSearch } from "react-icons/fa";
+import { initialModalState, ListmyHotelRender } from "./ListmyHotel";
 
 const Home = () => {
   const { data: hotels } = useQuery("fetchQuery", () =>
@@ -55,10 +55,10 @@ const Home = () => {
   ];
 
   const search = useSearchContext();
+  const [modal, setModal] = useState(initialModalState);
 
   const [destination, setDestination] = useState<string>("");
   const [checkIn, setCheckIn] = useState<Date>(search.checkIn);
-  const [isLoaded, setIsLoaded] = useState(false);
   const minDate = new Date();
   const maxDate = new Date();
   maxDate.setFullYear(maxDate.getFullYear() + 1);
@@ -75,7 +75,7 @@ const Home = () => {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
-          setIsLoaded(true);
+          // setIsLoaded(true);
           observer.disconnect();
         }
       },
@@ -95,15 +95,16 @@ const Home = () => {
 
   return (
     <div className="space-y-10">
+      <ListmyHotelRender modal={modal} setModal={setModal} />
       <section className="relative w-full h-screen overflow-hidden -mt-10">
         <video
           ref={videoRef}
-          src={isLoaded ? "/DaybreakpassSlides.mp4" : ""}
+          src={"/Daybreakpassslideslowerversion.mp4"}
           playsInline
           autoPlay
           loop
           muted
-          className="absolute inset-0 w-full h-[94%] object-cover"
+          className="absolute inset-0 w-full h-[95%] object-cover"
         ></video>
 
         <div className="absolute bottom-0 w-full flex flex-col justify-center items-center bg-transparent text-center p-4">
@@ -117,42 +118,52 @@ const Home = () => {
             </p>
           </div>
 
-          <div className="w-full md:w-2/3 lg:max-w-screen-lg">
+          <div className="w-full md:w-2/3 lg:w-1/2">
             <form
+              className="flex items-center p-4 bg-white rounded-full shadow-md"
               onSubmit={handleSubmit}
-              className="px-8 py-8 bg-white rounded-full shadow-lg h-14 flex items-center justify-between"
             >
-              <div className="w-2/5 md:w-1/3 flex items-center h-full relative border-r-2 border-gray-800">
-                <FaLocationDot className="text-xl mr-2 text-[#02596c]" />
-                <input
-                  placeholder="Where are you going?"
-                  className="text-sm md:text-lg w-full focus:outline-none text-[#02596c] placeholder:text-[#02596c]"
-                  value={destination}
-                  onChange={(event) => setDestination(event.target.value)}
-                />
+              <div className="flex items-center flex-1 px-4">
+                <div className="flex items-center space-x-2">
+                  <span className="text-xl">
+                    <FaLocationDot className="w-6 h-6 text-[#02596c]" />
+                  </span>
+                  <input
+                    type="text"
+                    placeholder="Where are you going?"
+                    className="outline-none bg-transparent placeholder-[#02596c] text-[#02596c] p-2 w-full"
+                    value={destination}
+                    onChange={(event) => setDestination(event.target.value)}
+                  />
+                </div>
               </div>
-              <div className="w-3/5 md:w-2/3 flex-1 flex items-center h-full pl-2 text-[#02596c] border-l-2 border-gray-800">
-                <MdCalendarMonth className="text-xl mr-2" />
-                <div className="w-full">
+              <div className="h-8 border border-gray-300"></div>
+              <div className="flex items-center flex-1 px-4">
+                <div className="flex items-center space-x-2">
+                  <span className="text-xl text-[#02596c]">
+                    <FaCalendar className="w-6 h-6" />
+                  </span>
                   <DatePicker
                     selected={checkIn}
                     onChange={(date) => setCheckIn(date as Date)}
                     selectsStart
                     startDate={checkIn}
                     minDate={minDate}
+                    // isClearable={true}
                     maxDate={maxDate}
-                    placeholderText="Check-in Date"
-                    className="w-full bg-white focus:outline-none placeholder:text-[#02596c]"
-                    wrapperClassName="w-full"
+                    placeholderText="Check-In Date"
+                    className="outline-none bg-transparent placeholder-[#02596c] text-[#02596c] p-2 w-full"
                   />
                 </div>
               </div>
               <button
-                className="h-10 w-10 md:w-24 text-white text-sm font-medium rounded-full bg-orange-500 flex items-center justify-center"
+                className="flex items-center justify-center px-6 py-2 ml-2 text-white bg-orange-500 rounded-full"
                 type="submit"
               >
-                <FaSearch className="sm:mr-2" />
-                <span className="hidden md:inline-block">Search</span>
+                <span className="text-lg">
+                  <FaSearch className="text-white w-6 h-6" />
+                </span>
+                <span className="ml-1 text-lg hidden md:block">Search</span>
               </button>
             </form>
           </div>
@@ -332,7 +343,7 @@ const Home = () => {
                 className="font-inter w-80 py-4 rounded-xl font-xl"
                 type="button"
                 onClick={() => {
-                  navigate("/partner/register");
+                  setModal((prev: any) => ({ ...prev, state: true }));
                 }}
               >
                 Become a Hotel Partner

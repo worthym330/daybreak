@@ -12,9 +12,9 @@ interface ProductCardProps {
   setCart?: any;
 }
 
-type FacilityKey = "SPA PASS" | "DAY PASS";
+export type TitleKey = "SPA PASS" | "DAY PASS";
 
-const facilityIcons = {
+export const titleIcons = {
   "SPA PASS": <FaSpa />,
   "DAY PASS": <FaSpa />,
 };
@@ -71,9 +71,9 @@ const ProductCard = ({ product, hotel, setCart }: ProductCardProps) => {
           <div className="w-2/3 pr-4">
             <h2 className="text-xl flex">
               <span className="text-white bg-[#00C0CB] text-center content-center border border-[#00C0CB] p-2 rounded-l-md">
-                {facilityIcons[product.title.toUpperCase() as FacilityKey] && (
+                {titleIcons[product.title.toUpperCase() as TitleKey] && (
                   <span>
-                    {facilityIcons[product.title.toUpperCase() as FacilityKey]}
+                    {titleIcons[product.title.toUpperCase() as TitleKey]}
                   </span>
                 )}
               </span>

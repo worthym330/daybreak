@@ -830,36 +830,36 @@ const Header = () => {
                   >
                     <ul className="py-2" aria-labelledby="user-menu-button">
                       <li>
-                        <a
-                          href="#"
+                        <Link
+                          to="#"
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
                         >
-                          My Profile
-                        </a>
+                          Profile
+                        </Link>
                       </li>
                       <li>
-                        <a
-                          href="#"
+                        <Link
+                          to="/my-bookings"
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
                         >
-                          My Trips
-                        </a>
+                          Bookings
+                        </Link>
                       </li>
-                      <li>
+                      {/* <li>
                         <a
                           href="#"
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
                         >
                           Giftcard
                         </a>
-                      </li>
+                      </li> */}
                       <li>
-                        <a
-                          href="#"
+                        <Link
+                          to="/my-favourites"
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
                         >
-                          My Favourite
-                        </a>
+                          Favourites
+                        </Link>
                       </li>
                       <li>
                         <span
@@ -916,10 +916,14 @@ const Header = () => {
                           Register
                         </span>
                       </li>
-                      <li>
-                        <span className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white cursor-pointer">
+                      <li onClick={() => toggleDropdown()}>
+                        <a
+                          href={import.meta.env.VITE_ADMIN_REDIRECT}
+                          target="_blank"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white cursor-pointer"
+                        >
                           Hotel Login
-                        </span>
+                        </a>
                       </li>
                       <li>
                         <span

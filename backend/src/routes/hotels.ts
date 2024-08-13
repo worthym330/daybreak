@@ -316,11 +316,6 @@ router.get("/get/favourites/:userId", async (req, res) => {
     const favouriteHotels = await Hotel.find({
       favourites: { $elemMatch: { userId: userId } },
     });
-    if (!favouriteHotels.length) {
-      return res
-        .status(404)
-        .json({ message: "No favorite hotels found for this user" });
-    }
     res.status(200).json(favouriteHotels);
   } catch (error) {
     res.status(500).json({ message: "An error occurred", error });

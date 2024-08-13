@@ -9,11 +9,14 @@ import {
   ResetPassRequest,
 } from "./Header";
 import { useState } from "react";
+import { ListmyHotelRender } from "../pages/ListmyHotel";
 
 const Footer = () => {
   const [modal, setModal] = useState(initialModalState);
   const [resetModal, setResetModal] = useState(initialResetModal);
   const [signupModal, setSignupModal] = useState(initialSignupModalState);
+  const [HotelRegisterModal, setHotelRegisterModal] = useState(initialModalState);
+
   return (
     <div className="bg-[#02596c] mt-8 font-poppins">
       <RenderLoginModal
@@ -32,6 +35,10 @@ const Footer = () => {
         isHeader={false}
       />
       <ResetPassRequest modal={resetModal} setModal={setResetModal} />
+      <ListmyHotelRender
+        modal={HotelRegisterModal}
+        setModal={setHotelRegisterModal}
+      />
       <div className="container mx-auto px-4 pt-10 flex flex-col items-center">
         <div className="flex flex-col md:flex-row justify-center items-center gap-10 md:gap-6 w-full">
           <div className="flex flex-col items-center md:w-1/3 text-center">
@@ -90,7 +97,7 @@ const Footer = () => {
               <span className="text-[#e1cf79] font-bold text-lg mb-2">
                 GUESTS
               </span>
-              <span className="text-white font-medium mb-1">
+              <span className="text-white font-medium mb-1 cursor-pointer">
                 <span
                   onClick={() =>
                     setModal((prev: any) => ({ ...prev, state: true }))
@@ -99,7 +106,7 @@ const Footer = () => {
                   Sign in
                 </span>
               </span>
-              <span className="text-white font-medium mb-1">
+              <span className="text-white font-medium mb-1 cursor-pointer">
                 <span
                   onClick={() =>
                     setSignupModal((prev: any) => ({ ...prev, state: true }))
@@ -115,8 +122,16 @@ const Footer = () => {
               <span className="text-[#e1cf79] font-bold text-lg mb-2">
                 HOTELS
               </span>
-              <span className="text-white font-medium mb-1">
-                <Link to="/partner/register">Become Hotel Partner</Link>
+              <span
+                className="text-white font-medium mb-1 cursor-pointer"
+                onClick={() =>
+                  setHotelRegisterModal((prev: any) => ({
+                    ...prev,
+                    state: true,
+                  }))
+                }
+              >
+                Become Hotel Partner
               </span>
               <span className="text-white font-medium mb-1">
                 <Link to="/support">Support</Link>

@@ -284,7 +284,7 @@ router.post(
 
     try {
       let user;
-      user = await User.findOne({ email});
+      user = await User.findOne({ email , role: { $ne: 'customer' } });
       if (!user) {
         return res.status(400).json({ message: "Invalid Credentials" });
       }
