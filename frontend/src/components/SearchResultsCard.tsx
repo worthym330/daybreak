@@ -24,7 +24,7 @@ const SearchResultsCard = ({ hotel }: Props) => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row border border-goldColor rounded-md p-4 gap-4 lg:gap-8 mx-5 md:mx-0 justify-between">
+    <div className="flex flex-col md:flex-row border-2 hover:border-[#00C0CB] rounded-md p-4 gap-4 lg:gap-8 mx-5 md:mx-0 justify-between">
       <div className="flex flex-col md:flex-row gap-7">
         {/* Images Section */}
         <div className="w-full mb-[5px] md:w-[239px]">
@@ -59,24 +59,26 @@ const SearchResultsCard = ({ hotel }: Props) => {
             <div className="flex items-center gap-2">
               <span className="ml-1 text-sm">{hotel.hotelType}</span>
               {/* <span className="text-sm py-1 px-2 text-white bg-btnColor rounded-md">{hotel.starRating}</span> */}
-              <span className="flex">
-                {Array.from({ length: hotel.star }).map((_, index) => (
-                  <AiFillStar key={index} className="fill-yellow-400" />
-                ))}
-              </span>
             </div>
+            <div className="text-sm">Panvel, MH</div>
             <Link
               to={`/hotel-detail/${hotel._id}`}
-              className="text-lg lg:text-xl font-bold cursor-pointer"
+              className="text-lg lg:text-xl font-bold cursor-pointer text-[#02596C]"
             >
               {hotel.name}
             </Link>
+            <div className="flex items-center text-md mt-1 gap-5">
+              <span className="border bg-[#02596C] px-3 py-2 rounded-lg text-white font-semibold text-xs">
+                Family-Friendly
+              </span>
+              <span className="flex items-center">
+                {Array.from({ length: hotel.star }).map((_, index) => (
+                  <AiFillStar key={index} className="fill-goldColor" />
+                ))}{" "}
+                | 100 Reviews
+              </span>
+            </div>
           </div>
-
-          <div>
-            <div className="line-clamp-4 text-sm">{hotel.description}</div>
-          </div>
-
           <div className="grid grid-cols-2 items-start font-medium">
             <div className="flex flex-wrap gap-1 text-white">
               {hotel.facilities.slice(0, 3).map((facility, index) => (
@@ -93,7 +95,15 @@ const SearchResultsCard = ({ hotel }: Props) => {
               </span>
             </div>
           </div>
-          <div className="flex flex-col gap-1 text-white">
+
+          <div>
+            <div className="line-clamp-2 text-sm text-[#717171]">
+              {hotel.description}
+            </div>
+          </div>
+
+
+          {/* <div className="flex flex-col gap-1 text-white">
             <span className="text-sm text-black font-bold">Products </span>
             <span className="flex flex-wrap">
               {hotel.productTitle.slice(0, 3).map((facility, index) => (
@@ -109,15 +119,42 @@ const SearchResultsCard = ({ hotel }: Props) => {
               {hotel.productTitle.length > 3 &&
                 `+${hotel.productTitle.length - 3} more`}
             </span>
+          </div> */}
+
+          {/* Passes Price Details Start */}
+          <div className="flex gap-2 mt-3">
+            <div className="flex flex-col border-r pr-5 items-center">
+              <span className="text-[#02596C] text-sm">DayPass</span>
+              <span className="text-2xl text-goldColor font-semi-bold">
+                ₹1200
+              </span>
+              <span className="text-sm">Only 5 left</span>
+            </div>
+            <div className="flex flex-col border-r px-5 items-center">
+              <span className="text-[#02596C] text-sm">SpaPass</span>
+              <span className="text-2xl text-goldColor font-semi-bold">
+                ₹1200
+              </span>
+            </div>
+            <div className="flex flex-col border-r px-5 items-center">
+              <span className="text-[#02596C] text-sm">PoolPass</span>
+              <span className="text-2xl text-goldColor font-semi-bold">
+                ₹1200
+              </span>
+            </div>
+            <div className="flex items-center">
+              <span>+1 More</span>
+            </div>
           </div>
+          {/* Passes Price Details Start */}
         </div>
         {/* Content Section End */}
       </div>
-      <div className="grid gap-2 content-around ">
-        <span className="text-btnColor font-bold text-nowrap">
+      <div className="grid gap-2 content-end">
+        {/* <span className="text-btnColor font-bold text-nowrap">
           <span className="text-gray-700 font-medium">Starting from</span> ₹{" "}
           {hotel?.productTitle[0]?.adultPrice}
-        </span>
+        </span> */}
         <Button
           className="text-sm "
           onClick={() => handleButtonClick(hotel._id)}
