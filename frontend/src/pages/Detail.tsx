@@ -77,7 +77,7 @@ export const Tooltip = ({ children, text }: any) => {
       onMouseLeave={() => setVisible(false)}
     >
       {visible && (
-        <div className="absolute bottom-full mb-2 px-2 py-1 border-2 border-black bg-white text-nowrap text-sm rounded-md shadow-full">
+        <div className="absolute bottom-full mb-2 px-2 py-1 border-2 border-black bg-white text-nowrap text-sm rounded-md shadow-full text-black">
           {text}
         </div>
       )}
@@ -399,8 +399,8 @@ const Detail = () => {
             </SwiperSlide>
           ))}
           {/* Custom navigation buttons */}
-          <div className="swiper-button-prev swiper-button-custom w-8 h-8 rounded-full flex items-center justify-center text-white"></div>
-          <div className="swiper-button-next swiper-button-custom w-8 h-8 rounded-full flex items-center justify-center text-white"></div>
+          <div className="swiper-button-prev swiper-button-custom w-8 h-8 rounded-full flex items-center justify-center text-white hidden md:block"></div>
+          <div className="swiper-button-next swiper-button-custom w-8 h-8 rounded-full flex items-center justify-center text-white hidden md:block"></div>
         </Swiper>
       </div>
       {/* Image Slider Ends */}
