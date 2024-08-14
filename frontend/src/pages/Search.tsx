@@ -7,7 +7,7 @@ import Pagination from "../components/Pagination";
 import StarRatingFilter from "../components/StarRatingFilter";
 import HotelTypesFilter from "../components/HotelTypesFilter";
 import FacilitiesFilter from "../components/FacilitiesFilter";
-import PriceFilter from "../components/PriceFilter";
+// import PriceFilter from "../components/PriceFilter";
 import { useLocation } from "react-router-dom";
 
 const useQueryParams = () => {
@@ -20,7 +20,7 @@ const Search = () => {
   const [selectedStars, setSelectedStars] = useState<string[]>([]);
   const [selectedHotelTypes, setSelectedHotelTypes] = useState<string[]>([]);
   const [selectedFacilities, setSelectedFacilities] = useState<string[]>([]);
-  const [selectedPrice, setSelectedPrice] = useState<number | undefined>();
+  // const [selectedPrice, setSelectedPrice] = useState<number | undefined>();
   const [sortOption, setSortOption] = useState<string>("");
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
   const queryParams = useQueryParams();
@@ -36,7 +36,7 @@ const Search = () => {
     stars: selectedStars,
     types: selectedHotelTypes,
     facilities: selectedFacilities,
-    maxPrice: selectedPrice?.toString(),
+    // maxPrice: selectedPrice?.toString(),
     sortOption,
   };
 
@@ -80,6 +80,12 @@ const Search = () => {
     );
   };
 
+  const handleClear = () => {
+    setSelectedStars([]);
+    setSelectedHotelTypes([]);
+    setSelectedFacilities([]);
+  };
+
   return (
     <div className="relative grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-5">
       <div
@@ -113,7 +119,10 @@ const Search = () => {
             />
 
             <div>
-              <button className="text-[#00C0CB] underline underline-offset-4 text-lg">
+              <button
+                className="text-[#00C0CB] underline underline-offset-4 text-lg"
+                onClick={() => handleClear()}
+              >
                 Clear All
               </button>
             </div>
@@ -149,17 +158,13 @@ const Search = () => {
             >
               <option value="">Sort By</option>
               <option value="starRating">Star Rating</option>
-              <option value="pricePerNightAsc">
-                Price Per Night (low to high)
-              </option>
-              <option value="pricePerNightDesc">
-                Price Per Night (high to low)
-              </option>
+              <option value="pricePerNightAsc">Price (low to high)</option>
+              <option value="pricePerNightDesc">Price (high to low)</option>
             </select>
           </div>
         </div>
         <span className="text-lg font-semi-bold text-center md:text-left">
-        Showing {hotelData?.pagination.total} Hotels
+          Showing {hotelData?.pagination.total} Hotels
           {search.destination ? ` in ${search.destination}` : ""}
         </span>
         {hotelData?.data?.map((hotel: any) => (

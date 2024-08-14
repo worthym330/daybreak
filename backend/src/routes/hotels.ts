@@ -25,10 +25,10 @@ router.get("/search", async (req: Request, res: Response) => {
         sortOptions = { starRating: -1 };
         break;
       case "pricePerNightAsc":
-        sortOptions = { pricePerNight: 1 };
+        sortOptions = { "productTitle.adultPrice": 1 };
         break;
       case "pricePerNightDesc":
-        sortOptions = { pricePerNight: -1 };
+        sortOptions = { "productTitle.adultPrice": -1 };
         break;
     }
 
@@ -132,7 +132,7 @@ router.post(
         return sum + itemTotal;
       }, 0);
       // Convert to the smallest currency unit (paise)
-      const amountPayable = totalAmount - discount * 100
+      const amountPayable = totalAmount - discount * 100;
       const receipt = `rcpt_${hotelId}_${req.userId}`.slice(0, 40);
       const options = {
         amount: Math.round(amountPayable), // amount in the smallest currency unit
@@ -263,10 +263,16 @@ const constructSearchQuery = (queryParams: any) => {
   }
 
   if (queryParams.stars) {
-    const starRatings = Array.isArray(queryParams.stars)
-      ? queryParams.stars.map((star: string) => parseInt(star))
-      : parseInt(queryParams.stars);
+    let starRatings: number[] = [];
 
+    if (Array.isArray(queryParams.stars)) {
+      starRatings = queryParams.stars.map((star: string) => parseInt(star));
+    } else if (queryParams.stars === "Any") {
+      starRatings = [1, 2, 3, 4, 5];
+    } else {
+      const star = parseInt(queryParams.stars);
+      starRatings = Array.from({ length: 5 - star + 1 }, (_, i) => star + i);
+    }
     constructedQuery.star = { $in: starRatings };
   }
 
