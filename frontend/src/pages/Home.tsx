@@ -170,19 +170,19 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="container mx-auto">
+      <section className="container mx-auto pt-10">
         <InfoSection />
       </section>
 
       {/* Latest Destinations */}
-      <section className="lg:container lg:mx-auto">
+      <section className="lg:container lg:mx-auto pt-10">
         <h2 className="text-center text-goldColor text-2xl md:text-3xl mb-3 font-LuzuryF2 uppercase">
           <span className="font-bold">Popular</span> <span>Destinations</span>
         </h2>
         <p className="text-center mb-5 text-base md:text-lg text-fontSecondaryColor">
           Most recent destinations added by our hosts
         </p>
-        <div className="grid gap-4 lg:gap-2 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 px-4 lg:px-0">
+        <div className="grid gap-4 lg:gap-2 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 px-4 lg:px-0 pt-10">
           {latestDestHotels
             .slice(0, 6)
             .reverse()
@@ -196,7 +196,7 @@ const Home = () => {
 
       {/* Latest Destinations End */}
 
-      <div className="relative py-6 rounded-lg my-8">
+      <div className="relative py-6 rounded-lg my-8 pt-10">
         <div className="flex flex-col md:flex-row items-center bg-gradient-to-r from-[#018292] to-[#00bdc8]">
           <div className="lg:w-1/3 w-full">
             <img
@@ -222,7 +222,7 @@ const Home = () => {
         </div>
       </div>
       {/* Top Destinations */}
-      <section className="container mx-auto">
+      <section className="container mx-auto pt-10">
         <div className="flex flex-col">
           <h2 className="text-center text-goldColor text-2xl md:text-3xl mb-3 font-LuzuryF2 uppercase">
             <span className="font-bold">Explore</span> <span>Destinations</span>
@@ -231,7 +231,7 @@ const Home = () => {
           Most recent desinations added by our hosts
         </p> */}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mt-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mt-10">
             {topDestinations.map((hotel: any) => {
               return <TopDestinationCard hotel={hotel} key={hotel._id} />;
             })}
@@ -240,7 +240,7 @@ const Home = () => {
       </section>
       {/* Top Destinations End */}
       <section className="container mx-auto">
-        <div className="py-14 px-4 mt-20">
+        <div className="py-14 px-4 mt-10">
           <h2 className="text-2xl font-bold text-left text-goldColor mb-10">
             HOW IT WORKS
           </h2>
@@ -303,7 +303,7 @@ const Home = () => {
               <span className="flex text-2xl md:text-4xl mb-4 text-goldColor font-bold font-LuzuryF1 uppercase text-center justify-center">
                 Are You A Hotelier?
               </span>
-              <span className="text-center max-w-2xl mx-auto mb-8 md:mb-12 text-sm md:text-2xl text-center">
+              <span className="text-center max-w-2xl mx-auto mb-8 md:mb-12 text-sm md:text-2xl">
                 Join the world's top hotel brands using Daycation to increase
                 their bottom line revenue.
               </span>

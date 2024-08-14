@@ -24,7 +24,7 @@ const LatestDestinationCard = ({ hotel }: any) => {
   };
 
   return (
-    <div className="max-w-sm rounded-lg overflow-hidden shadow-lg font-poppins text-white bg-[#00c0cb]">
+    <div className="max-w-sm rounded-lg overflow-hidden shadow-lg font-poppins text-white bg-[#00c0cb] mb-5">
       <Link to={`/hotel-detail/${hotel._id}`}>
         <div className="relative">
           <img
