@@ -109,22 +109,22 @@ const MyBookings = ({ tab }: any) => {
       {/* User Header Ends */}
 
       <div className="w-full">
-        <h1 className="text-2xl text-center text-[#00c0cb] font-medium mb-5 pl-0 lg:pl-5">
+        <h1 className="text-2xl text-center text-black font-medium my-5 pl-0 lg:pl-5">
           MY {tab.toUpperCase()}
         </h1>
         {/* Tabs */}
         <div className="">
-          <section className="py-4">
+          <section className="py-3">
             {/* Content Shown when clicked on Bookings*/}
             {tab === "bookings" && (
-              <div className="mx-5 my-4 pt-5">
-                <div className="space-y-5">
+              <div className="mx-20 my-4">
+                <div className="space-y-10">
                   {bookingData && bookingData.length > 0 ? (
                     bookingData.map((hotel: any) => (
                       <div key={hotel._id} className="space-y-5">
                         {hotel.bookings.map((booking: any) => (
                           <div key={booking._id} className="">
-                            <div className="flex flex-col md:flex-row bg-[#B2F6FF] rounded-lg shadow-lg overflow-hidden">
+                            <div className="flex flex-col md:flex-row bg-[#edfdff] rounded-lg overflow-hidden">
                               {/* Left Section (Image) */}
                               <div className="w-full md:w-1/3">
                                 <img
@@ -145,19 +145,19 @@ const MyBookings = ({ tab }: any) => {
                                   </p>
                                 </div>
 
-                                <div className="mt-2 flex gap-2 justify-between">
+                                <div className="mt-5 flex flex-col gap-2">
                                   <p className="flex gap-2">
-                                    <strong className="text-[#02596c]">
+                                    <span className="text-[#02596c] font-semibold">
                                       Dates:
-                                    </strong>{" "}
+                                    </span>{" "}
                                     <span className="font-medium text-base">
                                       {new Date(booking.checkIn).toDateString()}
                                     </span>
                                   </p>
                                   <p className="flex gap-2">
-                                    <strong className="text-[#02596c]">
+                                    <span className="text-[#02596c] font-semibold">
                                       Guests:
-                                    </strong>{" "}
+                                    </span>{" "}
                                     <span className="font-medium text-base">
                                       {booking.cart[0].adultCount} adults,{" "}
                                       {booking.cart[0].childCount} children
@@ -182,9 +182,9 @@ const MyBookings = ({ tab }: any) => {
                                     </button>
                                   ))}
                                 </div>
-                                <div className="mt-2 flex justify-between">
-                                  <button className="bg-[#02596c] text-white py-2 px-4 rounded-md shadow hover:bg-[#02596c] focus:outline-none focus:ring-2 focus:ring-[#02596c] focus:ring-opacity-50 flex gap-2 items-center flex gap-2 items-center"><span><FaFileDownload  className="w-6 h-6"/></span><span>Invoice</span></button>
-                                  <button className="bg-red-500 text-white py-2 px-4 rounded-md shadow hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 flex gap-2 items-center flex gap-2 items-center"><span><MdCancel  className="w-6 h-6"/></span><span>Cancel</span></button>
+                                <div className="mt-2 flex gap-4 justify-end">
+                                  <button className="bg-transparent border border-[#02596c] text-[#02596c] py-2 px-4 rounded-md hover:bg-[#02596c] hover:text-white focus:outline-none focus:ring-2 focus:ring-[#02596c] focus:ring-opacity-50 flex gap-2 items-center"><span><FaFileDownload  className="w-6 h-6"/></span><span>Invoice</span></button>
+                                  <button className="bg-transparent border border-red-500 text-red-500 hover:text-white py-2 px-4 rounded-md hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 flex gap-2 items-center"><span><MdCancel  className="w-6 h-6"/></span><span>Cancel</span></button>
 
                                   {/* <button>Cancel</button> */}
                                  </div>
