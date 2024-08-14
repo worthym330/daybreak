@@ -33,6 +33,14 @@ body {
     background-color: #B5813F;
   }
 
+  .input-box{
+    width: 1.2em;
+    height: 1.2em;
+    border: 2px solid #8f8f8f;
+    cursor: pointer;
+    vertical-align: middle;
+  }
+
 @layer utilities {
     @keyframes slide-up {
         0% {

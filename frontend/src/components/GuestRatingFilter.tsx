@@ -3,10 +3,10 @@ type Props = {
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   };
   
-  const StarRatingFilter = ({ selectedStars, onChange }: Props) => {
+  const GuestRatingFilter = ({ selectedStars, onChange }: Props) => {
     return (
       <div className="border-b pb-5">
-        <h4 className="text-lg mb-2">Hotel Class</h4>
+        <h4 className="text-lg mb-2">Guest Rating</h4>
         {["Any", "5 Star", "4+ Star", "3+ Star"].map((star) => (
           <label className="flex items-center space-x-2 leading-loose text-[#4A4A4A]">
             <input
@@ -23,4 +23,4 @@ type Props = {
     );
   };
   
-  export default StarRatingFilter;
+  export default GuestRatingFilter;
