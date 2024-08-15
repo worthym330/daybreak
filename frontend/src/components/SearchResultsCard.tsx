@@ -98,7 +98,7 @@ const SearchResultsCard = ({ hotel }: Props) => {
               {hotel.name}
             </Link>
             <div className="flex items-center text-md mt-1 gap-5 w-full ">
-              {hotel.hotelType && (
+              {hotel.hotelType.length > 0 && (
                 <span className="border bg-[#02596C] px-3 py-2 rounded-lg text-white font-semibold text-xs">
                   {hotel.hotelType[0]}
                 </span>
