@@ -5,10 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm install && tsc && vite build && babel dist --out-dir dist --extensions '.js,.jsx,.ts,.tsx'",
+    "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview",
-    "babel:transpile": "babel src --out-dir dist --extensions '.js,.jsx,.ts,.tsx'"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@headlessui/react": "^2.0.4",
