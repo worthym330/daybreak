@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build && babel dist --out-dir dist --extensions '.js,.jsx,.ts,.tsx'",
+    "build": "npm install && tsc && vite build && babel dist --out-dir dist --extensions '.js,.jsx,.ts,.tsx'",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "babel:transpile": "babel src --out-dir dist --extensions '.js,.jsx,.ts,.tsx'"
