@@ -56,7 +56,7 @@ const Home = () => {
 
   const search = useSearchContext();
   const [modal, setModal] = useState(initialModalState);
-
+  const [isLoaded, setIsLoaded] = useState(false);
   const [destination, setDestination] = useState<string>("");
   const [checkIn, setCheckIn] = useState<Date>(search.checkIn);
   const minDate = new Date();
@@ -75,7 +75,7 @@ const Home = () => {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
-          // setIsLoaded(true);
+          setIsLoaded(true);
           observer.disconnect();
         }
       },
@@ -97,15 +97,27 @@ const Home = () => {
     <div className="space-y-10">
       <ListmyHotelRender modal={modal} setModal={setModal} />
       <section className="relative w-full h-screen overflow-hidden -mt-10">
-        <video
-          ref={videoRef}
-          src={"/Daybreakpassslideslowerversion.mp4"}
-          playsInline
-          autoPlay
-          loop
-          muted
-          className="absolute inset-0 w-full h-[95%] object-cover"
-        ></video>
+      {!isLoaded && (
+        <img
+          src={"/3.jpg"}
+          alt="Welcome"
+          className={`absolute inset-0 w-full h-[95%] object-cover ${
+            isLoaded ? "hidden" : "block"
+          } `}
+        />
+      )}
+      <video
+        ref={videoRef}
+        src={"/Daybreakpassslideslowerversion.mp4"}
+        playsInline
+        autoPlay
+        loop
+        muted
+        className={`absolute inset-0 w-full h-[95%] object-cover ${
+          isLoaded ? "block" : "hidden"
+        }`}
+        onLoadedData={() => setIsLoaded(true)}
+      ></video>
 
         <div className="absolute bottom-0 w-full flex flex-col justify-center items-center bg-transparent text-center p-4">
           <div className="max-w-screen-lg mb-16">

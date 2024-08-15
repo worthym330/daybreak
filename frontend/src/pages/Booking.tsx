@@ -23,6 +23,7 @@ import {
 } from "../store/cartSlice";
 import { FaXmark } from "react-icons/fa6";
 import moment from "moment";
+import { HiArrowSmallLeft } from "react-icons/hi2";
 
 const Booking = () => {
   const cart = localStorage.getItem("cart");
@@ -115,6 +116,7 @@ const Booking = () => {
         onDelete={removeCart}
       />
       <ResetPassRequest modal={resetModal} setModal={setResetModal} />
+      <span className="my-2 flex gap-2 items-center cursor-pointer" onClick={()=>navigate(-1)}> <HiArrowSmallLeft className="w-6 h-6"/>Back</span>
       {cartItems.length > 0 ? (
         <div className="flex flex-col md:flex-row gap-4">
           <div className="w-full md:w-1/3">

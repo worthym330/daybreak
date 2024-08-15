@@ -829,7 +829,7 @@ const Header = () => {
                     id="user-dropdown"
                   >
                     <ul className="py-2" aria-labelledby="user-menu-button">
-                      <li>
+                      <li onClick={toggleDropdown}>
                         <Link
                           to="#"
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
@@ -837,7 +837,7 @@ const Header = () => {
                           Profile
                         </Link>
                       </li>
-                      <li>
+                      <li onClick={toggleDropdown}>
                         <Link
                           to="/my-bookings"
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
@@ -845,7 +845,7 @@ const Header = () => {
                           Bookings
                         </Link>
                       </li>
-                      {/* <li>
+                      {/* <li onClick={toggleDropdown}>
                         <a
                           href="#"
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
@@ -853,7 +853,7 @@ const Header = () => {
                           Giftcard
                         </a>
                       </li> */}
-                      <li>
+                      <li onClick={toggleDropdown}>
                         <Link
                           to="/my-favourites"
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
@@ -893,7 +893,7 @@ const Header = () => {
                     id="user-dropdown"
                   >
                     <ul className="py-2" aria-labelledby="user-menu-button">
-                      <li>
+                      <li onClick={toggleDropdown}>
                         <span
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white cursor-pointer"
                           onClick={() => {
@@ -903,7 +903,7 @@ const Header = () => {
                           Login
                         </span>
                       </li>
-                      <li>
+                      <li onClick={toggleDropdown}>
                         <span
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white cursor-pointer"
                           onClick={() => {
@@ -925,7 +925,7 @@ const Header = () => {
                           Hotel Login
                         </a>
                       </li>
-                      <li>
+                      <li onClick={toggleDropdown}>
                         <span
                           className="block md:hidden px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white cursor-pointer"
                           onClick={() => navigate("/list-my-hotel")}

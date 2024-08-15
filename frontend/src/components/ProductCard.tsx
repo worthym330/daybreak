@@ -1,10 +1,12 @@
 import { useState } from "react";
 import CartModal from "./CartModal";
-import { FaChevronDown, FaChevronUp, FaSpa } from "react-icons/fa";
+import { FaChevronDown, FaChevronUp, FaSpa, FaUsers } from "react-icons/fa";
 import Button from "./Button";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { setError } from "../store/cartSlice";
+import { PiCampfire } from "react-icons/pi";
+import { FiSun } from "react-icons/fi";
 
 interface ProductCardProps {
   product: any;
@@ -12,11 +14,13 @@ interface ProductCardProps {
   setCart?: any;
 }
 
-export type TitleKey = "SPA PASS" | "DAY PASS";
+export type TitleKey = "SPA PASS" | "DAY PASS" | "BORNFIRE" |"CONFERENCE HALL";
 
 export const titleIcons = {
   "SPA PASS": <FaSpa />,
-  "DAY PASS": <FaSpa />,
+  "DAY PASS": <FiSun />,
+  "BORNFIRE": <PiCampfire />,
+  "CONFERENCE HALL" : <FaUsers />
 };
 
 const ProductCard = ({ product, hotel, setCart }: ProductCardProps) => {
