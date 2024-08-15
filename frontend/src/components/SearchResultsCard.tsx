@@ -188,7 +188,7 @@ const SearchResultsCard = ({ hotel }: Props) => {
           {hotel?.productTitle[0]?.adultPrice}
         </span> */}
         <Button
-          className="text-sm "
+          className="text-sm text-nowrap"
           onClick={() => handleButtonClick(hotel._id)}
         >
           {isLoggedIn === null ? "Login to book now!" : "Book Now"}
