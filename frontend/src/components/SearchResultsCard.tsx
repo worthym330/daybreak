@@ -5,7 +5,14 @@ import { AiFillStar } from "react-icons/ai";
 import Cookies from "js-cookie";
 import Button from "./Button";
 import { facilityIcons, FacilityKey, Tooltip } from "../pages/Detail";
-import { initialModalState, initialResetModal, initialSignupModalState, RenderLoginModal, RenderSignUpModal, ResetPassRequest } from "./Header";
+import {
+  initialModalState,
+  initialResetModal,
+  initialSignupModalState,
+  RenderLoginModal,
+  RenderSignUpModal,
+  ResetPassRequest,
+} from "./Header";
 
 type Props = {
   hotel: HotelType;
@@ -78,10 +85,12 @@ const SearchResultsCard = ({ hotel }: Props) => {
         <div className="flex flex-col gap-3 w-full">
           <div>
             {/* <div className="flex items-center gap-2"> */}
-              {/* <span className="ml-1 text-sm">{hotel.hotelType}</span> */}
-              {/* <span className="text-sm py-1 px-2 text-white bg-btnColor rounded-md">{hotel.starRating}</span> */}
+            {/* <span className="ml-1 text-sm">{hotel.hotelType}</span> */}
+            {/* <span className="text-sm py-1 px-2 text-white bg-btnColor rounded-md">{hotel.starRating}</span> */}
             {/* </div> */}
-            <div className="text-sm">{hotel.city}, {hotel.state}</div>
+            <div className="text-sm">
+              {hotel.city}, {hotel.state}
+            </div>
             <Link
               to={`/hotel-detail/${hotel._id}`}
               className="text-lg lg:text-xl font-bold cursor-pointer text-[#02596C]"
@@ -89,9 +98,11 @@ const SearchResultsCard = ({ hotel }: Props) => {
               {hotel.name}
             </Link>
             <div className="flex items-center text-md mt-1 gap-5 w-full ">
-              <span className="border bg-[#02596C] px-3 py-2 rounded-lg text-white font-semibold text-xs">
-                {hotel.hotelType[0]}
-              </span>
+              {hotel.hotelType && (
+                <span className="border bg-[#02596C] px-3 py-2 rounded-lg text-white font-semibold text-xs">
+                  {hotel.hotelType[0]}
+                </span>
+              )}
               <div className="flex items-center">
                 {[...Array(hotel.star)].map((_, i) => (
                   <AiFillStar key={i} className="w-5 h-5 text-goldColor" />
@@ -107,12 +118,14 @@ const SearchResultsCard = ({ hotel }: Props) => {
             <div className="flex  gap-1 text-white items-center">
               {hotel.facilities.slice(0, 5).map((facility, index) => (
                 <Tooltip key={index} text={facility}>
-                <div className="rounded-md p-2 flex items-center space-x-2 cursor-pointer text-goldColor text-xl">
-                  {facilityIcons[facility as FacilityKey] && (
-                    <span className="text-goldColor">{facilityIcons[facility as FacilityKey]}</span>
-                  )}
-                </div>
-              </Tooltip>
+                  <div className="rounded-md p-2 flex items-center space-x-2 cursor-pointer text-goldColor text-xl">
+                    {facilityIcons[facility as FacilityKey] && (
+                      <span className="text-goldColor">
+                        {facilityIcons[facility as FacilityKey]}
+                      </span>
+                    )}
+                  </div>
+                </Tooltip>
               ))}
               <span className="text-sm text-black text-nowrap">
                 {hotel.facilities.length > 5 &&
@@ -126,7 +139,6 @@ const SearchResultsCard = ({ hotel }: Props) => {
               {hotel.description}
             </div>
           </div>
-
 
           {/* <div className="flex flex-col gap-1 text-white">
             <span className="text-sm text-black font-bold">Products </span>
@@ -148,14 +160,19 @@ const SearchResultsCard = ({ hotel }: Props) => {
 
           {/* Passes Price Details Start */}
           <div className="flex gap-2 mt-3">
-          {hotel.productTitle.slice(0, 3).map((facility, index) => (
-            <div className="flex flex-col border-r pr-5 items-center" key={index}>
-              <span className="text-[#02596C] text-sm">{facility.title}</span>
-              <span className="text-2xl text-goldColor font-semi-bold">
-                {facility.childPrice > facility.adultPrice ? facility.childPrice : facility.adultPrice}
-              </span>
-              {/* <span className="text-sm">Only 5 left</span> */}
-            </div>
+            {hotel.productTitle.slice(0, 3).map((facility, index) => (
+              <div
+                className="flex flex-col border-r pr-5 items-center"
+                key={index}
+              >
+                <span className="text-[#02596C] text-sm">{facility.title}</span>
+                <span className="text-2xl text-goldColor font-semi-bold">
+                  {facility.childPrice > facility.adultPrice
+                    ? facility.childPrice
+                    : facility.adultPrice}
+                </span>
+                {/* <span className="text-sm">Only 5 left</span> */}
+              </div>
             ))}
             <div className="flex items-center">
               <span>+1 More</span>
