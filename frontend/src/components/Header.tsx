@@ -794,9 +794,10 @@ const Header = () => {
           }`}
         >
           <span className="font-bold text-xl font-montserrat text-white">
-            Get Early access. Get{" "}
-            <span className="text-goldColor">50% off</span> on your first
-            booking.
+            Pilot run is live. Please join the{" "}
+            <Link to="/waitlist" className="text-goldColor">
+              waitlist click here
+            </Link>
           </span>
         </div>
         <div className="flex flex-wrap items-center justify-between mx-auto py-2 relative px-2 md:px-5 ">
