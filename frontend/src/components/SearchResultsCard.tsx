@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { HotelType } from "../../../backend/src/shared/types";
 import { AiFillStar } from "react-icons/ai";
-import Cookies from "js-cookie";
 import Button from "./Button";
 import { facilityIcons, FacilityKey, Tooltip } from "../pages/Detail";
 import {
@@ -13,6 +12,8 @@ import {
   RenderSignUpModal,
   ResetPassRequest,
 } from "./Header";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
 
 type Props = {
   hotel: HotelType;
@@ -20,18 +21,17 @@ type Props = {
 
 const SearchResultsCard = ({ hotel }: Props) => {
   const [mainImage, setMainImage] = useState(hotel.imageUrls[0]);
-  const auth_token = Cookies.get("authentication");
-  const isLoggedIn = auth_token ? JSON.parse(auth_token) : null;
+  const auth = useSelector((state: RootState) => state.auth);
   const navigate = useNavigate();
   const [modal, setModal] = useState(initialModalState);
   const [resetModal, setResetModal] = useState(initialResetModal);
   const [signupModal, setSignupModal] = useState(initialSignupModalState);
 
   const handleButtonClick = (id: string) => {
-    if (isLoggedIn === null) {
-      setModal((prev: any) => ({ ...prev, state: true }));
-    } else {
+    if (auth.isAuthenticated) {
       navigate(`/hotel-detail/${id}`);
+    } else {
+      setModal((prev: any) => ({ ...prev, state: true }));
     }
   };
 
@@ -191,7 +191,7 @@ const SearchResultsCard = ({ hotel }: Props) => {
           className="text-sm text-nowrap"
           onClick={() => handleButtonClick(hotel._id)}
         >
-          {isLoggedIn === null ? "Login to book now!" : "Book Now"}
+          {auth.isAuthenticated ?  "Book Now": "Login to book now!" }
         </Button>
       </div>
     </div>

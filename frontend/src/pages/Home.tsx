@@ -13,6 +13,9 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 import DatePicker from "react-datepicker";
 import { FaCalendar, FaSearch } from "react-icons/fa";
 import { initialModalState, ListmyHotelRender } from "./ListmyHotel";
+import Cookies from "js-cookie";
+import { useDispatch } from "react-redux";
+import { loginSuccess, logout } from "../store/authSlice";
 
 const Home = () => {
   const { data: hotels } = useQuery("fetchQuery", () =>
@@ -62,6 +65,7 @@ const Home = () => {
   const minDate = new Date();
   const maxDate = new Date();
   maxDate.setFullYear(maxDate.getFullYear() + 1);
+  const dispatch = useDispatch();
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
@@ -93,31 +97,42 @@ const Home = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const auth_token = Cookies.get("authentication");
+    const user = auth_token ? JSON.parse(auth_token) : null;
+    if (user === null) {
+      dispatch(logout());
+    } else {
+      const token = user.token;
+      dispatch(loginSuccess({ user, token }));
+    }
+  }, []);
+
   return (
     <div className="space-y-10">
       <ListmyHotelRender modal={modal} setModal={setModal} />
       <section className="relative w-full h-screen overflow-hidden -mt-10">
-      {!isLoaded && (
-        <img
-          src={"/3.jpg"}
-          alt="Welcome"
+        {!isLoaded && (
+          <img
+            src={"/3.jpg"}
+            alt="Welcome"
+            className={`absolute inset-0 w-full h-[95%] object-cover ${
+              isLoaded ? "hidden" : "block"
+            } `}
+          />
+        )}
+        <video
+          ref={videoRef}
+          src={"/Daybreakpassslideslowerversion.mp4"}
+          playsInline
+          autoPlay
+          loop
+          muted
           className={`absolute inset-0 w-full h-[95%] object-cover ${
-            isLoaded ? "hidden" : "block"
-          } `}
-        />
-      )}
-      <video
-        ref={videoRef}
-        src={"/Daybreakpassslideslowerversion.mp4"}
-        playsInline
-        autoPlay
-        loop
-        muted
-        className={`absolute inset-0 w-full h-[95%] object-cover ${
-          isLoaded ? "block" : "hidden"
-        }`}
-        onLoadedData={() => setIsLoaded(true)}
-      ></video>
+            isLoaded ? "block" : "hidden"
+          }`}
+          onLoadedData={() => setIsLoaded(true)}
+        ></video>
 
         <div className="absolute bottom-0 w-full flex flex-col justify-center items-center bg-transparent text-center p-4">
           <div className="max-w-screen-lg mb-16">

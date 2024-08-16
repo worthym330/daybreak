@@ -11,10 +11,11 @@ import * as apiClient from "../api-client";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import Button from "./Button";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { FaEye, FaEyeSlash, FaUserCircle } from "react-icons/fa";
 import { BsSuitcase } from "react-icons/bs";
+import { loginSuccess, logout } from "../store/authSlice";
 
 export const initialModalState = {
   type: "add",
@@ -208,6 +209,9 @@ export const RenderLoginModal = ({
     setSignupModal((prev: any) => ({ ...prev, state: true }));
   }
   const [showPassword, setShowPassword] = useState(false);
+  const dispatch = useDispatch();
+  // const user = useSelector((state: RootState) => state.auth)
+  // console.log(user)
   const responseLoginGoogle = async (response: any) => {
     const token = response.credential;
     const user = jwtDecode<CustomJwtPayload>(token);
@@ -240,6 +244,9 @@ export const RenderLoginModal = ({
         Cookies.set("authentication", JSON.stringify(body.user), {
           expires: 1,
         });
+        const user = body.user;
+        const token = body.user.token;
+        dispatch(loginSuccess({ user, token }));
       } else {
         // showToast({ message: "Failed to Login!", type: "ERROR" });
         toast.error("Failed to Login!");
@@ -278,9 +285,13 @@ export const RenderLoginModal = ({
             if (isBooking) {
               paymentIntent();
             }
+            console.log(body.user);
             Cookies.set("authentication", JSON.stringify(body.user), {
               expires: 1,
             });
+            const user = body.user;
+            const token = body.user.token;
+            dispatch(loginSuccess({ user, token }));
           }
         } catch (error: any) {
           console.error("Error during sign in:", error);
@@ -433,12 +444,13 @@ export const RenderLoginModal = ({
               <hr className="border-gray-300 flex-grow" />
               <span className="text-sm text-center">
                 Are you a hotel partner?{" "}
-                <Link
+                <a
                   className="underline text-goldColor"
-                  to="/partner/sign-in"
+                  href={import.meta.env.VITE_ADMIN_REDIRECT}
+                  target="_blank"
                 >
                   Log in here
-                </Link>
+                </a>
               </span>
             </div>
           </form>
@@ -694,15 +706,14 @@ const Header = () => {
   // const { showToast } = useAppContext();
   const [modal, setModal] = useState(initialModalState);
   const [signupModal, setSignupModal] = useState(initialSignupModalState);
-
-  const auth_token = Cookies.get("authentication");
-  const userLogined = auth_token ? JSON.parse(auth_token) : null;
+  const auth = useSelector((state: RootState) => state.auth);
   const navigate = useNavigate();
   const location = useLocation();
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [resetModal, setResetModal] = useState(initialResetModal);
   const cart = useSelector((state: RootState) => state.cart.items);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dispatch = useDispatch();
 
   const headerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -730,6 +741,7 @@ const Header = () => {
     onSuccess: async () => {
       Cookies.remove("authentication");
       // showToast({ message: "Signed Out!", type: "SUCCESS" });
+      dispatch(logout());
       toast.success("Successfully logout");
       navigate("/");
     },
@@ -781,9 +793,10 @@ const Header = () => {
             location.pathname !== "/" && "-mt-4"
           }`}
         >
-          <span className="font-bold text-lg font-montserrat text-white">
-            DayBreakPass is launching on{" "}
-            <span className="text-goldColor">August 15</span>.
+          <span className="font-bold text-xl font-montserrat text-white">
+            Get Early access. Get{" "}
+            <span className="text-goldColor">50% off</span> on your first
+            booking.
           </span>
         </div>
         <div className="flex flex-wrap items-center justify-between mx-auto py-2 relative px-2 md:px-5 ">
@@ -806,7 +819,7 @@ const Header = () => {
                 {cartItems.length}{" "}
               </span>
             </Link>
-            {userLogined !== null ? (
+            {auth.isAuthenticated ? (
               <>
                 <button
                   type="button"
@@ -821,7 +834,7 @@ const Header = () => {
                     src="/profile.jpg"
                     alt="user photo"
                   />
-                  <span className="block text-sm">Hii, {userLogined.name}</span>
+                  <span className="block text-sm">Hii, {auth?.user?.name}</span>
                 </button>
                 {isDropdownOpen && (
                   <div
