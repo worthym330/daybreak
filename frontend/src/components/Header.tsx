@@ -442,7 +442,12 @@ export const RenderLoginModal = ({
                 </div>
               </GoogleOAuthProvider>
               <hr className="border-gray-300 flex-grow" />
-              <span className="text-sm text-center">
+              <span
+                className="text-sm text-center"
+                onClick={() => {
+                  setModal((prev: any) => ({ ...prev, state: false }));
+                }}
+              >
                 Are you a hotel partner?{" "}
                 <a
                   className="underline text-goldColor"

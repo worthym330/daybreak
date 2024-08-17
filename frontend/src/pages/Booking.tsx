@@ -2,7 +2,6 @@ import { useQuery } from "react-query";
 import * as apiClient from "../api-client";
 import BookingForm from "../forms/BookingForm/BookingForm";
 import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import Button from "../components/Button";
 import {
@@ -29,8 +28,10 @@ const Booking = () => {
   const cart = localStorage.getItem("cart");
   const parsedCart = cart ? JSON.parse(cart) : [];
   const cartItems = parsedCart;
-  const auth_token = Cookies.get("authentication") || "null";
-  const userLogined = JSON.parse(auth_token);
+  // const auth_token = Cookies.get("authentication") || "null";
+  // const userLogined = JSON.parse(auth_token);
+  const auth = useSelector((state: RootState) => state.auth);
+
   const navigate = useNavigate();
   const [paymentIntentData, setPaymentIntentData] = useState(null);
   const hotelId = cartItems[0]?.hotel?._id;
@@ -116,7 +117,7 @@ const Booking = () => {
         onDelete={removeCart}
       />
       <ResetPassRequest modal={resetModal} setModal={setResetModal} />
-      <span className="my-2 flex gap-2 items-center cursor-pointer" onClick={()=>navigate(-1)}> <HiArrowSmallLeft className="w-6 h-6"/>Back</span>
+      <span className="my-2 flex" > <span className="flex gap-2 items-center cursor-pointer" onClick={()=>navigate(-1)}><HiArrowSmallLeft className="w-6 h-6"/>Back</span></span>
       {cartItems.length > 0 ? (
         <div className="flex flex-col md:flex-row gap-4">
           <div className="w-full md:w-1/3">
@@ -181,7 +182,7 @@ const Booking = () => {
               </div>
             </div>
           </div>
-          {userLogined ? (
+          {auth.isAuthenticated ? (
             currentUser &&
             paymentIntentData && (
               <div className="w-full md:w-2/3">

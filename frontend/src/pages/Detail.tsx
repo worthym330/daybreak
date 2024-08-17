@@ -377,7 +377,7 @@ const Detail = () => {
           }}
           modules={[Navigation]}
         >
-          {hotel.imageUrls.map((image, index) => (
+          {hotel.imageUrls.concat(hotel.imageUrls).map((image, index) => (
             <SwiperSlide key={index}>
               <div className="h-[300px] relative">
                 <img
@@ -426,7 +426,7 @@ const Detail = () => {
                 ))}
               </div>
               <div>
-                <span className="text-xl ">{hotel.star}</span>
+                <span className="text-xl ">{hotel.star.toFixed(1)}</span>
               </div>
               {/* <div>
                 <span className="text-xl text-black"> | </span>
@@ -440,7 +440,7 @@ const Detail = () => {
               <div className="flex gap-2 flex-wrap">
                 {hotel.facilities.map((facility, index) => (
                   <Tooltip key={index} text={facility}>
-                    <div className="rounded-md p-2 flex items-center space-x-2 cursor-pointer text-goldColor text-xl">
+                    <div className="rounded-md p-2 flex items-center space-x-2 cursor-pointer text-goldColor text-xl border hover:border-[#00C0CB]">
                       {facilityIcons[facility as FacilityKey] && (
                         <span>{facilityIcons[facility as FacilityKey]}</span>
                       )}
@@ -490,8 +490,10 @@ const Detail = () => {
                   onChange={handleDateChange}
                   min={new Date().toISOString().split("T")[0]}
                   className={`pl-10 px-4 py-2 text-[#02596c] placeholder:text-[#02596c] border rounded ${
-                    error ? "border-red-500" : "border-[#02596c]"
-                  }`}
+                    error
+                      ? "border-red-500"
+                      : "border-[#00C0CB] focus:border-[#00C0CB]"
+                  } focus:outline-none focus:ring-0`}
                 />
               </div>
             </div>

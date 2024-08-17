@@ -6,7 +6,7 @@ export type UserType = {
   lastName: string;
   role: string;
   status: boolean;
-  phone:string;
+  phone: string;
   resetPasswordToken: any;
   resetPasswordExpires: any;
 };
@@ -43,8 +43,11 @@ export type BookingType = {
   childCount?: number;
   checkIn?: Date;
   checkOut?: Date;
-  totalCost?: number;
+  totalCost: number;
+  orderId: string;
+  paymentId: string;
   cart?: any[];
+  status:string
 };
 
 export type FavouriteList = {

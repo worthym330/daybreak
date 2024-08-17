@@ -75,7 +75,7 @@ const ConfirmationModal = (props: any) => {
                 </button>
                 <button
                   type="button"
-                  className={`inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white border border-transparent rounded-2xl shadow-sm  sm:ml-3 sm:w-auto sm:text-lg bg-[#fe6a06] hover:bg-[#fe6a06] focus:ring-red-500`}
+                  className={`inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white border border-transparent rounded-2xl shadow-sm  sm:ml-3 sm:w-auto sm:text-lg focus:ring-red-500 ${confirmationButtonText === "OK" ?"bg-[#fe6a06] hover:bg-[#fe6a06]":"bg-red-500 hover:bg-red-700"}`}
                   onClick={() => {
                     setOpen(false);
                     onDelete && onDelete();

@@ -7,6 +7,7 @@ import { FaFileDownload } from "react-icons/fa";
 import { titleIcons, TitleKey } from "../components/ProductCard";
 import { MdCancel } from "react-icons/md";
 import LatestDestinationCard from "../components/LatestDestinationCard";
+import ConfirmationModal from "../components/AlertModal";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 const MyBookings = ({ tab }: any) => {
@@ -14,6 +15,9 @@ const MyBookings = ({ tab }: any) => {
   const personalInfo = JSON.parse(Cookies.get("authentication") || "[]");
   const [bookingData, setBookingData] = useState([]);
   const [favourites, setFavourites] = useState([]);
+  const [confirmationDialog, setConfirmationDialog] = useState(false);
+  const [hotelId, setHotelId] = useState()
+  const [bookingId, setBookingId] = useState()
 
   useEffect(() => {
     if (tab === "bookings") {
@@ -93,9 +97,42 @@ const MyBookings = ({ tab }: any) => {
   //   }
   // };
 
+  const cancelBooking = async() =>{
+    console.log(hotelId)
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/hotels/${hotelId}/bookings/${bookingId}/cancel`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include", // Include orderId in the request body
+        }
+      );
+      console.log(response)      
+    } catch (error) {
+      console.log(error)
+    }
+
+  }
+
+  const HandleCancellation = (hotel:any, bookingid:any) =>{
+    setHotelId(hotel)
+    setBookingId(bookingid)
+    setConfirmationDialog(true)
+  }
+
+
   return (
     <main className="">
       {/* User Header */}
+      <ConfirmationModal
+        setOpen={setConfirmationDialog}
+        open={confirmationDialog}
+        onDelete={cancelBooking}
+        confirmationButtonText= "Mark as Cancel"
+      />
       <div className="">
         <div className="max-w-6xl w-full">
           {/* <div className="text-goldColor font-medium text-3xl leading-30px tracking-extraTight mb-2">
@@ -133,7 +170,6 @@ const MyBookings = ({ tab }: any) => {
                                   className="object-cover w-full h-full"
                                 />
                               </div>
-
                               {/* Right Section (Details) */}
                               <div className="w-full md:w-2/3 p-6 flex flex-col border-black border-r-2 border-y-2 border-dashed justify-between ">
                                 <div>
@@ -184,7 +220,7 @@ const MyBookings = ({ tab }: any) => {
                                 </div>
                                 <div className="mt-2 flex gap-4 justify-end">
                                   <button className="bg-transparent border border-[#02596c] text-[#02596c] py-2 px-4 rounded-md hover:bg-[#02596c] hover:text-white focus:outline-none focus:ring-2 focus:ring-[#02596c] focus:ring-opacity-50 flex gap-2 items-center"><span><FaFileDownload  className="w-6 h-6"/></span><span>Invoice</span></button>
-                                  <button className="bg-transparent border border-red-500 text-red-500 hover:text-white py-2 px-4 rounded-md hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 flex gap-2 items-center"><span><MdCancel  className="w-6 h-6"/></span><span>Cancel</span></button>
+                                  <button className="bg-transparent border border-red-500 text-red-500 hover:text-white py-2 px-4 rounded-md hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 flex gap-2 items-center" onClick={()=>{HandleCancellation(hotel._id, booking._id)}}><span><MdCancel  className="w-6 h-6"/></span><span>Cancel</span></button>
 
                                   {/* <button>Cancel</button> */}
                                  </div>

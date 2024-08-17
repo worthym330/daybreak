@@ -214,15 +214,18 @@ router.post(
         return res.status(400).json({ message: "Hotel not found" });
       }
 
+
       await hotel.save();
 
       const serviceRecord = new ServiceRecord({
         userId: req.userId,
         hotelId: req.params.hotelId,
-        bookingId: newBooking._id, // Ensure newBooking._id is properly set
+        bookingId: hotel.bookings[hotel.bookings.length - 1]._id, // Ensure newBooking._id is properly set
         paymentId: paymentIntentId,
+        orderId:orderId,
         invoiceId: payment.invoice_id || "",
-        servicesUsed: req.body.servicesUsed || [],
+        amount: totalCost,
+        servicesUsed: cart.map((l: { product: { title: any; }; })=> l.product.title) || [],
         paymentStatus: payment.status,
       });
 
@@ -333,18 +336,34 @@ router.post(
   verifyToken,
   async (req: Request, res: Response) => {
     try {
-      const { paymentIntentId, orderId, refundAmount } = req.body;
       const { hotelId, bookingId } = req.params;
 
-      // Verify the payment exists
-      const payment = await razorpayInstance.payments.fetch(paymentIntentId);
+      // Fetch the service record to get payment details
+      const data = await ServiceRecord.findOne({
+        userId: req.userId,
+        hotelId: hotelId,
+        bookingId: bookingId,
+      });
+
+      if (!data) {
+        return res.status(404).json({ message: "Service record not found" });
+      }
+
+      if (!data.amount) {
+        return res.status(400).json({ message: "Amount not found in service record" });
+      }
+
+      console.log(data)
+
+      // Get payment details from Razorpay
+      const payment = await razorpayInstance.payments.fetch(data.paymentId);
 
       if (!payment) {
         return res.status(400).json({ message: "Payment not found" });
       }
 
       if (
-        payment.order_id !== orderId ||
+        payment.order_id !== data.orderId ||
         payment.notes.hotelId !== hotelId ||
         payment.notes.userId !== req.userId
       ) {
@@ -357,11 +376,14 @@ router.post(
         });
       }
 
+      // Calculate the refund amount (10% deduction)
+      const refundAmount = data.amount * 0.9; // Amount should be in paise
+
       // Initiate the refund process using Razorpay API
       const refundResponse = await axios.post(
-        `https://api.razorpay.com/v1/payments/${paymentIntentId}/refund`,
+        `https://api.razorpay.com/v1/payments/${data.paymentId}/refund`,
         {
-          amount: refundAmount, // Amount should be in paise
+          amount: Math.round(refundAmount), // Convert refund amount to nearest integer (paise)
         },
         {
           auth: {
@@ -382,9 +404,9 @@ router.post(
 
       // Remove the booking from the hotel's bookings array
       const hotel = await Hotel.findOneAndUpdate(
-        { _id: hotelId },
+        { _id: hotelId, "bookings._id": bookingId },
         {
-          $pull: { bookings: { _id: bookingId } },
+          $set: { "bookings.$.status": "Cancelled" },
         },
         { new: true }
       );
@@ -416,9 +438,9 @@ router.post(
 
       res
         .status(200)
-        .json({ message: "Booking cancelled and refunded successfully" });
+        .json({ message: "Booking cancelled and refunded successfully", serviceRecord });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       res.status(500).json({ message: "Something went wrong" });
     }
   }
