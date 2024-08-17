@@ -7,7 +7,7 @@ import Pagination from "../components/Pagination";
 import StarRatingFilter from "../components/StarRatingFilter";
 import HotelTypesFilter from "../components/HotelTypesFilter";
 import FacilitiesFilter from "../components/FacilitiesFilter";
-import PriceFilter from "../components/PriceFilter";
+// import PriceFilter from "../components/PriceFilter";
 import { useLocation } from "react-router-dom";
 
 const useQueryParams = () => {
@@ -20,7 +20,7 @@ const Search = () => {
   const [selectedStars, setSelectedStars] = useState<string[]>([]);
   const [selectedHotelTypes, setSelectedHotelTypes] = useState<string[]>([]);
   const [selectedFacilities, setSelectedFacilities] = useState<string[]>([]);
-  const [selectedPrice, setSelectedPrice] = useState<number | undefined>();
+  // const [selectedPrice, setSelectedPrice] = useState<number | undefined>();
   const [sortOption, setSortOption] = useState<string>("");
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
   const queryParams = useQueryParams();
@@ -36,7 +36,7 @@ const Search = () => {
     stars: selectedStars,
     types: selectedHotelTypes,
     facilities: selectedFacilities,
-    maxPrice: selectedPrice?.toString(),
+    // maxPrice: selectedPrice?.toString(),
     sortOption,
   };
 
@@ -80,6 +80,12 @@ const Search = () => {
     );
   };
 
+  const handleClear = () => {
+    setSelectedStars([]);
+    setSelectedHotelTypes([]);
+    setSelectedFacilities([]);
+  };
+
   return (
     <div className="relative grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-5">
       <div
@@ -87,10 +93,10 @@ const Search = () => {
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } transition-transform duration-300 lg:translate-x-0`}
       >
-        <div className="rounded-lg border border-goldColor p-5 h-full lg:h-fit lg:sticky lg:top-10 overflow-y-auto">
+        <div className="rounded-lg  p-5 h-full lg:h-fit lg:sticky lg:top-10 overflow-y-auto">
           <div className="space-y-5 h-full flex flex-col">
-            <div className="flex justify-between items-center border-b border-goldColor pb-5">
-              <h3 className="text-lg font-semibold">Filter by:</h3>
+            <div className="flex justify-between items-center border-b pb-5">
+              <h3 className="text-lg font-semibold">Select Filters</h3>
               <button
                 className="lg:hidden text-xl"
                 onClick={() => setIsSidebarOpen(false)}
@@ -102,6 +108,7 @@ const Search = () => {
               selectedStars={selectedStars}
               onChange={handleStarsChange}
             />
+
             <HotelTypesFilter
               selectedHotelTypes={selectedHotelTypes}
               onChange={handleHotelTypeChange}
@@ -110,10 +117,20 @@ const Search = () => {
               selectedFacilities={selectedFacilities}
               onChange={handleFacilityChange}
             />
-            <PriceFilter
+
+            <div>
+              <button
+                className="text-[#00C0CB] underline underline-offset-4 text-lg"
+                onClick={() => handleClear()}
+              >
+                Clear All
+              </button>
+            </div>
+
+            {/* <PriceFilter
               selectedPrice={selectedPrice}
               onChange={(value?: number) => setSelectedPrice(value)}
-            />
+            /> */}
             <div className="flex-grow pb-5">
               <button
                 className="lg:hidden w-full bg-goldColor text-white py-2 rounded-md"
@@ -137,21 +154,17 @@ const Search = () => {
             <select
               value={sortOption}
               onChange={(event) => setSortOption(event.target.value)}
-              className="p-2 border rounded-md border-goldColor"
+              className="px-4 py-3 border rounded-md bg-transparent"
             >
               <option value="">Sort By</option>
               <option value="starRating">Star Rating</option>
-              <option value="pricePerNightAsc">
-                Price Per Night (low to high)
-              </option>
-              <option value="pricePerNightDesc">
-                Price Per Night (high to low)
-              </option>
+              <option value="pricePerNightAsc">Price (low to high)</option>
+              <option value="pricePerNightDesc">Price (high to low)</option>
             </select>
           </div>
         </div>
-        <span className="text-xl font-bold text-center md:text-left">
-          {hotelData?.pagination.total} Hotels found
+        <span className="text-lg font-semi-bold text-center md:text-left">
+          Showing {hotelData?.pagination.total} Hotels
           {search.destination ? ` in ${search.destination}` : ""}
         </span>
         {hotelData?.data?.map((hotel: any) => (

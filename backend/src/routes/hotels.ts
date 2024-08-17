@@ -6,7 +6,7 @@ import Stripe from "stripe";
 import verifyToken from "../middleware/auth";
 import Razorpay from "razorpay";
 import ServiceRecord from "../models/invoice";
-import axios from 'axios';
+import axios from "axios";
 
 const razorpayInstance = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID as string,
@@ -25,10 +25,10 @@ router.get("/search", async (req: Request, res: Response) => {
         sortOptions = { starRating: -1 };
         break;
       case "pricePerNightAsc":
-        sortOptions = { pricePerNight: 1 };
+        sortOptions = { "productTitle.adultPrice": 1 };
         break;
       case "pricePerNightDesc":
-        sortOptions = { pricePerNight: -1 };
+        sortOptions = { "productTitle.adultPrice": -1 };
         break;
     }
 
@@ -117,7 +117,7 @@ router.post(
   "/:hotelId/bookings/payment-intent",
   verifyToken,
   async (req: Request, res: Response) => {
-    const { cartItems } = req.body;
+    const { cartItems, discount } = req.body;
     const hotelId = req.params.hotelId;
 
     try {
@@ -132,16 +132,16 @@ router.post(
         return sum + itemTotal;
       }, 0);
       // Convert to the smallest currency unit (paise)
-
+      const amountPayable = totalAmount - discount * 100;
       const receipt = `rcpt_${hotelId}_${req.userId}`.slice(0, 40);
       const options = {
-        amount: totalAmount, // amount in the smallest currency unit
+        amount: Math.round(amountPayable), // amount in the smallest currency unit
         currency: "INR",
         receipt: receipt,
         payment_capture: 1, // 1 for automatic capture, 0 for manual
         notes: {
           hotelId,
-          userId: req.userId, 
+          userId: req.userId,
         },
       };
 
@@ -172,14 +172,14 @@ router.post(
   async (req: Request, res: Response) => {
     try {
       const { paymentIntentId, orderId, cart } = req.body;
-  
+
       // Verify the payment signature
       const payment = await razorpayInstance.payments.fetch(paymentIntentId);
-  
+
       if (!payment) {
         return res.status(400).json({ message: "Payment not found" });
       }
-  
+
       if (
         payment.order_id !== orderId ||
         payment.notes.hotelId !== req.params.hotelId ||
@@ -187,21 +187,21 @@ router.post(
       ) {
         return res.status(400).json({ message: "Payment details mismatch" });
       }
-  
+
       if (payment.status !== "captured") {
         return res.status(400).json({
           message: `Payment not captured. Status: ${payment.status}`,
         });
       }
       let totalCost: number = (payment.amount as number) / 100;
-  
+
       const newBooking: BookingType = {
         ...req.body,
         userId: req.userId,
         totalCost: totalCost,
-        cart:cart
+        cart: cart,
       };
-  
+
       const hotel = await Hotel.findOneAndUpdate(
         { _id: req.params.hotelId },
         {
@@ -209,13 +209,13 @@ router.post(
         },
         { new: true }
       );
-  
+
       if (!hotel) {
         return res.status(400).json({ message: "Hotel not found" });
       }
-  
+
       await hotel.save();
-  
+
       const serviceRecord = new ServiceRecord({
         userId: req.userId,
         hotelId: req.params.hotelId,
@@ -225,9 +225,9 @@ router.post(
         servicesUsed: req.body.servicesUsed || [],
         paymentStatus: payment.status,
       });
-  
+
       await serviceRecord.save();
-  
+
       res.status(200).send();
     } catch (error) {
       console.log(error);
@@ -263,10 +263,16 @@ const constructSearchQuery = (queryParams: any) => {
   }
 
   if (queryParams.stars) {
-    const starRatings = Array.isArray(queryParams.stars)
-      ? queryParams.stars.map((star: string) => parseInt(star))
-      : parseInt(queryParams.stars);
+    let starRatings: number[] = [];
 
+    if (Array.isArray(queryParams.stars)) {
+      starRatings = queryParams.stars.map((star: string) => parseInt(star));
+    } else if (queryParams.stars === "Any") {
+      starRatings = [1, 2, 3, 4, 5];
+    } else {
+      const star = parseInt(queryParams.stars);
+      starRatings = Array.from({ length: 5 - star + 1 }, (_, i) => star + i);
+    }
     constructedQuery.star = { $in: starRatings };
   }
 
@@ -311,14 +317,11 @@ router.post("/:hotelId/favourite", async (req, res) => {
 
 router.get("/get/favourites/:userId", async (req, res) => {
   const { userId } = req.params;
-  console.log(userId)
+  console.log(userId);
   try {
-    const favouriteHotels = await Hotel.find({ 
-      favourites: { $elemMatch: { userId: userId } } 
+    const favouriteHotels = await Hotel.find({
+      favourites: { $elemMatch: { userId: userId } },
     });
-    if (!favouriteHotels.length) {
-      return res.status(404).json({ message: "No favorite hotels found for this user" });
-    }
     res.status(200).json(favouriteHotels);
   } catch (error) {
     res.status(500).json({ message: "An error occurred", error });
@@ -366,7 +369,7 @@ router.post(
             password: process.env.RAZORPAY_KEY_SECRET as string,
           },
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         }
       );
@@ -411,14 +414,14 @@ router.post(
 
       await serviceRecord.save();
 
-      res.status(200).json({ message: "Booking cancelled and refunded successfully" });
+      res
+        .status(200)
+        .json({ message: "Booking cancelled and refunded successfully" });
     } catch (error) {
       console.log(error);
       res.status(500).json({ message: "Something went wrong" });
     }
   }
 );
-
-
 
 export default router;

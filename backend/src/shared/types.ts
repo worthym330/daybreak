@@ -6,6 +6,7 @@ export type UserType = {
   lastName: string;
   role: string;
   status: boolean;
+  phone:string;
   resetPasswordToken: any;
   resetPasswordExpires: any;
 };

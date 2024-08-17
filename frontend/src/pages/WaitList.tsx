@@ -11,7 +11,6 @@ import {
 } from "react-icons/fa";
 import { Formik } from "formik";
 import * as Yup from "yup";
-import { toast } from "react-toastify";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL || "";
 import backgroundImage from "../assets/images/sunglasses-1850648_1280 1.png";
@@ -324,9 +323,7 @@ const WaitList = () => {
               </div>
               <div className="w-full lg:w-2/5 rounded-lg ">
                 <video
-                  src={
-                    "https://ixnyqungcmjgqzmlzyka.supabase.co/storage/v1/object/public/daybreakpass/DayBreakPass.mp4"
-                  }
+                  src={"/Daybreakpassslideslowerversion.mp4"}
                   playsInline
                   autoPlay
                   loop

@@ -1,6 +1,6 @@
 import { useQuery } from "react-query";
 import * as apiClient from "../api-client";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 // import hotelImg1 from "../assets/taj.jpg";
 import LatestDestinationCard from "../components/LatestDestinationCard";
 import TopDestinationCard from "../components/TopDestinationCard";
@@ -9,10 +9,13 @@ import InfoSection from "../components/InfoSection";
 import image from "../assets/images/image.png";
 import { FaLocationDot } from "react-icons/fa6";
 import { useSearchContext } from "../contexts/SearchContext";
-import { FormEvent, useState } from "react";
-import { MdCalendarMonth } from "react-icons/md";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import DatePicker from "react-datepicker";
-import { FaSearch } from "react-icons/fa";
+import { FaCalendar, FaSearch } from "react-icons/fa";
+import { initialModalState, ListmyHotelRender } from "./ListmyHotel";
+import Cookies from "js-cookie";
+import { useDispatch } from "react-redux";
+import { loginSuccess, logout } from "../store/authSlice";
 
 const Home = () => {
   const { data: hotels } = useQuery("fetchQuery", () =>
@@ -55,12 +58,14 @@ const Home = () => {
   ];
 
   const search = useSearchContext();
-
+  const [modal, setModal] = useState(initialModalState);
+  const [isLoaded, setIsLoaded] = useState(false);
   const [destination, setDestination] = useState<string>("");
   const [checkIn, setCheckIn] = useState<Date>(search.checkIn);
   const minDate = new Date();
   const maxDate = new Date();
   maxDate.setFullYear(maxDate.getFullYear() + 1);
+  const dispatch = useDispatch();
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
@@ -68,98 +73,157 @@ const Home = () => {
     navigate(`/listings?city=${destination}`);
   };
 
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setIsLoaded(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (videoRef.current) {
+      observer.observe(videoRef.current);
+    }
+
+    return () => {
+      if (videoRef.current) {
+        observer.unobserve(videoRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const auth_token = Cookies.get("authentication");
+    const user = auth_token ? JSON.parse(auth_token) : null;
+    if (user === null) {
+      dispatch(logout());
+    } else {
+      const token = user.token;
+      dispatch(loginSuccess({ user, token }));
+    }
+  }, []);
+
   return (
     <div className="space-y-10">
+      <ListmyHotelRender modal={modal} setModal={setModal} />
       <section className="relative w-full h-screen overflow-hidden -mt-10">
-      <video
-            src={
-              "https://ixnyqungcmjgqzmlzyka.supabase.co/storage/v1/object/public/daybreakpass/bgimage.mp4?t=2024-07-15T12%3A51%3A18.983Z"
-            }
-            playsInline
-            autoPlay
-            loop
-            muted
-            className="absolute inset-0 w-full h-[94%] object-cover"
-          ></video>
+        {!isLoaded && (
+          <img
+            src={"/3.jpg"}
+            alt="Welcome"
+            className={`absolute inset-0 w-full h-[95%] object-cover ${
+              isLoaded ? "hidden" : "block"
+            } `}
+          />
+        )}
+        <video
+          ref={videoRef}
+          src={"/Daybreakpassslideslowerversion.mp4"}
+          playsInline
+          autoPlay
+          loop
+          muted
+          className={`absolute inset-0 w-full h-[95%] object-cover ${
+            isLoaded ? "block" : "hidden"
+          }`}
+          onLoadedData={() => setIsLoaded(true)}
+        ></video>
 
-          {/* Hero Section */}
-          <div className="absolute bottom-0 w-full flex flex-col justify-center items-center bg-transparent text-center p-4">
-            <div className="max-w-screen-lg mb-16">
-              <h1 className="text-4xl md:text-6xl text-white font-normal font-LuzuryF2 tracking-wider mb-6 leading-10">
-                FIND YOUR NEXT DAYCATION
-              </h1>
-              <p className="text-lg md:text-2xl text-white mb-4 font-poppins">
-                Discover luxury by the day: Book Day Passes, Daybeds, Cabanas &
-                Experiences at premier hotels in your city.
-              </p>
-            </div>
+        <div className="absolute bottom-0 w-full flex flex-col justify-center items-center bg-transparent text-center p-4">
+          <div className="max-w-screen-lg mb-16">
+            <h1 className="text-4xl md:text-6xl text-white font-normal font-LuzuryF2 tracking-wider mb-6 leading-10">
+              FIND YOUR NEXT DAYCATION
+            </h1>
+            <p className="text-lg md:text-2xl text-white mb-4 font-poppins">
+              Discover luxury by the day: Book Day Passes, Daybeds, Cabanas &
+              Experiences at premier hotels in your city.
+            </p>
+          </div>
 
-            <div className="w-full md:w-2/3 lg:w-1/2">
-              <form
-                onSubmit={handleSubmit}
-                className="px-8 py-8 bg-white rounded-full shadow-lg h-14 flex items-center justify-between"
-              >
-                <div className="w-2/5 md:w-1/3 flex items-center h-full relative border-r-2 border-gray-800">
-                  <FaLocationDot className="text-xl mr-2 text-[#02596c]" />
+          <div className="w-full md:w-2/3 lg:w-1/2">
+            <form
+              className="flex items-center p-4 bg-white rounded-full shadow-md"
+              onSubmit={handleSubmit}
+            >
+              <div className="flex items-center flex-1 px-4">
+                <div className="flex items-center space-x-2">
+                  <span className="text-xl">
+                    <FaLocationDot className="w-6 h-6 text-[#02596c]" />
+                  </span>
                   <input
+                    type="text"
                     placeholder="Where are you going?"
-                    className="text-sm md:text-lg w-full focus:outline-none text-[#02596c] placeholder:text-[#02596c]"
+                    className="outline-none bg-transparent placeholder-[#02596c] text-[#02596c] p-2 w-full"
                     value={destination}
                     onChange={(event) => setDestination(event.target.value)}
                   />
                 </div>
-                <div className="w-3/5 md:w-2/3 flex-1 flex items-center h-full pl-2 text-[#02596c] border-l-2 border-gray-800">
-                  <MdCalendarMonth className="text-xl mr-2" />
-                  <div className="w-full">
-                    <DatePicker
-                      selected={checkIn}
-                      onChange={(date) => setCheckIn(date as Date)}
-                      selectsStart
-                      startDate={checkIn}
-                      minDate={minDate}
-                      maxDate={maxDate}
-                      placeholderText="Check-in Date"
-                      className="w-full bg-white focus:outline-none placeholder:text-[#02596c]"
-                      wrapperClassName="w-full"
-                    />
-                  </div>
+              </div>
+              <div className="h-8 border border-gray-300"></div>
+              <div className="flex items-center flex-1 px-4">
+                <div className="flex items-center space-x-2">
+                  <span className="text-xl text-[#02596c]">
+                    <FaCalendar className="w-6 h-6" />
+                  </span>
+                  <DatePicker
+                    selected={checkIn}
+                    onChange={(date) => setCheckIn(date as Date)}
+                    selectsStart
+                    startDate={checkIn}
+                    minDate={minDate}
+                    // isClearable={true}
+                    maxDate={maxDate}
+                    placeholderText="Check-In Date"
+                    className="outline-none bg-transparent placeholder-[#02596c] text-[#02596c] p-2 w-full"
+                  />
                 </div>
-                <button
-                  className="h-10 w-10 md:w-24 text-white text-sm font-medium rounded-full bg-orange-500 flex items-center justify-center"
-                  type="submit"
-                >
-                  <FaSearch className="sm:mr-2" />
-                  <span className="hidden md:inline-block">Search</span>
-                </button>
-              </form>
-            </div>
+              </div>
+              <button
+                className="flex items-center justify-center px-6 py-2 ml-2 text-white bg-orange-500 rounded-full"
+                type="submit"
+              >
+                <span className="text-lg">
+                  <FaSearch className="text-white w-6 h-6" />
+                </span>
+                <span className="ml-1 text-lg hidden md:block">Search</span>
+              </button>
+            </form>
           </div>
+        </div>
       </section>
 
-      <section className="container mx-auto">
+      <section className="container mx-auto pt-10">
         <InfoSection />
       </section>
 
       {/* Latest Destinations */}
-      <section className="lg:container lg:mx-auto">
+      <section className="lg:container lg:mx-auto pt-10">
         <h2 className="text-center text-goldColor text-2xl md:text-3xl mb-3 font-LuzuryF2 uppercase">
           <span className="font-bold">Popular</span> <span>Destinations</span>
         </h2>
         <p className="text-center mb-5 text-base md:text-lg text-fontSecondaryColor">
           Most recent destinations added by our hosts
         </p>
-        <div className="grid gap-4 lg:gap-2 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 px-4 lg:px-0">
-          {latestDestHotels.slice(0, 6).reverse().map((hotel: any) => (
-            <Link to={`/hotel-detail/${hotel._id}`}>
+        <div className="grid gap-4 lg:gap-2 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 px-4 lg:px-0 pt-10">
+          {latestDestHotels
+            .slice(0, 6)
+            .reverse()
+            .map((hotel: any) => (
+              // <Link to={`/hotel-detail/${hotel._id}`}>
               <LatestDestinationCard key={hotel.id} hotel={hotel} />
-            </Link>
-          ))}
+              // </Link>
+            ))}
         </div>
       </section>
 
       {/* Latest Destinations End */}
 
-      <div className="relative py-6 rounded-lg my-8">
+      <div className="relative py-6 rounded-lg my-8 pt-10">
         <div className="flex flex-col md:flex-row items-center bg-gradient-to-r from-[#018292] to-[#00bdc8]">
           <div className="lg:w-1/3 w-full">
             <img
@@ -185,7 +249,7 @@ const Home = () => {
         </div>
       </div>
       {/* Top Destinations */}
-      <section className="container mx-auto">
+      <section className="container mx-auto pt-10">
         <div className="flex flex-col">
           <h2 className="text-center text-goldColor text-2xl md:text-3xl mb-3 font-LuzuryF2 uppercase">
             <span className="font-bold">Explore</span> <span>Destinations</span>
@@ -194,7 +258,7 @@ const Home = () => {
           Most recent desinations added by our hosts
         </p> */}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mt-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mt-10">
             {topDestinations.map((hotel: any) => {
               return <TopDestinationCard hotel={hotel} key={hotel._id} />;
             })}
@@ -203,7 +267,7 @@ const Home = () => {
       </section>
       {/* Top Destinations End */}
       <section className="container mx-auto">
-        <div className="py-14 px-4 mt-20">
+        <div className="py-14 px-4 mt-10">
           <h2 className="text-2xl font-bold text-left text-goldColor mb-10">
             HOW IT WORKS
           </h2>
@@ -218,8 +282,8 @@ const Home = () => {
                 always adding new properties.
               </p>
               <div className="bg-[#00c0cb] text-white py-2 px-4 rounded-md w-full flex flex-col justify-center items-center">
-                <span className="font-bold text-xl">150,000+ </span>
-                <span>Happy Daycationers</span>
+                <span className="font-bold text-xl">Delighted </span>
+                <span>Daycationers</span>
               </div>
             </div>
 
@@ -266,7 +330,7 @@ const Home = () => {
               <span className="flex text-2xl md:text-4xl mb-4 text-goldColor font-bold font-LuzuryF1 uppercase text-center justify-center">
                 Are You A Hotelier?
               </span>
-              <span className="text-center max-w-2xl mx-auto mb-8 md:mb-12 text-sm md:text-2xl text-center">
+              <span className="text-center max-w-2xl mx-auto mb-8 md:mb-12 text-sm md:text-2xl">
                 Join the world's top hotel brands using Daycation to increase
                 their bottom line revenue.
               </span>
@@ -306,7 +370,7 @@ const Home = () => {
                 className="font-inter w-80 py-4 rounded-xl font-xl"
                 type="button"
                 onClick={() => {
-                  navigate("/partner/register");
+                  setModal((prev: any) => ({ ...prev, state: true }));
                 }}
               >
                 Become a Hotel Partner

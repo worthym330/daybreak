@@ -179,9 +179,7 @@ const Contact = () => {
                     values,
                     isSubmitting,
                     errors,
-                    touched,
                     handleChange,
-                    resetForm,
                   }) => (
                     <form onSubmit={handleSubmit} noValidate>
                       <ContactInputBox

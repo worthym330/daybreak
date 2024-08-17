@@ -1,28 +1,27 @@
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
-import { Link } from "react-router-dom";
-import { facilityIcons, FacilityKey, Tooltip } from "./Detail";
-import { FaHeart } from "react-icons/fa";
-import { useMutation, useQueryClient } from "react-query";
-import { toast } from "react-toastify";
+// import { Link } from "react-router-dom";
+// import { facilityIcons, FacilityKey, Tooltip } from "./Detail";
+import { FaFileDownload } from "react-icons/fa";
+// import { toast } from "react-toastify";
+import { titleIcons, TitleKey } from "../components/ProductCard";
+import { MdCancel } from "react-icons/md";
+import LatestDestinationCard from "../components/LatestDestinationCard";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
-const MyBookings = () => {
+const MyBookings = ({ tab }: any) => {
   // const { data: hotels } = useQuery("fetchMyBookings", apiClient.fetchMyBookings);
-  const [activeTab, setActiveTab] = useState("bookings");
   const personalInfo = JSON.parse(Cookies.get("authentication") || "[]");
   const [bookingData, setBookingData] = useState([]);
   const [favourites, setFavourites] = useState([]);
-  const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (activeTab === "bookings") {
+    if (tab === "bookings") {
       getMyBookings();
-    } else if (activeTab === "favourites") {
-      getFavourites();
     } else {
+      getFavourites();
     }
-  }, [activeTab]);
+  }, [tab]);
 
   async function getMyBookings() {
     try {
@@ -62,43 +61,43 @@ const MyBookings = () => {
     }
   }
 
-  const toggleFavourite = async (hotelId: any) => {
-    if (personalInfo !== null) {
-      const user: any = {
-        userId: personalInfo.id,
-        firstName: personalInfo.name.split(" ")[0],
-        lastName: personalInfo.name.split(" ").pop(),
-        email: personalInfo.email,
-      };
+  // const toggleFavourite = async (hotelId: any) => {
+  //   if (personalInfo !== null) {
+  //     const user: any = {
+  //       userId: personalInfo.id,
+  //       firstName: personalInfo.name.split(" ")[0],
+  //       lastName: personalInfo.name.split(" ").pop(),
+  //       email: personalInfo.email,
+  //     };
 
-      try {
-        const res = await fetch(
-          `${API_BASE_URL}/api/hotels/${hotelId}/favourite`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(user),
-          }
-        );
-        if (res.ok) {
-          // Handle success if necessary
-        }
-      } catch (error) {
-        // Handle error if necessary
-      }
-    } else {
-      // showToast({ message: "Please log in to save", type: "ERROR" });
-      toast.error("Please log in to save");
-    }
-  };
+  //     try {
+  //       const res = await fetch(
+  //         `${API_BASE_URL}/api/hotels/${hotelId}/favourite`,
+  //         {
+  //           method: "POST",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //           body: JSON.stringify(user),
+  //         }
+  //       );
+  //       if (res.ok) {
+  //         // Handle success if necessary
+  //       }
+  //     } catch (error) {
+  //       // Handle error if necessary
+  //     }
+  //   } else {
+  //     // showToast({ message: "Please log in to save", type: "ERROR" });
+  //     toast.error("Please log in to save");
+  //   }
+  // };
 
   return (
-    <main className="space-y-5">
+    <main className="">
       {/* User Header */}
-      <div className="py-4 px-10">
-        <div className="mx-auto max-w-6xl w-full">
+      <div className="">
+        <div className="max-w-6xl w-full">
           {/* <div className="text-goldColor font-medium text-3xl leading-30px tracking-extraTight mb-2">
             {personalInfo.name}
           </div> */}
@@ -109,99 +108,86 @@ const MyBookings = () => {
       </div>
       {/* User Header Ends */}
 
-      <div className="mx-auto max-w-6xl w-full pt-5">
-        <h1 className="text-2xl text-center lg:text-left font-medium mb-5 pl-0 lg:pl-5">
-          My Account
+      <div className="w-full">
+        <h1 className="text-2xl text-center text-black font-medium my-5 pl-0 lg:pl-5">
+          MY {tab.toUpperCase()}
         </h1>
         {/* Tabs */}
         <div className="">
-          <section className="py-4">
-            <ul className="overflow-x-auto flex flex-row px-5 gap-3">
-              <li className="">
-                <button
-                  className={`border capitalize px-4 py-3 rounded-lg ${
-                    activeTab === "bookings"
-                      ? "bg-[#fff6ea] text-darkGold border border-goldColor"
-                      : ""
-                  }`}
-                  onClick={() => setActiveTab("bookings")}
-                >
-                  Bookings
-                </button>
-              </li>
-              <li>
-                <button
-                  className={`border capitalize px-4 py-3 rounded-lg ${
-                    activeTab === "favourites"
-                      ? "bg-[#fff6ea] text-darkGold border border-goldColor"
-                      : ""
-                  }`}
-                  onClick={() => setActiveTab("favourites")}
-                >
-                  Favourites
-                </button>
-              </li>
-              {/* <li>
-                <button
-                  className={`border capitalize px-4 py-3 rounded-lg ${activeTab === "waitlist" ? "bg-[#fff6ea] text-darkGold border border-goldColor" : ""}`}
-                  onClick={() => setActiveTab("waitlist")}
-                >
-                  Cancelled
-                </button>
-              </li> */}
-            </ul>
+          <section className="py-3">
             {/* Content Shown when clicked on Bookings*/}
-            {activeTab === "bookings" && (
-              <div className="mx-5 my-4 pt-5">
-                <h3 className="border-b border-goldColor capitalize text-xl leading-[30px] font-medium pb-4 px-4 text-goldColor">
-                  My Bookings
-                </h3>
-                <div className="space-y-5 rounded-xl shadow-lg">
+            {tab === "bookings" && (
+              <div className="mx-20 my-4">
+                <div className="space-y-10">
                   {bookingData && bookingData.length > 0 ? (
                     bookingData.map((hotel: any) => (
-                      <div key={hotel._id} className="">
+                      <div key={hotel._id} className="space-y-5">
                         {hotel.bookings.map((booking: any) => (
-                          <div
-                            key={booking._id}
-                            className="grid grid-cols-1 lg:grid-cols-2 border border-goldColor rounded-lg p-4 gap-5"
-                          >
-                            <div className="lg:w-full lg:h-[250px]">
-                              <img
-                                src={hotel.imageUrls[0]}
-                                className="h-[250px] object-cover border border-[#00c0cb] rounded-lg"
-                              />
-                            </div>
-                            <div className="flex flex-col gap-4 overflow-y-auto max-h-[300px]">
-                              <div className="text-2xl font-bold">
-                                {hotel.name}
-                                <div className="text-xs font-normal">
-                                  {hotel.city}, {hotel.state}, India
+                          <div key={booking._id} className="">
+                            <div className="flex flex-col md:flex-row bg-[#edfdff] rounded-lg overflow-hidden">
+                              {/* Left Section (Image) */}
+                              <div className="w-full md:w-1/3">
+                                <img
+                                  src={hotel.imageUrls[0]}
+                                  alt={hotel.name}
+                                  className="object-cover w-full h-full"
+                                />
+                              </div>
+
+                              {/* Right Section (Details) */}
+                              <div className="w-full md:w-2/3 p-6 flex flex-col border-black border-r-2 border-y-2 border-dashed justify-between ">
+                                <div>
+                                  <h3 className="text-2xl font-bold text-[#02596c]">
+                                    {hotel.name}
+                                  </h3>
+                                  <p className="">
+                                    {hotel.city}, {hotel.state}
+                                  </p>
                                 </div>
-                              </div>
-                              <div>
-                                <span className="font-bold mr-2">Dates: </span>
-                                <span>
-                                  {new Date(booking.checkIn).toDateString()}
-                                </span>
-                              </div>
-                              <div className="">
-                                {booking.cart.map((e: any) => (
-                                  <span
-                                    key={e}
-                                    className="bg-goldColor p-2 rounded-md text-xs text-white"
-                                  >
-                                    {console.log(e)}
-                                    {e.product.title}
-                                  </span>
-                                ))}
-                              </div>
-                              
-                              <div>
-                                <span className="font-bold mr-2">Guests:</span>
-                                <span>
-                                  {booking.cart[0].adultCount} adults,{" "}
-                                  {booking.cart[0].childCount} children
-                                </span>
+
+                                <div className="mt-5 flex flex-col gap-2">
+                                  <p className="flex gap-2">
+                                    <span className="text-[#02596c] font-semibold">
+                                      Dates:
+                                    </span>{" "}
+                                    <span className="font-medium text-base">
+                                      {new Date(booking.checkIn).toDateString()}
+                                    </span>
+                                  </p>
+                                  <p className="flex gap-2">
+                                    <span className="text-[#02596c] font-semibold">
+                                      Guests:
+                                    </span>{" "}
+                                    <span className="font-medium text-base">
+                                      {booking.cart[0].adultCount} adults,{" "}
+                                      {booking.cart[0].childCount} children
+                                    </span>
+                                  </p>
+                                </div>
+
+                                <div className="mt-2">
+                                  {booking.cart.slice(0,4).map((e: any) => (
+                                    <button
+                                      key={e.product.title}
+                                      className="bg-orange-500 text-white py-2 px-4 rounded-md shadow hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 flex gap-2 items-center"
+                                    >
+                                      <span>
+                                        {
+                                          titleIcons[
+                                            e.product.title.toUpperCase() as TitleKey
+                                          ]
+                                        }
+                                      </span>
+                                      <span>{e.product.title}</span>
+                                    </button>
+                                  ))}
+                                </div>
+                                <div className="mt-2 flex gap-4 justify-end">
+                                  <button className="bg-transparent border border-[#02596c] text-[#02596c] py-2 px-4 rounded-md hover:bg-[#02596c] hover:text-white focus:outline-none focus:ring-2 focus:ring-[#02596c] focus:ring-opacity-50 flex gap-2 items-center"><span><FaFileDownload  className="w-6 h-6"/></span><span>Invoice</span></button>
+                                  <button className="bg-transparent border border-red-500 text-red-500 hover:text-white py-2 px-4 rounded-md hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 flex gap-2 items-center"><span><MdCancel  className="w-6 h-6"/></span><span>Cancel</span></button>
+
+                                  {/* <button>Cancel</button> */}
+                                 </div>
                               </div>
                             </div>
                           </div>
@@ -219,69 +205,12 @@ const MyBookings = () => {
             {/* Content Shown when clicked on Bookings End*/}
 
             {/* Content Shown when clicked on Favourites*/}
-            {activeTab === "favourites" && (
-              <div className="mx-5 my-4 pt-5">
-                <h3 className="border-b capitalize text-xl leading-[30px] font-medium pb-4 px-4 text-goldColor">
-                  My Favourites
-                </h3>
-                <div className="space-y-5 rounded-xl shadow-lg">
+            {tab === "favourites" && (
+              <div className="mx-5 my-4">
+                <div className="grid gap-4 lg:gap-2 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 px-4 lg:px-0">
                   {favourites && favourites.length > 0 ? (
                     favourites.map((hotel: any) => (
-                      <Link
-                        to={`/hotel-detail/${hotel._id}`}
-                        className="grid grid-cols-1 lg:grid-cols-[1fr_3fr] border border-goldColor rounded-lg p-8 gap-5"
-                      >
-                        <div className="lg:w-full lg:h-[250px]">
-                          <img
-                            src={hotel.imageUrls[0]}
-                            className="w-full h-full object-cover object-center rounded-md"
-                          />
-                        </div>
-                        <div className="flex flex-col gap-4 overflow-y-auto max-h-[300px]">
-                          <div className="flex justify-between">
-                            <div className="text-2xl font-bold">
-                              {hotel.name}
-                              <div className="text-xs font-normal">
-                                {hotel.city}, {hotel.state}
-                              </div>
-                            </div>
-                            <div>
-                              <button
-                                onClick={() => {
-                                  toggleFavourite(hotel._id);
-                                }}
-                              >
-                                {hotel._id ? (
-                                  <span className="flex gap-2">
-                                    <FaHeart className="w-6 h-6 text-red-500 fill-current" />
-                                    <span>Saved</span>
-                                  </span>
-                                ) : (
-                                  <span className="flex gap-2">
-                                    <FaHeart className="w-6 h-6 text-gray-300 fill-current" />
-                                    <span>Save</span>
-                                  </span>
-                                )}
-                              </button>
-                            </div>
-                          </div>
-                          <div className="flex gap-2 flex-wrap">
-                            {hotel.facilities.map(
-                              (facility: any, index: number) => (
-                                <Tooltip key={index} text={facility}>
-                                  <div className="border border-goldColor rounded-md p-2 flex items-center space-x-2 cursor-pointer text-goldColor text-xl">
-                                    {facilityIcons[facility as FacilityKey] && (
-                                      <span>
-                                        {facilityIcons[facility as FacilityKey]}
-                                      </span>
-                                    )}
-                                  </div>
-                                </Tooltip>
-                              )
-                            )}
-                          </div>
-                        </div>
-                      </Link>
+                      <LatestDestinationCard key={hotel.id} hotel={hotel} />
                     ))
                   ) : (
                     <div className="capitalize font-regular px-4 py-[22px] text-sm">
@@ -292,21 +221,6 @@ const MyBookings = () => {
               </div>
             )}
             {/* Content Shown when clicked on Favourites End*/}
-
-            {/* Content Shown when clicked on Waitlist*/}
-            {activeTab === "waitlist" && (
-              <div className="mx-5 my-4 pt-5 rounded-xl shadow-lg border">
-                <h3 className="border-b capitalize text-xl leading-[30px] font-medium pb-4 px-4 text-goldColor">
-                  My Waitlist
-                </h3>
-                <div className="">
-                  <div className="capitalize font-regular px-4 py-[22px] text-sm">
-                    No Bookings Found
-                  </div>
-                </div>
-              </div>
-            )}
-            {/* Content Shown when clicked on Waitlist End*/}
           </section>
         </div>
         {/* Tabs Ends */}

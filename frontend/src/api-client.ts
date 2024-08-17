@@ -1,5 +1,3 @@
-import { RegisterFormData } from "./pages/Register";
-import { SignInFormData } from "./pages/SignIn";
 import {
   HotelSearchResponse,
   HotelType,
@@ -19,7 +17,7 @@ export const fetchCurrentUser = async (): Promise<UserType> => {
   return response.json();
 };
 
-export const register = async (formData: RegisterFormData) => {
+export const register = async (formData: any) => {
   const response = await fetch(`${API_BASE_URL}/api/users/register`, {
     method: "POST",
     credentials: "include",
@@ -36,7 +34,7 @@ export const register = async (formData: RegisterFormData) => {
   }
 };
 
-export const signIn = async (formData: SignInFormData) => {
+export const signIn = async (formData: any) => {
   const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
     method: "POST",
     credentials: "include",
@@ -204,7 +202,11 @@ export const fetchHotelByName = async (name: string): Promise<HotelType> => {
   return response.json();
 };
 
-export const createPaymentIntent = async (hotelId: string, cartItems: any) => {
+export const createPaymentIntent = async (
+  hotelId: string,
+  cartItems: any,
+  discount: number
+) => {
   try {
     const response = await fetch(
       `${API_BASE_URL}/api/hotels/${hotelId}/bookings/payment-intent`,
@@ -214,7 +216,7 @@ export const createPaymentIntent = async (hotelId: string, cartItems: any) => {
           "Content-Type": "application/json", // Assuming you have a token for authentication
         },
         credentials: "include",
-        body: JSON.stringify({ cartItems }),
+        body: JSON.stringify({ cartItems, discount }),
       }
     );
     if (!response.ok) {

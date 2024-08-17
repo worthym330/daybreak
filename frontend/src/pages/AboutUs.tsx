@@ -3,6 +3,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import aboutImage from "../assets/images/about.jpg";
 import founderImg from "../assets/images/vitthal-kushe.jpeg"
+import { FaLinkedinIn } from "react-icons/fa";
 
 const About = () => {
   return (
@@ -70,7 +71,16 @@ const About = () => {
                   className="rounded-full mb-2"
                 />
                 <h3 className="text-xl font-bold">Vitthal Kushe</h3>
+                <span className="flex gap-2 justify-center items-center">
                 <p className="text-gray-700">Founder</p>
+
+                <a
+                  href="https://www.linkedin.com/in/vitthal-kushe/"
+                  target="_blank"
+                >
+                  <FaLinkedinIn className="w-8 h-8 text-[#0a66c2]" />
+                </a>
+                </span>
               </div>
               <div className="w-[full] md:w-1/2">
                 <p className="text-lg mb-6 text-center md:text-left">
@@ -79,6 +89,29 @@ const About = () => {
                   estate ventures. Our mission is to drive new revenue streams
                   for luxury resorts and wellness retreats through DayBreakPass.
                 </p>
+              </div>
+            </div>
+          </section>
+
+          <section className="py-4 mt-12 md:mt-16">
+            <h2 className="text-2xl md:text-4xl font-bold mb-5 text-center text-goldColor">
+              Recognized by DPIT
+            </h2>
+            <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10">
+              <div className="w-full md:w-1/2">
+                <p className="text-lg mb-6 text-center md:text-left">
+                  We are proud to be recognized by the Department for Promotion of Industry and Internal Trade (DPIT). This recognition is a testament to our innovative approach and commitment to creating value in the hospitality industry.
+                </p>
+                <p className="text-lg mb-6 text-center md:text-left">
+                  Our DPIT certificates validate our status as a startup with significant potential, helping us to collaborate with industry leaders and expand our impact on the luxury travel and wellness sectors.
+                </p>
+              </div>
+              <div className="w-full md:w-1/2 h-[350px]">
+                <img
+                  src={"/dpitcertificate.png"}
+                  alt="DPIT Certificates"
+                  className="w-full h-full object-cover"
+                />
               </div>
             </div>
           </section>

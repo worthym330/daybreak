@@ -12,6 +12,8 @@ import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 import Button from "../../components/Button";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 type Props = {
@@ -44,9 +46,8 @@ const GuestInfoForm = ({ hotelId, pricePerNight }: Props) => {
   const navigate = useNavigate();
   // const location = useLocation();
   // const { showToast } = useAppContext();
+  const auth = useSelector((state: RootState) => state.auth);
 
-  const auth_token = Cookies.get("authentication");
-  const isLoggedIn = auth_token ? JSON.parse(auth_token) : null;
   const [modal, setModal] = useState(initialModalState);
 
   const {
@@ -357,7 +358,7 @@ const GuestInfoForm = ({ hotelId, pricePerNight }: Props) => {
               </span>
             )}
           </div>
-          {isLoggedIn ? (
+          {auth.isAuthenticated ? (
             <Button className="bg-blue-600 text-white h-full p-2 font-bold hover:bg-blue-500 text-xl" >
               Book Now
             </Button>

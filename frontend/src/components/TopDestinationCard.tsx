@@ -1,8 +1,7 @@
 // import { Link } from "react-router-dom";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { HotelType } from "../../../backend/src/shared/types";
 import { useSearchContext } from "../contexts/SearchContext";
-import { FormEvent, useState } from "react";
 
 type Props = {
   hotel: HotelType;

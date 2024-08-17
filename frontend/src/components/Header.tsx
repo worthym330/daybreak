@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-// import { useAppContext } from "../contexts/AppContext";
-import SignOutButton from "./SignOutButton";
 import { Formik } from "formik";
 import Modal from "./modal";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
@@ -9,15 +7,15 @@ import * as Yup from "yup";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import { useMutation, useQueryClient } from "react-query";
-import { GiHamburgerMenu } from "react-icons/gi";
 import * as apiClient from "../api-client";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import Button from "./Button";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { FaEye, FaEyeSlash, FaUserCircle } from "react-icons/fa";
 import { BsSuitcase } from "react-icons/bs";
+import { loginSuccess, logout } from "../store/authSlice";
 
 export const initialModalState = {
   type: "add",
@@ -211,6 +209,9 @@ export const RenderLoginModal = ({
     setSignupModal((prev: any) => ({ ...prev, state: true }));
   }
   const [showPassword, setShowPassword] = useState(false);
+  const dispatch = useDispatch();
+  // const user = useSelector((state: RootState) => state.auth)
+  // console.log(user)
   const responseLoginGoogle = async (response: any) => {
     const token = response.credential;
     const user = jwtDecode<CustomJwtPayload>(token);
@@ -243,6 +244,9 @@ export const RenderLoginModal = ({
         Cookies.set("authentication", JSON.stringify(body.user), {
           expires: 1,
         });
+        const user = body.user;
+        const token = body.user.token;
+        dispatch(loginSuccess({ user, token }));
       } else {
         // showToast({ message: "Failed to Login!", type: "ERROR" });
         toast.error("Failed to Login!");
@@ -281,9 +285,13 @@ export const RenderLoginModal = ({
             if (isBooking) {
               paymentIntent();
             }
+            console.log(body.user);
             Cookies.set("authentication", JSON.stringify(body.user), {
               expires: 1,
             });
+            const user = body.user;
+            const token = body.user.token;
+            dispatch(loginSuccess({ user, token }));
           }
         } catch (error: any) {
           console.error("Error during sign in:", error);
@@ -436,12 +444,13 @@ export const RenderLoginModal = ({
               <hr className="border-gray-300 flex-grow" />
               <span className="text-sm text-center">
                 Are you a hotel partner?{" "}
-                <Link
+                <a
                   className="underline text-goldColor"
-                  to="/partner/sign-in"
+                  href={import.meta.env.VITE_ADMIN_REDIRECT}
+                  target="_blank"
                 >
                   Log in here
-                </Link>
+                </a>
               </span>
             </div>
           </form>
@@ -697,15 +706,14 @@ const Header = () => {
   // const { showToast } = useAppContext();
   const [modal, setModal] = useState(initialModalState);
   const [signupModal, setSignupModal] = useState(initialSignupModalState);
-
-  const auth_token = Cookies.get("authentication");
-  const userLogined = auth_token ? JSON.parse(auth_token) : null;
+  const auth = useSelector((state: RootState) => state.auth);
   const navigate = useNavigate();
   const location = useLocation();
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [resetModal, setResetModal] = useState(initialResetModal);
   const cart = useSelector((state: RootState) => state.cart.items);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dispatch = useDispatch();
 
   const headerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -733,6 +741,7 @@ const Header = () => {
     onSuccess: async () => {
       Cookies.remove("authentication");
       // showToast({ message: "Signed Out!", type: "SUCCESS" });
+      dispatch(logout());
       toast.success("Successfully logout");
       navigate("/");
     },
@@ -772,12 +781,11 @@ const Header = () => {
       />
       <ResetPassRequest modal={resetModal} setModal={setResetModal} />
       <div
-        className={`w-full 
-         ${
-           location.pathname === "/"
-             ? "bg-transparent text-white absolute z-10 top-0"
-             : "bg-white text-black border-gray-200 border shadow-lg py-4"
-         }`}
+        className={`w-full ${
+          location.pathname === "/"
+            ? "bg-transparent text-white absolute z-10 top-0"
+            : "bg-white text-black border-gray-200 border shadow-lg py-4"
+        }`}
         ref={headerRef}
       >
         <div
@@ -785,14 +793,16 @@ const Header = () => {
             location.pathname !== "/" && "-mt-4"
           }`}
         >
-          <span className="font-bold text-base md:text-lg font-montserrat text-white">
-            DayBreakPass is launching on{" "}
-            <span className="text-goldColor">August 15</span>.
+          <span className="font-bold text-xl font-montserrat text-white">
+            Pilot run is live. Please join the{" "}
+            <Link to="/waitlist" className="text-goldColor">
+              waitlist click here
+            </Link>
           </span>
         </div>
         <div className="flex flex-wrap items-center justify-between mx-auto py-2 relative px-2 md:px-5 ">
           <Link
-            className={`hidden md:flex items-center px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 `}
+            className={`hidden md:flex items-center px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-goldColor hover:text-white `}
             to="/list-my-hotel"
           >
             List My Hotel
@@ -810,7 +820,7 @@ const Header = () => {
                 {cartItems.length}{" "}
               </span>
             </Link>
-            {userLogined !== null ? (
+            {auth.isAuthenticated ? (
               <>
                 <button
                   type="button"
@@ -825,7 +835,7 @@ const Header = () => {
                     src="/profile.jpg"
                     alt="user photo"
                   />
-                  <span className="block text-sm">Hii, {userLogined.name}</span>
+                  <span className="block text-sm">Hii, {auth?.user?.name}</span>
                 </button>
                 {isDropdownOpen && (
                   <div
@@ -833,37 +843,37 @@ const Header = () => {
                     id="user-dropdown"
                   >
                     <ul className="py-2" aria-labelledby="user-menu-button">
-                      <li>
-                        <a
-                          href="#"
+                      {/* <li onClick={toggleDropdown}>
+                        <Link
+                          to="#"
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
                         >
-                          My Profile
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="#"
+                          Profile
+                        </Link>
+                      </li> */}
+                      <li onClick={toggleDropdown}>
+                        <Link
+                          to="/my-bookings"
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
                         >
-                          My Trips
-                        </a>
+                          Bookings
+                        </Link>
                       </li>
-                      <li>
+                      {/* <li onClick={toggleDropdown}>
                         <a
                           href="#"
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
                         >
                           Giftcard
                         </a>
-                      </li>
-                      <li>
-                        <a
-                          href="#"
+                      </li> */}
+                      <li onClick={toggleDropdown}>
+                        <Link
+                          to="/my-favourites"
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
                         >
-                          My Favourite
-                        </a>
+                          Favourites
+                        </Link>
                       </li>
                       <li>
                         <span
@@ -897,7 +907,7 @@ const Header = () => {
                     id="user-dropdown"
                   >
                     <ul className="py-2" aria-labelledby="user-menu-button">
-                      <li>
+                      <li onClick={toggleDropdown}>
                         <span
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white cursor-pointer"
                           onClick={() => navigate("/waitlist")}

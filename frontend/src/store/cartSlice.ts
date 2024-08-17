@@ -4,12 +4,16 @@ interface CartState {
   items: any[];
   error: boolean;
   date?: any;
+  appliedCoupon?: string;
+  discount?: number;
 }
 
 const initialState: CartState = {
   items: [],
   error: false,
   date: null,
+  appliedCoupon: "",
+  discount: 0,
 };
 
 const cartSlice = createSlice({
@@ -45,9 +49,31 @@ const cartSlice = createSlice({
     setDate(state, action) {
       state.date = action.payload;
     },
+    setAppliedCoupon: (state, action: PayloadAction<string>) => {
+      state.appliedCoupon = action.payload;
+    },
+    removeCoupon: (state) => {
+      state.appliedCoupon = ""; // Remove the applied coupon
+    },
+    setDiscountValue: (state, action: PayloadAction<any>) => {
+      state.discount = action.payload;
+    },
+    removeDiscount: (state) => {
+      state.discount = 0; // Remove the applied coupon
+    },
   },
 });
 
-export const { addToCart, clearCart, setError, setDate, removeFromCart } =
-  cartSlice.actions;
+export const {
+  addToCart,
+  clearCart,
+  setError,
+  setDate,
+  removeFromCart,
+  setAppliedCoupon,
+  removeCoupon,
+  setDiscountValue,
+  removeDiscount,
+} = cartSlice.actions;
+
 export default cartSlice.reducer;
