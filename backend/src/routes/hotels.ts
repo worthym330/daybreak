@@ -117,7 +117,8 @@ router.post(
   "/:hotelId/bookings/payment-intent",
   verifyToken,
   async (req: Request, res: Response) => {
-    const { cartItems, discount } = req.body;
+    const { cartItems, discount, gst } = req.body;
+    console.log(cartItems, discount, gst);
     const hotelId = req.params.hotelId;
 
     try {
@@ -131,8 +132,10 @@ router.post(
         const itemTotal = item.total * 100;
         return sum + itemTotal;
       }, 0);
+
+      const gstAmount = totalAmount * (1 + gst);
       // Convert to the smallest currency unit (paise)
-      const amountPayable = totalAmount - discount * 100;
+      const amountPayable = gstAmount - discount * 100;
       const receipt = `rcpt_${hotelId}_${req.userId}`.slice(0, 40);
       const options = {
         amount: Math.round(amountPayable), // amount in the smallest currency unit
@@ -214,7 +217,6 @@ router.post(
         return res.status(400).json({ message: "Hotel not found" });
       }
 
-
       await hotel.save();
 
       const serviceRecord = new ServiceRecord({
@@ -222,10 +224,11 @@ router.post(
         hotelId: req.params.hotelId,
         bookingId: hotel.bookings[hotel.bookings.length - 1]._id, // Ensure newBooking._id is properly set
         paymentId: paymentIntentId,
-        orderId:orderId,
+        orderId: orderId,
         invoiceId: payment.invoice_id || "",
         amount: totalCost,
-        servicesUsed: cart.map((l: { product: { title: any; }; })=> l.product.title) || [],
+        servicesUsed:
+          cart.map((l: { product: { title: any } }) => l.product.title) || [],
         paymentStatus: payment.status,
       });
 
@@ -350,10 +353,12 @@ router.post(
       }
 
       if (!data.amount) {
-        return res.status(400).json({ message: "Amount not found in service record" });
+        return res
+          .status(400)
+          .json({ message: "Amount not found in service record" });
       }
 
-      console.log(data)
+      console.log(data);
 
       // Get payment details from Razorpay
       const payment = await razorpayInstance.payments.fetch(data.paymentId);
@@ -436,9 +441,10 @@ router.post(
 
       await serviceRecord.save();
 
-      res
-        .status(200)
-        .json({ message: "Booking cancelled and refunded successfully", serviceRecord });
+      res.status(200).json({
+        message: "Booking cancelled and refunded successfully",
+        serviceRecord,
+      });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Something went wrong" });

@@ -71,7 +71,8 @@ const Booking = () => {
         const data = await apiClient.createPaymentIntent(
           hotelId,
           cartItems,
-          discount ?? 0
+          discount ?? 0,
+          0.18
         );
         setPaymentIntentData(data);
       } catch (error) {
@@ -87,7 +88,6 @@ const Booking = () => {
   // const { data: hotel } = useQuery("fetchHotelByID", () =>
   //   apiClient.fetchHotelById(hotelId as string)
   // );
-
 
   const { data: currentUser } = useQuery("fetchCurrentUser", () =>
     apiClient.fetchCurrentUser()
@@ -117,7 +117,16 @@ const Booking = () => {
         onDelete={removeCart}
       />
       <ResetPassRequest modal={resetModal} setModal={setResetModal} />
-      <span className="my-2 flex" > <span className="flex gap-2 items-center cursor-pointer" onClick={()=>navigate(-1)}><HiArrowSmallLeft className="w-6 h-6"/>Back</span></span>
+      <span className="my-2 flex">
+        {" "}
+        <span
+          className="flex gap-2 items-center cursor-pointer"
+          onClick={() => navigate(-1)}
+        >
+          <HiArrowSmallLeft className="w-6 h-6" />
+          Back
+        </span>
+      </span>
       {cartItems.length > 0 ? (
         <div className="flex flex-col md:flex-row gap-4">
           <div className="w-full md:w-1/3">

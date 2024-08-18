@@ -205,7 +205,8 @@ export const fetchHotelByName = async (name: string): Promise<HotelType> => {
 export const createPaymentIntent = async (
   hotelId: string,
   cartItems: any,
-  discount: number
+  discount: number,
+  gst: number
 ) => {
   try {
     const response = await fetch(
@@ -216,7 +217,7 @@ export const createPaymentIntent = async (
           "Content-Type": "application/json", // Assuming you have a token for authentication
         },
         credentials: "include",
-        body: JSON.stringify({ cartItems, discount }),
+        body: JSON.stringify({ cartItems, discount, gst }),
       }
     );
     if (!response.ok) {
