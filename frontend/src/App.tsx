@@ -29,6 +29,7 @@ import CancellationPolicy from "./pages/CancellationPolicy";
 import ResetPass from "./pages/ResetPassword";
 import Contact from "./pages/ContactUs";
 import ListMyPage from "./pages/ListmyHotel";
+import "react-datepicker/dist/react-datepicker.css";
 
 const AccessControl = ({ children, requiredRoles }: any) => {
   const auth_token = Cookies.get("authentication") || "null";
