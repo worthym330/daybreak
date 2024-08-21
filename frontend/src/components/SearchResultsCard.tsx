@@ -191,7 +191,7 @@ const SearchResultsCard = ({ hotel }: Props) => {
           className="text-sm text-nowrap"
           onClick={() => handleButtonClick(hotel._id)}
         >
-          {auth.isAuthenticated ?  "Book Now": "Login to book now!" }
+          Book Now
         </Button>
       </div>
     </div>
