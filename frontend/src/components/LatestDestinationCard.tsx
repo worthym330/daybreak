@@ -55,7 +55,7 @@ const LatestDestinationCard = ({ hotel }: any) => {
               {hotel?.productTitle
                 ?.slice(0, 3)
                 ?.map((facility: any, index: number) => (
-                  <span key={index} className="pr-2 rounded-md text-sm">
+                  <span key={index} className="pr-2 rounded-md text-sm text-nowrap">
                     {facility.title}
                   </span>
                 ))}

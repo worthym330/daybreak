@@ -158,14 +158,18 @@ const Booking = () => {
                     <div className="flex items-center space-x-2">
                       {/* <div className="bg-teal-500 p-2 rounded-full">
                       </div> */}
-                      <span>
-                        {item.product.title} - ₹{item.product.adultPrice} x{" "}
-                        {item.adultCount} Adult{" "}
+                      <span className="flex flex-col">
+                        <span>{item.product.title}</span>
+                        {item.adultCount > 0 && (
+                          <span>
+                            ₹{item.product.adultPrice} x {item.adultCount} Adult
+                          </span>
+                        )}
                         {item.childCount > 0 && (
-                          <>
+                          <span>
                             + ₹{item.product.childPrice} x {item.childCount}{" "}
                             Child
-                          </>
+                          </span>
                         )}
                       </span>
                     </div>

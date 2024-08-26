@@ -22,6 +22,7 @@ const ServiceRecordSchema = new mongoose.Schema(
     amount: { type: Number },
     // bank_transaction_id:{type:String},
     updatedAt: { type: Date },
+    invoiceUrl: { type: String },
   },
   { timestamps: true }
 );

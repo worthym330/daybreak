@@ -278,8 +278,8 @@ const Home = () => {
               </div>
               <h3 className="font-semibold text-xl text-goldColor">Explore</h3>
               <p className="leading-5 text-sm text-gray-700 mb-4">
-                Explore our list of hotels and resorts in your area. We’re
-                always adding new properties.
+                Explore nearby hotels and resorts. New properties added
+                regularly.
               </p>
               <div className="bg-[#00c0cb] text-white py-2 px-4 rounded-md w-full flex flex-col justify-center items-center">
                 <span className="font-bold text-xl">Delighted </span>
@@ -295,8 +295,7 @@ const Home = () => {
                 Pick & Book
               </h3>
               <p className="leading-5 text-sm text-gray-700 mb-4">
-                Once you’ve picked a hotel or a resort, select a date and book
-                your Daycation.
+                Choose a hotel or resort, pick a date, and book your Daycation.
               </p>
               <div className="bg-[#00c0cb] text-white py-2 px-4 rounded-md w-full flex flex-col justify-center items-center">
                 <span className="font-bold text-xl">Risk Free </span>
@@ -310,8 +309,7 @@ const Home = () => {
               </div>
               <h3 className="font-semibold text-xl text-goldColor">Enjoy</h3>
               <p className="leading-5 text-sm text-gray-700 mb-4">
-                Check-in at the hotel and enjoy the good life! Relax, swim, eat,
-                drink, and laugh.
+                Check in, relax, swim, eat, drink, and enjoy the good life!
               </p>
               <div className="bg-[#00c0cb] text-white py-2 px-4 rounded-md w-full flex flex-col justify-center items-center">
                 <span className="font-bold text-xl">Flexible</span>

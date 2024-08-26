@@ -16,8 +16,7 @@ const MyBookings = ({ tab }: any) => {
   const [bookingData, setBookingData] = useState([]);
   const [favourites, setFavourites] = useState([]);
   const [confirmationDialog, setConfirmationDialog] = useState(false);
-  const [hotelId, setHotelId] = useState()
-  const [bookingId, setBookingId] = useState()
+  const [id, setId] = useState();
 
   useEffect(() => {
     if (tab === "bookings") {
@@ -29,14 +28,13 @@ const MyBookings = ({ tab }: any) => {
 
   async function getMyBookings() {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/my-bookings`, {
+      const response = await fetch(`${API_BASE_URL}/api/invoice`, {
         credentials: "include",
       });
       const resbody = await response.json();
 
       if (response.ok) {
         setBookingData(resbody);
-        console.log(resbody);
       } else {
         console.log("theow errior");
       }
@@ -97,11 +95,34 @@ const MyBookings = ({ tab }: any) => {
   //   }
   // };
 
-  const cancelBooking = async() =>{
-    console.log(hotelId)
+  const cancelBooking = async () => {
     try {
       const response = await fetch(
-        `${API_BASE_URL}/api/hotels/${hotelId}/bookings/${bookingId}/cancel`,
+        `${API_BASE_URL}/api/invoice/${id}/cancellation`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include", // Include orderId in the request body
+        }
+      );
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const HandleCancellation = (hotel: any) => {
+    setId(hotel);
+    // setBookingId(bookingid);
+    setConfirmationDialog(true);
+  };
+
+  const handleInvoice = async (id: string) => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/invoice/${id}/invoice`,
         {
           method: "POST",
           headers: {
@@ -110,19 +131,23 @@ const MyBookings = ({ tab }: any) => {
           credentials: "include", // Include orderId in the request body
         }
       );
-      console.log(response)      
+      const responseData = await response.json();
+      console.log(response, responseData);
+      if (!response.ok) {
+        throw new Error(`Failed to download invoice: ${response.statusText}`);
+      }
+      // Convert the response to a blob (binary data)
+      const a = document.createElement("a");
+      a.href = responseData.pdfUrl; // Directly use the URL string
+      a.download = `invoice_${id}.pdf`;
+      a.target = "_blank";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-
-  }
-
-  const HandleCancellation = (hotel:any, bookingid:any) =>{
-    setHotelId(hotel)
-    setBookingId(bookingid)
-    setConfirmationDialog(true)
-  }
-
+  };
 
   return (
     <main className="">
@@ -131,7 +156,7 @@ const MyBookings = ({ tab }: any) => {
         setOpen={setConfirmationDialog}
         open={confirmationDialog}
         onDelete={cancelBooking}
-        confirmationButtonText= "Mark as Cancel"
+        confirmationButtonText="Mark as Cancel"
       />
       <div className="">
         <div className="max-w-6xl w-full">
@@ -157,77 +182,125 @@ const MyBookings = ({ tab }: any) => {
               <div className="mx-20 my-4">
                 <div className="space-y-10">
                   {bookingData && bookingData.length > 0 ? (
-                    bookingData.map((hotel: any) => (
-                      <div key={hotel._id} className="space-y-5">
-                        {hotel.bookings.map((booking: any) => (
-                          <div key={booking._id} className="">
-                            <div className="flex flex-col md:flex-row bg-[#edfdff] rounded-lg overflow-hidden">
-                              {/* Left Section (Image) */}
-                              <div className="w-full md:w-1/3">
-                                <img
-                                  src={hotel.imageUrls[0]}
-                                  alt={hotel.name}
-                                  className="object-cover w-full h-full"
-                                />
-                              </div>
-                              {/* Right Section (Details) */}
-                              <div className="w-full md:w-2/3 p-6 flex flex-col border-black border-r-2 border-y-2 border-dashed justify-between ">
-                                <div>
-                                  <h3 className="text-2xl font-bold text-[#02596c]">
-                                    {hotel.name}
-                                  </h3>
-                                  <p className="">
-                                    {hotel.city}, {hotel.state}
-                                  </p>
-                                </div>
+                    bookingData.map((booking: any) => (
+                      <div key={booking._id} className="space-y-5">
+                        <div className="flex flex-col md:flex-row bg-[#edfdff] rounded-lg overflow-hidden">
+                          {/* Left Section (Image) */}
+                          <div className="w-full md:w-1/3 relative">
+                            <img
+                              src={booking.hotelId.imageUrls[0]}
+                              alt={booking.hotelId.name}
+                              className={`object-cover w-full h-full ${
+                                booking.paymentStatus === "refunded"
+                                  ? "grayscale"
+                                  : "grayscale-0"
+                              }`}
+                            />
+                            <p
+                              className={`flex items-center text-sm font-semibold mb-2 absolute right-0 top-0 ${
+                                booking.paymentStatus === "refunded"
+                                  ? "text-red-500 opacity-95"
+                                  : "text-white"
+                              }`}
+                            >
+                              {booking.paymentStatus === "refunded"
+                                ? "Cancelled"
+                                : "Booked"}
+                            </p>
+                          </div>
 
-                                <div className="mt-5 flex flex-col gap-2">
-                                  <p className="flex gap-2">
-                                    <span className="text-[#02596c] font-semibold">
-                                      Dates:
-                                    </span>{" "}
-                                    <span className="font-medium text-base">
-                                      {new Date(booking.checkIn).toDateString()}
+                          {/* Right Section (Details) */}
+                          <div className="w-full md:w-2/3 p-6 flex flex-col border-black border-r-2 border-y-2 border-dashed justify-between">
+                            <div>
+                              <h3 className="text-2xl font-bold text-[#02596c]">
+                                {booking.hotelId.name}
+                              </h3>
+                              <p className="">
+                                {booking.hotelId.city}, {booking.hotelId.state}
+                              </p>
+                            </div>
+
+                            <div className="mt-5 flex flex-col gap-2">
+                              <p className="flex gap-2">
+                                <span className="text-[#02596c] font-semibold">
+                                  Dates:
+                                </span>
+                                <span className="font-medium text-base">
+                                  {new Date(booking.createdAt).toDateString()}
+                                </span>
+                              </p>
+                              {/* Modify the guests section according to the data structure */}
+                              <p className="flex gap-2">
+                                <span className="text-[#02596c] font-semibold">
+                                  Guests:
+                                </span>{" "}
+                                <span className="font-medium text-base">
+                                  {
+                                    booking.hotelId.bookings[0].cart[0]
+                                      .adultCount
+                                  }{" "}
+                                  adults,{" "}
+                                  {
+                                    booking.hotelId.bookings[0].cart[0]
+                                      .childCount
+                                  }{" "}
+                                  children
+                                </span>
+                              </p>
+                            </div>
+
+                            <div className="mt-2">
+                              {booking.servicesUsed
+                                .slice(0, 3)
+                                .map((service: string) => (
+                                  <button
+                                    key={service}
+                                    className="bg-orange-500 text-white py-2 px-4 rounded-md shadow hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 flex gap-2 items-center"
+                                  >
+                                    <span>
+                                      {
+                                        titleIcons[
+                                          service.toUpperCase() as TitleKey
+                                        ]
+                                      }{" "}
+                                      {/* Replace this with your icon logic if any */}
                                     </span>
-                                  </p>
-                                  <p className="flex gap-2">
-                                    <span className="text-[#02596c] font-semibold">
-                                      Guests:
-                                    </span>{" "}
-                                    <span className="font-medium text-base">
-                                      {booking.cart[0].adultCount} adults,{" "}
-                                      {booking.cart[0].childCount} children
-                                    </span>
-                                  </p>
-                                </div>
+                                    <span>{service}</span>
+                                  </button>
+                                ))}
+                            </div>
 
-                                <div className="mt-2">
-                                  {booking.cart.slice(0,4).map((e: any) => (
-                                    <button
-                                      key={e.product.title}
-                                      className="bg-orange-500 text-white py-2 px-4 rounded-md shadow hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 flex gap-2 items-center"
-                                    >
-                                      <span>
-                                        {
-                                          titleIcons[
-                                            e.product.title.toUpperCase() as TitleKey
-                                          ]
-                                        }
-                                      </span>
-                                      <span>{e.product.title}</span>
-                                    </button>
-                                  ))}
-                                </div>
-                                <div className="mt-2 flex gap-4 justify-end">
-                                  <button className="bg-transparent border border-[#02596c] text-[#02596c] py-2 px-4 rounded-md hover:bg-[#02596c] hover:text-white focus:outline-none focus:ring-2 focus:ring-[#02596c] focus:ring-opacity-50 flex gap-2 items-center"><span><FaFileDownload  className="w-6 h-6"/></span><span>Invoice</span></button>
-                                  <button className="bg-transparent border border-red-500 text-red-500 hover:text-white py-2 px-4 rounded-md hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 flex gap-2 items-center" onClick={()=>{HandleCancellation(hotel._id, booking._id)}}><span><MdCancel  className="w-6 h-6"/></span><span>Cancel</span></button>
-
-                                  {/* <button>Cancel</button> */}
-                                 </div>
-                              </div>
+                            <div className="mt-2 flex gap-4 justify-end">
+                              <button
+                                onClick={() => {
+                                  handleInvoice(booking._id);
+                                }}
+                                className="bg-transparent border border-[#02596c] text-[#02596c] py-2 px-4 rounded-md hover:bg-[#02596c] hover:text-white focus:outline-none focus:ring-2 focus:ring-[#02596c] focus:ring-opacity-50 flex gap-2 items-center"
+                              >
+                                <span>
+                                  <FaFileDownload className="w-6 h-6" />
+                                </span>
+                                <span>Invoice</span>
+                              </button>
+                              {booking.paymentStatus !== "refunded" && (
+                                <button
+                                  className="bg-transparent border border-red-500 text-red-500 hover:text-white py-2 px-4 rounded-md hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 flex gap-2 items-center disabled:cursor-not-allowed disabled:bg-gray-300 disabled:hover:text-red-500"
+                                  disabled={
+                                    booking.paymentStatus === "refunded"
+                                  }
+                                  onClick={() => {
+                                    HandleCancellation(booking._id);
+                                  }}
+                                >
+                                  <span>
+                                    <MdCancel className="w-6 h-6" />
+                                  </span>
+                                  <span>Cancel</span>
+                                </button>
+                              )}
                             </div>
                           </div>
-                        ))}
+                        </div>
                       </div>
                     ))
                   ) : (
