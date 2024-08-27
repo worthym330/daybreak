@@ -12,7 +12,7 @@ export const fetchCurrentUser = async (): Promise<UserType> => {
     credentials: "include",
   });
   if (!response.ok) {
-    throw new Error("Error fetching user");
+    console.error("Error fetching user");
   }
   return response.json();
 };
@@ -204,11 +204,13 @@ export const fetchHotelByName = async (name: string): Promise<HotelType> => {
 
 export const createPaymentIntent = async (
   hotelId: string,
-  cartItems: any,
+  cartItems: any[],
   discount: number,
   gst: number
 ) => {
   try {
+    const sanitizedCartItems = cartItems.map(({ hotel, ...item }) => item);
+    
     const response = await fetch(
       `${API_BASE_URL}/api/hotels/${hotelId}/bookings/payment-intent`,
       {
@@ -217,11 +219,12 @@ export const createPaymentIntent = async (
           "Content-Type": "application/json", // Assuming you have a token for authentication
         },
         credentials: "include",
-        body: JSON.stringify({ cartItems, discount, gst }),
+        body: JSON.stringify({ cartItems: sanitizedCartItems, discount, gst }),
       }
     );
+    
     if (!response.ok) {
-      throw new Error("Network response was not ok");
+      console.error("Network response was not ok");
     }
     return response.json();
   } catch (error) {
