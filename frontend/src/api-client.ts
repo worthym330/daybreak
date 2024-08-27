@@ -234,8 +234,10 @@ export const createPaymentIntent = async (
 
 export const createRoomBooking = async (
   formData: BookingFormData,
-  cart: any
+  cart: any[]
 ) => {
+  // Remove the 'hotel' information from each cart item
+  const sanitizedCart = cart.map(({ hotel, ...item }) => item);
   const response = await fetch(
     `${API_BASE_URL}/api/hotels/${formData.hotelId}/bookings`,
     {
@@ -244,7 +246,7 @@ export const createRoomBooking = async (
         "Content-Type": "application/json",
       },
       credentials: "include",
-      body: JSON.stringify({ ...formData, cart }), // Include orderId in the request body
+      body: JSON.stringify({ ...formData, cart: sanitizedCart }), // Include the sanitized cart
     }
   );
 
@@ -252,6 +254,7 @@ export const createRoomBooking = async (
     throw new Error("Error booking room");
   }
 };
+
 
 export const fetchMyBookings = async (): Promise<HotelType[]> => {
   const response = await fetch(`${API_BASE_URL}/api/my-bookings`, {
