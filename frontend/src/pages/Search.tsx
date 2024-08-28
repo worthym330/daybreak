@@ -9,6 +9,8 @@ import HotelTypesFilter from "../components/HotelTypesFilter";
 import FacilitiesFilter from "../components/FacilitiesFilter";
 // import PriceFilter from "../components/PriceFilter";
 import { useLocation } from "react-router-dom";
+import GuestRatingFilter from "../components/GuestRatingFilter";
+import PassesFilter from "../components/PassesFilter";
 
 const useQueryParams = () => {
   return new URLSearchParams(useLocation().search);
@@ -18,10 +20,13 @@ const Search = () => {
   const search = useSearchContext();
   const [page, setPage] = useState<number>(1);
   const [selectedStars, setSelectedStars] = useState<string[]>([]);
+  const [guestStars, setGuestStars] = useState<string[]>([]);
   const [selectedHotelTypes, setSelectedHotelTypes] = useState<string[]>([]);
+  const [selectedPassesTypes, setSelectedPassesTypes] = useState<string[]>([]);
   const [selectedFacilities, setSelectedFacilities] = useState<string[]>([]);
   // const [selectedPrice, setSelectedPrice] = useState<number | undefined>();
-  const [sortOption, setSortOption] = useState<string>("");
+  // const [sortOption, setSortOption] = useState<string>("");
+  const [isAvailable, setIsAvailable] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
   const queryParams = useQueryParams();
   const city = queryParams.get("city");
@@ -36,8 +41,11 @@ const Search = () => {
     stars: selectedStars,
     types: selectedHotelTypes,
     facilities: selectedFacilities,
+    passes: selectedPassesTypes,
     // maxPrice: selectedPrice?.toString(),
-    sortOption,
+    // sortOption,
+    isAvailable,
+    guestStars,
   };
 
   if (queryParams.size === 0) {
@@ -58,11 +66,22 @@ const Search = () => {
     );
   };
 
+  const handleGuestsStarsChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const starRating = event.target.value;
+
+    setGuestStars((prevStars) =>
+      event.target.checked
+        ? [...prevStars, starRating]
+        : prevStars.filter((star) => star !== starRating)
+    );
+  };
+
   const handleHotelTypeChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const hotelType = event.target.value;
-
     setSelectedHotelTypes((prevHotelTypes) =>
       event.target.checked
         ? [...prevHotelTypes, hotelType]
@@ -70,6 +89,17 @@ const Search = () => {
     );
   };
 
+  const handlePassesTypeChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const hotelType = event.target.value;
+
+    setSelectedPassesTypes((prevHotelTypes) =>
+      event.target.checked
+        ? [...prevHotelTypes, hotelType]
+        : prevHotelTypes.filter((hotel) => hotel !== hotelType)
+    );
+  };
   const handleFacilityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const facility = event.target.value;
 
@@ -87,7 +117,7 @@ const Search = () => {
   };
 
   return (
-    <div className="relative grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-5">
+    <div className="relative w-full lg:max-w-5xl lg:mx-auto grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-5">
       <div
         className={`fixed lg:static top-0 left-0 w-full lg:w-auto h-full lg:h-auto bg-white z-50 lg:z-0 transform ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
@@ -104,18 +134,41 @@ const Search = () => {
                 &times;
               </button>
             </div>
+            <div className="border-b pb-5 font-inter">
+              <h4 className="text-lg mb-2">Availability</h4>
+              <label className="flex justify-between items-center space-x-2 leading-loose">
+                <span className="text-sm text-black ">
+                  Only show hotels with availability
+                </span>
+                <input
+                  type="checkbox"
+                  className="rounded input-box text-[#4A4A4A]"
+                  checked={isAvailable}
+                  onChange={() => setIsAvailable(!isAvailable)}
+                />
+              </label>
+            </div>
             <StarRatingFilter
               selectedStars={selectedStars}
               onChange={handleStarsChange}
             />
-
-            <HotelTypesFilter
-              selectedHotelTypes={selectedHotelTypes}
-              onChange={handleHotelTypeChange}
+            <GuestRatingFilter
+              selectedStars={guestStars}
+              onChange={handleGuestsStarsChange}
             />
+
+            <PassesFilter
+              selectedHotelTypes={selectedPassesTypes}
+              onChange={handlePassesTypeChange}
+            />
+
             <FacilitiesFilter
               selectedFacilities={selectedFacilities}
               onChange={handleFacilityChange}
+            />
+            <HotelTypesFilter
+              selectedHotelTypes={selectedHotelTypes}
+              onChange={handleHotelTypeChange}
             />
 
             <div>
@@ -151,7 +204,7 @@ const Search = () => {
             >
               Filters
             </button>
-            <select
+            {/* <select
               value={sortOption}
               onChange={(event) => setSortOption(event.target.value)}
               className="px-4 py-3 border rounded-md bg-transparent"
@@ -160,10 +213,10 @@ const Search = () => {
               <option value="starRating">Star Rating</option>
               <option value="pricePerNightAsc">Price (low to high)</option>
               <option value="pricePerNightDesc">Price (high to low)</option>
-            </select>
+            </select> */}
           </div>
         </div>
-        <span className="text-lg font-semi-bold text-center md:text-left">
+        <span className="text-sm font-semi-bold text-center lg:text-left font-poppins">
           Showing {hotelData?.pagination.total} Hotels
           {search.destination ? ` in ${search.destination}` : ""}
         </span>

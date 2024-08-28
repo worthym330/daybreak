@@ -94,7 +94,7 @@ const Booking = () => {
   );
 
   return (
-    <div className="font-poppins">
+    <div className="font-poppins sm:mx-4 lg:mx-20">
       <RenderLoginModal
         modal={modal}
         setModal={setModal}

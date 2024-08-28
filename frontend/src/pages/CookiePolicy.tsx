@@ -1,6 +1,6 @@
 const CookiePolicy = () => {
   return (
-    <div className="">
+    <div className="px-4">
       <main className="text-justify">
         <section className="">
           <h1 className="text-4xl font-bold mb-4 text-center">Cookie Policy</h1>

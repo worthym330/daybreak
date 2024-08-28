@@ -5,7 +5,7 @@ type Props = {
 
 const StarRatingFilter = ({ selectedStars, onChange }: Props) => {
   return (
-    <div className="border-b pb-5">
+    <div className="border-b pb-5 font-inter">
       <h4 className="text-lg mb-4">Hotel Class</h4>
       <div className="flex flex-wrap gap-4">
         {[
@@ -16,7 +16,7 @@ const StarRatingFilter = ({ selectedStars, onChange }: Props) => {
         ].map((star) => (
           <label
             key={star.value}
-            className={`flex items-center justify-center p-2 rounded-full cursor-pointer border ${
+            className={`flex items-center justify-center p-2 rounded-xl cursor-pointer border ${
               selectedStars.includes(star.value)
                 ? "bg-black text-white border-black"
                 : "bg-white text-black border-gray-300"

@@ -315,7 +315,7 @@ const MyBookings = ({ tab }: any) => {
 
             {/* Content Shown when clicked on Favourites*/}
             {tab === "favourites" && (
-              <div className="mx-5 my-4">
+              <div className="mx-20 my-4">
                 <div className="grid gap-4 lg:gap-2 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 px-4 lg:px-0">
                   {favourites && favourites.length > 0 ? (
                     favourites.map((hotel: any) => (

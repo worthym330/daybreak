@@ -41,6 +41,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Navigation } from "swiper/modules";
+import ConfirmationModal from "../components/AlertModal";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAP_GL_TOKEN;
 
@@ -89,6 +90,7 @@ export const Tooltip = ({ children, text }: any) => {
 const Detail = () => {
   const { hotelId, name } = useParams();
   const queryClient = useQueryClient();
+  const [confirmationDialog, setConfirmationDialog] = useState(false);
   // const { showToast } = useAppContext();
   const [carts, setCart] = useState([]);
   const [cartItems, setCartItems] = useState<any[]>([]);
@@ -245,6 +247,7 @@ const Detail = () => {
         );
         if (res.ok) {
           // Handle success if necessary
+          setConfirmationDialog(true);
         }
       } catch (error) {
         // Handle error if necessary
@@ -360,6 +363,18 @@ const Detail = () => {
         isHeader={false}
       />
       <ResetPassRequest modal={resetModal} setModal={setResetModal} />
+      <ConfirmationModal
+        setOpen={setConfirmationDialog}
+        open={confirmationDialog}
+        onDelete={() => navigate("/my-favourites")}
+        title={isFavourite ? "Added to favorites" : "Removed from favorites"}
+        confirmationButtonText="View Favourites"
+        description={
+          isFavourite
+            ? "This hotel has been successfully added to your favorites list. You can view it anytime in your favorites."
+            : "This hotel has been removed from your favorites list. You can view your updated favorites anytime."
+        }
+      />
       {/* Image Slider Starts */}
       <div className="relative">
         <Swiper

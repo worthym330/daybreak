@@ -1,7 +1,7 @@
 const TermsAndConditions = () => {
   return (
     <div className="">
-      <div className="px-8 md:px-0">
+      <div className="px-4">
         <h1 className="text-4xl font-bold text-center my-4">
           Terms and Conditions
         </h1>

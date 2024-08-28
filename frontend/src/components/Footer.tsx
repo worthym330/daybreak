@@ -15,7 +15,8 @@ const Footer = () => {
   const [modal, setModal] = useState(initialModalState);
   const [resetModal, setResetModal] = useState(initialResetModal);
   const [signupModal, setSignupModal] = useState(initialSignupModalState);
-  const [HotelRegisterModal, setHotelRegisterModal] = useState(initialModalState);
+  const [HotelRegisterModal, setHotelRegisterModal] =
+    useState(initialModalState);
 
   return (
     <div className="bg-[#02596c] mt-8 font-poppins">
@@ -46,7 +47,25 @@ const Footer = () => {
               DayBreakPass
             </span>
             <div className="flex flex-col items-center">
-              <span className="text-gray-400 mb-2">Connect with us</span>
+              <span className="text-gray-400 mb-2">Recognized by</span>
+              <div className="flex gap-4">
+                <img
+                  src={"/DPIIT-logo-trans.png"}
+                  alt="DPIIT-logo"
+                  className="w-12 h-12 bg-white rounded-md"
+                />
+                <img
+                  src={"/razorpayrize.png"}
+                  alt="Raazorpay rize logo"
+                  className="w-12 h-12 bg-white rounded-md"
+                />
+                <img
+                  src={"/startupindia.png"}
+                  alt="Startup India-logo"
+                  className="w-12 h-12 bg-white rounded-md"
+                />
+              </div>
+              <span className="text-gray-400 my-2">Connect with us</span>
               <div className="flex gap-4">
                 <a
                   href="https://www.facebook.com/profile.php?id=61561046045525"

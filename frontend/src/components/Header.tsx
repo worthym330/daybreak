@@ -259,7 +259,7 @@ export const RenderLoginModal = ({
     <Formik
       initialValues={data}
       validationSchema={loginSchema}
-      onSubmit={async (values: login) => {
+      onSubmit={async (values: login,{resetForm}) => {
         setModal((prev: any) => ({ ...prev, state: false, loading: true }));
         try {
           const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
@@ -279,6 +279,7 @@ export const RenderLoginModal = ({
             toast.error(body.message);
           } else {
             toast.success("Logined Successfully!");
+            resetForm()
             if (isHeader) {
               setShowDropdown(false);
             }
@@ -311,12 +312,14 @@ export const RenderLoginModal = ({
         errors,
         touched,
         handleChange,
+        resetForm,
       }) => (
         <Modal
           title=""
           open={state}
           setOpen={() => {
             setModal((prev: any) => ({ ...prev, state: false }));
+            resetForm()
           }}
         >
           <form onSubmit={handleSubmit} noValidate>
@@ -338,7 +341,7 @@ export const RenderLoginModal = ({
                 onChange={handleChange}
               />
               {touched.email && (
-                <span className="text-red-500 font-normal">{errors.email}</span>
+                <span className="text-red-500 font-normal">{errors.email as string}</span>
               )}
             </div>
 
@@ -365,7 +368,7 @@ export const RenderLoginModal = ({
                 )}
               </div>
               {touched.password && (
-                <span className="text-red-500">{errors.password}</span>
+                <span className="text-red-500">{errors.password as string}</span>
               )}
             </div>
             <div className="flex flex-col justify-center gap-5">
@@ -798,7 +801,7 @@ const Header = () => {
             location.pathname !== "/" && "-mt-4"
           }`}
         >
-          <span className="font-bold text-xl font-montserrat text-white">
+          <span className="font-bold text-xl font-montserrat text-white text-center">
             Pilot run is live. Please join the{" "}
             <Link to="/waitlist" className="text-goldColor">
               waitlist click here
@@ -835,12 +838,15 @@ const Header = () => {
                   onClick={toggleDropdown}
                 >
                   <span className="sr-only">Open user menu</span>
-                  <img
+                  {/* <img
                     className="w-10 h-10 rounded-full border-2"
                     src="/profile.jpg"
                     alt="user photo"
-                  />
-                  <span className="block text-sm">Hii, {auth?.user?.name}</span>
+                  /> */}
+                  <FaUserCircle className="w-10 h-10 rounded-full text-[#00C0CB]" /> 
+                  <span className="hidden md:block text-sm">
+                    Hii, {auth?.user?.name}
+                  </span>
                 </button>
                 {isDropdownOpen && (
                   <div
@@ -880,7 +886,7 @@ const Header = () => {
                           Favourites
                         </Link>
                       </li>
-                      <li>
+                      <li onClick={toggleDropdown}>
                         <span
                           className="block px-4 py-2 text-sm text-white bg-goldColor cursor-pointer"
                           onClick={() => {

@@ -288,6 +288,14 @@ const constructSearchQuery = (queryParams: any) => {
     };
   }
 
+  if (queryParams.passes) {
+    constructedQuery["productTitle.title"] = {
+      $in: Array.isArray(queryParams.passes)
+        ? queryParams.passes
+        : [queryParams.passes],
+    };
+  }
+
   return constructedQuery;
 };
 

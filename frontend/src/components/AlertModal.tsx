@@ -1,6 +1,7 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useRef } from "react";
 import { BsExclamation } from "react-icons/bs";
+import { FaCheck } from "react-icons/fa";
 
 const ConfirmationModal = (props: any) => {
   const {
@@ -45,11 +46,24 @@ const ConfirmationModal = (props: any) => {
         >
           <Dialog.Panel className="relative bg-white rounded-lg shadow-xl sm:w-full sm:max-w-xl">
             <div className="p-6 sm:p-12 flex items-center justify-center flex-col">
-              <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto border-4 border-red-600 rounded-full">
-                <BsExclamation
-                  className="w-10 h-10 text-red-600"
-                  aria-hidden="true"
-                />
+              <div
+                className={`flex items-center justify-center flex-shrink-0 w-16 h-16 mx-auto border-4 ${
+                  confirmationButtonText !== "View Favourites"
+                    ? "border-red-600"
+                    : "border-green-600"
+                } rounded-full`}
+              >
+                {confirmationButtonText !== "View Favourites" ? (
+                  <BsExclamation
+                    className="w-10 h-10 text-red-600"
+                    aria-hidden="true"
+                  />
+                ) : (
+                  <FaCheck
+                    className="w-10 h-10 text-green-600"
+                    aria-hidden="true"
+                  />
+                )}
               </div>
               <div className="mt-6 text-center flex-grow sm:mt-8 ">
                 <Dialog.Title
@@ -75,7 +89,13 @@ const ConfirmationModal = (props: any) => {
                 </button>
                 <button
                   type="button"
-                  className={`inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white border border-transparent rounded-2xl shadow-sm  sm:ml-3 sm:w-auto sm:text-lg focus:ring-red-500 ${confirmationButtonText === "OK" ?"bg-[#fe6a06] hover:bg-[#fe6a06]":"bg-red-500 hover:bg-red-700"}`}
+                  className={`inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white border border-transparent rounded-2xl shadow-sm  sm:ml-3 sm:w-auto sm:text-lg focus:ring-red-500 ${
+                    confirmationButtonText === "OK"
+                      ? "bg-[#fe6a06] hover:bg-[#fe6a06]"
+                      : confirmationButtonText === "View Favourites"
+                      ? "bg-green-500 hover:bg-green-700"
+                      : "bg-red-500 hover:bg-red-700"
+                  }`}
                   onClick={() => {
                     setOpen(false);
                     onDelete && onDelete();

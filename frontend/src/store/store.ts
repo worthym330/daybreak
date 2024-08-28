@@ -3,6 +3,7 @@ import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // Default to localStorage for web
 import cartReducer from "./cartSlice";
 import authReducer from "./authSlice";
+import favReducer from "./favSlice";
 
 // Configure persist settings for cart
 const cartPersistConfig = {
@@ -15,15 +16,21 @@ const authPersistConfig = {
   key: "auth",
   storage,
 };
+const favPersistConfig = {
+  key: "favourites",
+  storage,
+};
 
 // Wrap your reducers with persistReducer
 const persistedCartReducer = persistReducer(cartPersistConfig, cartReducer);
 const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);
+const persistedFavReducer = persistReducer(favPersistConfig, favReducer);
 
 const store = configureStore({
   reducer: {
     cart: persistedCartReducer,
     auth: persistedAuthReducer,
+    fav: persistedFavReducer,
   },
 });
 

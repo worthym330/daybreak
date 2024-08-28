@@ -142,6 +142,9 @@ export type SearchParams = {
   stars?: string[];
   maxPrice?: string;
   sortOption?: string;
+  isAvailable?: boolean;
+  passes?: string[];
+  guestStars?: string[];
 };
 
 export const searchHotels = async (
@@ -165,6 +168,14 @@ export const searchHotels = async (
   searchParams.types?.forEach((type) => queryParams.append("types", type));
   searchParams.stars?.forEach((star) => queryParams.append("stars", star));
 
+  // Convert boolean to string before appending
+  if (searchParams.isAvailable !== undefined) {
+    queryParams.append("isAvailable", String(searchParams.isAvailable));
+  }
+  searchParams.passes?.forEach((type) => queryParams.append("passes", type));
+  searchParams.guestStars?.forEach((type) =>
+    queryParams.append("guestStars", type)
+  );
   const response = await fetch(
     `${API_BASE_URL}/api/hotels/search?${queryParams}`
   );
@@ -210,7 +221,7 @@ export const createPaymentIntent = async (
 ) => {
   try {
     const sanitizedCartItems = cartItems.map(({ hotel, ...item }) => item);
-    
+
     const response = await fetch(
       `${API_BASE_URL}/api/hotels/${hotelId}/bookings/payment-intent`,
       {
@@ -222,7 +233,7 @@ export const createPaymentIntent = async (
         body: JSON.stringify({ cartItems: sanitizedCartItems, discount, gst }),
       }
     );
-    
+
     if (!response.ok) {
       console.error("Network response was not ok");
     }
@@ -254,7 +265,6 @@ export const createRoomBooking = async (
     throw new Error("Error booking room");
   }
 };
-
 
 export const fetchMyBookings = async (): Promise<HotelType[]> => {
   const response = await fetch(`${API_BASE_URL}/api/my-bookings`, {
