@@ -114,10 +114,13 @@ const Search = () => {
     setSelectedStars([]);
     setSelectedHotelTypes([]);
     setSelectedFacilities([]);
+    setIsAvailable(false);
+    setSelectedPassesTypes([]);
+    setGuestStars([]);
   };
 
   return (
-    <div className="relative w-full lg:max-w-5xl lg:mx-auto grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-5">
+    <div className="relative w-full 2xl:max-w-screen-2xl 2xl:mx-auto grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-5">
       <div
         className={`fixed lg:static top-0 left-0 w-full lg:w-auto h-full lg:h-auto bg-white z-50 lg:z-0 transform ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
