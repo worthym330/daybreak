@@ -16,7 +16,7 @@ const StarRatingFilter = ({ selectedStars, onChange }: Props) => {
         ].map((star) => (
           <label
             key={star.value}
-            className={`flex items-center justify-center p-2 rounded-xl cursor-pointer border ${
+            className={`flex text-sm items-center justify-center p-2 rounded-xl cursor-pointer border ${
               selectedStars.includes(star.value)
                 ? "bg-black text-white border-black"
                 : "bg-white text-black border-gray-300"
