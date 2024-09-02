@@ -26,11 +26,10 @@ const Contact = () => {
     <>
       <section className="relative z-10 overflow-hidden bg-white py-20 dark:bg-dark lg:py-[120px]">
         <div className="px-4">
-        <h1 className="text-4xl font-bold mb-4 text-center">Contact Us</h1>
+          <h1 className="text-4xl font-bold mb-4 text-center">Contact Us</h1>
           <div className="-mx-4 flex flex-wrap lg:justify-between">
             <div className="w-full px-4 lg:w-1/2 xl:w-6/12">
               <div className="mb-12 max-w-[570px] lg:mb-0">
-
                 <h2 className="mb-6 text-[28px] font-bold uppercase text-dark dark:text-white">
                   GET IN TOUCH WITH US
                 </h2>
@@ -54,8 +53,9 @@ const Contact = () => {
                     <h4 className="mb-1 text-xl font-bold text-dark dark:text-white">
                       Our Location
                     </h4>
-                    <p className="text-base text-body-color dark:text-dark-6">
-                      Goregaon, Mumbai
+                    <p className="text-base text-body-color dark:text-dark-6 text-justify">
+                      1801 3E Wing, 412 Pahadi Goregaon Mhada, Bangur Nagar,
+                      <br /> Goregaon West, Mumbai 400104 <br /> Maharashtra
                     </p>
                   </div>
                 </div>
