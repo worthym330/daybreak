@@ -7,6 +7,7 @@ import verifyToken from "../middleware/auth";
 import Razorpay from "razorpay";
 import ServiceRecord from "../models/invoice";
 import axios from "axios";
+import HotelDetails from "../models/productdetail";
 
 const razorpayInstance = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID as string,
@@ -459,5 +460,88 @@ router.post(
     }
   }
 );
+
+router.put("/update/time/date/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    // Find the hotel by ID
+    const hotel = await Hotel.findById(id);
+    if (!hotel) {
+      return res.status(404).json({ message: "Hotel not found" });
+    }
+
+    // Ensure titlesId is initialized as an array
+    hotel.titlesId = hotel.titlesId || [];
+
+    // Iterate through the events to create a new HotelDetails entry
+    for (const event of req.body) {
+      const customId = `${event.date}-${hotel.name.slice(0, 3).toUpperCase()}`;
+
+      const newDetail = new HotelDetails({
+        _id: customId,
+        title: event.title,
+        date: event.date,
+        slotTime: event.slotTime,
+        startTime: event.startTime,
+        endTime: event.endTime,
+        hotelId: hotel._id,
+      });
+
+      await newDetail.save();
+
+      // Update hotel titlesId array with the new detail ID
+      hotel.titlesId.push(newDetail._id);
+    }
+
+    // Save the updated hotel data
+    await hotel.save();
+
+    // Respond with the updated hotel data
+
+    res.status(200).json(hotel);
+  } catch (error) {
+    console.error("Error updating hotel:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.get("/getdata/hotel/:id", async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    // Find the hotel and populate the titlesId with HotelDetails
+    const hotel = await Hotel.findById(id).populate("titlesId");
+
+    // Respond with the hotel data including populated HotelDetails
+    res.status(200).json(hotel);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error });
+  }
+});
+
+// Update HotelDetails by ID
+router.put("/hotel-details/:id", async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const updateData = req.body;
+
+  try {
+    // Find the HotelDetails by ID and update it with the provided data
+    const updatedHotelDetails = await HotelDetails.findByIdAndUpdate(
+      id,
+      updateData,
+      { new: true }
+    );
+
+    if (!updatedHotelDetails) {
+      return res.status(404).json({ message: "HotelDetails not found" });
+    }
+
+    // Respond with the updated HotelDetails data
+    res.status(200).json(updatedHotelDetails);
+  } catch (error) {
+    console.error("Error updating HotelDetails:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
+});
 
 export default router;

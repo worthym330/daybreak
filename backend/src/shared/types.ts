@@ -31,6 +31,7 @@ export interface HotelType {
   pincode: string;
   mapurl: string;
   status: boolean;
+  titlesId?: string[];
 }
 
 export type BookingType = {

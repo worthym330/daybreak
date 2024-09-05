@@ -55,6 +55,7 @@ const hotelSchema = new mongoose.Schema<HotelType>({
   pincode:{type:String},
   bookings: [bookingSchema],
   favourites: [favouriteListSchema],
+  titlesId: [{ type: String, ref: 'HotelDetails' }],
   status:{type:Boolean}
 }, { timestamps: true });
 
