@@ -866,22 +866,10 @@ const Header:React.FC = () => {
         className={`w-full ${
           location.pathname === "/"
             ? "bg-transparent text-white absolute z-10 top-0"
-            : "bg-white text-black border-gray-200 border shadow-lg py-4"
+            : "bg-white text-black border-gray-200 border shadow-lg"
         }`}
         ref={headerRef}
       >
-        <div
-          className={`flex justify-center items-center gap-2 bg-black py-2 ${
-            location.pathname !== "/" && "-mt-4"
-          }`}
-        >
-          <span className="font-bold text-xl font-montserrat text-white text-center">
-            Pilot run is live. Please join the{" "}
-            <Link to="/waitlist" className="text-goldColor">
-              waitlist click here
-            </Link>
-          </span>
-        </div>
         <div className="flex flex-wrap items-center justify-between mx-auto py-2 relative px-2 md:px-5 ">
           <Link
             className={`hidden md:flex items-center px-3 py-1 md:px-5 md:py-2 rounded-full font-bold border-2 hover:bg-goldColor hover:text-white `}
@@ -890,7 +878,7 @@ const Header:React.FC = () => {
             List My Hotel
           </Link>
           <span className="text-xl md:text-3xl font-bold tracking-tight flex gap-2">
-            <Link to="/">DayBreakPass</Link>
+            <Link to="/"><img src="/daybreaklogo.png" alt="Logo" className="h-16 -py-2" /></Link>
           </span>
           <span className="flex space-x-4">
             <Link
