@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import Button from "./Button";
 import moment from "moment";
-import { toast } from "react-toastify";
 import { addToCart } from "../store/cartSlice";
 import { useDispatch } from "react-redux";
 import { FaCalendar } from "react-icons/fa";
@@ -60,12 +59,12 @@ const CartModal = ({ product, hotel, onClose, setCart }: any) => {
         (item) => item.hotel._id !== hotel._id
       );
 
-      if (differentHotelId) {
-        toast.warning(
-          "Please select the same hotel or remove the current selection from your cart before booking a new hotel."
-        );
-        return;
-      }
+      // if (differentHotelId) {
+      //   toast.warning(
+      //     "Please select the same hotel or remove the current selection from your cart before booking a new hotel."
+      //   );
+      //   return;
+      // }
 
       const existingProductIndex = cart.findIndex(
         (item) =>
@@ -81,10 +80,15 @@ const CartModal = ({ product, hotel, onClose, setCart }: any) => {
         date,
       };
 
-      if (existingProductIndex !== -1) {
-        cart[existingProductIndex] = cartItem;
-      } else {
+      if (differentHotelId) {
+        cart = [];
         cart.push(cartItem);
+      } else {
+        if (existingProductIndex !== -1) {
+          cart[existingProductIndex] = cartItem;
+        } else {
+          cart.push(cartItem);
+        }
       }
 
       try {
@@ -213,11 +217,11 @@ const CartModal = ({ product, hotel, onClose, setCart }: any) => {
           ×
         </button>
         <div className="flex flex-col space-y-4 mt-4 pb-20">
-        <div>
+          <div>
             <label htmlFor="date" className="block text-sm font-medium ">
               Select Date
             </label>
-        <div className="relative rounded-md w-full">
+            <div className="relative rounded-md w-full">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                 <FaCalendar aria-hidden="true" className="h-5 w-5" />
               </div>
@@ -233,7 +237,8 @@ const CartModal = ({ product, hotel, onClose, setCart }: any) => {
                 min={new Date().toISOString().split("T")[0]}
                 className="pl-10 w-full"
               />
-            </div></div>
+            </div>
+          </div>
           <div className="flex justify-between items-center">
             <span>Adult (over 13)</span>
             <div className="flex items-center">
