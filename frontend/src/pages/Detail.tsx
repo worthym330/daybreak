@@ -684,12 +684,12 @@ const Detail = () => {
                         <span>Total:</span>
                         <span>₹{subtotal.toFixed(2)}</span>
                       </div>
-                        <Button
-                          className="w-full bg-goldColor text-white py-2 rounded-lg"
-                          onClick={() => navigate(`/checkout`)}
-                        >
-                          Book Now
-                        </Button>
+                      <Button
+                        className="w-full bg-goldColor text-white py-2 rounded-lg"
+                        onClick={() => navigate(`/checkout`)}
+                      >
+                        Book Now
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -767,26 +767,12 @@ const Detail = () => {
                           <span>Total:</span>
                           <span>₹{subtotal.toFixed(2)}</span>
                         </div>
-                        {userLogined !== null ? (
-                          <Button
-                            className="w-full bg-goldColor text-white py-2 rounded-lg"
-                            onClick={() => navigate(`/checkout`)}
-                          >
-                            Book Now
-                          </Button>
-                        ) : (
-                          <Button
-                            className="w-full bg-goldColor text-white py-2 rounded-lg"
-                            onClick={() =>
-                              setModal((prev: any) => ({
-                                ...prev,
-                                state: true,
-                              }))
-                            }
-                          >
-                            Login
-                          </Button>
-                        )}
+                        <Button
+                          className="w-full bg-goldColor text-white py-2 rounded-lg"
+                          onClick={() => navigate(`/checkout`)}
+                        >
+                          Book Now
+                        </Button>
                       </div>
                     </div>
                   )}

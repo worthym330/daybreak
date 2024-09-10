@@ -44,11 +44,7 @@ const SearchResultsCard = ({ hotel }: Props) => {
   const isFavourite = favorites.some((fav: any) => fav._id === hotel._id);
 
   const handleButtonClick = (id: string) => {
-    if (auth.isAuthenticated) {
       navigate(`/hotel-detail/${id}`);
-    } else {
-      setModal((prev: any) => ({ ...prev, state: true }));
-    }
   };
 
   const handleToggleFavourite = async () => {
