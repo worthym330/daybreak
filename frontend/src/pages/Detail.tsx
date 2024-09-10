@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import * as apiClient from "./../api-client";
 import { AiFillStar } from "react-icons/ai";
 import {
+  FaCalendar,
   FaDumbbell,
   FaHeart,
   FaParking,
@@ -101,7 +102,7 @@ const Detail = () => {
   const mapContainerRef = useRef(null);
   const dispatch = useDispatch();
   const error = useSelector((state: RootState) => state.cart.error);
-  // const date = useSelector((state: RootState) => state.cart.date);
+  const date = useSelector((state: RootState) => state.cart.date);
   const [modal, setModal] = useState(initialModalState);
   const [resetModal, setResetModal] = useState(initialResetModal);
   const [signupModal, setSignupModal] = useState(initialSignupModalState);
@@ -323,26 +324,26 @@ const Detail = () => {
     setCartItems(cart);
   }
 
-  // const handleDateChange = (event: any) => {
-  //   const dateString = event.target.value;
-  //   const selectedDate = new Date(dateString);
-  //   const today = new Date();
-  //   today.setHours(0, 0, 0, 0);
+  const handleDateChange = (event: any) => {
+    const dateString = event.target.value;
+    const selectedDate = new Date(dateString);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-  //   if (!isNaN(selectedDate.getTime())) {
-  //     if (selectedDate < today) {
-  //       console.error("Selected date cannot be earlier than today.");
-  //       setError(true);
-  //     } else {
-  //       dispatch(setError(false));
-  //       dispatch(setDate(selectedDate.toISOString()));
-  //       Cookies.set("date", dateString, { expires: 1 });
-  //     }
-  //   } else {
-  //     dispatch(setDate(null));
-  //     Cookies.remove("date");
-  //   }
-  // };
+    if (!isNaN(selectedDate.getTime())) {
+      if (selectedDate < today) {
+        console.error("Selected date cannot be earlier than today.");
+        setError(true);
+      } else {
+        dispatch(setError(false));
+        dispatch(setDate(selectedDate.toISOString()));
+        Cookies.set("date", dateString, { expires: 1 });
+      }
+    } else {
+      dispatch(setDate(null));
+      Cookies.remove("date");
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -483,8 +484,8 @@ const Detail = () => {
 
             <div className="w-full break-words mb-5">{hotel.description}</div>
 
-            {/* <span className="text-lg font-medium mb-3">
-              Please Select a Date
+            <span className="text-lg font-medium mb-3">
+              Book your Daycation
             </span>
             <div className="flex items-center gap-2">
               <div className="relative mt-2 rounded-md shadow-sm">
@@ -517,7 +518,7 @@ const Detail = () => {
                   Invalid date. Please select a valid date.
                 </p>
               )}
-            </div> */}
+            </div>
             <hr className="border-gray-200 mb-3 w-full" />
             <span className="text-lg font-medium">Select a product</span>
             <div className="mt-5">
