@@ -878,7 +878,11 @@ const Header:React.FC = () => {
             List My Hotel
           </Link>
           <span className="text-xl md:text-3xl font-bold tracking-tight flex gap-2">
-            <Link to="/"><img src="/daybreaklogo.png" alt="Logo" className="h-16 -py-2" /></Link>
+            <Link to="/">
+            {/* <img src={location.pathname === "/" ?"/whitelogo.png":"/logo.png"} alt="Logo" className="h-16 -py-2" /> */}
+            <img src={"/daybreaklogo.png"} alt="Logo" className="h-16 -py-2" />
+
+            </Link>
           </span>
           <span className="flex space-x-4">
             <Link

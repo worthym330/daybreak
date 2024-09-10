@@ -10,9 +10,6 @@ import {
   FaDumbbell,
 } from "react-icons/fa";
 import Button from "./Button";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../store/store";
-import { setError } from "../store/cartSlice";
 import { PiCampfire } from "react-icons/pi";
 import { FiSun } from "react-icons/fi";
 import { MdOutlineWater } from "react-icons/md";
@@ -52,17 +49,6 @@ export const titleIcons = {
 const ProductCard = ({ product, hotel, setCart }: ProductCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showLess, setShowLess] = useState(false);
-  const dispatch = useDispatch();
-  const error = useSelector((state: RootState) => state.cart.error);
-  const date = useSelector((state: RootState) => state.cart.date);
-  const handleSelect = () => {
-    console.log(error, date);
-    if (date === undefined) {
-      dispatch(setError(true));
-    } else {
-      setIsModalOpen(true);
-    }
-  };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -83,7 +69,7 @@ const ProductCard = ({ product, hotel, setCart }: ProductCardProps) => {
           <div className="pl-4 ml-4">
             <Button
               className="bg-goldColor text-white px-4 py-2 rounded-lg w-24 flex items-center justify-center"
-              onClick={handleSelect}
+              onClick={()=>setIsModalOpen(true)}
             >
               <span>Select</span>
               <span className="font-thin">
@@ -162,7 +148,7 @@ const ProductCard = ({ product, hotel, setCart }: ProductCardProps) => {
             <div className="mt-2">
               <Button
                 className="bg-goldColor text-white px-4 py-2 rounded-lg w-full flex items-center justify-center"
-                onClick={handleSelect}
+                onClick={()=>setIsModalOpen(true)}
               >
                 <span>Select</span>
                 <span className="font-thin">
@@ -198,7 +184,7 @@ const ProductCard = ({ product, hotel, setCart }: ProductCardProps) => {
           product={product}
           hotel={hotel}
           onClose={handleCloseModal}
-          date={date}
+          // date={date}
           setCart={setCart}
         />
       )}
