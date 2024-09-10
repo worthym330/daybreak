@@ -16,7 +16,7 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 router.post(
   "/login",
-  [check("email", "Email is required").isEmail()],
+  [check("email", "Email is required").isEmail().optional({ nullable: true })],
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -28,24 +28,42 @@ router.post(
     try {
       let user;
 
-      if (loginThrough === "google" && googleToken) {
+      // If login through Google
+      if (googleToken) {
+        // Verify Google token
         const ticket = await client.verifyIdToken({
           idToken: googleToken,
           audience: process.env.GOOGLE_CLIENT_ID,
         });
         const payload = ticket.getPayload();
         const googleEmail = payload?.email;
+        const firstName = payload?.given_name;
+        const lastName = payload?.family_name;
 
         if (!googleEmail) {
           return res.status(400).json({ message: "Invalid Google token" });
         }
 
+        // Find user by email and role
         user = await User.findOne({ email: googleEmail, role: userType });
+
+        // If user does not exist, create a new user
         if (!user) {
-          return res.status(400).json({ message: "User not found" });
+          user = new User({
+            email: googleEmail,
+            firstName: firstName || "GoogleUser",
+            lastName: lastName || "",
+            role: userType,
+            status: true, // Assuming new users are active by default
+            password: null, // No password since it's a Google login
+          });
+
+          await user.save();
         }
       } else if (email && password) {
+        // Email/password based login
         user = await User.findOne({ email, role: userType });
+
         if (!user) {
           return res.status(400).json({ message: "Invalid Credentials" });
         }
@@ -58,15 +76,14 @@ router.post(
         return res.status(400).json({ message: "Invalid login request" });
       }
 
-      // Check if the user's status is true
+      // Check if the user's status is active
       if (!user.status) {
-        return res
-          .status(403)
-          .json({
-            message: "Please contact the admin to activate your account",
-          });
+        return res.status(403).json({
+          message: "Please contact the admin to activate your account",
+        });
       }
 
+      // Generate JWT token
       const token = jwt.sign(
         { userId: user.id },
         process.env.JWT_SECRET_KEY as string,
@@ -83,19 +100,21 @@ router.post(
         role: user.role,
       };
 
+      // Set cookie with the token
       res.cookie("auth_token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        maxAge: 86400000,
+        maxAge: 86400000, // 1 day
       });
 
       res.status(200).json({ user: userPayload });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       res.status(500).json({ message: "Something went wrong" });
     }
   }
 );
+
 
 router.get("/validate-token", verifyToken, (req: Request, res: Response) => {
   res.status(200).send({ userId: req.userId });

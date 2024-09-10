@@ -315,68 +315,6 @@ export const sendCredentials = async (data: any) => {
 
 // User Mails
 
-export const welcomeMail = async (data: any) => {
-  try {
-    const { email } = data;
-    const mailOptions = {
-      to: email,
-      subject: `Welcome to DayBreakPass!`,
-      html: `
-       <!DOCTYPE html>
-  <html>
-    <head>
-      <style>
-        .container {
-          font-family: Arial, sans-serif;
-          margin: 20px;
-          padding: 20px;
-          border: 1px solid #ccc;
-          border-radius: 10px;
-        }
-        .header {
-          background-color: #B5813F;
-          padding: 10px;
-          text-align: center;
-          border-bottom: 1px solid #ccc;
-        }
-        .content {
-          margin-top: 20px;
-        }
-        .footer {
-          margin-top: 20px;
-          text-align: center;
-          color: #888;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <div class="header">
-          <h1>Welcome to DayBreakPass</h1>
-        </div>
-        <div class="content">
-          <p>Hello,</p>
-          <p>Dear [User Name],</p>
-          <p>Welcome to DayBreakPass! We are thrilled to have you with us.</p>
-          <p>To get started, you can explore our features and services <a href="${process.env.FRONTEND_URL}"> ${process.env.FRONTEND_URL}</a>.</p>
-          <p>For any questions or assistance, please feel free to reach out to us at <a href="tel:+918369029862">8369029862</a> or email us at
-              <a href="mailto:team@daybreakpass.com">team@daybreakpass.com</a>.
-          </p>
-        </div>
-        <div class="footer">
-          <p>&copy; 2024 DayBreakPass. All rights reserved.</p>
-        </div>
-      </div>
-    </body>
-  </html>
-`,
-    };
-    await transporter.sendMail(mailOptions);
-  } catch (error) {
-    console.error("Error sending request received email:", error);
-  }
-};
-
 export const resetPass = async (data: any) => {
   try {
     const { email, name, token } = data;
@@ -771,7 +709,7 @@ export const FeedBack = async (data: any) => {
     const { email, hotelName, hotelId, name } = data;
     const mailOptions = {
       to: email,
-      subject: `Your DayBreakPass Account Credentials`,
+      subject: `Your feedback`,
       html: `
        <!DOCTYPE html>
   <html>
@@ -899,427 +837,307 @@ export const Support = async (data: any) => {
 
 //Hotels Mail
 
-export const BookingsNotification = async (data: any) => {
-  try {
-    const { email, password } = data;
-    const mailOptions = {
-      to: email,
-      subject: `Your DayBreakPass Account Credentials`,
-      html: `
-       <!DOCTYPE html>
-  <html>
-    <head>
-      <style>
-        .container {
-          font-family: Arial, sans-serif;
-          margin: 20px;
-          padding: 20px;
-          border: 1px solid #ccc;
-          border-radius: 10px;
-        }
-        .header {
-          background-color: #B5813F;
-          padding: 10px;
-          text-align: center;
-          border-bottom: 1px solid #ccc;
-        }
-        .content {
-          margin-top: 20px;
-        }
-        .footer {
-          margin-top: 20px;
-          text-align: center;
-          color: #888;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <div class="header">
-          <h1>Welcome to DayBreakPass</h1>
-        </div>
-        <div class="content">
-          <p>Hello,</p>
-          <p>Thank you for registering with us. Here are your credentials:</p>
-          <p><strong>Email Id:</strong> ${email}</p>
-          <p><strong>Password:</strong> ${password}</p>
-          <p>Please keep this information safe and do not share it with anyone.</p>
-        </div>
-        <div class="footer">
-          <p>&copy; 2024 DayBreakPass. All rights reserved.</p>
-        </div>
-      </div>
-    </body>
-  </html>
-`,
-    };
-    await transporter.sendMail(mailOptions);
-  } catch (error) {
-    console.error("Error sending request received email:", error);
-  }
-};
+// export const PaymentMail = async (data: any) => {
+//   try {
+//     const { email, password } = data;
+//     const mailOptions = {
+//       to: email,
+//       subject: `Your DayBreakPass Account Credentials`,
+//       html: `
+//        <!DOCTYPE html>
+//   <html>
+//     <head>
+//       <style>
+//         .container {
+//           font-family: Arial, sans-serif;
+//           margin: 20px;
+//           padding: 20px;
+//           border: 1px solid #ccc;
+//           border-radius: 10px;
+//         }
+//         .header {
+//           background-color: #B5813F;
+//           padding: 10px;
+//           text-align: center;
+//           border-bottom: 1px solid #ccc;
+//         }
+//         .content {
+//           margin-top: 20px;
+//         }
+//         .footer {
+//           margin-top: 20px;
+//           text-align: center;
+//           color: #888;
+//         }
+//       </style>
+//     </head>
+//     <body>
+//       <div class="container">
+//         <div class="header">
+//           <h1>Welcome to DayBreakPass</h1>
+//         </div>
+//         <div class="content">
+//           <p>Hello,</p>
+//           <p>Thank you for registering with us. Here are your credentials:</p>
+//           <p><strong>Email Id:</strong> ${email}</p>
+//           <p><strong>Password:</strong> ${password}</p>
+//           <p>Please keep this information safe and do not share it with anyone.</p>
+//         </div>
+//         <div class="footer">
+//           <p>&copy; 2024 DayBreakPass. All rights reserved.</p>
+//         </div>
+//       </div>
+//     </body>
+//   </html>
+// `,
+//     };
+//     await transporter.sendMail(mailOptions);
+//   } catch (error) {
+//     console.error("Error sending request received email:", error);
+//   }
+// };
 
-export const CancellationMail = async (data: any) => {
-  try {
-    const { email, password } = data;
-    const mailOptions = {
-      to: email,
-      subject: `Your DayBreakPass Account Credentials`,
-      html: `
-       <!DOCTYPE html>
-  <html>
-    <head>
-      <style>
-        .container {
-          font-family: Arial, sans-serif;
-          margin: 20px;
-          padding: 20px;
-          border: 1px solid #ccc;
-          border-radius: 10px;
-        }
-        .header {
-          background-color: #B5813F;
-          padding: 10px;
-          text-align: center;
-          border-bottom: 1px solid #ccc;
-        }
-        .content {
-          margin-top: 20px;
-        }
-        .footer {
-          margin-top: 20px;
-          text-align: center;
-          color: #888;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <div class="header">
-          <h1>Welcome to DayBreakPass</h1>
-        </div>
-        <div class="content">
-          <p>Hello,</p>
-          <p>Thank you for registering with us. Here are your credentials:</p>
-          <p><strong>Email Id:</strong> ${email}</p>
-          <p><strong>Password:</strong> ${password}</p>
-          <p>Please keep this information safe and do not share it with anyone.</p>
-        </div>
-        <div class="footer">
-          <p>&copy; 2024 DayBreakPass. All rights reserved.</p>
-        </div>
-      </div>
-    </body>
-  </html>
-`,
-    };
-    await transporter.sendMail(mailOptions);
-  } catch (error) {
-    console.error("Error sending request received email:", error);
-  }
-};
+// export const ReviewMail = async (data: any) => {
+//   try {
+//     const { email, password } = data;
+//     const mailOptions = {
+//       to: email,
+//       subject: `Your DayBreakPass Account Credentials`,
+//       html: `
+//        <!DOCTYPE html>
+//   <html>
+//     <head>
+//       <style>
+//         .container {
+//           font-family: Arial, sans-serif;
+//           margin: 20px;
+//           padding: 20px;
+//           border: 1px solid #ccc;
+//           border-radius: 10px;
+//         }
+//         .header {
+//           background-color: #B5813F;
+//           padding: 10px;
+//           text-align: center;
+//           border-bottom: 1px solid #ccc;
+//         }
+//         .content {
+//           margin-top: 20px;
+//         }
+//         .footer {
+//           margin-top: 20px;
+//           text-align: center;
+//           color: #888;
+//         }
+//       </style>
+//     </head>
+//     <body>
+//       <div class="container">
+//         <div class="header">
+//           <h1>Welcome to DayBreakPass</h1>
+//         </div>
+//         <div class="content">
+//           <p>Hello,</p>
+//           <p>Thank you for registering with us. Here are your credentials:</p>
+//           <p><strong>Email Id:</strong> ${email}</p>
+//           <p><strong>Password:</strong> ${password}</p>
+//           <p>Please keep this information safe and do not share it with anyone.</p>
+//         </div>
+//         <div class="footer">
+//           <p>&copy; 2024 DayBreakPass. All rights reserved.</p>
+//         </div>
+//       </div>
+//     </body>
+//   </html>
+// `,
+//     };
+//     await transporter.sendMail(mailOptions);
+//   } catch (error) {
+//     console.error("Error sending request received email:", error);
+//   }
+// };
 
-export const PaymentMail = async (data: any) => {
-  try {
-    const { email, password } = data;
-    const mailOptions = {
-      to: email,
-      subject: `Your DayBreakPass Account Credentials`,
-      html: `
-       <!DOCTYPE html>
-  <html>
-    <head>
-      <style>
-        .container {
-          font-family: Arial, sans-serif;
-          margin: 20px;
-          padding: 20px;
-          border: 1px solid #ccc;
-          border-radius: 10px;
-        }
-        .header {
-          background-color: #B5813F;
-          padding: 10px;
-          text-align: center;
-          border-bottom: 1px solid #ccc;
-        }
-        .content {
-          margin-top: 20px;
-        }
-        .footer {
-          margin-top: 20px;
-          text-align: center;
-          color: #888;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <div class="header">
-          <h1>Welcome to DayBreakPass</h1>
-        </div>
-        <div class="content">
-          <p>Hello,</p>
-          <p>Thank you for registering with us. Here are your credentials:</p>
-          <p><strong>Email Id:</strong> ${email}</p>
-          <p><strong>Password:</strong> ${password}</p>
-          <p>Please keep this information safe and do not share it with anyone.</p>
-        </div>
-        <div class="footer">
-          <p>&copy; 2024 DayBreakPass. All rights reserved.</p>
-        </div>
-      </div>
-    </body>
-  </html>
-`,
-    };
-    await transporter.sendMail(mailOptions);
-  } catch (error) {
-    console.error("Error sending request received email:", error);
-  }
-};
+// export const SupportMail = async (data: any) => {
+//   try {
+//     const { email, password } = data;
+//     const mailOptions = {
+//       to: email,
+//       subject: `Your DayBreakPass Account Credentials`,
+//       html: `
+//        <!DOCTYPE html>
+//   <html>
+//     <head>
+//       <style>
+//         .container {
+//           font-family: Arial, sans-serif;
+//           margin: 20px;
+//           padding: 20px;
+//           border: 1px solid #ccc;
+//           border-radius: 10px;
+//         }
+//         .header {
+//           background-color: #B5813F;
+//           padding: 10px;
+//           text-align: center;
+//           border-bottom: 1px solid #ccc;
+//         }
+//         .content {
+//           margin-top: 20px;
+//         }
+//         .footer {
+//           margin-top: 20px;
+//           text-align: center;
+//           color: #888;
+//         }
+//       </style>
+//     </head>
+//     <body>
+//       <div class="container">
+//         <div class="header">
+//           <h1>Welcome to DayBreakPass</h1>
+//         </div>
+//         <div class="content">
+//           <p>Hello,</p>
+//           <p>Thank you for registering with us. Here are your credentials:</p>
+//           <p><strong>Email Id:</strong> ${email}</p>
+//           <p><strong>Password:</strong> ${password}</p>
+//           <p>Please keep this information safe and do not share it with anyone.</p>
+//         </div>
+//         <div class="footer">
+//           <p>&copy; 2024 DayBreakPass. All rights reserved.</p>
+//         </div>
+//       </div>
+//     </body>
+//   </html>
+// `,
+//     };
+//     await transporter.sendMail(mailOptions);
+//   } catch (error) {
+//     console.error("Error sending request received email:", error);
+//   }
+// };
 
-export const ReviewMail = async (data: any) => {
-  try {
-    const { email, password } = data;
-    const mailOptions = {
-      to: email,
-      subject: `Your DayBreakPass Account Credentials`,
-      html: `
-       <!DOCTYPE html>
-  <html>
-    <head>
-      <style>
-        .container {
-          font-family: Arial, sans-serif;
-          margin: 20px;
-          padding: 20px;
-          border: 1px solid #ccc;
-          border-radius: 10px;
-        }
-        .header {
-          background-color: #B5813F;
-          padding: 10px;
-          text-align: center;
-          border-bottom: 1px solid #ccc;
-        }
-        .content {
-          margin-top: 20px;
-        }
-        .footer {
-          margin-top: 20px;
-          text-align: center;
-          color: #888;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <div class="header">
-          <h1>Welcome to DayBreakPass</h1>
-        </div>
-        <div class="content">
-          <p>Hello,</p>
-          <p>Thank you for registering with us. Here are your credentials:</p>
-          <p><strong>Email Id:</strong> ${email}</p>
-          <p><strong>Password:</strong> ${password}</p>
-          <p>Please keep this information safe and do not share it with anyone.</p>
-        </div>
-        <div class="footer">
-          <p>&copy; 2024 DayBreakPass. All rights reserved.</p>
-        </div>
-      </div>
-    </body>
-  </html>
-`,
-    };
-    await transporter.sendMail(mailOptions);
-  } catch (error) {
-    console.error("Error sending request received email:", error);
-  }
-};
+// export const ReminderToUpdateInventory = async (data: any) => {
+//   try {
+//     const { email, password } = data;
+//     const mailOptions = {
+//       to: email,
+//       subject: `Your DayBreakPass Account Credentials`,
+//       html: `
+//        <!DOCTYPE html>
+//   <html>
+//     <head>
+//       <style>
+//         .container {
+//           font-family: Arial, sans-serif;
+//           margin: 20px;
+//           padding: 20px;
+//           border: 1px solid #ccc;
+//           border-radius: 10px;
+//         }
+//         .header {
+//           background-color: #B5813F;
+//           padding: 10px;
+//           text-align: center;
+//           border-bottom: 1px solid #ccc;
+//         }
+//         .content {
+//           margin-top: 20px;
+//         }
+//         .footer {
+//           margin-top: 20px;
+//           text-align: center;
+//           color: #888;
+//         }
+//       </style>
+//     </head>
+//     <body>
+//       <div class="container">
+//         <div class="header">
+//           <h1>Welcome to DayBreakPass</h1>
+//         </div>
+//         <div class="content">
+//           <p>Hello,</p>
+//           <p>Thank you for registering with us. Here are your credentials:</p>
+//           <p><strong>Email Id:</strong> ${email}</p>
+//           <p><strong>Password:</strong> ${password}</p>
+//           <p>Please keep this information safe and do not share it with anyone.</p>
+//         </div>
+//         <div class="footer">
+//           <p>&copy; 2024 DayBreakPass. All rights reserved.</p>
+//         </div>
+//       </div>
+//     </body>
+//   </html>
+// `,
+//     };
+//     await transporter.sendMail(mailOptions);
+//   } catch (error) {
+//     console.error("Error sending request received email:", error);
+//   }
+// };
 
-export const SupportMail = async (data: any) => {
-  try {
-    const { email, password } = data;
-    const mailOptions = {
-      to: email,
-      subject: `Your DayBreakPass Account Credentials`,
-      html: `
-       <!DOCTYPE html>
-  <html>
-    <head>
-      <style>
-        .container {
-          font-family: Arial, sans-serif;
-          margin: 20px;
-          padding: 20px;
-          border: 1px solid #ccc;
-          border-radius: 10px;
-        }
-        .header {
-          background-color: #B5813F;
-          padding: 10px;
-          text-align: center;
-          border-bottom: 1px solid #ccc;
-        }
-        .content {
-          margin-top: 20px;
-        }
-        .footer {
-          margin-top: 20px;
-          text-align: center;
-          color: #888;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <div class="header">
-          <h1>Welcome to DayBreakPass</h1>
-        </div>
-        <div class="content">
-          <p>Hello,</p>
-          <p>Thank you for registering with us. Here are your credentials:</p>
-          <p><strong>Email Id:</strong> ${email}</p>
-          <p><strong>Password:</strong> ${password}</p>
-          <p>Please keep this information safe and do not share it with anyone.</p>
-        </div>
-        <div class="footer">
-          <p>&copy; 2024 DayBreakPass. All rights reserved.</p>
-        </div>
-      </div>
-    </body>
-  </html>
-`,
-    };
-    await transporter.sendMail(mailOptions);
-  } catch (error) {
-    console.error("Error sending request received email:", error);
-  }
-};
+// //Hotels Mail End
 
-export const ReminderToUpdateInventory = async (data: any) => {
-  try {
-    const { email, password } = data;
-    const mailOptions = {
-      to: email,
-      subject: `Your DayBreakPass Account Credentials`,
-      html: `
-       <!DOCTYPE html>
-  <html>
-    <head>
-      <style>
-        .container {
-          font-family: Arial, sans-serif;
-          margin: 20px;
-          padding: 20px;
-          border: 1px solid #ccc;
-          border-radius: 10px;
-        }
-        .header {
-          background-color: #B5813F;
-          padding: 10px;
-          text-align: center;
-          border-bottom: 1px solid #ccc;
-        }
-        .content {
-          margin-top: 20px;
-        }
-        .footer {
-          margin-top: 20px;
-          text-align: center;
-          color: #888;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <div class="header">
-          <h1>Welcome to DayBreakPass</h1>
-        </div>
-        <div class="content">
-          <p>Hello,</p>
-          <p>Thank you for registering with us. Here are your credentials:</p>
-          <p><strong>Email Id:</strong> ${email}</p>
-          <p><strong>Password:</strong> ${password}</p>
-          <p>Please keep this information safe and do not share it with anyone.</p>
-        </div>
-        <div class="footer">
-          <p>&copy; 2024 DayBreakPass. All rights reserved.</p>
-        </div>
-      </div>
-    </body>
-  </html>
-`,
-    };
-    await transporter.sendMail(mailOptions);
-  } catch (error) {
-    console.error("Error sending request received email:", error);
-  }
-};
-
-//Hotels Mail End
-
-export const CaReport = async (data: any) => {
-  try {
-    const { email, password } = data;
-    const mailOptions = {
-      to: email,
-      subject: `Your DayBreakPass Account Credentials`,
-      html: `
-       <!DOCTYPE html>
-  <html>
-    <head>
-      <style>
-        .container {
-          font-family: Arial, sans-serif;
-          margin: 20px;
-          padding: 20px;
-          border: 1px solid #ccc;
-          border-radius: 10px;
-        }
-        .header {
-          background-color: #B5813F;
-          padding: 10px;
-          text-align: center;
-          border-bottom: 1px solid #ccc;
-        }
-        .content {
-          margin-top: 20px;
-        }
-        .footer {
-          margin-top: 20px;
-          text-align: center;
-          color: #888;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <div class="header">
-          <h1>Welcome to DayBreakPass</h1>
-        </div>
-        <div class="content">
-          <p>Hello,</p>
-          <p>Thank you for registering with us. Here are your credentials:</p>
-          <p><strong>Email Id:</strong> ${email}</p>
-          <p><strong>Password:</strong> ${password}</p>
-          <p>Please keep this information safe and do not share it with anyone.</p>
-        </div>
-        <div class="footer">
-          <p>&copy; 2024 DayBreakPass. All rights reserved.</p>
-        </div>
-      </div>
-    </body>
-  </html>
-`,
-    };
-    await transporter.sendMail(mailOptions);
-  } catch (error) {
-    console.error("Error sending request received email:", error);
-  }
-};
+// export const CaReport = async (data: any) => {
+//   try {
+//     const { email, password } = data;
+//     const mailOptions = {
+//       to: email,
+//       subject: `Your DayBreakPass Account Credentials`,
+//       html: `
+//        <!DOCTYPE html>
+//   <html>
+//     <head>
+//       <style>
+//         .container {
+//           font-family: Arial, sans-serif;
+//           margin: 20px;
+//           padding: 20px;
+//           border: 1px solid #ccc;
+//           border-radius: 10px;
+//         }
+//         .header {
+//           background-color: #B5813F;
+//           padding: 10px;
+//           text-align: center;
+//           border-bottom: 1px solid #ccc;
+//         }
+//         .content {
+//           margin-top: 20px;
+//         }
+//         .footer {
+//           margin-top: 20px;
+//           text-align: center;
+//           color: #888;
+//         }
+//       </style>
+//     </head>
+//     <body>
+//       <div class="container">
+//         <div class="header">
+//           <h1>Welcome to DayBreakPass</h1>
+//         </div>
+//         <div class="content">
+//           <p>Hello,</p>
+//           <p>Thank you for registering with us. Here are your credentials:</p>
+//           <p><strong>Email Id:</strong> ${email}</p>
+//           <p><strong>Password:</strong> ${password}</p>
+//           <p>Please keep this information safe and do not share it with anyone.</p>
+//         </div>
+//         <div class="footer">
+//           <p>&copy; 2024 DayBreakPass. All rights reserved.</p>
+//         </div>
+//       </div>
+//     </body>
+//   </html>
+// `,
+//     };
+//     await transporter.sendMail(mailOptions);
+//   } catch (error) {
+//     console.error("Error sending request received email:", error);
+//   }
+// };
 
 
 export const sendContactNotification = async (data: any) => {

@@ -4,6 +4,9 @@ import verifyToken from "../middleware/auth";
 import Hotel from "../models/hotel";
 import axios from "axios";
 import Razorpay from "razorpay";
+import { BookingCancellation } from "./mail";
+import User from "../models/user";
+import mongoose from "mongoose";
 
 const razorpayInstance = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID as string,
@@ -153,7 +156,21 @@ router.put(
       }
 
       await hotel.save();
-
+      const user = await User.findById(data.userId);
+      const hotelInfo = await Hotel.findOne({
+        _id: data.hotelId,
+        "bookings._id": data.bookingId,
+      });
+      const booking = hotel
+        ? hotel.bookings.find((b) => b._id.toString() === data.bookingId)
+        : null;
+      const mailPayload = {
+        email: user?.email,
+        name: `${user?.firstName} ${user?.lastName}`, // Fixed potential typo (firstName used twice)
+        hotelName: hotelInfo?.name,
+        date: booking?.cart?.[0]?.date, // Use optional chaining here
+        amount: payment.amount,
+      };
       // Update the service record with cancellation info
       const serviceRecord = await ServiceRecord.findOneAndUpdate(
         {
@@ -170,6 +187,7 @@ router.put(
       }
 
       await serviceRecord.save();
+      BookingCancellation(mailPayload);
 
       res.status(200).json({
         message: "Booking cancelled and refunded successfully",
@@ -252,10 +270,13 @@ async function createAndMarkInvoiceAsPaid(data: any, lineItems: any[]) {
     const updatePayload = {
       receipt: payment.id,
     };
-    
+
     // Ensure you have the correct method and API endpoint for updating invoice status
-    const updateInv = await razorpayInstance.invoices.edit(invoice.id, updatePayload);
-    console.log(updateInv)
+    const updateInv = await razorpayInstance.invoices.edit(
+      invoice.id,
+      updatePayload
+    );
+    console.log(updateInv);
     return invoice;
   } catch (error) {
     console.error("Error in creating and marking invoice as paid:", error);

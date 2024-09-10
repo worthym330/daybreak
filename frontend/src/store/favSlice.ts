@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: any = {
   favorites: [],
+  hotel: {},
 };
 
 const favoritesSlice = createSlice({
@@ -16,8 +17,15 @@ const favoritesSlice = createSlice({
         (hotel: any) => hotel._id !== action.payload
       );
     },
+    addHotel: (state, action: PayloadAction<any>) => {
+      state.hotel = action.payload;
+    },
+    removeHotel: (state) => {
+      state.hotel = {};
+    },
   },
 });
 
-export const { addFavorite, removeFavorite } = favoritesSlice.actions;
+export const { addFavorite, removeFavorite, addHotel, removeHotel } =
+  favoritesSlice.actions;
 export default favoritesSlice.reducer;

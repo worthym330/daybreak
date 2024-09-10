@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { HotelType } from "../../../backend/src/shared/types";
 import { AiFillStar } from "react-icons/ai";
 import Button from "./Button";
-import { facilityIcons, FacilityKey, Tooltip } from "../pages/Detail";
+import { AmenitiesIcons, FacilityKey, Tooltip } from "../pages/Detail";
 import {
   initialModalState,
   initialResetModal,
@@ -15,9 +15,9 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { FaHeart } from "react-icons/fa";
-import { addFavorite, removeFavorite } from "../store/favSlice";
+import { addFavorite, addHotel, removeFavorite } from "../store/favSlice";
 import ConfirmationModal from "./AlertModal";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 type Props = {
@@ -87,7 +87,8 @@ const SearchResultsCard = ({ hotel }: Props) => {
         console.error("An error occurred while toggling favorite");
       }
     } else {
-      toast.error("Please log in to add into favourites");
+      dispatch(addHotel(hotel))
+      setModal((prev: any) => ({ ...prev, state: true,hotel }));
     }
   };
 
@@ -100,6 +101,7 @@ const SearchResultsCard = ({ hotel }: Props) => {
         setSignupModal={setSignupModal}
         isHeader={false}
         isBooking={false}
+        isFavourite={true}
       />
       <RenderSignUpModal
         modal={signupModal}
@@ -204,9 +206,9 @@ const SearchResultsCard = ({ hotel }: Props) => {
               {hotel.facilities.slice(0, 6).map((facility, index) => (
                 <Tooltip key={index} text={facility}>
                   <div className="rounded-md p-2 flex items-center space-x-2 text-goldColor text-xl">
-                    {facilityIcons[facility as FacilityKey] && (
+                    {AmenitiesIcons[facility as FacilityKey] && (
                       <span className="text-goldColor">
-                        {facilityIcons[facility as FacilityKey]}
+                        {AmenitiesIcons[facility as FacilityKey]}
                       </span>
                     )}
                   </div>

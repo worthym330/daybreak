@@ -1,4 +1,3 @@
-import { useQuery } from "react-query";
 import * as apiClient from "../api-client";
 import BookingForm from "../forms/BookingForm/BookingForm";
 import { useNavigate } from "react-router-dom";
@@ -30,7 +29,7 @@ const Booking = () => {
   const cartItems = parsedCart;
   // const auth_token = Cookies.get("authentication") || "null";
   // const userLogined = JSON.parse(auth_token);
-  const auth = useSelector((state: RootState) => state.auth);
+  // const auth = useSelector((state: RootState) => state.auth);
 
   const navigate = useNavigate();
   const [paymentIntentData, setPaymentIntentData] = useState(null);
@@ -89,9 +88,9 @@ const Booking = () => {
   //   apiClient.fetchHotelById(hotelId as string)
   // );
 
-  const { data: currentUser } = useQuery("fetchCurrentUser", () =>
-    apiClient.fetchCurrentUser()
-  );
+  // const { data: currentUser } = useQuery("fetchCurrentUser", () =>
+  //   apiClient.fetchCurrentUser()
+  // );
 
   return (
     <div className="font-poppins sm:mx-4 lg:mx-20">
@@ -195,40 +194,17 @@ const Booking = () => {
               </div>
             </div>
           </div>
-          {auth.isAuthenticated ? (
-            currentUser &&
-            paymentIntentData && (
-              <div className="w-full md:w-2/3">
-                {/* Display booking summary */}
-                <BookingForm
-                  currentUser={currentUser}
-                  paymentIntent={paymentIntentData}
-                  cartItems={cartItems}
-                />
-                {/* Button to initiate Razorpay payment */}
-              </div>
-            )
-          ) : (
-            <main className="grid place-items-center bg-white px-6 py-24 sm:py-32 lg:px-8">
-              <div className="text-center">
-                <h1 className="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-                  Please log in
-                </h1>
-                <p className="mt-6 text-base leading-7 text-gray-600">
-                  You need to be logged in to view your booking summary and
-                  proceed with payment.
-                </p>
-                <div className="mt-10 flex items-center justify-center gap-x-6">
-                  <Button
-                    onClick={() =>
-                      setModal((prev: any) => ({ ...prev, state: true }))
-                    }
-                  >
-                    Go to Login
-                  </Button>
-                </div>
-              </div>
-            </main>
+          {paymentIntentData && (
+            <div className="w-full md:w-2/3">
+              {/* Display booking summary */}
+              <BookingForm
+                // currentUser={currentUser}
+                paymentIntent={paymentIntentData}
+                cartItems={cartItems}
+                setModal={setModal}
+              />
+              {/* Button to initiate Razorpay payment */}
+            </div>
           )}
         </div>
       ) : (

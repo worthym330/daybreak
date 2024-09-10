@@ -147,7 +147,7 @@ const Home = () => {
 
           <div className="w-full md:w-2/3 lg:w-1/2">
             <form
-              className="flex items-center p-4 bg-white rounded-full shadow-md"
+              className="flex items-center p-4 bg-white rounded-full shadow-md w-full"
               onSubmit={handleSubmit}
             >
               <div className="flex items-center flex-1 px-4">
@@ -157,7 +157,7 @@ const Home = () => {
                   </span>
                   <input
                     type="text"
-                    placeholder="Where are you going?"
+                    placeholder="Location"
                     className="outline-none bg-transparent placeholder-[#02596c] text-[#02596c] p-2 w-full"
                     value={destination}
                     onChange={(event) => setDestination(event.target.value)}

@@ -2,12 +2,24 @@ import express, { Request, Response } from "express";
 import Hotel from "../models/hotel";
 import { BookingType, HotelSearchResponse } from "../shared/types";
 import { param, validationResult } from "express-validator";
-import Stripe from "stripe";
-import verifyToken from "../middleware/auth";
+import verifyToken, {
+  createAndVerifyToken,
+  verifyAdminToken,
+} from "../middleware/auth";
 import Razorpay from "razorpay";
 import ServiceRecord from "../models/invoice";
 import axios from "axios";
 import HotelDetails from "../models/productdetail";
+import { sendPaymentConfirmationSms } from "./twillio";
+import User from "../models/user";
+import {
+  BookingConfirmation,
+  PaymentFailed,
+  PaymentSuccess,
+  sendCredentials,
+} from "./mail";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 const razorpayInstance = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID as string,
@@ -33,7 +45,7 @@ router.get("/search", async (req: Request, res: Response) => {
         break;
     }
 
-    const pageSize = 5;
+    const pageSize = 10;
     const pageNumber = parseInt(
       req.query.page ? req.query.page.toString() : "1"
     );
@@ -116,12 +128,10 @@ router.get(
 
 router.post(
   "/:hotelId/bookings/payment-intent",
-  verifyToken,
+  // createAndVerifyToken,
   async (req: Request, res: Response) => {
     const { cartItems, discount, gst } = req.body;
-    console.log(cartItems, discount, gst);
     const hotelId = req.params.hotelId;
-
     try {
       const hotel = await Hotel.findById(hotelId);
       if (!hotel) {
@@ -145,7 +155,7 @@ router.post(
         payment_capture: 1, // 1 for automatic capture, 0 for manual
         notes: {
           hotelId,
-          userId: req.userId,
+          // userId: req.userId,
         },
       };
 
@@ -172,13 +182,108 @@ router.post(
 
 router.post(
   "/:hotelId/bookings",
-  verifyToken,
+  createAndVerifyToken,
   async (req: Request, res: Response) => {
     try {
-      const { paymentIntentId, orderId, cart } = req.body;
-
+      const {
+        paymentIntentId,
+        orderId,
+        cart,
+        phone,
+        email,
+        firstName,
+        lastName,
+      } = req.body;
+console.log(email, req.userId)
+      let user, mailPayload, token, password;
       // Verify the payment signature
       const payment = await razorpayInstance.payments.fetch(paymentIntentId);
+      const hotel = await Hotel.findById(req.params.hotelId);
+
+      if (req.userId !== "") {
+        user = await User.findById(req.userId);
+
+        if (!user) {
+          return res.status(400).json({ message: "User not found" });
+        }
+
+        mailPayload = {
+          email: user.email,
+          name: `${user.firstName} ${user.lastName}`,
+          hotelName: hotel?.name,
+          date: cart[0].date,
+          amount: payment.amount,
+        };
+      } else {
+        console.log("called");
+
+        // Check if user already exists with the given email
+        user = await User.findOne({ email });
+
+        if (user) {
+          console.log("User already exists with this email");
+          mailPayload = {
+            email: user.email,
+            name: `${user.firstName} ${user.lastName}`,
+            hotelName: hotel?.name,
+            date: cart[0].date,
+            amount: payment.amount,
+          };
+        } else {
+          // Check email domain
+          if (email.endsWith("@gmail.com")) {
+            password = null;
+          } else {
+            password = firstName; // Set password as firstName for non-gmail users
+          }
+
+          // Hash the password only if it's not null
+          let hashedPassword = password
+            ? await bcrypt.hash(password, 10)
+            : null;
+
+          // Create a new user
+          const body = {
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            phone: phone,
+            role: "customer",
+            password: hashedPassword, // Save hashed password if it's not null
+          };
+          user = new User(body);
+          await user.save();
+
+          token = jwt.sign(
+            { userId: user.id },
+            process.env.JWT_SECRET_KEY as string,
+            {
+              expiresIn: "1d",
+            }
+          );
+          res.cookie("auth_token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            maxAge: 86400000,
+          });
+
+          // Prepare mail payload
+          mailPayload = {
+            email: email,
+            name: `${user.firstName} ${user.lastName}`,
+            hotelName: hotel?.name,
+            date: cart[0].date,
+            amount: payment.amount,
+            password: password ? password : "N/A", // Include password if exists, otherwise show "N/A"
+          };
+          const mailCredentialData = {
+            name: `${user.firstName} ${user.lastName}`,
+            email: email,
+            password,
+          };
+          sendCredentials(mailCredentialData);
+        }
+      }
 
       if (!payment) {
         return res.status(400).json({ message: "Payment not found" });
@@ -186,33 +291,41 @@ router.post(
 
       if (
         payment.order_id !== orderId ||
-        payment.notes.hotelId !== req.params.hotelId ||
-        payment.notes.userId !== req.userId
+        payment.notes.hotelId !== req.params.hotelId
       ) {
         return res.status(400).json({ message: "Payment details mismatch" });
       }
 
       if (payment.status !== "captured") {
+        PaymentFailed(mailPayload);
         return res.status(400).json({
           message: `Payment not captured. Status: ${payment.status}`,
         });
       }
+
       let totalCost: number = (payment.amount as number) / 100;
 
       const newBooking: BookingType = {
         ...req.body,
-        userId: req.userId,
+        userId: user ? user._id : undefined,
         totalCost: totalCost,
         cart: cart,
       };
 
-      const hotel = await Hotel.findOneAndUpdate(
-        { _id: req.params.hotelId },
-        {
-          $push: { bookings: newBooking },
-        },
-        { new: true }
-      );
+      if (!hotel) {
+        return res.status(400).json({ message: "Hotel not found" });
+      }
+      
+      // Initialize the bookings array if it's null or undefined
+      if (!hotel.bookings) {
+        hotel.bookings = [];
+      }
+      
+      // Push the new booking to the bookings array
+      hotel.bookings.push(newBooking);
+      
+      // Save the hotel document after updating
+      await hotel.save();
 
       if (!hotel) {
         return res.status(400).json({ message: "Hotel not found" });
@@ -221,9 +334,9 @@ router.post(
       await hotel.save();
 
       const serviceRecord = new ServiceRecord({
-        userId: req.userId,
+        userId: user ? user._id : undefined,
         hotelId: req.params.hotelId,
-        bookingId: hotel.bookings[hotel.bookings.length - 1]._id, // Ensure newBooking._id is properly set
+        bookingId: hotel.bookings[hotel.bookings.length - 1]._id,
         paymentId: paymentIntentId,
         orderId: orderId,
         invoiceId: payment.invoice_id || "",
@@ -232,10 +345,29 @@ router.post(
           cart.map((l: { product: { title: any } }) => l.product.title) || [],
         paymentStatus: payment.status,
       });
-
       await serviceRecord.save();
 
-      res.status(200).send();
+      sendPaymentConfirmationSms(
+        phone,
+        hotel?.name || "",
+        serviceRecord.servicesUsed,
+        cart[0].date,
+        cart[0].date
+      );
+
+      PaymentSuccess(mailPayload);
+      BookingConfirmation(mailPayload);
+
+      res.status(200).send({
+        user: {
+          id: user?._id || "",
+          firstName: user?.firstName || "",
+          lastName: user?.lastName || "",
+          email: user?.email || "",
+          token: token || "",
+          role: user?.role || "customer",
+        },
+      });
     } catch (error) {
       console.log(error);
       res.status(500).json({ message: "Something went wrong" });
@@ -245,7 +377,6 @@ router.post(
 
 const constructSearchQuery = (queryParams: any) => {
   let constructedQuery: any = {};
-
   if (queryParams.destination) {
     constructedQuery.$or = [
       { city: new RegExp(queryParams.destination, "i") },
@@ -294,6 +425,13 @@ const constructSearchQuery = (queryParams: any) => {
       $in: Array.isArray(queryParams.passes)
         ? queryParams.passes
         : [queryParams.passes],
+    };
+  }
+
+  if (queryParams.cities) {
+    const cities = [queryParams.cities];
+    constructedQuery["city"] = {
+      $in: cities.flat().map((city: string) => new RegExp(city, "i")),
     };
   }
 

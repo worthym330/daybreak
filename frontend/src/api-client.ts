@@ -145,6 +145,7 @@ export type SearchParams = {
   isAvailable?: boolean;
   passes?: string[];
   guestStars?: string[];
+  cities?: { label: string; value: string }[];
 };
 
 export const searchHotels = async (
@@ -176,6 +177,12 @@ export const searchHotels = async (
   searchParams.guestStars?.forEach((type) =>
     queryParams.append("guestStars", type)
   );
+  if (searchParams.cities && searchParams.cities.length > 0) {
+    searchParams.cities.forEach((city) => {
+      queryParams.append("cities", city.value); // Append each city's value to the query string
+    });
+  }
+
   const response = await fetch(
     `${API_BASE_URL}/api/hotels/search?${queryParams}`
   );

@@ -1,11 +1,8 @@
 import { useForm } from "react-hook-form";
-import {
-  PaymentIntentResponse,
-  UserType,
-} from "../../../../backend/src/shared/types";
+import { PaymentIntentResponse } from "../../../../backend/src/shared/types";
 import { useSearchContext } from "../../contexts/SearchContext";
 import { useNavigate } from "react-router-dom";
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import * as apiClient from "../../api-client";
 import { useAppContext } from "../../contexts/AppContext";
 import Cookies from "js-cookie";
@@ -21,28 +18,52 @@ import {
 } from "../../store/cartSlice";
 import { RootState } from "../../store/store";
 import { FaXmark } from "react-icons/fa6";
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 
 type Props = {
-  currentUser: UserType;
+  // currentUser: UserType;
   paymentIntent: PaymentIntentResponse;
   cartItems: any;
+  setModal: any;
 };
 
 export type BookingFormData = {
   firstName: string;
   lastName: string;
   email: string;
-  adultCount: number;
+  adultCount?: number;
   phone: string;
-  childCount: number;
-  checkIn: string;
-  hotelId: string;
-  paymentIntentId: string;
-  totalCost: number;
+  childCount?: number;
+  checkIn?: string;
+  hotelId?: string;
+  paymentIntentId?: string;
+  totalCost?: number;
   orderId?: string;
 };
 
-const BookingForm = ({ currentUser, paymentIntent, cartItems }: Props) => {
+const validationSchema = yup.object().shape({
+  firstName: yup.string().required('First Name is required'),
+  lastName: yup.string().required('Last Name is required'),
+  email: yup.string().email('Invalid email address').required('Email is required'),
+  phone: yup.string().matches(/^[0-9]{10}$/, 'Mobile Number must be 10 digits').required('Mobile Number is required'),
+  adultCount: yup.number().positive('Must be a positive number').integer('Must be an integer').optional(),
+  childCount: yup.number().positive('Must be a positive number').integer('Must be an integer').optional(),
+  checkIn: yup.string().optional(),
+  hotelId: yup.string().optional(),
+  paymentIntentId: yup.string().optional(),
+  totalCost: yup.number().positive('Must be a positive number').optional(),
+  orderId: yup.string().optional(),
+});
+
+
+const BookingForm = ({
+  // currentUser,
+  paymentIntent,
+  cartItems,
+}: // setModal,
+Props) => {
+  console.log("paymentIntent", paymentIntent);
   const search = useSearchContext();
   const { razorpayOptions } = useAppContext();
   const navigate = useNavigate();
@@ -58,7 +79,10 @@ const BookingForm = ({ currentUser, paymentIntent, cartItems }: Props) => {
   const cart = localStorage.getItem("cart");
   const parsedCart = cart ? JSON.parse(cart) : [];
   const hotelId = parsedCart[0]?.hotel?._id;
-
+  // const auth = useSelector((state: RootState) => state.auth);
+  const { data: currentUser } = useQuery("fetchCurrentUser", () =>
+    apiClient.fetchCurrentUser()
+  );
   const { mutate: bookRoom, isLoading } = useMutation<
     void,
     Error,
@@ -81,12 +105,13 @@ const BookingForm = ({ currentUser, paymentIntent, cartItems }: Props) => {
     }
   );
 
-  const { handleSubmit, register } = useForm<BookingFormData>({
+  const { handleSubmit, register, formState: { errors } } = useForm<BookingFormData>({
+    resolver: yupResolver(validationSchema), // Ensure schema matches BookingFormData
     defaultValues: {
-      firstName: currentUser.firstName,
-      lastName: currentUser.lastName,
-      email: currentUser.email,
-      phone: currentUser.phone,
+      firstName: currentUser?.firstName,
+      lastName: currentUser?.lastName,
+      email: currentUser?.email,
+      phone: currentUser?.phone,
       checkIn: search.checkIn.toISOString(),
       hotelId: hotelId,
       totalCost: paymentIntent.totalCost,
@@ -96,12 +121,20 @@ const BookingForm = ({ currentUser, paymentIntent, cartItems }: Props) => {
   });
 
   const onSubmit = async (formData: BookingFormData) => {
+    formData.checkIn = search.checkIn.toISOString();
+    formData.hotelId = hotelId;
+    formData.paymentIntentId = paymentIntent.paymentIntentId;
+    formData.totalCost = paymentIntent.totalCost;
+    formData.orderId = paymentIntent.orderId;
     try {
       const options = {
         key: razorpayOptions.key_id,
         amount: paymentIntent.amount,
         currency: paymentIntent.currency,
-        name: `${currentUser.firstName} ${currentUser.lastName}`,
+        name:
+          currentUser?.firstName !== undefined
+            ? `${currentUser?.firstName} ${currentUser?.lastName}`
+            : `${formData.firstName} ${formData.lastName}`,
         description: "Booking payment",
         order_id: paymentIntent.orderId,
         status: "captured",
@@ -128,9 +161,18 @@ const BookingForm = ({ currentUser, paymentIntent, cartItems }: Props) => {
           }
         },
         prefill: {
-          name: `${currentUser.firstName} ${currentUser.lastName}`,
-          email: currentUser.email,
-          contact: currentUser.phone,
+          name:
+            currentUser?.firstName !== undefined
+              ? `${currentUser?.firstName} ${currentUser?.lastName}`
+              : `${formData.firstName} ${formData.lastName}`,
+          email:
+            currentUser?.email !== undefined
+              ? currentUser?.email
+              : formData.email,
+          contact:
+            currentUser?.phone !== undefined
+              ? currentUser?.phone
+              : formData.phone,
         },
         notes: {
           address: "Booking Address",
@@ -152,6 +194,8 @@ const BookingForm = ({ currentUser, paymentIntent, cartItems }: Props) => {
     }
   };
 
+  console.log(errors)
+
   useEffect(() => {
     const calculateSubtotal = (items: any) => {
       return items.reduce((total: number, item: any) => {
@@ -165,7 +209,8 @@ const BookingForm = ({ currentUser, paymentIntent, cartItems }: Props) => {
 
     const calculatedSubtotal = calculateSubtotal(cartItems);
     const calculatedGst = calculatedSubtotal * 0.18;
-    const calculatedTotal = calculatedSubtotal - (discountValue ?? 0) + calculatedGst;
+    const calculatedTotal =
+      calculatedSubtotal - (discountValue ?? 0) + calculatedGst;
 
     setSubtotal(calculatedSubtotal);
     setGst(calculatedGst);
@@ -193,44 +238,52 @@ const BookingForm = ({ currentUser, paymentIntent, cartItems }: Props) => {
       onSubmit={handleSubmit(onSubmit)}
       className="grid grid-cols-1 gap-5 rounded-lg border border-gray-400 p-5 font-poppins"
     >
-      <span className="text-3xl font-bold text-[#02596C]">Confirm Your Details</span>
+      <span className="text-3xl font-bold text-[#02596C]">
+        Confirm Your Details
+      </span>
       <div className="grid grid-cols-2 gap-6">
         <label className="text-gray-700 text-base flex-1">
           First Name
           <input
             className="mt-1 border rounded w-full py-2 px-3 text-gray-700 font-normal"
             type="text"
-            {...register("firstName")}
+            {...register('firstName')}
           />
+          {errors.firstName && <p className="text-red-500">{errors.firstName.message}</p>}
         </label>
         <label className="text-gray-700 text-base flex-1">
           Last Name
           <input
             className="mt-1 border rounded w-full py-2 px-3 text-gray-700 font-normal"
             type="text"
-            {...register("lastName")}
+            {...register('lastName')}
           />
+          {errors.lastName && <p className="text-red-500">{errors.lastName.message}</p>}
         </label>
         <label className="text-gray-700 text-base flex-1">
           Email
           <input
             className="mt-1 border rounded w-full py-2 px-3 text-gray-700 font-normal"
             type="text"
-            {...register("email")}
+            {...register('email')}
           />
+          {errors.email && <p className="text-red-500">{errors.email.message}</p>}
         </label>
         <label className="text-gray-700 text-base flex-1">
           Mobile Number
           <input
             className="mt-1 border rounded w-full py-2 px-3 text-gray-700 font-normal"
             type="text"
-            {...register("phone")}
+            {...register('phone')}
           />
+          {errors.phone && <p className="text-red-500">{errors.phone.message}</p>}
         </label>
       </div>
 
       <div className="mb-4">
-        <h3 className="text-lg font-medium text-[#02596C]">Your Price Summary</h3>
+        <h3 className="text-lg font-medium text-[#02596C]">
+          Your Price Summary
+        </h3>
         {cartItems.map((item: any, index: any) => (
           <div
             className="flex justify-between items-center gap-4 py-2"
@@ -246,7 +299,7 @@ const BookingForm = ({ currentUser, paymentIntent, cartItems }: Props) => {
               )}
             </span>
             <span className="">
-              ₹
+              ₹{" "}
               {(item.adultCount > 0 && item.childCount > 0
                 ? item.product.adultPrice * item.adultCount +
                   item.product.childPrice * item.childCount
@@ -309,7 +362,6 @@ const BookingForm = ({ currentUser, paymentIntent, cartItems }: Props) => {
           </button>
         </div>
       </div>
-
       <Button disabled={isLoading} type="submit">
         {isLoading ? "Saving..." : "Confirm Booking"}
       </Button>

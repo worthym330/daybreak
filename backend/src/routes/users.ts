@@ -7,6 +7,7 @@ import { OAuth2Client } from "google-auth-library";
 import Lead from "../models/leads";
 import { sendCredentials, sendLeadNotification, sendToCustomer } from "./mail";
 import bcrypt from "bcryptjs";
+import { sendWelcomeSms } from "./twillio";
 
 const router = express.Router();
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -93,6 +94,12 @@ router.post(
           expiresIn: "1d",
         }
       );
+      const emailData = {
+        email,
+        fullName:`${firstName} ${lastName}`
+      }
+      await sendToCustomer(emailData);
+      // sendWelcomeSms(contactNo,fullName)
       res.cookie("auth_token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
@@ -106,7 +113,7 @@ router.post(
           lastName: user.lastName,
           email: user.email,
           token: token,
-          role: user.role
+          role: user.role,
         },
       });
     } catch (error) {
@@ -151,6 +158,7 @@ router.post(
       await lead.save();
       await sendLeadNotification(leadData);
       await sendToCustomer(leadData);
+      // sendWelcomeSms(contactNo,fullName)
       const body = {
         firstName: fullName.split(" ")[0],
         lastName: fullName.split(" ")[fullName.split(" ").length - 1],
@@ -158,6 +166,7 @@ router.post(
         role: role,
         password: hotelName,
         status: false,
+        phone: contactNo,
       };
 
       user = new User(body);

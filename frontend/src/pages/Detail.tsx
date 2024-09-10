@@ -57,7 +57,7 @@ export type FacilityKey =
   | "Spa"
   | "Fitness Center";
 
-export const facilityIcons = {
+export const AmenitiesIcons = {
   "Free WiFi": <FaWifi />,
   Parking: <FaParking />,
   "Airport Shuttle": <FaShuttleVan />,
@@ -456,8 +456,8 @@ const Detail = () => {
                 {hotel.facilities.map((facility, index) => (
                   <Tooltip key={index} text={facility}>
                     <div className="rounded-md p-2 flex items-center space-x-2 cursor-pointer text-goldColor text-xl border hover:border-[#00C0CB]">
-                      {facilityIcons[facility as FacilityKey] && (
-                        <span>{facilityIcons[facility as FacilityKey]}</span>
+                      {AmenitiesIcons[facility as FacilityKey] && (
+                        <span>{AmenitiesIcons[facility as FacilityKey]}</span>
                       )}
                     </div>
                   </Tooltip>
@@ -684,23 +684,12 @@ const Detail = () => {
                         <span>Total:</span>
                         <span>₹{subtotal.toFixed(2)}</span>
                       </div>
-                      {userLogined !== null ? (
                         <Button
                           className="w-full bg-goldColor text-white py-2 rounded-lg"
                           onClick={() => navigate(`/checkout`)}
                         >
                           Book Now
                         </Button>
-                      ) : (
-                        <Button
-                          className="w-full bg-goldColor text-white py-2 rounded-lg"
-                          onClick={() =>
-                            setModal((prev: any) => ({ ...prev, state: true }))
-                          }
-                        >
-                          Login
-                        </Button>
-                      )}
                     </div>
                   </div>
                 </div>

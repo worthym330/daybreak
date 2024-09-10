@@ -1,7 +1,7 @@
 import { useQuery } from "react-query";
 import { useSearchContext } from "../contexts/SearchContext";
 import * as apiClient from "../api-client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SearchResultsCard from "../components/SearchResultsCard";
 import Pagination from "../components/Pagination";
 import StarRatingFilter from "../components/StarRatingFilter";
@@ -11,9 +11,16 @@ import FacilitiesFilter from "../components/FacilitiesFilter";
 import { useLocation } from "react-router-dom";
 import GuestRatingFilter from "../components/GuestRatingFilter";
 import PassesFilter from "../components/PassesFilter";
+import Select from "react-select";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 const useQueryParams = () => {
   return new URLSearchParams(useLocation().search);
+};
+
+type CityOption = {
+  value: string;
+  label: string;
 };
 
 const Search = () => {
@@ -30,6 +37,8 @@ const Search = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
   const queryParams = useQueryParams();
   const city = queryParams.get("city");
+  const [cityOptions, setCityOptions] = useState<CityOption[]>([]);
+  const [selectedCities, setSelectedCities] = useState<any[]>([]);
 
   const searchParams = {
     destination: city ? city : "",
@@ -46,6 +55,7 @@ const Search = () => {
     // sortOption,
     isAvailable,
     guestStars,
+    cities: selectedCities,
   };
 
   if (queryParams.size === 0) {
@@ -55,6 +65,29 @@ const Search = () => {
   const { data: hotelData } = useQuery(["searchHotels", searchParams], () =>
     apiClient.searchHotels(searchParams)
   );
+
+  const getHotelData = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/hotels/search`);
+      if (response.ok) {
+        const data = await response.json();
+        const cities = data.data.map((hotel: { city: string }) => hotel.city); // Adjust to your data structure
+        const uniqueCities = [...new Set(cities)].map((city) => ({
+          value: city,
+          label: city,
+        })) as CityOption[];
+        setCityOptions(uniqueCities);
+      } else {
+        console.log(response.ok);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getHotelData();
+  }, []);
 
   const handleStarsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const starRating = event.target.value;
@@ -148,6 +181,23 @@ const Search = () => {
                   className="rounded input-box text-[#4A4A4A]"
                   checked={isAvailable}
                   onChange={() => setIsAvailable(!isAvailable)}
+                />
+              </label>
+            </div>
+            <div className="border-b pb-5 font-inter">
+              <h4 className="text-lg mb-2">Cities</h4>
+              <label className="w-full leading-loose">
+                <Select
+                  isMulti={true}
+                  isClearable
+                  isSearchable
+                  options={cityOptions}
+                  value={selectedCities}
+                  onChange={(option) => {
+                    setSelectedCities(option.map((e) => e));
+                  }}
+                  placeholder="Select Cities"
+                  className="mt-4"
                 />
               </label>
             </div>

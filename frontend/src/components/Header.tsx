@@ -1,7 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import React, {  useEffect,  useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Formik } from "formik";
-import Modal from "./modal";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import * as Yup from "yup";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -16,6 +15,9 @@ import { RootState } from "../store/store";
 import { FaEye, FaEyeSlash, FaUserCircle } from "react-icons/fa";
 import { BsSuitcase } from "react-icons/bs";
 import { loginSuccess, logout } from "../store/authSlice";
+import { addFavorite, removeFavorite } from "../store/favSlice";
+import { FavouriteList } from "./SearchResultsCard";
+import Modal from "./modal";
 
 export const initialModalState = {
   type: "add",
@@ -76,29 +78,31 @@ export interface CustomJwtPayload extends JwtPayload {
   name?: string;
 }
 
-export const loginSchema = Yup.object().shape({
-  email: Yup.string().email("Invalid email").required("Email is required"),
+export const loginSchema =Yup.object().shape({
+  email: Yup.string().email('Invalid email').required('Email is required'),
   password: Yup.string()
-    .required("Password is required")
-    .min(6, "Password must be at least 6 characters"),
-  loginThrough: Yup.string().required("Login Through is required"),
+    .required('Password is required')
+    .min(6, 'Password must be at least 6 characters'),
+  loginThrough: Yup.string().required('Login Through is required'),
 });
 
-const registerSchema = Yup.object().shape({
-  firstName: Yup.string().required("First Name is required!"),
-  lastName: Yup.string().required("Last Name is required!"),
-  email: Yup.string().email("Invalid email").required("Email is required"),
+const registerSchema =Yup.object().shape({
+  firstName: Yup.string().required('First Name is required!'),
+  lastName: Yup.string().required('Last Name is required!'),
+  email: Yup.string().email('Invalid email').required('Email is required'),
   password: Yup.string()
-    .required("Password is required")
-    .min(6, "Password must be at least 6 characters")
-    .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
-    .matches(/[\W_]/, "Password must contain at least one special character"),
+    .required('Password is required')
+    .min(6, 'Password must be at least 6 characters')
+    .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .matches(/[\W_]/, 'Password must contain at least one special character'),
   confirmpassword: Yup.string()
-    .required("Password is required")
-    .min(6, "Password must be at least 6 characters")
-    .oneOf([Yup.ref("password")], "Passwords must match"),
+    .required('Password is required')
+    .min(6, 'Password must be at least 6 characters')
+    .oneOf([Yup.ref('password')], 'Passwords must match'),
   role: Yup.string(),
 });
+
+const MemoizedModal = React.memo(Modal);
 
 export const ResetPassRequest = ({ modal, setModal }: any) => {
   const { state, data } = modal;
@@ -146,7 +150,7 @@ export const ResetPassRequest = ({ modal, setModal }: any) => {
         handleChange,
         resetForm,
       }) => (
-        <Modal
+        <MemoizedModal
           title="Forgot Password Request"
           open={state}
           setOpen={() => {
@@ -187,7 +191,7 @@ export const ResetPassRequest = ({ modal, setModal }: any) => {
               </span>
             </div>
           </form>
-        </Modal>
+        </MemoizedModal>
       )}
     </Formik>
   );
@@ -202,6 +206,7 @@ export const RenderLoginModal = ({
   isHeader,
   isBooking,
   paymentIntent,
+  isFavourite
 }: any) => {
   const { state, data } = modal;
   function handleSignInClick() {
@@ -210,14 +215,17 @@ export const RenderLoginModal = ({
   }
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
-  // const user = useSelector((state: RootState) => state.auth)
-  // console.log(user)
+  const hotel = useSelector((state: RootState) => state.fav.hotel)
+  // console.log(hotel)
+
+  const favorites = useSelector((state: RootState) => state.fav.favorites);
+  const liked = favorites.some((fav: any) => fav._id === hotel._id);
   const responseLoginGoogle = async (response: any) => {
     const token = response.credential;
     const user = jwtDecode<CustomJwtPayload>(token);
     let payload = {
       email: user.email,
-      loginThrough: "google",
+      // loginThrough: "google",
       googleToken: token,
       userType: "customer",
     };
@@ -240,6 +248,40 @@ export const RenderLoginModal = ({
         }
         if (isBooking) {
           paymentIntent();
+        }
+        if(isFavourite){
+          const user: FavouriteList = {
+            userId: body.user.id,
+            firstName: body.user.name.split(" ")[0],
+            lastName: body.user.name.split(" ").pop(),
+            email: body.user.email,
+          };
+    
+          try {
+            const res = await fetch(
+              `${API_BASE_URL}/api/hotels/${hotel._id}/favourite`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(user),
+              }
+            );
+    
+            if (res.ok) {
+              if (liked) {
+                dispatch(removeFavorite(hotel._id));
+              } else {
+                dispatch(addFavorite(hotel));
+              }
+              // toast.success(liked ? 'Removed from favorites' : 'Added to favorites');
+            } else {
+              console.log("Failed to toggle favorite");
+            }
+          } catch (error) {
+            console.error("An error occurred while toggling favorite");
+          }
         }
         Cookies.set("authentication", JSON.stringify(body.user), {
           expires: 1,
@@ -286,7 +328,40 @@ export const RenderLoginModal = ({
             if (isBooking) {
               paymentIntent();
             }
-            console.log(body.user);
+            if(isFavourite){
+              const user: FavouriteList = {
+                userId: body.user.id,
+                firstName: body.user.name.split(" ")[0],
+                lastName: body.user.name.split(" ").pop(),
+                email: body.user.email,
+              };
+        
+              try {
+                const res = await fetch(
+                  `${API_BASE_URL}/api/hotels/${hotel._id}/favourite`,
+                  {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(user),
+                  }
+                );
+        
+                if (res.ok) {
+                  if (liked) {
+                    dispatch(removeFavorite(hotel._id));
+                  } else {
+                    dispatch(addFavorite(hotel));
+                  }
+                  // toast.success(liked ? 'Removed from favorites' : 'Added to favorites');
+                } else {
+                  console.log("Failed to toggle favorite");
+                }
+              } catch (error) {
+                console.error("An error occurred while toggling favorite");
+              }
+            }
             Cookies.set("authentication", JSON.stringify(body.user), {
               expires: 1,
             });
@@ -314,7 +389,7 @@ export const RenderLoginModal = ({
         handleChange,
         resetForm,
       }) => (
-        <Modal
+        <MemoizedModal
           title=""
           open={state}
           setOpen={() => {
@@ -462,7 +537,7 @@ export const RenderLoginModal = ({
               </span>
             </div>
           </form>
-        </Modal>
+        </MemoizedModal>
       )}
     </Formik>
   );
@@ -494,7 +569,6 @@ export const RenderSignUpModal = ({
       googleToken: token,
       role: "customer",
     };
-    console.log(payload, user.name);
 
     try {
       const response = await fetch(`${API_BASE_URL}/api/users/register`, {
@@ -564,7 +638,7 @@ export const RenderSignUpModal = ({
         touched,
         handleChange,
       }) => (
-        <Modal
+        <MemoizedModal
           title=""
           open={state}
           setOpen={() => {
@@ -704,13 +778,13 @@ export const RenderSignUpModal = ({
               </GoogleOAuthProvider>
             </div>
           </form>
-        </Modal>
+        </MemoizedModal>
       )}
     </Formik>
   );
 };
 
-const Header = () => {
+const Header:React.FC = () => {
   // const { showToast } = useAppContext();
   const [modal, setModal] = useState(initialModalState);
   const [signupModal, setSignupModal] = useState(initialSignupModalState);
@@ -838,11 +912,6 @@ const Header = () => {
                   onClick={toggleDropdown}
                 >
                   <span className="sr-only">Open user menu</span>
-                  {/* <img
-                    className="w-10 h-10 rounded-full border-2"
-                    src="/profile.jpg"
-                    alt="user photo"
-                  /> */}
                   <FaUserCircle className="w-10 h-10 rounded-full text-[#00C0CB]" /> 
                   <span className="hidden md:block text-sm">
                     Hii, {auth?.user?.name}
@@ -970,4 +1039,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default React.memo(Header);

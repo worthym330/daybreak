@@ -1,12 +1,22 @@
 import { useState } from "react";
 import CartModal from "./CartModal";
-import { FaChevronDown, FaChevronUp, FaSpa, FaUsers } from "react-icons/fa";
+import {
+  FaChevronDown,
+  FaChevronUp,
+  FaSpa,
+  FaSwimmingPool,
+  FaUmbrellaBeach,
+  FaUsers,
+  FaDumbbell,
+} from "react-icons/fa";
 import Button from "./Button";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { setError } from "../store/cartSlice";
 import { PiCampfire } from "react-icons/pi";
 import { FiSun } from "react-icons/fi";
+import { MdOutlineWater } from "react-icons/md";
+import { GiWaterSplash } from "react-icons/gi";
 
 interface ProductCardProps {
   product: any;
@@ -14,13 +24,29 @@ interface ProductCardProps {
   setCart?: any;
 }
 
-export type TitleKey = "SPA PASS" | "DAY PASS" | "BORNFIRE" |"CONFERENCE HALL";
+export type TitleKey =
+  | "SPA PASS"
+  | "DAY PASS"
+  | "POOL PASS"
+  | "GYM PASS"
+  | "CABANA"
+  | "LAZY RIVER"
+  | "WATER SLIDE"
+  | "BEACH ACCESS"
+  | "BORNFIRE"
+  | "CONFERENCE HALL";
 
 export const titleIcons = {
   "SPA PASS": <FaSpa />,
   "DAY PASS": <FiSun />,
-  "BORNFIRE": <PiCampfire />,
-  "CONFERENCE HALL" : <FaUsers />
+  "POOL PASS": <FaSwimmingPool />,
+  "GYM PASS": <FaDumbbell />,
+  CABANA: <FaUmbrellaBeach />,
+  "LAZY RIVER": <GiWaterSplash />,
+  "WATER SLIDE": <MdOutlineWater />,
+  "BEACH ACCESS": <FaUmbrellaBeach />,
+  BORNFIRE: <PiCampfire />,
+  "CONFERENCE HALL": <FaUsers />,
 };
 
 const ProductCard = ({ product, hotel, setCart }: ProductCardProps) => {
