@@ -105,20 +105,26 @@ Props) => {
     }
   );
 
-  const { handleSubmit, register, formState: { errors } } = useForm<BookingFormData>({
-    resolver: yupResolver(validationSchema), // Ensure schema matches BookingFormData
-    defaultValues: {
-      firstName: currentUser?.firstName,
-      lastName: currentUser?.lastName,
-      email: currentUser?.email,
-      phone: currentUser?.phone,
-      checkIn: search.checkIn.toISOString(),
-      hotelId: hotelId,
-      totalCost: paymentIntent.totalCost,
-      paymentIntentId: paymentIntent.paymentIntentId,
-      orderId: paymentIntent.orderId,
-    },
+  const { handleSubmit, register, formState: { errors }, reset } = useForm<BookingFormData>({
+    resolver: yupResolver(validationSchema),
   });
+
+  // Set default form values dynamically after currentUser data is loaded
+  useEffect(() => {
+    if (currentUser && search.checkIn) {
+      reset({
+        firstName: currentUser.firstName || "",
+        lastName: currentUser.lastName || "",
+        email: currentUser.email || "",
+        phone: currentUser.phone || "",
+        checkIn: search.checkIn.toISOString(),
+        hotelId: hotelId,
+        totalCost: paymentIntent.totalCost,
+        paymentIntentId: paymentIntent.paymentIntentId,
+        orderId: paymentIntent.orderId,
+      });
+    }
+  }, [currentUser, search.checkIn, hotelId, paymentIntent, reset]);
 
   const onSubmit = async (formData: BookingFormData) => {
     formData.checkIn = search.checkIn.toISOString();
