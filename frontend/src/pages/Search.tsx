@@ -193,8 +193,8 @@ const Search = () => {
                   isSearchable
                   options={cityOptions}
                   value={selectedCities}
-                  onChange={(option) => {
-                    setSelectedCities(option.map((e) => e));
+                  onChange={(option:any) => {
+                    setSelectedCities(option.map((e:any) => e));
                   }}
                   placeholder="Select Cities"
                   className="mt-4"
