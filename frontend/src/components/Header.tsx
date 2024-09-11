@@ -553,6 +553,7 @@ export const RenderSignUpModal = ({
 }: any) => {
   const { state, data } = modal;
   const queryClient = useQueryClient();
+  const dispatch = useDispatch();
   function handleLoginSpanClick() {
     setModal((prev: any) => ({ ...prev, state: false }));
     setLoginModal((prev: any) => ({ ...prev, state: true }));
@@ -589,6 +590,9 @@ export const RenderSignUpModal = ({
         Cookies.set("authentication", JSON.stringify(body.user), {
           expires: 1,
         });
+        const user = body.user;
+        const token = body.user.token;
+        dispatch(loginSuccess({ user, token }));
       } else {
         toast.error("Failed to register!");
       }
@@ -621,6 +625,9 @@ export const RenderSignUpModal = ({
             if (isHeader) {
               setShowDropdown(false);
             }
+            const user = responseBody.user;
+            const token = responseBody.user.token;
+            dispatch(loginSuccess({ user, token }));
             setModal(initialModalState);
           } else {
             toast.error(responseBody.message);
