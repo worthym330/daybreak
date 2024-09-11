@@ -147,26 +147,26 @@ const Home = () => {
 
           <div className="w-full md:w-2/3 lg:w-1/2">
             <form
-              className="flex items-center p-4 bg-white rounded-full shadow-md w-full"
+              className="flex items-center md:p-2 bg-white rounded-full shadow-md w-full"
               onSubmit={handleSubmit}
             >
-              <div className="flex items-center flex-1 px-4">
-                <div className="flex items-center space-x-2">
+              <div className="flex items-center flex-1 px-2">
+                <div className="flex items-center md:space-x-2">
                   <span className="text-xl">
                     <FaLocationDot className="w-6 h-6 text-[#02596c]" />
                   </span>
                   <input
                     type="text"
                     placeholder="Location"
-                    className="outline-none bg-transparent placeholder-[#02596c] text-[#02596c] p-2 w-full"
+                    className="outline-none bg-transparent placeholder-[#02596c] text-[#02596c] p-1 md:p-2 w-full"
                     value={destination}
                     onChange={(event) => setDestination(event.target.value)}
                   />
                 </div>
               </div>
               <div className="h-8 border border-gray-300"></div>
-              <div className="flex items-center flex-1 px-4">
-                <div className="flex items-center space-x-2">
+              <div className="flex items-center flex-1 px-2">
+                <div className="flex items-center md:space-x-2">
                   <span className="text-xl text-[#02596c]">
                     <FaCalendar className="w-6 h-6" />
                   </span>
@@ -179,7 +179,7 @@ const Home = () => {
                     // isClearable={true}
                     maxDate={maxDate}
                     placeholderText="Check-In Date"
-                    className="outline-none bg-transparent placeholder-[#02596c] text-[#02596c] p-2 w-full"
+                    className="outline-none bg-transparent placeholder-[#02596c] text-[#02596c] p-1 md:p-2 w-full"
                   />
                 </div>
               </div>
