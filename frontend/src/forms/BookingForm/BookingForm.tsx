@@ -113,7 +113,6 @@ Props) => {
       navigate("/my-bookings");
       const userData = data.data
       if(!auth.isAuthenticated){
-        console.log("userData",userData)
         Cookies.set("authentication", JSON.stringify(userData), {
           expires: 1,
         });
@@ -225,8 +224,6 @@ Props) => {
       alert("Failed to initiate payment. Please try again.");
     }
   };
-
-  console.log(errors);
 
   useEffect(() => {
     const calculateSubtotal = (items: any) => {
