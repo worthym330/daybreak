@@ -13,11 +13,13 @@ export const hotelFacilities = [
 
 export const hotelProducts = [
   "Day Pass",
+  "Family Pass",
   "Spa Pass",
   "Pool Pass",
   "Gym Pass",
   "Cabana",
-  "Lazy River",
-  "Water Slide",
-  "Beach Access",
+  "Brunch",
+  "Daybed Pass",
+  "Couple Pass",
+  "Conference Hall"
 ];

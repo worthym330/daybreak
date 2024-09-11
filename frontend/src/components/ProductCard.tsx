@@ -31,20 +31,28 @@ export type TitleKey =
   | "WATER SLIDE"
   | "BEACH ACCESS"
   | "BORNFIRE"
-  | "CONFERENCE HALL";
+  | "CONFERENCE HALL"
+  | "FAMILY PASS"
+  | "BRUNCH"
+  | "DAYBED PASS"
+  | "COUPLE PASS";
 
-export const titleIcons = {
-  "SPA PASS": <FaSpa />,
-  "DAY PASS": <FiSun />,
-  "POOL PASS": <FaSwimmingPool />,
-  "GYM PASS": <FaDumbbell />,
-  CABANA: <FaUmbrellaBeach />,
-  "LAZY RIVER": <GiWaterSplash />,
-  "WATER SLIDE": <MdOutlineWater />,
-  "BEACH ACCESS": <FaUmbrellaBeach />,
-  BORNFIRE: <PiCampfire />,
-  "CONFERENCE HALL": <FaUsers />,
-};
+  export const titleIcons = {
+    "SPA PASS": <FaSpa />,
+    "DAY PASS": <FiSun />,
+    "POOL PASS": <FaSwimmingPool />,
+    "GYM PASS": <FaDumbbell />,
+    CABANA: <FaUmbrellaBeach />,
+    "LAZY RIVER": <GiWaterSplash />,
+    "WATER SLIDE": <MdOutlineWater />,
+    "BEACH ACCESS": <FaUmbrellaBeach />,
+    BORNFIRE: <PiCampfire />,
+    "CONFERENCE HALL": <FaUsers />,
+    "FAMILY PASS": <FaUsers />,
+    BRUNCH: <FiSun />,
+    "DAYBED PASS": <FaUmbrellaBeach />,
+    "COUPLE PASS": <FaUsers />,
+  };
 
 const ProductCard = ({ product, hotel, setCart }: ProductCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
