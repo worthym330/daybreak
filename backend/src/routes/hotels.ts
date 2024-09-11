@@ -357,14 +357,12 @@ console.log(email, req.userId)
 
       PaymentSuccess(mailPayload);
       BookingConfirmation(mailPayload);
-
-      res.status(200).send({
-        user: {
+      res.status(200).json({
+        data: {
           id: user?._id || "",
-          firstName: user?.firstName || "",
-          lastName: user?.lastName || "",
+          name: `${user.firstName} ${user.lastName}`,
           email: user?.email || "",
-          token: token || "",
+          token: token,
           role: user?.role || "customer",
         },
       });

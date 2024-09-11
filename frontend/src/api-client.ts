@@ -271,6 +271,8 @@ export const createRoomBooking = async (
   if (!response.ok) {
     throw new Error("Error booking room");
   }
+  const data = await response.json()
+  return data
 };
 
 export const fetchMyBookings = async (): Promise<HotelType[]> => {

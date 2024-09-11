@@ -18,8 +18,9 @@ import {
 } from "../../store/cartSlice";
 import { RootState } from "../../store/store";
 import { FaXmark } from "react-icons/fa6";
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { loginSuccess } from "../../store/authSlice";
 
 type Props = {
   // currentUser: UserType;
@@ -43,19 +44,32 @@ export type BookingFormData = {
 };
 
 const validationSchema = yup.object().shape({
-  firstName: yup.string().required('First Name is required'),
-  lastName: yup.string().required('Last Name is required'),
-  email: yup.string().email('Invalid email address').required('Email is required'),
-  phone: yup.string().matches(/^[0-9]{10}$/, 'Mobile Number must be 10 digits').required('Mobile Number is required'),
-  adultCount: yup.number().positive('Must be a positive number').integer('Must be an integer').optional(),
-  childCount: yup.number().positive('Must be a positive number').integer('Must be an integer').optional(),
+  firstName: yup.string().required("First Name is required"),
+  lastName: yup.string().required("Last Name is required"),
+  email: yup
+    .string()
+    .email("Invalid email address")
+    .required("Email is required"),
+  phone: yup
+    .string()
+    .matches(/^[0-9]{10}$/, "Mobile Number must be 10 digits")
+    .required("Mobile Number is required"),
+  adultCount: yup
+    .number()
+    .positive("Must be a positive number")
+    .integer("Must be an integer")
+    .optional(),
+  childCount: yup
+    .number()
+    .positive("Must be a positive number")
+    .integer("Must be an integer")
+    .optional(),
   checkIn: yup.string().optional(),
   hotelId: yup.string().optional(),
   paymentIntentId: yup.string().optional(),
-  totalCost: yup.number().positive('Must be a positive number').optional(),
+  totalCost: yup.number().positive("Must be a positive number").optional(),
   orderId: yup.string().optional(),
 });
-
 
 const BookingForm = ({
   // currentUser,
@@ -63,7 +77,6 @@ const BookingForm = ({
   cartItems,
 }: // setModal,
 Props) => {
-  console.log("paymentIntent", paymentIntent);
   const search = useSearchContext();
   const { razorpayOptions } = useAppContext();
   const navigate = useNavigate();
@@ -79,33 +92,49 @@ Props) => {
   const cart = localStorage.getItem("cart");
   const parsedCart = cart ? JSON.parse(cart) : [];
   const hotelId = parsedCart[0]?.hotel?._id;
-  // const auth = useSelector((state: RootState) => state.auth);
+  const auth = useSelector((state: RootState) => state.auth);
   const { data: currentUser } = useQuery("fetchCurrentUser", () =>
     apiClient.fetchCurrentUser()
   );
   const { mutate: bookRoom, isLoading } = useMutation<
-    void,
-    Error,
-    BookingFormData
-  >(
-    "createBooking", // Mutation key
-    async (formData) => {
-      await apiClient.createRoomBooking(formData, parsedCart);
+  void,
+  Error,
+  BookingFormData
+>(
+  async (formData) => {
+    const data = await apiClient.createRoomBooking(formData, parsedCart);
+    return data;  // Return the data here
+  },
+  {
+    onSuccess: (data:any) => {
+      toast.success("Successfully booked!");
+      localStorage.removeItem("cart");
+      Cookies.remove("date");
+      navigate("/my-bookings");
+      const userData = data.data
+      if(!auth.isAuthenticated){
+        console.log("userData",userData)
+        Cookies.set("authentication", JSON.stringify(userData), {
+          expires: 1,
+        });
+        const user = userData;
+        const token = userData.token;
+        dispatch(loginSuccess({ user, token }));
+      }
     },
-    {
-      onSuccess: () => {
-        toast.success("Successfully booked!");
-        localStorage.removeItem("cart");
-        Cookies.remove("date");
-        navigate("/my-bookings");
-      },
-      onError: () => {
-        toast.error("Failed to mark your payment");
-      },
-    }
-  );
+    onError: () => {
+      toast.error("Failed to mark your payment");
+    },
+  }
+);
 
-  const { handleSubmit, register, formState: { errors }, reset } = useForm<BookingFormData>({
+
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+    reset,
+  } = useForm<BookingFormData>({
     resolver: yupResolver(validationSchema),
   });
 
@@ -146,7 +175,6 @@ Props) => {
         status: "captured",
         handler: async function (response: any) {
           try {
-            console.log("Razorpay response:", response);
             if (response.razorpay_payment_id) {
               // Call backend to complete booking
               await bookRoom({
@@ -159,11 +187,9 @@ Props) => {
                 "Razorpay payment_id missing in response:",
                 response
               );
-              alert("Payment failed. Please try again.");
             }
           } catch (error) {
             console.error("Error booking room:", error);
-            alert("Failed to complete booking. Please try again.");
           }
         },
         prefill: {
@@ -200,7 +226,7 @@ Props) => {
     }
   };
 
-  console.log(errors)
+  console.log(errors);
 
   useEffect(() => {
     const calculateSubtotal = (items: any) => {
@@ -253,36 +279,44 @@ Props) => {
           <input
             className="mt-1 border rounded w-full py-2 px-3 text-gray-700 font-normal"
             type="text"
-            {...register('firstName')}
+            {...register("firstName")}
           />
-          {errors.firstName && <p className="text-red-500">{errors.firstName.message}</p>}
+          {errors.firstName && (
+            <p className="text-red-500">{errors.firstName.message}</p>
+          )}
         </label>
         <label className="text-gray-700 text-base flex-1">
           Last Name
           <input
             className="mt-1 border rounded w-full py-2 px-3 text-gray-700 font-normal"
             type="text"
-            {...register('lastName')}
+            {...register("lastName")}
           />
-          {errors.lastName && <p className="text-red-500">{errors.lastName.message}</p>}
+          {errors.lastName && (
+            <p className="text-red-500">{errors.lastName.message}</p>
+          )}
         </label>
         <label className="text-gray-700 text-base flex-1">
           Email
           <input
             className="mt-1 border rounded w-full py-2 px-3 text-gray-700 font-normal"
             type="text"
-            {...register('email')}
+            {...register("email")}
           />
-          {errors.email && <p className="text-red-500">{errors.email.message}</p>}
+          {errors.email && (
+            <p className="text-red-500">{errors.email.message}</p>
+          )}
         </label>
         <label className="text-gray-700 text-base flex-1">
           Mobile Number
           <input
             className="mt-1 border rounded w-full py-2 px-3 text-gray-700 font-normal"
             type="text"
-            {...register('phone')}
+            {...register("phone")}
           />
-          {errors.phone && <p className="text-red-500">{errors.phone.message}</p>}
+          {errors.phone && (
+            <p className="text-red-500">{errors.phone.message}</p>
+          )}
         </label>
       </div>
 
