@@ -49,12 +49,10 @@ router.post(
       role,
       loginThrough,
     } = req.body;
+
     try {
-      let user = await User.findOne({ email });
-      console.log("Working");
-      if (user) {
-        return res.status(400).json({ message: "User already exists" });
-      }
+      let user;
+
       if (loginThrough === "google") {
         const ticket = await client.verifyIdToken({
           idToken: googleToken,
@@ -64,29 +62,56 @@ router.post(
         if (payload?.email !== email) {
           return res.status(400).json({ message: "Invalid Google token" });
         }
-        const salt = await bcrypt.genSalt(10);
-        const hash = await bcrypt.hash(firstName, salt);
-        const googleUser = {
-          firstName: firstName,
-          lastName: lastName,
-          email: email,
-          role: role,
-          password: hash,
-        };
-        user = new User(googleUser);
+        user = await User.findOne({ email: payload?.email });
+        if (user) {
+          const token = jwt.sign(
+            { userId: user.id },
+            process.env.JWT_SECRET_KEY as string,
+            {
+              expiresIn: "1d",
+            }
+          );
+          res.cookie("auth_token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            maxAge: 86400000,
+          });
+          return res.status(200).send({
+            message: "User registered",
+            user: {
+              id: user._id,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              email: user.email,
+              token: token,
+              role: user.role,
+            },
+          });
+        } else {
+          const googleUser = {
+            firstName,
+            lastName,
+            email,
+            role,
+            password: null,
+          };
+          user = new User(googleUser);
+        }
       } else {
         const salt = await bcrypt.genSalt(10);
         const hash = await bcrypt.hash(password, salt);
-        const body = {
-          firstName: firstName,
-          lastName: lastName,
-          email: email,
-          role: role,
+        const newUser = {
+          firstName,
+          lastName,
+          email,
+          role,
           password: hash,
         };
-        user = new User(body);
+        user = new User(newUser);
       }
+
       await user.save();
+
       const token = jwt.sign(
         { userId: user.id },
         process.env.JWT_SECRET_KEY as string,
@@ -94,17 +119,21 @@ router.post(
           expiresIn: "1d",
         }
       );
+
       const emailData = {
         email,
-        fullName:`${firstName} ${lastName}`
-      }
+        fullName: `${firstName} ${lastName}`,
+      };
+
       await sendToCustomer(emailData);
       // sendWelcomeSms(contactNo,fullName)
+
       res.cookie("auth_token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         maxAge: 86400000,
       });
+
       return res.status(200).send({
         message: "User registered",
         user: {
