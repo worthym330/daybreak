@@ -42,6 +42,7 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Navigation } from "swiper/modules";
 import ConfirmationModal from "../components/AlertModal";
+import { addHotel } from "../store/favSlice";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAP_GL_TOKEN;
 
@@ -96,7 +97,7 @@ const Detail = () => {
   const [cartItems, setCartItems] = useState<any[]>([]);
   const auth_token = Cookies.get("authentication") || "null";
   const userLogined = JSON.parse(auth_token);
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const [address, setAddress] = useState("");
   const [coordinates, setCoordinates] = useState({ lat: 0, lng: 0 });
   const mapContainerRef = useRef(null);
@@ -107,6 +108,7 @@ const Detail = () => {
   const [resetModal, setResetModal] = useState(initialResetModal);
   const [signupModal, setSignupModal] = useState(initialSignupModalState);
   const dateRef = useRef<HTMLInputElement>(null);
+  const auth = useSelector((state: RootState) => state.auth);
 
   const hotelQuery = useQuery(
     ["fetchHotelById", hotelId],
@@ -265,7 +267,12 @@ const Detail = () => {
   });
 
   const handleToggleFavourite = () => {
-    toggleFavouriteMutation.mutate();
+    if(auth.isAuthenticated){
+      toggleFavouriteMutation.mutate();
+    }else{
+      dispatch(addHotel(hotel))
+      setModal((prev: any) => ({ ...prev, state: true,hotel }));
+    }
   };
 
   const isFavourite = hotel?.favourites?.some(
@@ -354,6 +361,7 @@ const Detail = () => {
         setSignupModal={setSignupModal}
         isHeader={false}
         isBooking={false}
+        isFavourite={true}
       />
       <RenderSignUpModal
         modal={signupModal}
