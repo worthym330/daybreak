@@ -757,7 +757,7 @@ router.post("/hotel-details/bulk-creations", async (req, res) => {
           _id: new mongoose.Types.ObjectId(),
           title,
           date: currentDate,
-          slotTime: `${startDateTime.toISOString()} - ${endDateTime.toISOString()}`,
+          slotTime: `${startDateTime} - ${endDateTime}`,
           startTime: startDateTime,
           endTime: endDateTime,
           hotelId,
