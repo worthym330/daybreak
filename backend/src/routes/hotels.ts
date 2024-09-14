@@ -723,7 +723,8 @@ const getDatesInRange = (startDate: Date, endDate: Date) => {
 router.post("/hotel-details/bulk-creations", async (req, res) => {
   try {
     const { hotelId, startDate, endDate, startTime, endTime, title } = req.body;
-
+    const start = new Date(startTime).toISOString().split("T")[1].split(".")[0]; // "10:30:00"
+    const end = new Date(endTime).toISOString().split("T")[1].split(".")[0];     // "13:00:00"
     // Find the hotel by its ID
     const hotel = await Hotel.findById(hotelId);
     if (!hotel) {
@@ -747,10 +748,10 @@ router.post("/hotel-details/bulk-creations", async (req, res) => {
     dateRange.forEach((currentDate) => {
       title.forEach((title: any) => {
         const startDateTime = new Date(
-          `${currentDate.toISOString().split("T")[0]}T${startTime}`
+          `${currentDate.toISOString().split("T")[0]}T${start}`
         );
         const endDateTime = new Date(
-          `${currentDate.toISOString().split("T")[0]}T${endTime}`
+          `${currentDate.toISOString().split("T")[0]}T${end}`
         );
 
         hotelDetailsArray.push({
