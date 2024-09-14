@@ -20,6 +20,7 @@ import {
 } from "./mail";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 const razorpayInstance = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID as string,
@@ -194,7 +195,7 @@ router.post(
         firstName,
         lastName,
       } = req.body;
-console.log(email, req.userId)
+      console.log(email, req.userId);
       let user, mailPayload, token, password;
       // Verify the payment signature
       const payment = await razorpayInstance.payments.fetch(paymentIntentId);
@@ -315,15 +316,15 @@ console.log(email, req.userId)
       if (!hotel) {
         return res.status(400).json({ message: "Hotel not found" });
       }
-      
+
       // Initialize the bookings array if it's null or undefined
       if (!hotel.bookings) {
         hotel.bookings = [];
       }
-      
+
       // Push the new booking to the bookings array
       hotel.bookings.push(newBooking);
-      
+
       // Save the hotel document after updating
       await hotel.save();
 
@@ -597,50 +598,6 @@ router.post(
   }
 );
 
-router.put("/update/time/date/:id", async (req, res) => {
-  const { id } = req.params;
-  try {
-    // Find the hotel by ID
-    const hotel = await Hotel.findById(id);
-    if (!hotel) {
-      return res.status(404).json({ message: "Hotel not found" });
-    }
-
-    // Ensure titlesId is initialized as an array
-    hotel.titlesId = hotel.titlesId || [];
-
-    // Iterate through the events to create a new HotelDetails entry
-    for (const event of req.body) {
-      const customId = `${event.date}-${hotel.name.slice(0, 3).toUpperCase()}`;
-
-      const newDetail = new HotelDetails({
-        _id: customId,
-        title: event.title,
-        date: event.date,
-        slotTime: event.slotTime,
-        startTime: event.startTime,
-        endTime: event.endTime,
-        hotelId: hotel._id,
-      });
-
-      await newDetail.save();
-
-      // Update hotel titlesId array with the new detail ID
-      hotel.titlesId.push(newDetail._id);
-    }
-
-    // Save the updated hotel data
-    await hotel.save();
-
-    // Respond with the updated hotel data
-
-    res.status(200).json(hotel);
-  } catch (error) {
-    console.error("Error updating hotel:", error);
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
 router.get("/getdata/hotel/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -659,7 +616,6 @@ router.get("/getdata/hotel/:id", async (req: Request, res: Response) => {
 router.put("/hotel-details/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
   const updateData = req.body;
-
   try {
     // Find the HotelDetails by ID and update it with the provided data
     const updatedHotelDetails = await HotelDetails.findByIdAndUpdate(
@@ -676,6 +632,152 @@ router.put("/hotel-details/:id", async (req: Request, res: Response) => {
     res.status(200).json(updatedHotelDetails);
   } catch (error) {
     console.error("Error updating HotelDetails:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
+});
+
+router.delete("/hotel-details/:id", async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const hotelDetails = await HotelDetails.findById(id);
+
+    if (!hotelDetails) {
+      return res.status(404).json({ message: "HotelDetails not found" });
+    }
+
+    const hotel = await Hotel.findById(hotelDetails.hotelId);
+
+    if (!hotel) {
+      return res.status(404).json({ message: "Associated hotel not found" });
+    }
+
+    const titlesId = hotel.titlesId || [];
+
+    hotel.titlesId = titlesId.filter(
+      (titleId: string) => titleId !== hotelDetails._id.toString()
+    );
+
+    await hotel.save();
+
+    await HotelDetails.findByIdAndDelete(id);
+
+    res.status(200).json({
+      message: "HotelDetails deleted and titlesId removed from hotel",
+      updatedHotel: hotel,
+    });
+  } catch (error) {
+    console.error("Error deleting HotelDetails:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
+});
+
+
+// Update HotelDetails by ID
+router.post("/hotel-details", async (req: Request, res: Response) => {
+  const { state, hotelId } = req.body;
+  try {
+    const hotel = await Hotel.findById(hotelId);
+
+    if (!hotel) {
+      return res.status(404).json({ message: "Hotel not found" });
+    }
+
+    hotel.titlesId = hotel.titlesId || [];
+
+    const payload = {
+      _id: new mongoose.Types.ObjectId(),
+      title: state.title,
+      date: state.startTime.split("T")[0],
+      slotTime: `${state.startTime} - ${state.endTime}`,
+      startTime: state.startTime,
+      endTime: state.endTime,
+      hotelId,
+    };
+    console.log(payload);
+    const hotelPass = await HotelDetails(payload);
+    hotelPass.save();
+    hotel.titlesId.push(hotelPass._id);
+    hotel.save();
+    res.status(200).json(hotelPass);
+  } catch (error) {
+    console.error("Error updating HotelDetails:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
+});
+
+const getDatesInRange = (startDate: Date, endDate: Date) => {
+  const dateArray = [];
+  let currentDate = new Date(startDate);
+  const end = new Date(endDate);
+
+  while (currentDate <= end) {
+    dateArray.push(new Date(currentDate));
+    currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
+  }
+
+  return dateArray;
+};
+
+// POST endpoint to add new hotel details for multiple titles over a date range
+router.post("/hotel-details/bulk-creations", async (req, res) => {
+  try {
+    const { hotelId, startDate, endDate, startTime, endTime, title } = req.body;
+
+    // Find the hotel by its ID
+    const hotel = await Hotel.findById(hotelId);
+    if (!hotel) {
+      return res.status(404).json({ message: "Hotel not found" });
+    }
+
+    hotel.titlesId = hotel.titlesId || [];
+
+    const dateRange = getDatesInRange(startDate, endDate);
+
+    const hotelDetailsArray: {
+      _id: mongoose.Types.ObjectId;
+      title: any;
+      date: Date;
+      slotTime: string;
+      startTime: Date;
+      endTime: Date;
+      hotelId: any;
+    }[] = [];
+
+    dateRange.forEach((currentDate) => {
+      title.forEach((title: any) => {
+        const startDateTime = new Date(
+          `${currentDate.toISOString().split("T")[0]}T${startTime}`
+        );
+        const endDateTime = new Date(
+          `${currentDate.toISOString().split("T")[0]}T${endTime}`
+        );
+
+        hotelDetailsArray.push({
+          _id: new mongoose.Types.ObjectId(),
+          title,
+          date: currentDate,
+          slotTime: `${startDateTime.toISOString()} - ${endDateTime.toISOString()}`,
+          startTime: startDateTime,
+          endTime: endDateTime,
+          hotelId,
+        });
+      });
+    });
+
+    const savedHotelDetails = await HotelDetails.insertMany(hotelDetailsArray);
+
+    const newTitlesIds = savedHotelDetails.map((detail: any) => detail._id);
+    hotel.titlesId.push(...newTitlesIds);
+
+    await hotel.save();
+
+    res.status(201).json({
+      message: "Passes added successfully",
+      data: savedHotelDetails,
+    });
+  } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Server error", error });
   }
 });
