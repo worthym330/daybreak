@@ -380,7 +380,7 @@ Props) => {
       </div>
       <div className="mb-4">
         <label className="block text-gray-700">Coupon Code</label>
-        <div className="flex">
+        <div className="flex flex-col md:flex-row gap-2">
           <input
             type="text"
             className="flex-1 px-3 py-2 border rounded-md"
@@ -392,7 +392,7 @@ Props) => {
           />
           <button
             type="button"
-            className="ml-2 px-4 py-2 bg-teal-600 text-white rounded-md"
+            className="px-4 py-2 bg-teal-600 text-white rounded-md"
             onClick={() => handleCouponApply()}
           >
             Apply
