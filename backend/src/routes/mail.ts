@@ -484,7 +484,7 @@ export const PaymentSuccess = async (data: any) => {
           <p>We're happy to inform you that your payment for the booking at ${hotelName} was successful.</p>
           <p>Your booking details:
             Check-in: ${date} <br />
-            Total Amount: ${amount} <br />
+            Total Amount: ₹ ${amount/100} <br />
           </p>
           <p>We look forward to hosting you!</p>
           <p>For any questions or assistance, please feel free to reach out to us at <a href="tel:+918369029862">8369029862</a> or email us at
@@ -577,7 +577,7 @@ export const BookingConfirmation = async (data: any) => {
     const { email, name, hotelName, date, amount } = data;
     const mailOptions = {
       to: email,
-      subject: `our Booking Confirmation at ${hotelName}`,
+      subject: `Our Booking Confirmation at ${hotelName}`,
       html: `
        <!DOCTYPE html>
   <html>
