@@ -62,7 +62,7 @@ router.post(
         if (payload?.email !== email) {
           return res.status(400).json({ message: "Invalid Google token" });
         }
-        user = await User.findOne({ email: payload?.email });
+        user = await User.findOne({ email: payload?.email, role });
         if (user) {
           const token = jwt.sign(
             { userId: user.id },
@@ -71,6 +71,10 @@ router.post(
               expiresIn: "1d",
             }
           );
+          if(!user.status){
+            user.status = true
+            user.save()
+          }
           res.cookie("auth_token", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",

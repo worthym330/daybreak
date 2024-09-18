@@ -384,7 +384,7 @@ Props) => {
           <input
             type="text"
             className="flex-1 px-3 py-2 border rounded-md"
-            placeholder="Coupon Code"
+            placeholder="Enter Coupon Code"
             value={couponCode}
             onChange={(e) => {
               setCouponCode(e.target.value);
