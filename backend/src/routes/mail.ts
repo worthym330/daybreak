@@ -42,6 +42,7 @@ export const sendToCustomer = async (leadData: any) => {
     const { email, fullName } = leadData;
     const mailOptions = {
       to: email,
+      cc:process.env.SMTP_USER,
       subject: `Sign Up Confirmation and Onboarding Process`,
       html: ` 
       <!DOCTYPE html>
@@ -188,6 +189,7 @@ export const notifyHotelUserRequestReceived = async (data: any) => {
     const { name, email, ownerName } = data;
     const mailOptions = {
       to: email,
+      cc:process.env.SMTP_USER,
       subject: `Your Request to Add ${name} is Being Reviewed`,
       html: `
       <!DOCTYPE html>
@@ -258,6 +260,7 @@ export const sendCredentials = async (data: any) => {
     const { email, password, name } = data;
     const mailOptions = {
       to: email,
+      cc:process.env.SMTP_USER,
       subject: `Your DayBreakPass Account Credentials`,
       html: `
        <!DOCTYPE html>
@@ -320,6 +323,7 @@ export const resetPass = async (data: any) => {
     const { email, name, token } = data;
     const mailOptions = {
       to: email,
+      cc:process.env.SMTP_USER,
       subject: `Reset Your Password`,
       html: `
        <!DOCTYPE html>
@@ -383,6 +387,7 @@ export const incompeleteBooking = async (data: any) => {
     const { email, name } = data;
     const mailOptions = {
       to: email,
+      cc:process.env.SMTP_USER,
       subject: `Complete Your Booking at DayBreakPass`,
       html: `
        <!DOCTYPE html>
@@ -445,6 +450,7 @@ export const PaymentSuccess = async (data: any) => {
     const { email, name, hotelName, date, amount } = data;
     const mailOptions = {
       to: email,
+      cc:process.env.SMTP_USER,
       subject: `Payment Successful for Your Booking`,
       html: `
        <!DOCTYPE html>
@@ -511,6 +517,7 @@ export const PaymentFailed = async (data: any) => {
     const { email, name, hotelName, date, amount } = data;
     const mailOptions = {
       to: email,
+      cc:process.env.SMTP_USER,
       subject: `Payment Failed for Your Booking`,
       html: `
        <!DOCTYPE html>
@@ -577,6 +584,7 @@ export const BookingConfirmation = async (data: any) => {
     const { email, name, hotelName, date, amount } = data;
     const mailOptions = {
       to: email,
+      cc:process.env.SMTP_USER,
       subject: `Our Booking Confirmation at ${hotelName}`,
       html: `
        <!DOCTYPE html>
@@ -643,6 +651,7 @@ export const BookingCancellation = async (data: any) => {
     const { email, name, hotelName, date, amount } = data;
     const mailOptions = {
       to: email,
+      cc:process.env.SMTP_USER,
       subject: `Your Booking at ${hotelName} Has Been Cancelled`,
       html: `
        <!DOCTYPE html>
@@ -709,6 +718,7 @@ export const FeedBack = async (data: any) => {
     const { email, hotelName, hotelId, name } = data;
     const mailOptions = {
       to: email,
+      cc:process.env.SMTP_USER,
       subject: `Your feedback`,
       html: `
        <!DOCTYPE html>
@@ -772,6 +782,7 @@ export const Support = async (data: any) => {
     const { email, name, subject, description } = data;
     const mailOptions = {
       to: email,
+      cc:process.env.SMTP_USER,
       subject: `Your DayBreakPass Account Credentials`,
       html: `
        <!DOCTYPE html>
@@ -842,6 +853,7 @@ export const Support = async (data: any) => {
 //     const { email, password } = data;
 //     const mailOptions = {
 //       to: email,
+// cc:process.env.SMTP_USER,
 //       subject: `Your DayBreakPass Account Credentials`,
 //       html: `
 //        <!DOCTYPE html>
@@ -902,6 +914,7 @@ export const Support = async (data: any) => {
 //     const { email, password } = data;
 //     const mailOptions = {
 //       to: email,
+// cc:process.env.SMTP_USER,
 //       subject: `Your DayBreakPass Account Credentials`,
 //       html: `
 //        <!DOCTYPE html>
@@ -962,6 +975,7 @@ export const Support = async (data: any) => {
 //     const { email, password } = data;
 //     const mailOptions = {
 //       to: email,
+// cc:process.env.SMTP_USER,
 //       subject: `Your DayBreakPass Account Credentials`,
 //       html: `
 //        <!DOCTYPE html>
@@ -1022,6 +1036,7 @@ export const Support = async (data: any) => {
 //     const { email, password } = data;
 //     const mailOptions = {
 //       to: email,
+// cc:process.env.SMTP_USER,
 //       subject: `Your DayBreakPass Account Credentials`,
 //       html: `
 //        <!DOCTYPE html>
@@ -1084,6 +1099,7 @@ export const Support = async (data: any) => {
 //     const { email, password } = data;
 //     const mailOptions = {
 //       to: email,
+// cc:process.env.SMTP_USER,
 //       subject: `Your DayBreakPass Account Credentials`,
 //       html: `
 //        <!DOCTYPE html>
