@@ -277,6 +277,7 @@ Props) => {
             className="mt-1 border rounded w-full py-2 px-3 text-gray-700 font-normal"
             type="text"
             {...register("firstName")}
+            placeholder="Enter First Name"
           />
           {errors.firstName && (
             <p className="text-red-500">{errors.firstName.message}</p>
@@ -288,6 +289,7 @@ Props) => {
             className="mt-1 border rounded w-full py-2 px-3 text-gray-700 font-normal"
             type="text"
             {...register("lastName")}
+            placeholder="Enter Last Name"
           />
           {errors.lastName && (
             <p className="text-red-500">{errors.lastName.message}</p>
@@ -298,6 +300,7 @@ Props) => {
           <input
             className="mt-1 border rounded w-full py-2 px-3 text-gray-700 font-normal"
             type="text"
+            placeholder="Enter Email"
             {...register("email")}
           />
           {errors.email && (
@@ -310,6 +313,7 @@ Props) => {
             className="mt-1 border rounded w-full py-2 px-3 text-gray-700 font-normal"
             type="text"
             {...register("phone")}
+            placeholder="Enter Mobile Number"
           />
           {errors.phone && (
             <p className="text-red-500">{errors.phone.message}</p>
