@@ -689,24 +689,26 @@ router.post(
         status,
       };
 
+      console.log(newHotel)
+
       // // Create and save the new hotel document
       const hotel = new Hotel(newHotel);
       await hotel.save();
       const userInfo = await User.findById(userId);
-      if (userInfo) {
-        const password = await generateRandomPassword(10);
-        const salt = await bcrypt.genSalt(10);
-        const hash = await bcrypt.hash(password, salt);
-        userInfo.password = hash;
-        userInfo.status = true;
-        await userInfo.save();
-        const data = {
-          name: `${userInfo.firstName} ${userInfo.lastName}`,
-          email: userInfo.email,
-          password,
-        };
-        await sendCredentials(data);
-      }
+      // if (userInfo) {
+      //   const password = await generateRandomPassword(10);
+      //   const salt = await bcrypt.genSalt(10);
+      //   const hash = await bcrypt.hash(password, salt);
+      //   userInfo.password = hash;
+      //   userInfo.status = true;
+      //   await userInfo.save();
+      //   const data = {
+      //     name: `${userInfo.firstName} ${userInfo.lastName}`,
+      //     email: userInfo.email,
+      //     password,
+      //   };
+      //   await sendCredentials(data);
+      // }
 
       res.status(201).send(hotel);
     } catch (e) {
