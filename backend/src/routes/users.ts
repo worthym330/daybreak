@@ -266,7 +266,7 @@ router.post(
           email,
           password,
         };
-        await sendCredentials(data);
+        // await sendCredentials(data);
         return res.status(200).send(user);
       } else {
         return res.status(424).send("Duplicate Entry");
