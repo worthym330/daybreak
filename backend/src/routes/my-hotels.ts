@@ -717,4 +717,74 @@ router.post(
     }
   }
 );
+
+router.put(
+  "/edit/hotel/:id",
+  verifyAdminToken,
+  upload.array("imageFiles", 10),
+  async (req: Request, res: Response) => {
+    try {
+      const hotelId = req.params.id;
+      const imageFiles = req.files as Express.Multer.File[];
+      const {
+        userId,
+        name,
+        address,
+        city,
+        state,
+        description,
+        cancellationPolicy,
+        facilities,
+        hotelType,
+        star,
+        mapurl,
+        pincode,
+        status,
+      } = req.body;
+
+      // Upload images and get URLs if new images are provided
+      let imageUrls :string[]= [];
+      if (imageFiles.length > 0) {
+        imageUrls = await uploadImages(imageFiles);
+      }
+
+      const facilitiesMap = facilities.split(",");
+      const HotelTypes = hotelType.split(",");
+
+      // Find the existing hotel and update its fields
+      const hotel = await Hotel.findById(hotelId);
+      if (!hotel) {
+        return res.status(404).json({ message: "Hotel not found" });
+      }
+
+      hotel.userId = userId || hotel.userId;
+      hotel.name = name || hotel.name;
+      hotel.address = address || hotel.address;
+      hotel.city = city || hotel.city;
+      hotel.state = state || hotel.state;
+      hotel.description = description || hotel.description;
+      hotel.cancellationPolicy = cancellationPolicy || hotel.cancellationPolicy;
+      hotel.facilities = facilitiesMap.length > 0 ? facilitiesMap : hotel.facilities;
+      hotel.hotelType = HotelTypes.length > 0 ? HotelTypes : hotel.hotelType;
+      hotel.pincode = pincode || hotel.pincode;
+      hotel.mapurl = mapurl || hotel.mapurl;
+      hotel.star = star ? Number(star) : hotel.star;
+      hotel.status = status || hotel.status;
+      hotel.lastUpdated = new Date();
+
+      // Only update images if new ones are provided
+      if (imageUrls.length > 0) {
+        hotel.imageUrls = imageUrls;
+      }
+
+      await hotel.save();
+
+      res.status(200).json(hotel);
+    } catch (e) {
+      console.log(e);
+      res.status(500).json({ message: "Something went wrong" });
+    }
+  }
+);
+
 export default router;
