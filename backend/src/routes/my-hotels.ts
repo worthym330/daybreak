@@ -151,7 +151,7 @@ router.get("/:id", verifyToken, async (req: Request, res: Response) => {
 
 router.put(
   "/:hotelId",
-  verifyToken,
+  verifyAdminToken,
   upload.array("imageFiles"),
   async (req: Request, res: Response) => {
     try {
