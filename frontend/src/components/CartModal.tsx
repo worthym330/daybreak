@@ -11,6 +11,8 @@ const CartModal = ({ product, hotel, onClose, setCart }: any) => {
   const [total, setTotal] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
   const [date, setDate] = useState<string | undefined>(undefined);
+  const [slot, setSlot] = useState('');
+  const [availableSlots, setAvailableSlots] = useState<string[]>([]);;
   const dispatch = useDispatch();
   const handleClose = () => {
     setIsVisible(false);
@@ -36,6 +38,7 @@ const CartModal = ({ product, hotel, onClose, setCart }: any) => {
     }
   }, [product.title, hotel]);
 
+  console.log("hotel", hotel,product)
   useEffect(() => {
     const calculateGST = (amount: number) => amount * 1;
     const adultTotal = calculateGST(adultCount * product.adultPrice);
@@ -103,6 +106,42 @@ const CartModal = ({ product, hotel, onClose, setCart }: any) => {
     }
   };
 
+  const createSlots = (hotelData:any) => {
+    if (!hotelData) return [];
+
+    const { startTime, endTime, slotTime } = hotelData;
+    const slots = [];
+    let start = new Date(`1970-01-01T${startTime}:00`);
+    let end = new Date(`1970-01-01T${endTime}:00`);
+    let slotDuration = parseInt(slotTime, 10) * 60 * 60 * 1000; // Convert slotTime hours to milliseconds
+
+    // Create slots between startTime and endTime
+    while (start < end) {
+      let slotEnd = new Date(start.getTime() + slotDuration);
+      if (slotEnd > end) break; // Ensure the slot does not exceed endTime
+
+      // Format slots into "HH:MM AM/PM - HH:MM AM/PM"
+      const formattedStart = start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const formattedEnd = slotEnd.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      slots.push(`${formattedStart} - ${formattedEnd}`);
+
+      // Move to the next slot
+      start = slotEnd;
+    }
+
+    return slots;
+  };
+
+  // Effect to create slots when hotelData changes
+  useEffect(() => {
+    if (product) {
+      const slots = createSlots(product);
+      setAvailableSlots(slots);
+    } else {
+      setAvailableSlots([]);
+    }
+  }, [product]);
+
   return (
     <div
       className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50"
@@ -142,6 +181,28 @@ const CartModal = ({ product, hotel, onClose, setCart }: any) => {
               />
             </div>
           </div>
+
+          {date && (
+          <div>
+            <label htmlFor="slot" className="block text-sm font-medium">
+              Select Time Slot
+            </label>
+            <select
+              id="slot"
+              name="slot"
+              value={slot}
+              onChange={(e) => setSlot(e.target.value)}
+              className="w-full px-4 py-2 border rounded-md"
+            >
+              <option value="">Select a slot</option>
+              {availableSlots.map((slotTime, index) => (
+                <option key={index} value={slotTime}>
+                  {slotTime}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
           <div className="flex justify-between items-center px-2 py-2">
             <span>Adult (over 13)</span>
