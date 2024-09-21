@@ -91,4 +91,5 @@ export interface ProductType {
   endTime: string;
   isChildPrice: boolean;
   maxGuestsperDay: number;
+  breakTime:string;
 }

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Tax Invoice</title>
+    <style>
+        body {
+            background-color: #f9fafb;
+            font-family: 'Arial', sans-serif;
+            line-height: 1.5;
+        }
+        .container {
+            width: 210mm;
+            height: 297mm;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #d1d5db;
+            box-sizing: border-box;
+        }
+        .header {
+            text-align: center;
+            padding-bottom: 5px;
+            /* margin-bottom: 20px; */
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .header img {
+            height: 64px;
+        }
+        h1 {
+            font-size: 24px;
+            font-weight: bold;
+            color: #374151;
+            margin: 10px 0;
+        }
+        p {
+            font-size: 14px;
+            color: #6b7280;
+            margin: 0 0 5px;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #374151;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 5px;
+        }
+        .details {
+            margin-bottom: 20px;
+        }
+        .details p {
+            font-size: 14px;
+            color: #4b5563;
+        }
+        .details strong {
+            font-weight: bold;
+        }
+
+        /* Webkit Flexbox Compatibility */
+        .details-layout {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-flex-wrap: wrap;
+            -ms-flex-wrap: wrap;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .details-layout .details-column {
+            -webkit-box-flex: 1;
+            -webkit-flex: 1;
+            -ms-flex: 1;
+            flex: 1;
+            margin-right: 20px;
+            min-width: 240px;
+        }
+
+        /* Payment Breakup Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table th, table td {
+            border: 1px solid #d1d5db;
+            padding: 10px;
+            text-align: left;
+            font-size: 14px;
+        }
+        table th {
+            background-color: #f3f4f6;
+            color: #6b7280;
+        }
+        table td {
+            color: #374151;
+        }
+        .grand-total {
+            font-weight: bold;
+            background-color: #f9fafb;
+        }
+
+        .footer {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        .footer p {
+            margin-bottom: 10px;
+        }
+
+        /* A4 Page Size for Printing */
+        @media print {
+            @page {
+                size: A4;
+                margin: 0;
+            }
+            body {
+                margin: 0;
+                padding: 0;
+                background: white;
+            }
+            .container {
+                width: 210mm;
+                height: 297mm;
+                border: none;
+                margin: 0;
+                /* padding: 20mm; */
+                background-color: white;
+                page-break-inside: avoid;
+            }
+            .header, .footer {
+                page-break-before: avoid;
+                page-break-after: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header Section -->
+    <div class="header">
+        <img src="https://www.daybreakpass.com/daybreaklogo.png" alt="DAYBREAKPASS">
+        <h1>Tax Invoice</h1>
+        <p>DAYBREAKPASS HOSPITALITY TECHNOLOGY PRIVATE LIMITED</p>
+        <p>1801,18th Floor, 3E Wing, 412 Pahadi Goregaon, Bangur Nagar, Goregaon West, Mumbai - 400104</p>
+    </div>
+
+    <!-- Invoice Details -->
+    <div class="details">
+        <h3 class="section-title">Invoice Details</h3>
+        <div class="details-layout">
+            <div class="details-column">
+                <p><strong>Booking ID:</strong> {{bookingId}}</p>
+                <p><strong>Date:</strong> {{date}}</p>
+                <p><strong>Transactional Type/Category:</strong> REG/B2B</p>
+                <p><strong>HSN/SAC:</strong> 998552</p>
+                <p><strong>CIN:</strong> U55101MH2024PTC428638</p>
+            </div>
+            <div class="details-column">
+                <p><strong>Invoice No:</strong> {{invoiceNo}}</p>
+                <p><strong>Place of Supply:</strong> Maharashtra</p>
+                <p><strong>PAN:</strong> AAKCD9879R</p>
+                <p><strong>GSTIN:</strong> 27AAKCD9879R1Z9</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer and Hotel Details -->
+    <div class="details">
+        <h3 class="section-title">Customer & Hotel Details</h3>
+        <div class="details-layout">
+            <div class="details-column">
+                {{#if companyLegalName}}
+                    <p><strong>Company Legal Name:</strong> {{companyLegalName}}</p>
+                {{/if}}
+                {{#if companyTradeName}}
+                    <p><strong>Company Trade Name:</strong> {{companyTradeName}}</p>
+                {{/if}}
+                <p><strong>Customer Name:</strong> {{customerName}}</p>
+                {{#if customerGSTIN}}
+                    <p><strong>Customer GSTIN:</strong> {{customerGSTIN}}</p>
+                {{/if}}
+                {{#if customerAddress}}
+                    <p><strong>Customer Address:</strong> {{customerAddress}}</p>
+                {{/if}}
+            </div>
+            <div class="details-column">
+                <p><strong>Hotel Name:</strong> {{hotelName}}</p>
+                <p><strong>Hotel City:</strong> {{hotelCity}}</p>
+                <p><strong>Check-in:</strong> {{checkIn}}</p>
+                <p><strong>Check-Out:</strong> {{checkOut}}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Breakup -->
+    <div class="details">
+        <h3 class="section-title">Payment Breakup</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Amount (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each lineItems}}
+                <tr>
+                    <td>{{description}}</td>
+                    <td>₹{{amount}}</td>
+                </tr>
+                {{/each}}
+                <tr class="grand-total">
+                    <td><strong>Grand Total</strong></td>
+                    <td><strong>₹{{grandTotal}}</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Footer Section -->
+    <div class="footer">
+        <p>Input tax credit of GST charged by the original service provider is available only against the invoice issued by the respective service provider. Daybreakpass acts only as a facilitator for these services. This is not a valid travel document.</p>
+        <p>1. Any dispute with respect to the invoice is to be reported back to Daybreakpass within 48 hours of receipt of invoice.</p>
+        <p>2. This is a system-generated invoice and does not require signatures.</p>
+    </div>
+</div>
+
+</body>
+</html>

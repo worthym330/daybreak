@@ -409,6 +409,7 @@ router.post(
         adultPrice,
         childPrice,
         isChildPrice,
+        breakTime
       } = req.body;
 
       // Construct productTitle object
@@ -425,6 +426,7 @@ router.post(
         adultPrice,
         childPrice,
         isChildPrice,
+        breakTime
       };
 
       // Find the existing hotel by ID
@@ -506,6 +508,7 @@ router.put(
         adultPrice,
         childPrice,
         isChildPrice,
+        breakTime
       } = req.body;
 
       // Construct productTitle object
@@ -522,6 +525,7 @@ router.put(
         adultPrice,
         childPrice,
         isChildPrice,
+        breakTime
       };
 
       // Find the existing hotel by ID
@@ -553,6 +557,7 @@ router.put(
       productTitleToUpdate.adultPrice = updatedProductTitle.adultPrice;
       productTitleToUpdate.childPrice = updatedProductTitle.childPrice;
       productTitleToUpdate.isChildPrice = updatedProductTitle.isChildPrice;
+      productTitleToUpdate.breakTime = updatedProductTitle.breakTime
       existingHotel.lastUpdated = new Date();
       // Save the updated hotel
       await existingHotel.save();

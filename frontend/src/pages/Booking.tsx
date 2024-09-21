@@ -143,8 +143,8 @@ const Booking = () => {
                       <h3 className="text-lg font-semibold text-[#02596C]">
                         {item.hotel.name}
                       </h3>
-                      <p className="text-gray-500">
-                        {moment(item.date).format("Do MMMM YYYY")}{" "}
+                      <p className="flex flex-col md:flex-row justify-between text-gray-500 gap-2 text-nowrap">
+                        <span>{moment(item.date).format("Do MMMM YYYY")}</span><span>{item.slot}</span>
                       </p>
                     </div>
                   </div>

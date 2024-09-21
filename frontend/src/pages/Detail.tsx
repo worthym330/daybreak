@@ -535,6 +535,7 @@ const Detail = () => {
                   key={index}
                   product={product}
                   hotel={hotel}
+                  titles={hotel.titlesId}
                   setCart={setCart}
                 />
               ))}

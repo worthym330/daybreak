@@ -9,7 +9,7 @@ import verifyToken, {
 import Razorpay from "razorpay";
 import ServiceRecord from "../models/invoice";
 import axios from "axios";
-import HotelDetails from "../models/productdetail";
+import { HotelDetails, Slot } from "../models/productdetail";
 import { sendPaymentConfirmationSms } from "./twillio";
 import User from "../models/user";
 import {
@@ -21,6 +21,10 @@ import {
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
+const pdf = require('pdf-creator-node') as any;
+import fs from "fs";
+import path from "path";
+const moment = require("moment");
 
 const razorpayInstance = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID as string,
@@ -97,7 +101,10 @@ router.get(
     const id = req.params.id.toString();
 
     try {
-      const hotel = await Hotel.findById(id);
+      const hotel = await Hotel.findById(id).populate({
+        path: "titlesId",
+        populate: { path: "slots" },
+      });
       res.json(hotel);
     } catch (error) {
       console.log(error);
@@ -118,7 +125,10 @@ router.get(
     const name = req.params.name.toString();
 
     try {
-      const hotel = await Hotel.findOne({ name: name });
+      const hotel = await Hotel.findOne({ name: name }).populate({
+        path: "titlesId",
+        populate: { path: "slots" },
+      });
       res.json(hotel);
     } catch (error) {
       console.log(error);
@@ -200,7 +210,6 @@ router.post(
       // Verify the payment signature
       const payment = await razorpayInstance.payments.fetch(paymentIntentId);
       const hotel = await Hotel.findById(req.params.hotelId);
-
       if (req.userId !== "") {
         user = await User.findById(req.userId);
 
@@ -345,6 +354,8 @@ router.post(
         servicesUsed:
           cart.map((l: { product: { title: any } }) => l.product.title) || [],
         paymentStatus: payment.status,
+        slot: cart[0].slot,
+        date: cart[0].date,
       });
       await serviceRecord.save();
 
@@ -603,11 +614,15 @@ router.get("/getdata/hotel/:id", async (req: Request, res: Response) => {
     const { id } = req.params;
 
     // Find the hotel and populate the titlesId with HotelDetails
-    const hotel = await Hotel.findById(id).populate("titlesId");
+    const hotel = await Hotel.findById(id).populate({
+      path: "titlesId",
+      populate: { path: "slots" },
+    });
 
     // Respond with the hotel data including populated HotelDetails
     res.status(200).json(hotel);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Server error", error: error });
   }
 });
@@ -672,7 +687,6 @@ router.delete("/hotel-details/:id", async (req: Request, res: Response) => {
   }
 });
 
-
 // Update HotelDetails by ID
 router.post("/hotel-details", async (req: Request, res: Response) => {
   const { state, hotelId } = req.body;
@@ -694,7 +708,6 @@ router.post("/hotel-details", async (req: Request, res: Response) => {
       endTime: state.endTime,
       hotelId,
     };
-    console.log(payload);
     const hotelPass = await HotelDetails(payload);
     hotelPass.save();
     hotel.titlesId.push(hotelPass._id);
@@ -719,63 +732,107 @@ const getDatesInRange = (startDate: Date, endDate: Date) => {
   return dateArray;
 };
 
-// POST endpoint to add new hotel details for multiple titles over a date range
 router.post("/hotel-details/bulk-creations", async (req, res) => {
   try {
-    const { hotelId, startDate, endDate, startTime, endTime, title } = req.body;
-    const start = new Date(startTime).toISOString().split("T")[1].split(".")[0]; // "10:30:00"
-    const end = new Date(endTime).toISOString().split("T")[1].split(".")[0];     // "13:00:00"
-    // Find the hotel by its ID
+    const {
+      hotelId,
+      startDate,
+      endDate,
+      title,
+      pricingFields,
+      startTime,
+      endTime,
+    } = req.body;
+    const start = new Date(startTime).toISOString().split("T")[1].split(".")[0];
+    const end = new Date(endTime).toISOString().split("T")[1].split(".")[0];
     const hotel = await Hotel.findById(hotelId);
     if (!hotel) {
       return res.status(404).json({ message: "Hotel not found" });
     }
-
     hotel.titlesId = hotel.titlesId || [];
-
     const dateRange = getDatesInRange(startDate, endDate);
-
-    const hotelDetailsArray: {
-      _id: mongoose.Types.ObjectId;
-      title: any;
-      date: Date;
-      slotTime: string;
-      startTime: Date;
-      endTime: Date;
-      hotelId: any;
-    }[] = [];
-
-    dateRange.forEach((currentDate) => {
-      title.forEach((title: any) => {
-        const startDateTime = new Date(
-          `${currentDate.toISOString().split("T")[0]}T${start}`
+    for (const currentDate of dateRange) {
+      for (const selectedTitle of title) {
+        const productTitle = hotel.productTitle.find(
+          (pt) => pt.title === selectedTitle
         );
-        const endDateTime = new Date(
-          `${currentDate.toISOString().split("T")[0]}T${end}`
+        if (!productTitle) {
+          continue;
+        }
+        const slots = createSlots(
+          productTitle.startTime,
+          productTitle.endTime,
+          productTitle.slotTime
         );
-
-        hotelDetailsArray.push({
-          _id: new mongoose.Types.ObjectId(),
-          title,
+        const peoplePerSlot = Math.round(
+          productTitle.maxGuestsperDay / slots.length
+        );
+        const startDateTime = moment(
+          `${currentDate.toISOString().split("T")[0]} ${start}`,
+          "YYYY-MM-DD HH:mm:ss"
+        ).toDate();
+        const endDateTime = moment(
+          `${currentDate.toISOString().split("T")[0]} ${end}`,
+          "YYYY-MM-DD HH:mm:ss"
+        ).toDate();
+        const {
+          adultWeekdayPrice,
+          adultWeekendPrice,
+          childWeekdayPrice,
+          childWeekendPrice,
+        } = pricingFields[selectedTitle] || {};
+        const hotelDetailDoc = new HotelDetails({
+          title: selectedTitle,
           date: currentDate,
           slotTime: `${startDateTime} - ${endDateTime}`,
           startTime: startDateTime,
           endTime: endDateTime,
           hotelId,
+          adultWeekdayPrice,
+          adultWeekendPrice: pricingFields[selectedTitle]?.includeWeekendPrice
+            ? adultWeekendPrice
+            : undefined,
+          childWeekdayPrice: pricingFields[selectedTitle]?.includeChildPrice
+            ? childWeekdayPrice
+            : undefined,
+          childWeekendPrice:
+            pricingFields[selectedTitle]?.includeChildPrice &&
+            pricingFields[selectedTitle]?.includeWeekendPrice
+              ? childWeekendPrice
+              : undefined,
         });
-      });
-    });
-
-    const savedHotelDetails = await HotelDetails.insertMany(hotelDetailsArray);
-
-    const newTitlesIds = savedHotelDetails.map((detail: any) => detail._id);
-    hotel.titlesId.push(...newTitlesIds);
+        const savedHotelDetail = await hotelDetailDoc.save();
+        for (const slot of slots) {
+          const [slotStartTime, slotEndTime] = slot.split(" - ");
+          const startSlotDateTime = moment(
+            `${currentDate.toISOString().split("T")[0]} ${slotStartTime}`,
+            "YYYY-MM-DD hh:mm a"
+          ).toDate();
+          const endSlotDateTime = moment(
+            `${currentDate.toISOString().split("T")[0]} ${slotEndTime}`,
+            "YYYY-MM-DD hh:mm a"
+          ).toDate();
+          const slotDoc = new Slot({
+            hotelId,
+            hotelProductId: savedHotelDetail._id,
+            slotTime: `${slotStartTime} - ${slotEndTime}`,
+            startTime: startSlotDateTime,
+            endTime: endSlotDateTime,
+            peoplePerSlot,
+          });
+          const savedSlot = await slotDoc.save();
+          hotelDetailDoc.slots.push(savedSlot._id);
+        }
+        await hotelDetailDoc.save();
+        hotel.titlesId.push(savedHotelDetail._id);
+      }
+    }
 
     await hotel.save();
 
     res.status(201).json({
-      message: "Passes added successfully",
-      data: savedHotelDetails,
+      message: "Passes, hotel details, and slots added successfully",
+      hotel,
     });
   } catch (error) {
     console.error(error);
@@ -783,4 +840,121 @@ router.post("/hotel-details/bulk-creations", async (req, res) => {
   }
 });
 
+const createSlots = (startTime: any, endTime: any, slotTime: string) => {
+  const slots = [];
+  let start = new Date(`1970-01-01T${startTime}:00`);
+  let end = new Date(`1970-01-01T${endTime}:00`);
+  let slotDuration = parseInt(slotTime, 10) * 60 * 60 * 1000;
+  const breakTime = 0;
+
+  while (start < end) {
+    let slotEnd = new Date(start.getTime() + slotDuration);
+    if (slotEnd > end) break;
+    const formattedStart = start.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    const formattedEnd = slotEnd.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    slots.push(`${formattedStart} - ${formattedEnd}`);
+    start = new Date(slotEnd.getTime() + breakTime);
+  }
+  return slots;
+};
+
+router.put("/hotel-details/slots/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const updatedSlot = await Slot.findByIdAndUpdate(
+      id,
+      { status: status === "Active" ? true : false },
+      { new: true }
+    );
+
+    if (!updatedSlot) {
+      return res.status(404).json({ message: "Slot not found" });
+    }
+    res.status(200).json({
+      message: "Slot updated successfully",
+      updatedSlot,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error", error });
+  }
+});
+
+const createInvoice = async (invoiceData:any) => {
+  // Path to the template
+  const htmlTemplate = fs.readFileSync(
+    path.join(__dirname, "../invoicetemplates/customerInvoice.html"),
+    "utf8"
+  );
+
+  // PDF options
+  const options = {
+    format: "A4",
+    orientation: "portrait",
+    border: "10mm",
+  };
+
+  // Data to pass to the template
+  const document = {
+    html: htmlTemplate,
+    data: {
+      bookingId: invoiceData.bookingId,
+            invoiceNo: invoiceData.invoiceNo,
+            date: invoiceData.date,
+            placeOfSupply: invoiceData.placeOfSupply,
+            companyLegalName: invoiceData.companyLegalName,
+            customerName: invoiceData.customerName,
+            customerGSTIN: invoiceData.customerGSTIN,
+            customerAddress: invoiceData.customerAddress,
+            lineItems: invoiceData.lineItems,
+      grandTotal: invoiceData.lineItems
+        .reduce(
+          (total: number, item: any) => total + parseFloat(item.amount),
+          0
+        )
+        .toFixed(2),
+    },
+    path: `./uploads/invoices/${invoiceData.invoiceNo}-${invoiceData.customerName}.pdf`,
+    type: "",
+  };
+
+  // Create PDF
+  try {
+    const res = await pdf.create(document, options);
+    console.log(`Invoice created at: ${res.filename}`);
+  } catch (error) {
+    console.error("Error creating PDF:", error);
+  }
+};
+
+router.get("/invoice/create-inv",async (req, res)=>{
+// Example data
+const invoiceData = {
+  bookingId: "NH78061353474870",
+  invoiceNo: "M06HL25I06066024",
+  date: "13 Sep 2024",
+  placeOfSupply: "Maharashtra",
+  companyLegalName: "WAMAN VITTHAL KUSHE",
+  customerName: "Vitthal Kushe",
+  // customerGSTIN: "27BKMPK7607J1ZP",
+  customerAddress: "18,1801 / 3E WING, 412 PAHADI, New Link Road, Mumbai...",
+  lineItems: [
+    { description: "Accommodation Charges", amount: "782.88" },
+    { description: "Service Fees", amount: "71.08" },
+    { description: "IGST @18%", amount: "12.8" },
+  ],
+};
+
+await createInvoice(invoiceData)
+// 9335555768
+res.json({message:"Created inv"})
+})
 export default router;

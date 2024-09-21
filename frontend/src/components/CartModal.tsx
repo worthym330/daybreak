@@ -5,14 +5,14 @@ import { addToCart } from "../store/cartSlice";
 import { useDispatch } from "react-redux";
 import { FaCalendar } from "react-icons/fa";
 
-const CartModal = ({ product, hotel, onClose, setCart }: any) => {
+const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
   const [adultCount, setAdultCount] = useState(0);
   const [childCount, setChildCount] = useState(0);
   const [total, setTotal] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
   const [date, setDate] = useState<string | undefined>(undefined);
-  const [slot, setSlot] = useState('');
-  const [availableSlots, setAvailableSlots] = useState<string[]>([]);;
+  const [slot, setSlot] = useState("");
+  const [availableSlots, setAvailableSlots] = useState<any[]>([]);
   const dispatch = useDispatch();
   const handleClose = () => {
     setIsVisible(false);
@@ -38,7 +38,6 @@ const CartModal = ({ product, hotel, onClose, setCart }: any) => {
     }
   }, [product.title, hotel]);
 
-  console.log("hotel", hotel,product)
   useEffect(() => {
     const calculateGST = (amount: number) => amount * 1;
     const adultTotal = calculateGST(adultCount * product.adultPrice);
@@ -81,6 +80,7 @@ const CartModal = ({ product, hotel, onClose, setCart }: any) => {
         childCount,
         total,
         date,
+        slot
       };
 
       if (differentHotelId) {
@@ -106,41 +106,17 @@ const CartModal = ({ product, hotel, onClose, setCart }: any) => {
     }
   };
 
-  const createSlots = (hotelData:any) => {
-    if (!hotelData) return [];
-
-    const { startTime, endTime, slotTime } = hotelData;
-    const slots = [];
-    let start = new Date(`1970-01-01T${startTime}:00`);
-    let end = new Date(`1970-01-01T${endTime}:00`);
-    let slotDuration = parseInt(slotTime, 10) * 60 * 60 * 1000; // Convert slotTime hours to milliseconds
-
-    // Create slots between startTime and endTime
-    while (start < end) {
-      let slotEnd = new Date(start.getTime() + slotDuration);
-      if (slotEnd > end) break; // Ensure the slot does not exceed endTime
-
-      // Format slots into "HH:MM AM/PM - HH:MM AM/PM"
-      const formattedStart = start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      const formattedEnd = slotEnd.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      slots.push(`${formattedStart} - ${formattedEnd}`);
-
-      // Move to the next slot
-      start = slotEnd;
-    }
-
-    return slots;
-  };
-
-  // Effect to create slots when hotelData changes
   useEffect(() => {
-    if (product) {
-      const slots = createSlots(product);
-      setAvailableSlots(slots);
-    } else {
-      setAvailableSlots([]);
+    if (slotValues && date) {
+      // Filter slots based on the selected date
+      const availableSlots = slotValues
+        .filter((slot: any) => moment(slot.startTime).isSame(date, "day"))
+        .map((e: any) => e.slots)
+        .flat();
+
+      setAvailableSlots(availableSlots);
     }
-  }, [product]);
+  }, [slotValues, date]);
 
   return (
     <div
@@ -161,7 +137,7 @@ const CartModal = ({ product, hotel, onClose, setCart }: any) => {
         <div className="flex flex-col space-y-4 mt-10">
           <div>
             <label htmlFor="date" className="block text-sm font-medium ">
-              Select Date
+              Please Select Date
             </label>
             <div className="relative rounded-md w-full">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -177,32 +153,30 @@ const CartModal = ({ product, hotel, onClose, setCart }: any) => {
                   setDate(date.target.value);
                 }}
                 min={new Date().toISOString().split("T")[0]}
-                className="pl-10 w-full px-4 py-2"
+                className="pl-10 w-full px-4 py-2 border"
               />
             </div>
           </div>
 
-          {date && (
-          <div>
-            <label htmlFor="slot" className="block text-sm font-medium">
-              Select Time Slot
-            </label>
-            <select
-              id="slot"
-              name="slot"
-              value={slot}
-              onChange={(e) => setSlot(e.target.value)}
-              className="w-full px-4 py-2 border rounded-md"
-            >
-              <option value="">Select a slot</option>
-              {availableSlots.map((slotTime, index) => (
-                <option key={index} value={slotTime}>
-                  {slotTime}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+            <div>
+              <label htmlFor="slot" className="block text-sm font-medium">
+                Select Time Slot
+              </label>
+              <select
+                id="slot"
+                name="slot"
+                value={slot}
+                onChange={(e) => setSlot(e.target.value)}
+                className="w-full px-4 py-2 border rounded-md"
+              >
+                <option value="">Select a slot</option>
+                {availableSlots.filter((e:any)=> e.status).map((slot: any, index) => (
+                  <option key={index} value={slot.slotTime}>
+                    {slot.slotTime}
+                  </option>
+                ))}
+              </select>
+            </div>
 
           <div className="flex justify-between items-center px-2 py-2">
             <span>Adult (over 13)</span>
@@ -280,7 +254,7 @@ const CartModal = ({ product, hotel, onClose, setCart }: any) => {
         <div className="flex flex-col space-y-4 mt-4 pb-20">
           <div>
             <label htmlFor="date" className="block text-sm font-medium ">
-              Select Date
+            Please Select Date
             </label>
             <div className="relative rounded-md w-full">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -300,6 +274,25 @@ const CartModal = ({ product, hotel, onClose, setCart }: any) => {
               />
             </div>
           </div>
+          <div>
+              <label htmlFor="slot" className="block text-sm font-medium">
+                Select Time Slot
+              </label>
+              <select
+                id="slot"
+                name="slot"
+                value={slot}
+                onChange={(e) => setSlot(e.target.value)}
+                className="w-full px-4 py-2 border rounded-md"
+              >
+                <option value="">Select a slot</option>
+                {availableSlots.filter((e:any)=> e.status).map((slot: any, index) => (
+                  <option key={index} value={slot._id}>
+                    {slot.slotTime}
+                  </option>
+                ))}
+              </select>
+            </div>
           <div className="flex justify-between items-center">
             <span>Adult (over 13)</span>
             <div className="flex items-center">

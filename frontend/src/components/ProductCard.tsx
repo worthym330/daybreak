@@ -19,6 +19,7 @@ interface ProductCardProps {
   product: any;
   hotel: any;
   setCart?: any;
+  titles?:any
 }
 
 export type TitleKey =
@@ -54,14 +55,13 @@ export type TitleKey =
     "COUPLE PASS": <FaUsers />,
   };
 
-const ProductCard = ({ product, hotel, setCart }: ProductCardProps) => {
+const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showLess, setShowLess] = useState(false);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
-
   return (
     <div
       className={`bg-white rounded-lg lg:shadow-xl p-4 lg:p-8 mb-4 border-2 hover:border-[#00C0CB]`}
@@ -192,6 +192,7 @@ const ProductCard = ({ product, hotel, setCart }: ProductCardProps) => {
           product={product}
           hotel={hotel}
           onClose={handleCloseModal}
+          slotValues={titles}
           // date={date}
           setCart={setCart}
         />

@@ -225,8 +225,9 @@ const MyBookings = ({ tab }: any) => {
                                 <span className="text-[#02596c] font-semibold">
                                   Dates:
                                 </span>
-                                <span className="font-medium text-base">
-                                  {new Date(booking.createdAt).toDateString()}
+                                <span className="font-medium text-base flex justify-between gap-4">
+                                  <span>{new Date(booking.date).toDateString()}</span><span>{booking.slot}</span>
+                                  
                                 </span>
                               </p>
                               {/* Modify the guests section according to the data structure */}

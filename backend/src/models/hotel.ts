@@ -35,6 +35,7 @@ const productSchema = new mongoose.Schema<ProductType>({
   endTime: { type: String},
   isChildPrice: { type: Boolean},
   maxGuestsperDay: { type: Number},
+  breakTime:{type:String}
 },{_id:true});
 
 const hotelSchema = new mongoose.Schema<HotelType>({
