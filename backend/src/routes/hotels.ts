@@ -17,6 +17,7 @@ import {
   PaymentFailed,
   PaymentSuccess,
   sendCredentials,
+  sendInvoiceToCustomer,
 } from "./mail";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -342,6 +343,7 @@ router.post(
       }
 
       await hotel.save();
+      const newInvoiceId = await generateInvoiceId();
 
       const serviceRecord = new ServiceRecord({
         userId: user ? user._id : undefined,
@@ -349,7 +351,7 @@ router.post(
         bookingId: hotel.bookings[hotel.bookings.length - 1]._id,
         paymentId: paymentIntentId,
         orderId: orderId,
-        invoiceId: payment.invoice_id || "",
+        invoiceId: newInvoiceId,
         amount: totalCost,
         servicesUsed:
           cart.map((l: { product: { title: any } }) => l.product.title) || [],
@@ -359,16 +361,53 @@ router.post(
       });
       await serviceRecord.save();
 
+      const totalPrice = cart.reduce((total: number, item: any) => total + item.price, 0);
+
+// Calculate taxes based on the total price
+const igstAmount = (totalPrice * 0.18).toFixed(2);
+const serviceTaxAmount = (totalPrice * 0.05).toFixed(2);
+
+      const invoiceData = {
+        bookingId: serviceRecord.bookingId,
+        invoiceNo: newInvoiceId,
+        date: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
+        // companyLegalName: "Your Company Name",
+        customerName: `${user.firstName} ${user.lastName}`,
+        // customerGSTIN:
+        // customerAddress: "Customer Address Here",
+        hotelName:hotel?.name ,
+        hotelCity:hotel?.city,
+        passDate:cart[0].date,
+        slotTime:cart[0].slot,
+        customerEmail:user.email,
+        lineItems:[
+          ...cart.map((item: any) => ({
+            description: item.product.title,
+            amount: item.price,
+          })),
+          {
+            description: "IGST @18%",
+            amount: igstAmount,
+          },
+          {
+            description: "Service Tax @5%",
+            amount: serviceTaxAmount,
+          }
+        ],
+      };
+
+      createInvoiceandSendCustomer(invoiceData)
+
       sendPaymentConfirmationSms(
         phone,
         hotel?.name || "",
         serviceRecord.servicesUsed,
         cart[0].date,
-        cart[0].date
+        cart[0].slot
       );
 
-      PaymentSuccess(mailPayload);
-      BookingConfirmation(mailPayload);
+      // PaymentSuccess(mailPayload);
+      // BookingConfirmation(mailPayload);
       res.status(200).json({
         data: {
           id: user?._id || "",
@@ -760,10 +799,13 @@ router.post("/hotel-details/bulk-creations", async (req, res) => {
           continue;
         }
         const slots = createSlots(
-          productTitle.startTime,
-          productTitle.endTime,
+          start,
+          end,
           productTitle.slotTime
         );
+
+        console.log("productTitle.startTime,productTitle.endTime,",start, end,productTitle.startTime,
+          productTitle.endTime)
         const peoplePerSlot = Math.round(
           productTitle.maxGuestsperDay / slots.length
         );
@@ -842,11 +884,11 @@ router.post("/hotel-details/bulk-creations", async (req, res) => {
 
 const createSlots = (startTime: any, endTime: any, slotTime: string) => {
   const slots = [];
-  let start = new Date(`1970-01-01T${startTime}:00`);
-  let end = new Date(`1970-01-01T${endTime}:00`);
+  let start = new Date(`1970-01-01T${startTime}`);
+  let end = new Date(`1970-01-01T${endTime}`);
   let slotDuration = parseInt(slotTime, 10) * 60 * 60 * 1000;
   const breakTime = 0;
-
+console.log("slots",startTime, endTime, start, end)
   while (start < end) {
     let slotEnd = new Date(start.getTime() + slotDuration);
     if (slotEnd > end) break;
@@ -858,6 +900,7 @@ const createSlots = (startTime: any, endTime: any, slotTime: string) => {
       hour: "2-digit",
       minute: "2-digit",
     });
+    console.log(`${formattedStart} - ${formattedEnd}`)
     slots.push(`${formattedStart} - ${formattedEnd}`);
     start = new Date(slotEnd.getTime() + breakTime);
   }
@@ -930,6 +973,7 @@ const createInvoice = async (invoiceData:any) => {
   try {
     const res = await pdf.create(document, options);
     console.log(`Invoice created at: ${res.filename}`);
+    return res
   } catch (error) {
     console.error("Error creating PDF:", error);
   }
@@ -940,11 +984,12 @@ router.get("/invoice/create-inv",async (req, res)=>{
 const invoiceData = {
   bookingId: "NH78061353474870",
   invoiceNo: "M06HL25I06066024",
-  date: "13 Sep 2024",
+  date: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
   placeOfSupply: "Maharashtra",
   companyLegalName: "WAMAN VITTHAL KUSHE",
   customerName: "Vitthal Kushe",
   // customerGSTIN: "27BKMPK7607J1ZP",
+  customerEmail:"mbasant829@gmail.co,",
   customerAddress: "18,1801 / 3E WING, 412 PAHADI, New Link Road, Mumbai...",
   lineItems: [
     { description: "Accommodation Charges", amount: "782.88" },
@@ -953,8 +998,38 @@ const invoiceData = {
   ],
 };
 
-await createInvoice(invoiceData)
+await createInvoiceandSendCustomer(invoiceData)
 // 9335555768
 res.json({message:"Created inv"})
 })
+
+const createInvoiceandSendCustomer = async(invoiceData:any) =>{
+  const invoice = await createInvoice(invoiceData)
+  console.log(invoice)
+  const mailPayload ={
+    fullName:invoiceData.customerName,
+    email:invoiceData.customerEmail,
+    invoicePath:invoice.filename
+  }
+  await sendInvoiceToCustomer(mailPayload)
+
+
+}
+
+const generateInvoiceId = async () => {
+  const latestRecord = await ServiceRecord.findOne({}, { invoiceId: 1 })
+    .sort({ createdAt: -1 })
+    .lean();
+
+  // Check if there's a previous invoiceId and extract the number part
+  let newInvoiceNumber = 1;
+  if (latestRecord && latestRecord.invoiceId) {
+    const invoiceNumber = parseInt(latestRecord.invoiceId.replace("DBP", ""), 10);
+    newInvoiceNumber = invoiceNumber + 1;
+  }
+
+  // Format the invoice number to always be 6 digits (DBP000001, DBP000002, etc.)
+  const formattedInvoiceId = `DBP${newInvoiceNumber.toString().padStart(6, "0")}`;
+  return formattedInvoiceId;
+};
 export default router;
