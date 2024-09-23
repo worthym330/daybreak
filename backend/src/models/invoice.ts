@@ -25,6 +25,7 @@ const ServiceRecordSchema = new mongoose.Schema(
     invoiceUrl: { type: String },
     slot: { type: String },
     date: { type: String },
+    lineItems:[]
   },
   { timestamps: true }
 );

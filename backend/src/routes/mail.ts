@@ -42,7 +42,7 @@ export const sendToCustomer = async (leadData: any) => {
     const { email, fullName } = leadData;
     const mailOptions = {
       to: email,
-      cc:process.env.SMTP_USER,
+      cc: process.env.SMTP_USER,
       subject: `Sign Up Confirmation and Onboarding Process`,
       html: ` 
       <!DOCTYPE html>
@@ -189,7 +189,7 @@ export const notifyHotelUserRequestReceived = async (data: any) => {
     const { name, email, ownerName } = data;
     const mailOptions = {
       to: email,
-      cc:process.env.SMTP_USER,
+      cc: process.env.SMTP_USER,
       subject: `Your Request to Add ${name} is Being Reviewed`,
       html: `
       <!DOCTYPE html>
@@ -260,7 +260,7 @@ export const sendCredentials = async (data: any) => {
     const { email, password, name } = data;
     const mailOptions = {
       to: email,
-      cc:process.env.SMTP_USER,
+      cc: process.env.SMTP_USER,
       subject: `Your DayBreakPass Account Credentials`,
       html: `
        <!DOCTYPE html>
@@ -323,7 +323,7 @@ export const resetPass = async (data: any) => {
     const { email, name, token } = data;
     const mailOptions = {
       to: email,
-      cc:process.env.SMTP_USER,
+      cc: process.env.SMTP_USER,
       subject: `Reset Your Password`,
       html: `
        <!DOCTYPE html>
@@ -387,7 +387,7 @@ export const incompeleteBooking = async (data: any) => {
     const { email, name } = data;
     const mailOptions = {
       to: email,
-      cc:process.env.SMTP_USER,
+      cc: process.env.SMTP_USER,
       subject: `Complete Your Booking at DayBreakPass`,
       html: `
        <!DOCTYPE html>
@@ -445,65 +445,109 @@ export const incompeleteBooking = async (data: any) => {
   }
 };
 
-export const PaymentSuccess = async (data: any) => {
+export const PaymentSuccess = async (
+  data: any,
+  bookingId?: string | null | undefined
+) => {
   try {
-    const { email, name, hotelName, date, amount } = data;
+    const { email, name, date } = data;
     const mailOptions = {
       to: email,
-      cc:process.env.SMTP_USER,
+      cc: process.env.SMTP_USER,
       subject: `Payment Successful for Your Booking`,
       html: `
        <!DOCTYPE html>
-  <html>
-    <head>
-      <style>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tax Invoice for Hotel Booking</title>
+        <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            color: #333333;
+        }
         .container {
-          font-family: Arial, sans-serif;
-          margin: 20px;
-          padding: 20px;
-          border: 1px solid #ccc;
-          border-radius: 10px;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
         .header {
-          background-color: #B5813F;
-          padding: 10px;
-          text-align: center;
-          border-bottom: 1px solid #ccc;
+            /* background-color: #fe6a06; */
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        .header img {
+            max-width: 150px; /* Adjust logo size */
+            margin-bottom: 10px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
         }
         .content {
-          margin-top: 20px;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .content h2 {
+            color: #fe6a06;
+            font-size: 18px;
+        }
+        .button {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .button a {
+            background-color: #fe6a06;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 4px;
         }
         .footer {
-          margin-top: 20px;
-          text-align: center;
-          color: #888;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #555555;
         }
-      </style>
-    </head>
-    <body>
-      <div class="container">
+        .footer a {
+            color: #00c0cb;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
         <div class="header">
-          <h1>Welcome to DayBreakPass</h1>
+            <!-- Logo added here -->
+            <img src="https://example.com/path/to/logo.png" alt="DayBreakPass Logo">
+            <h1>DayBreakPass</h1>
         </div>
         <div class="content">
-          <p>Hello ${name},</p>
-          <p>We're happy to inform you that your payment for the booking at ${hotelName} was successful.</p>
-          <p>Your booking details:
-            Check-in: ${date} <br />
-            Total Amount: ₹ ${amount/100} <br />
-          </p>
-          <p>We look forward to hosting you!</p>
-          <p>For any questions or assistance, please feel free to reach out to us at <a href="tel:+918369029862">8369029862</a> or email us at
-            <a href="mailto:team@daybreakpass.com">team@daybreakpass.com</a>.
-        </p>
-        <p>Best regards,<br>The Team at DayBreakPass</p>
+            <h2>Important Update</h2>
+            <p>Dear ${name},</p>
+            <p>Please find attached the Invoice for your Hotel booking (${bookingId}) with DayBreakPass on ${date}. <strong>(Your Invoice is not a valid travel document).</strong></p>
+            <p>For all further details, please visit <a href="https://www.daybreakpass.com/my-bookings">My Bookings</a>.</p>
+            <p>Regards,<br>Team DayBreakPass</p>
+        </div>
+        <div class="button">
+            <a href="https://www.daybreakpass.com/my-bookings">View My Invoice</a>
         </div>
         <div class="footer">
-          <p>&copy; 2024 DayBreakPass. All rights reserved.</p>
+            <p>P.S.: This is a system-generated email. Please do not reply to this email.</p>
         </div>
-      </div>
-    </body>
-  </html>
+    </div>
+</body>
+</html>
+
 `,
     };
     await transporter.sendMail(mailOptions);
@@ -517,7 +561,7 @@ export const PaymentFailed = async (data: any) => {
     const { email, name, hotelName, date, amount } = data;
     const mailOptions = {
       to: email,
-      cc:process.env.SMTP_USER,
+      cc: process.env.SMTP_USER,
       subject: `Payment Failed for Your Booking`,
       html: `
        <!DOCTYPE html>
@@ -584,7 +628,7 @@ export const BookingConfirmation = async (data: any) => {
     const { email, name, hotelName, date, amount } = data;
     const mailOptions = {
       to: email,
-      cc:process.env.SMTP_USER,
+      cc: process.env.SMTP_USER,
       subject: `Our Booking Confirmation at ${hotelName}`,
       html: `
        <!DOCTYPE html>
@@ -651,7 +695,7 @@ export const BookingCancellation = async (data: any) => {
     const { email, name, hotelName, date, amount } = data;
     const mailOptions = {
       to: email,
-      cc:process.env.SMTP_USER,
+      cc: process.env.SMTP_USER,
       subject: `Your Booking at ${hotelName} Has Been Cancelled`,
       html: `
        <!DOCTYPE html>
@@ -718,7 +762,7 @@ export const FeedBack = async (data: any) => {
     const { email, hotelName, hotelId, name } = data;
     const mailOptions = {
       to: email,
-      cc:process.env.SMTP_USER,
+      cc: process.env.SMTP_USER,
       subject: `Your feedback`,
       html: `
        <!DOCTYPE html>
@@ -782,7 +826,7 @@ export const Support = async (data: any) => {
     const { email, name, subject, description } = data;
     const mailOptions = {
       to: email,
-      cc:process.env.SMTP_USER,
+      cc: process.env.SMTP_USER,
       subject: `Your DayBreakPass Account Credentials`,
       html: `
        <!DOCTYPE html>
@@ -1155,10 +1199,9 @@ export const Support = async (data: any) => {
 //   }
 // };
 
-
 export const sendContactNotification = async (data: any) => {
   try {
-    const { name , email , phone, detail } = data;
+    const { name, email, phone, detail } = data;
     const mailOptions = {
       to: process.env.MAILTO,
       subject: `New Contact Us Submission`,

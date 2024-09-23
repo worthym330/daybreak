@@ -22,7 +22,7 @@ import {
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
-const pdf = require('pdf-creator-node') as any;
+const pdf = require("pdf-creator-node") as any;
 import fs from "fs";
 import path from "path";
 const moment = require("moment");
@@ -359,28 +359,31 @@ router.post(
         slot: cart[0].slot,
         date: cart[0].date,
       });
-      await serviceRecord.save();
+      const data = await serviceRecord.save();
 
-      const totalPrice = cart.reduce((total: number, item: any) => total + item.price, 0);
+      const totalPrice = cart.reduce(
+        (total: number, item: any) => total + item.price,
+        0
+      );
 
-// Calculate taxes based on the total price
-const igstAmount = (totalPrice * 0.18).toFixed(2);
-const serviceTaxAmount = (totalPrice * 0.05).toFixed(2);
+      // Calculate taxes based on the total price
+      const igstAmount = (totalPrice * 0.18).toFixed(2);
+      const serviceTaxAmount = (totalPrice * 0.05).toFixed(2);
 
       const invoiceData = {
         bookingId: serviceRecord.bookingId,
         invoiceNo: newInvoiceId,
-        date: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
+        date: new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
         // companyLegalName: "Your Company Name",
         customerName: `${user.firstName} ${user.lastName}`,
         // customerGSTIN:
         // customerAddress: "Customer Address Here",
-        hotelName:hotel?.name ,
-        hotelCity:hotel?.city,
-        passDate:cart[0].date,
-        slotTime:cart[0].slot,
-        customerEmail:user.email,
-        lineItems:[
+        hotelName: hotel?.name,
+        hotelCity: hotel?.city,
+        passDate: cart[0].date,
+        slotTime: cart[0].slot,
+        customerEmail: user.email,
+        lineItems: [
           ...cart.map((item: any) => ({
             description: item.product.title,
             amount: item.price,
@@ -392,11 +395,12 @@ const serviceTaxAmount = (totalPrice * 0.05).toFixed(2);
           {
             description: "Service Tax @5%",
             amount: serviceTaxAmount,
-          }
+          },
         ],
       };
-
-      createInvoiceandSendCustomer(invoiceData)
+      data.lineItems = invoiceData.lineItems;
+      await data.save();
+      createInvoiceandSendCustomer(invoiceData);
 
       sendPaymentConfirmationSms(
         phone,
@@ -406,8 +410,9 @@ const serviceTaxAmount = (totalPrice * 0.05).toFixed(2);
         cart[0].slot
       );
 
-      // PaymentSuccess(mailPayload);
-      // BookingConfirmation(mailPayload);
+      // mailPayload.bookingId = serviceRecord.bookingId
+      PaymentSuccess(mailPayload, serviceRecord.bookingId);
+      // BookingConfirmation(mailPayload,serviceRecord.bookingId);
       res.status(200).json({
         data: {
           id: user?._id || "",
@@ -798,14 +803,15 @@ router.post("/hotel-details/bulk-creations", async (req, res) => {
         if (!productTitle) {
           continue;
         }
-        const slots = createSlots(
+        const slots = createSlots(start, end, productTitle.slotTime);
+
+        console.log(
+          "productTitle.startTime,productTitle.endTime,",
           start,
           end,
-          productTitle.slotTime
+          productTitle.startTime,
+          productTitle.endTime
         );
-
-        console.log("productTitle.startTime,productTitle.endTime,",start, end,productTitle.startTime,
-          productTitle.endTime)
         const peoplePerSlot = Math.round(
           productTitle.maxGuestsperDay / slots.length
         );
@@ -888,7 +894,7 @@ const createSlots = (startTime: any, endTime: any, slotTime: string) => {
   let end = new Date(`1970-01-01T${endTime}`);
   let slotDuration = parseInt(slotTime, 10) * 60 * 60 * 1000;
   const breakTime = 0;
-console.log("slots",startTime, endTime, start, end)
+  console.log("slots", startTime, endTime, start, end);
   while (start < end) {
     let slotEnd = new Date(start.getTime() + slotDuration);
     if (slotEnd > end) break;
@@ -900,7 +906,7 @@ console.log("slots",startTime, endTime, start, end)
       hour: "2-digit",
       minute: "2-digit",
     });
-    console.log(`${formattedStart} - ${formattedEnd}`)
+    console.log(`${formattedStart} - ${formattedEnd}`);
     slots.push(`${formattedStart} - ${formattedEnd}`);
     start = new Date(slotEnd.getTime() + breakTime);
   }
@@ -931,7 +937,7 @@ router.put("/hotel-details/slots/:id", async (req, res) => {
   }
 });
 
-const createInvoice = async (invoiceData:any) => {
+const createInvoice = async (invoiceData: any) => {
   // Path to the template
   const htmlTemplate = fs.readFileSync(
     path.join(__dirname, "../invoicetemplates/customerInvoice.html"),
@@ -950,14 +956,14 @@ const createInvoice = async (invoiceData:any) => {
     html: htmlTemplate,
     data: {
       bookingId: invoiceData.bookingId,
-            invoiceNo: invoiceData.invoiceNo,
-            date: invoiceData.date,
-            placeOfSupply: invoiceData.placeOfSupply,
-            companyLegalName: invoiceData.companyLegalName,
-            customerName: invoiceData.customerName,
-            customerGSTIN: invoiceData.customerGSTIN,
-            customerAddress: invoiceData.customerAddress,
-            lineItems: invoiceData.lineItems,
+      invoiceNo: invoiceData.invoiceNo,
+      date: invoiceData.date,
+      placeOfSupply: invoiceData.placeOfSupply,
+      companyLegalName: invoiceData.companyLegalName,
+      customerName: invoiceData.customerName,
+      customerGSTIN: invoiceData.customerGSTIN,
+      customerAddress: invoiceData.customerAddress,
+      lineItems: invoiceData.lineItems,
       grandTotal: invoiceData.lineItems
         .reduce(
           (total: number, item: any) => total + parseFloat(item.amount),
@@ -973,48 +979,46 @@ const createInvoice = async (invoiceData:any) => {
   try {
     const res = await pdf.create(document, options);
     console.log(`Invoice created at: ${res.filename}`);
-    return res
+    return res;
   } catch (error) {
     console.error("Error creating PDF:", error);
   }
 };
 
-router.get("/invoice/create-inv",async (req, res)=>{
-// Example data
-const invoiceData = {
-  bookingId: "NH78061353474870",
-  invoiceNo: "M06HL25I06066024",
-  date: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
-  placeOfSupply: "Maharashtra",
-  companyLegalName: "WAMAN VITTHAL KUSHE",
-  customerName: "Vitthal Kushe",
-  // customerGSTIN: "27BKMPK7607J1ZP",
-  customerEmail:"mbasant829@gmail.co,",
-  customerAddress: "18,1801 / 3E WING, 412 PAHADI, New Link Road, Mumbai...",
-  lineItems: [
-    { description: "Accommodation Charges", amount: "782.88" },
-    { description: "Service Fees", amount: "71.08" },
-    { description: "IGST @18%", amount: "12.8" },
-  ],
+router.get("/invoice/create-inv", async (req, res) => {
+  // Example data
+  const invoiceData = {
+    bookingId: "NH78061353474870",
+    invoiceNo: "M06HL25I06066024",
+    date: new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
+    placeOfSupply: "Maharashtra",
+    companyLegalName: "WAMAN VITTHAL KUSHE",
+    customerName: "Vitthal Kushe",
+    // customerGSTIN: "27BKMPK7607J1ZP",
+    customerEmail: "mbasant829@gmail.co,",
+    customerAddress: "18,1801 / 3E WING, 412 PAHADI, New Link Road, Mumbai...",
+    lineItems: [
+      { description: "Accommodation Charges", amount: "782.88" },
+      { description: "Service Fees", amount: "71.08" },
+      { description: "IGST @18%", amount: "12.8" },
+    ],
+  };
+
+  await createInvoiceandSendCustomer(invoiceData);
+  // 9335555768
+  res.json({ message: "Created inv" });
+});
+
+const createInvoiceandSendCustomer = async (invoiceData: any) => {
+  const invoice = await createInvoice(invoiceData);
+  console.log(invoice);
+  const mailPayload = {
+    fullName: invoiceData.customerName,
+    email: invoiceData.customerEmail,
+    invoicePath: invoice.filename,
+  };
+  await sendInvoiceToCustomer(mailPayload);
 };
-
-await createInvoiceandSendCustomer(invoiceData)
-// 9335555768
-res.json({message:"Created inv"})
-})
-
-const createInvoiceandSendCustomer = async(invoiceData:any) =>{
-  const invoice = await createInvoice(invoiceData)
-  console.log(invoice)
-  const mailPayload ={
-    fullName:invoiceData.customerName,
-    email:invoiceData.customerEmail,
-    invoicePath:invoice.filename
-  }
-  await sendInvoiceToCustomer(mailPayload)
-
-
-}
 
 const generateInvoiceId = async () => {
   const latestRecord = await ServiceRecord.findOne({}, { invoiceId: 1 })
@@ -1024,12 +1028,17 @@ const generateInvoiceId = async () => {
   // Check if there's a previous invoiceId and extract the number part
   let newInvoiceNumber = 1;
   if (latestRecord && latestRecord.invoiceId) {
-    const invoiceNumber = parseInt(latestRecord.invoiceId.replace("DBP", ""), 10);
+    const invoiceNumber = parseInt(
+      latestRecord.invoiceId.replace("DBP", ""),
+      10
+    );
     newInvoiceNumber = invoiceNumber + 1;
   }
 
   // Format the invoice number to always be 6 digits (DBP000001, DBP000002, etc.)
-  const formattedInvoiceId = `DBP${newInvoiceNumber.toString().padStart(6, "0")}`;
+  const formattedInvoiceId = `DBP${newInvoiceNumber
+    .toString()
+    .padStart(6, "0")}`;
   return formattedInvoiceId;
 };
 export default router;
