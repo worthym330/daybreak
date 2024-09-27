@@ -104,7 +104,7 @@ router.get(
     try {
       const hotel = await Hotel.findById(id).populate({
         path: "titlesId",
-        populate: { path: "slots" },
+        populate: { path: "slots", populate:"hotelProductId" },
       });
       res.json(hotel);
     } catch (error) {
