@@ -13,10 +13,7 @@ const hotelDetailsSchema = new mongoose.Schema(
       required: true,
     },
     // New fields for pricing
-    adultWeekdayPrice: {
-      type: Number,
-      required: true,
-    },
+    adultWeekdayPrice: Number,
     adultWeekendPrice: Number,
     childWeekdayPrice: Number,
     childWeekendPrice: Number,

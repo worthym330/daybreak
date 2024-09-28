@@ -435,7 +435,7 @@ const Detail = () => {
             <div className="flex justify-between flex-col md:flex-row">
               <div className="flex flex-col gap-2">
                 <span className="text-3xl font-semibold font-LuxuryF1 text-[#02596C] break-normal">
-                  {hotel.name}
+                  {hotel.name}, {hotel.city}
                 </span>
               </div>
             </div>

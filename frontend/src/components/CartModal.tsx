@@ -110,7 +110,7 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
     if (slotValues && date) {
       // Filter slots based on the selected date
       const availableSlots = slotValues
-        .filter((slot: any) => moment(slot.startTime).isSame(date, "day"))
+        .filter((slot: any) => moment(slot.startTime).isSame(date, "day") && slot?.title === product?.title)
         .map((e: any) => e.slots)
         .flat();
 
@@ -171,8 +171,8 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
               >
                 <option value="">Select a slot</option>
                 {availableSlots.filter((e:any)=> e.status).map((slot: any, index) => (
-                  <option key={index} value={slot.slotTime}>
-                    {slot.slotTime}
+                  <option key={index} value={`${slot.startTime} - ${slot.endTime}` }>
+                    {`${moment(slot.startTime).format('LT')} - ${moment(slot.endTime).format('LT')}` }
                   </option>
                 ))}
               </select>
@@ -287,8 +287,8 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
               >
                 <option value="">Select a slot</option>
                 {availableSlots.filter((e:any)=> e.status).map((slot: any, index) => (
-                  <option key={index} value={slot._id}>
-                    {slot.slotTime}
+                  <option key={index} value={`${slot.startTime} - ${slot.endTime}` }>
+                    {`${moment(slot.startTime).format('LT')} - ${moment(slot.endTime).format('LT')}` }
                   </option>
                 ))}
               </select>

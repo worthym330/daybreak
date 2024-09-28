@@ -104,7 +104,7 @@ router.get(
     try {
       const hotel = await Hotel.findById(id).populate({
         path: "titlesId",
-        populate: { path: "slots", populate:"hotelProductId" },
+        populate: { path: "slots" },
       });
       res.json(hotel);
     } catch (error) {
@@ -673,22 +673,90 @@ router.get("/getdata/hotel/:id", async (req: Request, res: Response) => {
 
 // Update HotelDetails by ID
 router.put("/hotel-details/:id", async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const updateData = req.body;
-  try {
-    // Find the HotelDetails by ID and update it with the provided data
-    const updatedHotelDetails = await HotelDetails.findByIdAndUpdate(
-      id,
-      updateData,
-      { new: true }
-    );
+  const {
+    title,
+    startTime,
+    endTime,
+    hotelId,
+    includeWeekendPrice,
+    adultWeekdayPrice,
+    adultWeekendPrice,
+    includeChildPrice,
+    childWeekdayPrice,
+    childWeekendPrice,
+  } = req.body;
 
-    if (!updatedHotelDetails) {
-      return res.status(404).json({ message: "HotelDetails not found" });
+  const hotelPassId = req.params.id;
+
+  try {
+    // Find hotel by ID
+    const hotel = await Hotel.findById(hotelId);
+
+    // Hotel not found
+    if (!hotel) {
+      return res.status(404).json({ message: "Hotel not found" });
     }
 
-    // Respond with the updated HotelDetails data
-    res.status(200).json(updatedHotelDetails);
+    // Find the existing hotel pass by ID
+    const hotelPass = await HotelDetails.findById(hotelPassId);
+
+    // HotelPass not found
+    if (!hotelPass) {
+      return res.status(404).json({ message: "HotelPass not found" });
+    }
+
+    // Find the existing slot by hotelPassId
+    const slot = await Slot.findOne({ hotelProductId: hotelPassId });
+
+    // Slot not found
+    if (!slot) {
+      return res.status(404).json({ message: "Slot not found" });
+    }
+
+    // Update hotelPass fields
+    hotelPass.title = title || hotelPass.title;
+    hotelPass.date = startTime ? startTime.split("T")[0] : hotelPass.date; // Update date if startTime is provided
+    hotelPass.slotTime =
+      startTime && endTime ? `${startTime} - ${endTime}` : hotelPass.slotTime; // Update slot time range
+    hotelPass.startTime = startTime || hotelPass.startTime;
+    hotelPass.endTime = endTime || hotelPass.endTime;
+    hotelPass.adultWeekdayPrice =
+      adultWeekdayPrice !== undefined
+        ? adultWeekdayPrice
+        : hotelPass.adultWeekdayPrice;
+    hotelPass.adultWeekendPrice = includeWeekendPrice
+      ? adultWeekendPrice
+      : hotelPass.adultWeekendPrice;
+    hotelPass.childWeekdayPrice = includeChildPrice
+      ? childWeekdayPrice
+      : hotelPass.childWeekdayPrice;
+    hotelPass.childWeekendPrice =
+      includeChildPrice && includeWeekendPrice
+        ? childWeekendPrice
+        : hotelPass.childWeekendPrice;
+
+    // Find product title within hotel.productTitle array
+    const productTitle = hotel.productTitle.find((pt) => pt.title === title);
+    let peoplePerSlot = slot.peoplePerSlot; // Default to existing value
+
+    // If a matching productTitle is found, update peoplePerSlot
+    if (productTitle) {
+      peoplePerSlot = productTitle.maxGuestsperDay;
+    }
+
+    // Update the slot document
+    slot.startTime = startTime || slot.startTime;
+    slot.endTime = endTime || slot.endTime;
+    slot.slotTime =
+      startTime && endTime ? `${startTime} - ${endTime}` : slot.slotTime;
+    slot.peoplePerSlot = peoplePerSlot;
+
+    // Save the updates
+    await hotelPass.save();
+    await slot.save();
+
+    // Return success response with updated documents
+    res.status(200).json({ hotelPass, slot });
   } catch (error) {
     console.error("Error updating HotelDetails:", error);
     res.status(500).json({ message: "Server error", error });
@@ -696,34 +764,45 @@ router.put("/hotel-details/:id", async (req: Request, res: Response) => {
 });
 
 router.delete("/hotel-details/:id", async (req: Request, res: Response) => {
-  const { id } = req.params;
-
+  const hotelPassId = req.params.id;
+  console.log(hotelPassId);
   try {
-    const hotelDetails = await HotelDetails.findById(id);
+    // Find the hotel pass by ID
+    const hotelPass = await Slot.findById(hotelPassId);
 
-    if (!hotelDetails) {
-      return res.status(404).json({ message: "HotelDetails not found" });
+    // HotelPass not found
+    if (!hotelPass) {
+      return res.status(404).json({ message: "HotelPass not found" });
     }
 
-    const hotel = await Hotel.findById(hotelDetails.hotelId);
+    const { hotelId } = hotelPass;
 
+    // Find the hotel by ID
+    const hotel = await Hotel.findById(hotelId);
+
+    // Hotel not found
     if (!hotel) {
-      return res.status(404).json({ message: "Associated hotel not found" });
+      return res.status(404).json({ message: "Hotel not found" });
     }
-
-    const titlesId = hotel.titlesId || [];
-
-    hotel.titlesId = titlesId.filter(
-      (titleId: string) => titleId !== hotelDetails._id.toString()
+    hotel.titlesId = hotel.titlesId || [];
+    // Remove hotelPass ID from hotel's titlesId array
+    hotel.titlesId = hotel.titlesId.filter(
+      (id) => id.toString() !== hotelPassId
     );
 
+    // Save the updated hotel document
     await hotel.save();
 
-    await HotelDetails.findByIdAndDelete(id);
+    // Find and remove the corresponding slot
+    await HotelDetails.findOneAndDelete({ hotelProductId: hotelPassId });
 
+    // Remove the hotel pass
+    await Slot.findByIdAndDelete(hotelPassId);
+
+    // Return success response
     res.status(200).json({
-      message: "HotelDetails deleted and titlesId removed from hotel",
-      updatedHotel: hotel,
+      message: "HotelPass and associated Slot deleted successfully",
+      hotel,
     });
   } catch (error) {
     console.error("Error deleting HotelDetails:", error);
@@ -733,30 +812,84 @@ router.delete("/hotel-details/:id", async (req: Request, res: Response) => {
 
 // Update HotelDetails by ID
 router.post("/hotel-details", async (req: Request, res: Response) => {
-  const { state, hotelId } = req.body;
+  const {
+    title,
+    startTime,
+    endTime,
+    hotelId,
+    includeWeekendPrice,
+    adultWeekdayPrice,
+    adultWeekendPrice,
+    includeChildPrice,
+    childWeekdayPrice,
+    childWeekendPrice,
+  } = req.body;
+
+  console.log(req.body, hotelId);
+
   try {
     const hotel = await Hotel.findById(hotelId);
 
+    // Hotel not found
     if (!hotel) {
       return res.status(404).json({ message: "Hotel not found" });
     }
 
+    // Initialize titlesId if not present
     hotel.titlesId = hotel.titlesId || [];
 
+    // Prepare the payload for the hotel pass
     const payload = {
       _id: new mongoose.Types.ObjectId(),
-      title: state.title,
-      date: state.startTime.split("T")[0],
-      slotTime: `${state.startTime} - ${state.endTime}`,
-      startTime: state.startTime,
-      endTime: state.endTime,
+      title: title,
+      date: startTime.split("T")[0], // Extract date
+      slotTime: `${startTime} - ${endTime}`, // Slot time range
+      startTime,
+      endTime,
       hotelId,
+      adultWeekdayPrice,
+      adultWeekendPrice: includeWeekendPrice ? adultWeekendPrice : undefined, // Set if applicable
+      childWeekdayPrice: includeChildPrice ? childWeekdayPrice : undefined,
+      childWeekendPrice:
+        includeChildPrice && includeWeekendPrice
+          ? childWeekendPrice
+          : undefined,
     };
-    const hotelPass = await HotelDetails(payload);
-    hotelPass.save();
+
+    // Create and save the hotel pass
+    const hotelPass = new HotelDetails(payload);
+    await hotelPass.save();
+
+    // Update hotel with the new hotelPass
     hotel.titlesId.push(hotelPass._id);
-    hotel.save();
-    res.status(200).json(hotelPass);
+    await hotel.save();
+
+    // Find product title within hotel.productTitle array
+    const productTitle = hotel.productTitle.find((pt) => pt.title === title);
+    let peoplePerSlot = 1; // Default if no matching title
+
+    // If a matching productTitle is found, update peoplePerSlot
+    if (productTitle) {
+      peoplePerSlot = productTitle.maxGuestsperDay;
+    }
+
+    // Create a new slot document
+    const slotDoc = new Slot({
+      hotelId,
+      hotelProductId: hotelPass._id,
+      slotTime: `${startTime} - ${endTime}`, // Set slot time range
+      startTime,
+      endTime,
+      peoplePerSlot,
+    });
+
+    // Save the slot and update the hotelPass with slot ID
+    const savedSlot = await slotDoc.save();
+    hotelPass.slots.push(savedSlot._id);
+    await hotelPass.save();
+
+    // Return success response with created documents
+    res.status(200).json({ hotelPass, slotDoc, hotel });
   } catch (error) {
     console.error("Error updating HotelDetails:", error);
     res.status(500).json({ message: "Server error", error });
