@@ -400,7 +400,7 @@ router.post(
       };
       data.lineItems = invoiceData.lineItems;
       await data.save();
-      createInvoiceandSendCustomer(invoiceData);
+      await createInvoiceandSendCustomer(invoiceData);
 
       sendPaymentConfirmationSms(
         phone,
@@ -1072,11 +1072,9 @@ router.put("/hotel-details/slots/:id", async (req, res) => {
 
 const createInvoice = async (invoiceData: any) => {
   // Path to the template
-  const htmlTemplate = fs.readFileSync(
-    path.join(__dirname, "../invoicetemplates/customerInvoice.html"),
-    "utf8"
-  );
-
+  const filePath = path.join(__dirname, 'invoicetemplates', 'customerInvoice.html');
+  const htmlTemplate = fs.readFileSync(filePath, 'utf8');
+console.log("htmlTemplate",htmlTemplate, filePath)
   // PDF options
   const options = {
     format: "A4",
@@ -1108,6 +1106,7 @@ const createInvoice = async (invoiceData: any) => {
     type: "",
   };
 
+  console.log(document)
   // Create PDF
   try {
     const res = await pdf.create(document, options);
