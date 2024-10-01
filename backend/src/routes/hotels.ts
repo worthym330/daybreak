@@ -1072,9 +1072,11 @@ router.put("/hotel-details/slots/:id", async (req, res) => {
 
 const createInvoice = async (invoiceData: any) => {
   // Path to the template
-  const filePath = path.join(__dirname, 'invoicetemplates', 'customerInvoice.html');
-  const htmlTemplate = fs.readFileSync(filePath, 'utf8');
-console.log("htmlTemplate",htmlTemplate, filePath)
+  const htmlTemplate = fs.readFileSync(
+    path.join(__dirname, "../invoicetemplates/customerInvoice.html"),
+    "utf8"
+  );
+console.log("htmlTemplate",htmlTemplate)
   // PDF options
   const options = {
     format: "A4",
