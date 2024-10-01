@@ -1104,7 +1104,7 @@ console.log("htmlTemplate",htmlTemplate)
         )
         .toFixed(2),
     },
-    path: `./uploads/invoices/${invoiceData.invoiceNo}-${invoiceData.customerName}.pdf`,
+    path: `./uploads/invoices/${invoiceData.invoiceNo}.pdf`,
     type: "",
   };
 
