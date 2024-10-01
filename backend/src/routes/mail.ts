@@ -1312,7 +1312,7 @@ export const sendInvoiceToCustomer = async (leadData: any) => {
       <body>
           <div class="container">
               <div class="header">
-                  <img src="https://yourlogo.com/logo.png" alt="DayBreakPass Logo">
+                  <img src="https://www.daybreakpass.com/daybreaklogo.png" alt="DayBreakPass Logo">
                   <h1>Your Invoice from DayBreakPass</h1>
               </div>
               <div class="content">
