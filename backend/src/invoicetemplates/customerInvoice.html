@@ -11,8 +11,8 @@
             line-height: 1.4;
         }
         .container {
-            max-width: 640px;
-            margin: 0 auto;
+            /* max-width: 640px;
+            margin: 0 auto; */
             align-items: center;
         }
         .header {
@@ -95,28 +95,6 @@
         .footer p {
             margin-bottom: 8px;
         }
-
-        @media print {
-            @page {
-                size: A4;
-                margin: 0;
-            }
-            body {
-                margin: 0;
-                background: white;
-            }
-            .container {
-                margin: 0;
-                padding: 15mm;
-                background-color: white;
-                page-break-inside: avoid;
-                overflow: hidden;
-            }
-            .header, .footer {
-                page-break-before: avoid;
-                page-break-after: avoid;
-            }
-        }
     </style>
 </head>
 <body>
@@ -135,14 +113,14 @@
         <h3 class="section-title">Invoice Details</h3>
         <div class="details-layout">
             <div class="details-column">
-                <p><strong>Booking ID:</strong> {{bookingId}}</p>
-                <p><strong>Date:</strong> {{date}}</p>
+                <p><strong>Booking ID:</strong> NH78061353474870</p>
+                <p><strong>Date:</strong> 2/10/2024, 8:46:03 pm</p>
                 <p><strong>Transactional Type/Category:</strong> REG/B2B</p>
                 <p><strong>HSN/SAC:</strong> 998552</p>
                 <p><strong>CIN:</strong> U55101MH2024PTC428638</p>
             </div>
             <div class="details-column">
-                <p><strong>Invoice No:</strong> {{invoiceNo}}</p>
+                <p><strong>Invoice No:</strong> M06HL25I06066024</p>
                 <p><strong>Place of Supply:</strong> Maharashtra</p>
                 <p><strong>PAN:</strong> AAKCD9879R</p>
                 <p><strong>GSTIN:</strong> 27AAKCD9879R1Z9</p>
@@ -155,19 +133,9 @@
         <h3 class="section-title">Customer & Hotel Details</h3>
         <div class="details-layout">
             <div class="details-column">
-                {{#if companyLegalName}}
-                    <p><strong>Company Legal Name:</strong> {{companyLegalName}}</p>
-                {{/if}}
-                {{#if companyTradeName}}
-                    <p><strong>Company Trade Name:</strong> {{companyTradeName}}</p>
-                {{/if}}
-                <p><strong>Customer Name:</strong> {{customerName}}</p>
-                {{#if customerGSTIN}}
-                    <p><strong>Customer GSTIN:</strong> {{customerGSTIN}}</p>
-                {{/if}}
-                {{#if customerAddress}}
-                    <p><strong>Customer Address:</strong> {{customerAddress}}</p>
-                {{/if}}
+                <p><strong>Company Legal Name:</strong> WAMAN VITTHAL KUSHE</p>
+                <p><strong>Customer Name:</strong> Vitthal Kushe</p>
+                <p><strong>Customer Address:</strong> 18,1801 / 3E WING, 412 PAHADI, New Link Road, Mumbai</p>
             </div>
             <div class="details-column">
                 <p><strong>Hotel Name:</strong> {{hotelName}}</p>
@@ -189,15 +157,21 @@
                 </tr>
             </thead>
             <tbody>
-                {{#each lineItems}}
                 <tr>
-                    <td>{{description}}</td>
-                    <td>₹{{amount}}</td>
+                    <td>Accommodation Charges</td>
+                    <td>₹782.88</td>
                 </tr>
-                {{/each}}
+                <tr>
+                    <td>Service Fees</td>
+                    <td>₹71.08</td>
+                </tr>
+                <tr>
+                    <td>IGST @18%</td>
+                    <td>₹12.8</td>
+                </tr>
                 <tr class="grand-total">
                     <td><strong>Grand Total</strong></td>
-                    <td><strong>₹{{grandTotal}}</strong></td>
+                    <td><strong>₹866.76</strong></td>
                 </tr>
             </tbody>
         </table>
