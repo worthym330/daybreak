@@ -8,87 +8,78 @@
         body {
             background-color: #f9fafb;
             font-family: 'Arial', sans-serif;
-            line-height: 1.5;
+            line-height: 1.4;
         }
         .container {
             width: 210mm;
-            height: 297mm;
+            min-height: 297mm;
             margin: 0 auto;
-            padding: 20px;
+            padding: 15mm;
             background-color: #ffffff;
             border: 1px solid #d1d5db;
             box-sizing: border-box;
+            overflow: hidden;
         }
         .header {
             text-align: center;
             padding-bottom: 5px;
-            /* margin-bottom: 20px; */
             border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 10px;
         }
         .header img {
-            height: 64px;
+            height: 50px;
         }
         h1 {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: bold;
             color: #374151;
-            margin: 10px 0;
+            margin: 5px 0;
         }
         p {
-            font-size: 14px;
+            font-size: 13px;
             color: #6b7280;
-            margin: 0 0 5px;
+            margin: 0 0 4px;
         }
         .section-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             color: #374151;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             border-bottom: 1px solid #e5e7eb;
-            padding-bottom: 5px;
+            padding-bottom: 4px;
         }
         .details {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         .details p {
-            font-size: 14px;
+            font-size: 13px;
             color: #4b5563;
         }
         .details strong {
             font-weight: bold;
         }
 
-        /* Webkit Flexbox Compatibility */
         .details-layout {
-            display: -webkit-box;
-            display: -webkit-flex;
-            display: -ms-flexbox;
             display: flex;
-            -webkit-flex-wrap: wrap;
-            -ms-flex-wrap: wrap;
             flex-wrap: wrap;
             justify-content: space-between;
         }
-        .details-layout .details-column {
-            -webkit-box-flex: 1;
-            -webkit-flex: 1;
-            -ms-flex: 1;
+        .details-column {
             flex: 1;
-            margin-right: 20px;
-            min-width: 240px;
+            margin-right: 15px;
+            min-width: 220px;
         }
 
-        /* Payment Breakup Table */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         table th, table td {
             border: 1px solid #d1d5db;
-            padding: 10px;
+            padding: 8px;
             text-align: left;
-            font-size: 14px;
+            font-size: 13px;
         }
         table th {
             background-color: #f3f4f6;
@@ -107,10 +98,9 @@
             color: #6b7280;
         }
         .footer p {
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
-        /* A4 Page Size for Printing */
         @media print {
             @page {
                 size: A4;
@@ -118,17 +108,14 @@
             }
             body {
                 margin: 0;
-                padding: 0;
                 background: white;
             }
             .container {
-                width: 210mm;
-                height: 297mm;
-                border: none;
                 margin: 0;
-                /* padding: 20mm; */
+                padding: 15mm;
                 background-color: white;
                 page-break-inside: avoid;
+                overflow: hidden;
             }
             .header, .footer {
                 page-break-before: avoid;
@@ -145,7 +132,7 @@
         <img src="https://www.daybreakpass.com/daybreaklogo.png" alt="DAYBREAKPASS">
         <h1>Tax Invoice</h1>
         <p>DAYBREAKPASS HOSPITALITY TECHNOLOGY PRIVATE LIMITED</p>
-        <p>1801,18th Floor, 3E Wing, 412 Pahadi Goregaon, Bangur Nagar, Goregaon West, Mumbai - 400104</p>
+        <p>1801, 18th Floor, 3E Wing, 412 Pahadi Goregaon, Bangur Nagar, Goregaon West, Mumbai - 400104</p>
     </div>
 
     <!-- Invoice Details -->

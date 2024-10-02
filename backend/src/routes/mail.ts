@@ -528,7 +528,7 @@ export const PaymentSuccess = async (
     <div class="container">
         <div class="header">
             <!-- Logo added here -->
-            <img src="https://example.com/path/to/logo.png" alt="DayBreakPass Logo">
+            <img src="https://www.daybreakpass.com/daybreaklogo.png" alt="DayBreakPass Logo">
             <h1>DayBreakPass</h1>
         </div>
         <div class="content">
@@ -1290,8 +1290,6 @@ export const sendInvoiceToCustomer = async (leadData: any) => {
               }
               .header {
                   text-align: center;
-                  background-color: #B5813F;
-                  color: #fff;
                   padding: 10px;
               }
               .header img {
