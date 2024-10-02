@@ -23,7 +23,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 // const pdf = require("pdf-creator-node") as any;
-const pdf = require("html-pdf")
+const pdf = require("html-pdf");
 import fs from "fs";
 import path from "path";
 const handlebars = require("handlebars");
@@ -364,15 +364,19 @@ router.post(
       const data = await serviceRecord.save();
 
       const totalPrice = cart.reduce(
-        (total: number, item: any) => total + item.price,
+        (total: number, item: any) => total + parseFloat(item.price),
         0
       );
-      console.log(totalPrice)
 
       // Calculate taxes based on the total price
       const igstAmount = (totalPrice * 0.18).toFixed(2);
       const serviceTaxAmount = (totalPrice * 0.05).toFixed(2);
-
+      console.log(
+        "igstAmount,totalPrice,serviceTaxAmount",
+        totalPrice,
+        igstAmount,
+        serviceTaxAmount
+      );
       const invoiceData = {
         bookingId: serviceRecord.bookingId,
         invoiceNo: newInvoiceId,
@@ -387,7 +391,7 @@ router.post(
         slotTime: cart[0].slot,
         customerEmail: user.email,
         lineItems: [
-          ...cart.map((item: any) => ({
+          cart.map((item: any) => ({
             description: item.product.title,
             amount: item.price,
           })),
@@ -1080,6 +1084,7 @@ const createInvoice = async (invoiceData: any): Promise<any> => {
     "utf8"
   );
 
+  console.log(invoiceData);
   // Compile the template using Handlebars
   const template = handlebars.compile(htmlTemplate);
 
@@ -1089,10 +1094,10 @@ const createInvoice = async (invoiceData: any): Promise<any> => {
     invoiceNo: invoiceData.invoiceNo,
     date: invoiceData.date,
     placeOfSupply: invoiceData.placeOfSupply,
-    hotelName:invoiceData.hotelName,
+    hotelName: invoiceData.hotelName,
     hotelCity: invoiceData.hotelCity,
     passDate: invoiceData.passDate,
-    checkOut:invoiceData.slot,
+    checkOut: invoiceData.slotTime,
     companyLegalName: invoiceData.companyLegalName,
     customerName: invoiceData.customerName,
     customerGSTIN: invoiceData.customerGSTIN,
@@ -1113,10 +1118,15 @@ const createInvoice = async (invoiceData: any): Promise<any> => {
   // Create PDF
   try {
     const res = await new Promise<any>((resolve, reject) => {
-      pdf.create(htmlToRender, options).toFile(`./uploads/invoices/${invoiceData.invoiceNo}.pdf`, (err: any, res: any) => {
-        if (err) return reject(err);
-        resolve(res);
-      });
+      pdf
+        .create(htmlToRender, options)
+        .toFile(
+          `./uploads/invoices/${invoiceData.invoiceNo}.pdf`,
+          (err: any, res: any) => {
+            if (err) return reject(err);
+            resolve(res);
+          }
+        );
     });
 
     console.log(`Invoice created at: ${res.filename}`);
@@ -1153,7 +1163,7 @@ router.get("/invoice/create-inv", async (req, res) => {
 const createInvoiceandSendCustomer = async (invoiceData: any) => {
   // Call createInvoice and ensure it is checked for null/undefined
   const invoice = await createInvoice(invoiceData);
-  
+
   if (!invoice || !invoice.filename) {
     console.error("Invoice creation failed, no file generated.");
     return;
@@ -1169,13 +1179,11 @@ const createInvoiceandSendCustomer = async (invoiceData: any) => {
   // Send invoice only if it was successfully created
   try {
     await sendInvoiceToCustomer(mailPayload);
-    console.log("sendInvoiceToCustomer(mailPayload)")
-
+    console.log("sendInvoiceToCustomer(mailPayload)");
   } catch (error) {
     console.error("Error sending invoice to customer:", error);
   }
 };
-
 
 const generateInvoiceId = async () => {
   const latestRecord = await ServiceRecord.findOne({}, { invoiceId: 1 })
