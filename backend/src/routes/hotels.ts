@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import Hotel from "../models/hotel";
-import { BookingType, HotelSearchResponse, InvoiceData, PdfResult } from "../shared/types";
+import { BookingType, HotelSearchResponse } from "../shared/types";
 import { param, validationResult } from "express-validator";
 import verifyToken, {
   createAndVerifyToken,
@@ -367,6 +367,7 @@ router.post(
         (total: number, item: any) => total + item.price,
         0
       );
+      console.log(totalPrice)
 
       // Calculate taxes based on the total price
       const igstAmount = (totalPrice * 0.18).toFixed(2);
@@ -1072,7 +1073,7 @@ router.put("/hotel-details/slots/:id", async (req, res) => {
   }
 });
 
-const createInvoice = async (invoiceData: InvoiceData): Promise<PdfResult | void> => {
+const createInvoice = async (invoiceData: any): Promise<any> => {
   // Path to the template
   const htmlTemplate = fs.readFileSync(
     path.join(__dirname, "../invoicetemplates/customerInvoice.html"),
@@ -1088,6 +1089,10 @@ const createInvoice = async (invoiceData: InvoiceData): Promise<PdfResult | void
     invoiceNo: invoiceData.invoiceNo,
     date: invoiceData.date,
     placeOfSupply: invoiceData.placeOfSupply,
+    hotelName:invoiceData.hotelName,
+    hotelCity: invoiceData.hotelCity,
+    passDate: invoiceData.passDate,
+    checkOut:invoiceData.slot,
     companyLegalName: invoiceData.companyLegalName,
     customerName: invoiceData.customerName,
     customerGSTIN: invoiceData.customerGSTIN,
@@ -1107,8 +1112,8 @@ const createInvoice = async (invoiceData: InvoiceData): Promise<PdfResult | void
 
   // Create PDF
   try {
-    const res = await new Promise<PdfResult>((resolve, reject) => {
-      pdf.create(htmlToRender, options).toFile(`./uploads/invoices/${invoiceData.invoiceNo}.pdf`, (err: any, res: PdfResult) => {
+    const res = await new Promise<any>((resolve, reject) => {
+      pdf.create(htmlToRender, options).toFile(`./uploads/invoices/${invoiceData.invoiceNo}.pdf`, (err: any, res: any) => {
         if (err) return reject(err);
         resolve(res);
       });

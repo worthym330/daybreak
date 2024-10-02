@@ -93,19 +93,3 @@ export interface ProductType {
   maxGuestsperDay: number;
   breakTime: string;
 }
-
-export interface InvoiceData {
-  bookingId: string;
-  invoiceNo: string;
-  date: string;
-  placeOfSupply: string;
-  companyLegalName: string;
-  customerName: string;
-  customerGSTIN: string;
-  customerAddress: string;
-  lineItems: Array<{ description: string; amount: string }>;
-}
-
-export interface PdfResult {
-  filename: string;
-}
