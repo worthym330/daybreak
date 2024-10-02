@@ -48,7 +48,7 @@ export type BookingType = {
   orderId: string;
   paymentId: string;
   cart?: any[];
-  status:string
+  status: string;
 };
 
 export type FavouriteList = {
@@ -91,5 +91,21 @@ export interface ProductType {
   endTime: string;
   isChildPrice: boolean;
   maxGuestsperDay: number;
-  breakTime:string;
+  breakTime: string;
+}
+
+export interface InvoiceData {
+  bookingId: string;
+  invoiceNo: string;
+  date: string;
+  placeOfSupply: string;
+  companyLegalName: string;
+  customerName: string;
+  customerGSTIN: string;
+  customerAddress: string;
+  lineItems: Array<{ description: string; amount: string }>;
+}
+
+export interface PdfResult {
+  filename: string;
 }

@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import Hotel from "../models/hotel";
-import { BookingType, HotelSearchResponse } from "../shared/types";
+import { BookingType, HotelSearchResponse, InvoiceData, PdfResult } from "../shared/types";
 import { param, validationResult } from "express-validator";
 import verifyToken, {
   createAndVerifyToken,
@@ -22,9 +22,11 @@ import {
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
-const pdf = require("pdf-creator-node") as any;
+// const pdf = require("pdf-creator-node") as any;
+const pdf = require("html-pdf")
 import fs from "fs";
 import path from "path";
+const handlebars = require("handlebars");
 const moment = require("moment");
 
 const razorpayInstance = new Razorpay({
@@ -1070,13 +1072,32 @@ router.put("/hotel-details/slots/:id", async (req, res) => {
   }
 });
 
-const createInvoice = async (invoiceData: any) => {
+const createInvoice = async (invoiceData: InvoiceData): Promise<PdfResult | void> => {
   // Path to the template
   const htmlTemplate = fs.readFileSync(
     path.join(__dirname, "../invoicetemplates/customerInvoice.html"),
     "utf8"
   );
-console.log("htmlTemplate",htmlTemplate)
+
+  // Compile the template using Handlebars
+  const template = handlebars.compile(htmlTemplate);
+
+  // Inject the data into the HTML template
+  const htmlToRender = template({
+    bookingId: invoiceData.bookingId,
+    invoiceNo: invoiceData.invoiceNo,
+    date: invoiceData.date,
+    placeOfSupply: invoiceData.placeOfSupply,
+    companyLegalName: invoiceData.companyLegalName,
+    customerName: invoiceData.customerName,
+    customerGSTIN: invoiceData.customerGSTIN,
+    customerAddress: invoiceData.customerAddress,
+    lineItems: invoiceData.lineItems,
+    grandTotal: invoiceData.lineItems
+      .reduce((total: number, item: any) => total + parseFloat(item.amount), 0)
+      .toFixed(2),
+  });
+
   // PDF options
   const options = {
     format: "A4",
@@ -1084,34 +1105,15 @@ console.log("htmlTemplate",htmlTemplate)
     border: "10mm",
   };
 
-  // Data to pass to the template
-  const document = {
-    html: htmlTemplate,
-    data: {
-      bookingId: invoiceData.bookingId,
-      invoiceNo: invoiceData.invoiceNo,
-      date: invoiceData.date,
-      placeOfSupply: invoiceData.placeOfSupply,
-      companyLegalName: invoiceData.companyLegalName,
-      customerName: invoiceData.customerName,
-      customerGSTIN: invoiceData.customerGSTIN,
-      customerAddress: invoiceData.customerAddress,
-      lineItems: invoiceData.lineItems,
-      grandTotal: invoiceData.lineItems
-        .reduce(
-          (total: number, item: any) => total + parseFloat(item.amount),
-          0
-        )
-        .toFixed(2),
-    },
-    path: `./uploads/invoices/${invoiceData.invoiceNo}.pdf`,
-    type: "",
-  };
-
-  console.log(document)
   // Create PDF
   try {
-    const res = await pdf.create(document, options);
+    const res = await new Promise<PdfResult>((resolve, reject) => {
+      pdf.create(htmlToRender, options).toFile(`./uploads/invoices/${invoiceData.invoiceNo}.pdf`, (err: any, res: PdfResult) => {
+        if (err) return reject(err);
+        resolve(res);
+      });
+    });
+
     console.log(`Invoice created at: ${res.filename}`);
     return res;
   } catch (error) {
@@ -1144,15 +1146,31 @@ router.get("/invoice/create-inv", async (req, res) => {
 });
 
 const createInvoiceandSendCustomer = async (invoiceData: any) => {
+  // Call createInvoice and ensure it is checked for null/undefined
   const invoice = await createInvoice(invoiceData);
+  
+  if (!invoice || !invoice.filename) {
+    console.error("Invoice creation failed, no file generated.");
+    return;
+  }
+
   console.log(invoice);
   const mailPayload = {
     fullName: invoiceData.customerName,
     email: invoiceData.customerEmail,
     invoicePath: invoice.filename,
   };
-  await sendInvoiceToCustomer(mailPayload);
+
+  // Send invoice only if it was successfully created
+  try {
+    await sendInvoiceToCustomer(mailPayload);
+    console.log("sendInvoiceToCustomer(mailPayload)")
+
+  } catch (error) {
+    console.error("Error sending invoice to customer:", error);
+  }
 };
+
 
 const generateInvoiceId = async () => {
   const latestRecord = await ServiceRecord.findOne({}, { invoiceId: 1 })
