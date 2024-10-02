@@ -22,8 +22,9 @@ import {
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
-// const pdf = require("pdf-creator-node") as any;
-const pdf = require("html-pdf");
+const pdf = require("pdf-creator-node");
+// import pdf from 'pdf-creator-node';
+// const pdf = require("html-pdf");
 import fs from "fs";
 import path from "path";
 const handlebars = require("handlebars");
@@ -1077,64 +1078,64 @@ router.put("/hotel-details/slots/:id", async (req, res) => {
   }
 });
 
-const createInvoice = async (invoiceData: any): Promise<any> => {
-  // Path to the template
-  const htmlTemplate = fs.readFileSync(
-    path.join(__dirname, "../invoicetemplates/customerInvoice.html"),
-    "utf8"
-  );
+// const createInvoice = async (invoiceData: any): Promise<any> => {
+//   // Path to the template
+//   const htmlTemplate = fs.readFileSync(
+//     path.join(__dirname, "../invoicetemplates/customerInvoice.html"),
+//     "utf8"
+//   );
 
-  console.log(invoiceData);
-  // Compile the template using Handlebars
-  const template = handlebars.compile(htmlTemplate);
+//   console.log(invoiceData);
+//   // Compile the template using Handlebars
+//   const template = handlebars.compile(htmlTemplate);
 
-  // Inject the data into the HTML template
-  const htmlToRender = template({
-    bookingId: invoiceData.bookingId,
-    invoiceNo: invoiceData.invoiceNo,
-    date: invoiceData.date,
-    placeOfSupply: invoiceData.placeOfSupply,
-    hotelName: invoiceData.hotelName,
-    hotelCity: invoiceData.hotelCity,
-    passDate: invoiceData.passDate,
-    checkOut: invoiceData.slotTime,
-    companyLegalName: invoiceData.companyLegalName,
-    customerName: invoiceData.customerName,
-    customerGSTIN: invoiceData.customerGSTIN,
-    customerAddress: invoiceData.customerAddress,
-    lineItems: invoiceData.lineItems,
-    grandTotal: invoiceData.lineItems
-      .reduce((total: number, item: any) => total + parseFloat(item.amount), 0)
-      .toFixed(2),
-  });
+//   // Inject the data into the HTML template
+//   const htmlToRender = template({
+//     bookingId: invoiceData.bookingId,
+//     invoiceNo: invoiceData.invoiceNo,
+//     date: invoiceData.date,
+//     placeOfSupply: invoiceData.placeOfSupply,
+//     hotelName: invoiceData.hotelName,
+//     hotelCity: invoiceData.hotelCity,
+//     passDate: invoiceData.passDate,
+//     checkOut: invoiceData.slotTime,
+//     companyLegalName: invoiceData.companyLegalName,
+//     customerName: invoiceData.customerName,
+//     customerGSTIN: invoiceData.customerGSTIN,
+//     customerAddress: invoiceData.customerAddress,
+//     lineItems: invoiceData.lineItems,
+//     grandTotal: invoiceData.lineItems
+//       .reduce((total: number, item: any) => total + parseFloat(item.amount), 0)
+//       .toFixed(2),
+//   });
 
-  // PDF options
-  const options = {
-    format: "A4",
-    orientation: "portrait",
-    border: "10mm",
-  };
+//   // PDF options
+//   const options = {
+//     format: "A4",
+//     orientation: "portrait",
+//     border: "10mm",
+//   };
 
-  // Create PDF
-  try {
-    const res = await new Promise<any>((resolve, reject) => {
-      pdf
-        .create(htmlToRender, options)
-        .toFile(
-          `./uploads/invoices/${invoiceData.invoiceNo}.pdf`,
-          (err: any, res: any) => {
-            if (err) return reject(err);
-            resolve(res);
-          }
-        );
-    });
+//   // Create PDF
+//   try {
+//     const res = await new Promise<any>((resolve, reject) => {
+//       pdf
+//         .create(htmlToRender, options)
+//         .toFile(
+//           `./uploads/invoices/${invoiceData.invoiceNo}.pdf`,
+//           (err: any, res: any) => {
+//             if (err) return reject(err);
+//             resolve(res);
+//           }
+//         );
+//     });
 
-    console.log(`Invoice created at: ${res.filename}`);
-    return res;
-  } catch (error) {
-    console.error("Error creating PDF:", error);
-  }
-};
+//     console.log(`Invoice created at: ${res.filename}`);
+//     return res;
+//   } catch (error) {
+//     console.error("Error creating PDF:", error);
+//   }
+// };
 
 router.get("/invoice/create-inv", async (req, res) => {
   // Example data
@@ -1205,5 +1206,61 @@ const generateInvoiceId = async () => {
     .toString()
     .padStart(6, "0")}`;
   return formattedInvoiceId;
+};
+
+const createInvoice = async (invoiceData: any): Promise<any> => {
+  // Path to the template
+  const htmlTemplate = fs.readFileSync(
+    path.join(__dirname, "../invoicetemplates/customerInvoice.html"),
+    "utf8"
+  );
+
+  console.log(invoiceData);
+  // Compile the template using Handlebars
+  const template = handlebars.compile(htmlTemplate);
+
+  // Inject the data into the HTML template
+  const htmlToRender = template({
+    bookingId: invoiceData.bookingId,
+    invoiceNo: invoiceData.invoiceNo,
+    date: invoiceData.date,
+    placeOfSupply: invoiceData.placeOfSupply,
+    hotelName: invoiceData.hotelName,
+    hotelCity: invoiceData.hotelCity,
+    passDate: invoiceData.passDate,
+    checkOut: invoiceData.slotTime,
+    companyLegalName: invoiceData.companyLegalName,
+    customerName: invoiceData.customerName,
+    customerGSTIN: invoiceData.customerGSTIN,
+    customerAddress: invoiceData.customerAddress,
+    lineItems: invoiceData.lineItems,
+    grandTotal: invoiceData.lineItems
+      .reduce((total: number, item: any) => total + parseFloat(item.amount), 0)
+      .toFixed(2),
+  });
+
+  // PDF options for pdf-creator-node
+  const options = {
+    format: "A4",
+    orientation: "portrait",
+    border: "10mm",
+  };
+
+  // Document definition for pdf-creator-node
+  const document = {
+    html: htmlToRender,
+    data: invoiceData,
+    path: `./uploads/invoices/${invoiceData.invoiceNo}.pdf`,
+    type: "",
+  };
+
+  // Create PDF
+  try {
+    const res = await pdf.create(document, options);
+    console.log(`Invoice created at: ${res.filename}`);
+    return res;
+  } catch (error) {
+    console.error("Error creating PDF:", error);
+  }
 };
 export default router;
