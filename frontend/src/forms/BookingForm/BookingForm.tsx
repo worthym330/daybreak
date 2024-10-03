@@ -248,7 +248,7 @@ Props) => {
 
   const handleCouponApply = () => {
     if (couponCode !== "") {
-      const discount = total * 0.1;
+      const discount = total * 0.15;
       dispatch(setDiscountValue(discount));
       setTotal(total - discount);
       dispatch(setAppliedCoupon(couponCode));

@@ -366,7 +366,7 @@ router.post(
       const data = await serviceRecord.save();
 
       const totalPrice = cart.reduce(
-        (total: number, item: any) => total + parseFloat(item.price),
+        (total: number, item: any) => total + parseFloat(item.total),
         0
       );
 
@@ -395,19 +395,20 @@ router.post(
         lineItems: [
           ...cart.map((item: any) => ({
             description: item.product.title,
-            amount: item.price,
+            amount: item.total,
           })),
           {
             description: "IGST @18%",
             amount: igstAmount,
           },
-          {
-            description: "Service Tax @5%",
-            amount: serviceTaxAmount,
-          },
+          // {
+          //   description: "Service Tax @5%",
+          //   amount: serviceTaxAmount,
+          // },
         ],
       };
       data.lineItems = invoiceData.lineItems;
+      console.log("invoiceData", invoiceData, cart)
       await data.save();
       await createInvoiceandSendCustomer(invoiceData);
       const hotelUser = await User.findById(hotel.userId);
