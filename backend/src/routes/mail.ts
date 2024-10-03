@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import customers from "razorpay/dist/types/customers";
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -1334,6 +1335,102 @@ export const sendInvoiceToCustomer = async (leadData: any) => {
           contentType: "application/pdf",
         },
       ],
+    };
+
+    // Send the email
+    await transporter.sendMail(mailOptions);
+    console.log(`Email sent to ${email} with invoice attachment`);
+  } catch (error) {
+    console.error(`Error sending invoice email to ${leadData.email}:`, error);
+  }
+};
+
+export const sendVoucherToHotel = async (leadData: any) => {
+  try {
+    const { email, customerName, bookingId, hotelName, checkIn, checkOut, roomType, totalAmount } = leadData;
+
+    const mailOptions = {
+      from: process.env.SMTP_USER,
+      to: email,
+      cc: process.env.SMTP_USER,
+      subject: `Hotel Booking Voucher - DayBreakPass`,
+      html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+          <meta charset="UTF-8">
+          <style>
+              body {
+                  font-family: Arial, sans-serif;
+                  background-color: #f4f4f4;
+                  color: #333;
+                  margin: 0;
+                  padding: 0;
+              }
+              .container {
+                  width: 100%;
+                  max-width: 600px;
+                  margin: 0 auto;
+                  background-color: #fff;
+                  padding: 20px;
+                  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+              }
+              .header {
+                  text-align: center;
+                  padding: 10px;
+              }
+              .header img {
+                  max-width: 120px;
+                  height: auto;
+              }
+              .content {
+                  margin: 20px 0;
+              }
+              .details {
+                  background-color: #f9f9f9;
+                  padding: 10px;
+                  border-radius: 8px;
+              }
+              .details p {
+                  margin: 5px 0;
+                  font-weight: bold;
+              }
+              .footer {
+                  text-align: center;
+                  color: #888;
+                  font-size: 12px;
+                  margin-top: 20px;
+              }
+          </style>
+      </head>
+      <body>
+          <div class="container">
+              <div class="header">
+                  <img src="https://www.daybreakpass.com/daybreaklogo.png" alt="DayBreakPass Logo">
+                  <h1>Booking Confirmation</h1>
+              </div>
+              <div class="content">
+                  <p>Hi,</p>
+                  <p>We have confirmed the following reservation, please help us by making the necessary arrangementsfor the booking.</p>
+                  <div class="details">
+                      <p><strong>Booking ID:</strong> ${bookingId}</p>
+                      <p><strong>Hotel Name:</strong> ${hotelName}</p>
+                      <p><strong>Guest Name:</strong> ${customerName}</p>
+                      <p><strong>Date:</strong> ${checkIn}</p>
+                      <p><strongSlot:</strong> ${checkOut}</p>
+                      <p><strong>Pass:</strong> ${roomType}</p>
+                      <p><strong>Total Amount:</strong> ₹${totalAmount}</p>
+                  </div>
+                  <p>For any questions, feel free to reach out to us at <a href="mailto:team@daybreakpass.com">team@daybreakpass.com</a> or call us at <a href="tel:+918369029862">8369029862</a>.</p>
+                  <p>Best regards,<br>The DayBreakPass Team</p>
+              </div>
+              <div class="footer">
+                  <p>&copy; 2024 DayBreakPass. All rights reserved.</p>
+              </div>
+          </div>
+      </body>
+      </html>
+      `,
     };
 
     // Send the email

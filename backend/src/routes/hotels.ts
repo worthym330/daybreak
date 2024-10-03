@@ -18,6 +18,7 @@ import {
   PaymentSuccess,
   sendCredentials,
   sendInvoiceToCustomer,
+  sendVoucherToHotel,
 } from "./mail";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -392,7 +393,7 @@ router.post(
         slotTime: cart[0].slot,
         customerEmail: user.email,
         lineItems: [
-          cart.map((item: any) => ({
+          ...cart.map((item: any) => ({
             description: item.product.title,
             amount: item.price,
           })),
@@ -409,6 +410,19 @@ router.post(
       data.lineItems = invoiceData.lineItems;
       await data.save();
       await createInvoiceandSendCustomer(invoiceData);
+      const hotelUser = await User.findById(hotel.userId);
+      const hotelMailPayload = {
+        email: hotelUser?.email,
+        customerName: `${user.firstName} ${user.lastName}`,
+        bookingId: serviceRecord.bookingId,
+        hotelName: hotel?.name,
+        checkIn: cart[0].date,
+        checkOut: cart[0].slot,
+        roomType:
+          cart.map((l: { product: { title: any } }) => l.product.title) || [],
+        totalAmount: totalPrice,
+      };
+      await sendVoucherToHotel(hotelMailPayload);
 
       sendPaymentConfirmationSms(
         phone,
