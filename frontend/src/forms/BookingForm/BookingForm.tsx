@@ -23,7 +23,6 @@ import * as yup from "yup";
 import { loginSuccess } from "../../store/authSlice";
 
 type Props = {
-  // currentUser: UserType;
   paymentIntent: PaymentIntentResponse;
   cartItems: any;
   setModal: any;
@@ -71,12 +70,7 @@ const validationSchema = yup.object().shape({
   orderId: yup.string().optional(),
 });
 
-const BookingForm = ({
-  // currentUser,
-  paymentIntent,
-  cartItems,
-}: // setModal,
-Props) => {
+const BookingForm = ({ paymentIntent, cartItems }: Props) => {
   const search = useSearchContext();
   const { razorpayOptions } = useAppContext();
   const navigate = useNavigate();
@@ -97,35 +91,35 @@ Props) => {
     apiClient.fetchCurrentUser()
   );
   const { mutate: bookRoom, isLoading } = useMutation<
-  void,
-  Error,
-  BookingFormData
->(
-  async (formData) => {
-    const data = await apiClient.createRoomBooking(formData, parsedCart);
-    return data;  // Return the data here
-  },
-  {
-    onSuccess: (data:any) => {
-      toast.success("Successfully booked!");
-      localStorage.removeItem("cart");
-      Cookies.remove("date");
-      navigate("/my-bookings");
-      const userData = data.data
-      if(!auth.isAuthenticated){
-        Cookies.set("authentication", JSON.stringify(userData), {
-          expires: 1,
-        });
-        const user = userData;
-        const token = userData.token;
-        dispatch(loginSuccess({ user, token }));
-      }
+    void,
+    Error,
+    BookingFormData
+  >(
+    async (formData) => {
+      const data = await apiClient.createRoomBooking(formData, parsedCart);
+      return data;
     },
-    onError: () => {
-      toast.error("Failed to mark your payment");
-    },
-  }
-);
+    {
+      onSuccess: (data: any) => {
+        toast.success("Successfully booked!");
+        localStorage.removeItem("cart");
+        Cookies.remove("date");
+        navigate("/my-bookings");
+        const userData = data.data;
+        if (!auth.isAuthenticated) {
+          Cookies.set("authentication", JSON.stringify(userData), {
+            expires: 1,
+          });
+          const user = userData;
+          const token = userData.token;
+          dispatch(loginSuccess({ user, token }));
+        }
+      },
+      onError: () => {
+        toast.error("Failed to mark your payment");
+      },
+    }
+  );
 
 
   const {
@@ -140,17 +134,19 @@ Props) => {
   // Set default form values dynamically after currentUser data is loaded
   useEffect(() => {
     if (currentUser && search.checkIn) {
-      reset({
-        firstName: currentUser.firstName || "",
-        lastName: currentUser.lastName || "",
-        email: currentUser.email || "",
-        phone: currentUser.phone || "",
-        checkIn: search.checkIn.toISOString(),
-        hotelId: hotelId,
-        totalCost: paymentIntent.totalCost,
-        paymentIntentId: paymentIntent.paymentIntentId,
-        orderId: paymentIntent.orderId,
-      });
+      reset((formValues) => ({
+        ...formValues,
+        firstName: formValues.firstName || currentUser.firstName || "",
+        lastName: formValues.lastName || currentUser.lastName || "",
+        email: formValues.email || currentUser.email || "",
+        phone: formValues.phone || currentUser.phone || "",
+        checkIn: formValues.checkIn || search.checkIn.toISOString(),
+        hotelId: formValues.hotelId || hotelId,
+        totalCost: formValues.totalCost || paymentIntent.totalCost,
+        paymentIntentId:
+          formValues.paymentIntentId || paymentIntent.paymentIntentId,
+        orderId: formValues.orderId || paymentIntent.orderId,
+      }));
     }
   }, [currentUser, search.checkIn, hotelId, paymentIntent, reset]);
 
@@ -165,56 +161,32 @@ Props) => {
         key: razorpayOptions.key_id,
         amount: paymentIntent.amount,
         currency: paymentIntent.currency,
-        name:
-          currentUser?.firstName !== undefined
-            ? `${currentUser?.firstName} ${currentUser?.lastName}`
-            : `${formData.firstName} ${formData.lastName}`,
+        name: currentUser?.firstName
+          ? `${currentUser?.firstName} ${currentUser?.lastName}`
+          : `${formData.firstName} ${formData.lastName}`,
         description: "Booking payment",
         order_id: paymentIntent.orderId,
         status: "captured",
         handler: async function (response: any) {
-          try {
-            if (response.razorpay_payment_id) {
-              // Call backend to complete booking
-              await bookRoom({
-                ...formData,
-                paymentIntentId: response.razorpay_payment_id,
-                orderId: response.razorpay_order_id,
-              });
-            } else {
-              console.error(
-                "Razorpay payment_id missing in response:",
-                response
-              );
-            }
-          } catch (error) {
-            console.error("Error booking room:", error);
+          if (response.razorpay_payment_id) {
+            await bookRoom({
+              ...formData,
+              paymentIntentId: response.razorpay_payment_id,
+              orderId: response.razorpay_order_id,
+            });
+          } else {
+            console.error("Razorpay payment_id missing in response:", response);
           }
         },
         prefill: {
-          name:
-            currentUser?.firstName !== undefined
-              ? `${currentUser?.firstName} ${currentUser?.lastName}`
-              : `${formData.firstName} ${formData.lastName}`,
-          email:
-            currentUser?.email !== undefined
-              ? currentUser?.email
-              : formData.email,
-          contact:
-            currentUser?.phone !== undefined
-              ? currentUser?.phone
-              : formData.phone,
+          name: currentUser?.firstName
+            ? `${currentUser?.firstName} ${currentUser?.lastName}`
+            : `${formData.firstName} ${formData.lastName}`,
+          email: currentUser?.email || formData.email,
+          contact: currentUser?.phone || formData.phone,
         },
-        notes: {
-          address: "Booking Address",
-        },
-        theme: {
-          color: "#F37254",
-        },
-        payment_method: {
-          // Enable UPI payments
-          method: "upi",
-        },
+        notes: { address: "Booking Address" },
+        theme: { color: "#F37254" },
       };
 
       const rzp = new (window as any).Razorpay(options);
@@ -382,6 +354,7 @@ Props) => {
           <span>₹ {total.toFixed(2)}</span>
         </div>
       </div>
+      {appliedCoupon ==="" &&
       <div className="mb-4">
         <label className="block text-gray-700">Coupon Code</label>
         <div className="flex flex-col md:flex-row gap-2">
@@ -402,7 +375,7 @@ Props) => {
             Apply
           </button>
         </div>
-      </div>
+      </div>}
       <Button disabled={isLoading} type="submit">
         {isLoading ? "Saving..." : "Confirm Booking"}
       </Button>
