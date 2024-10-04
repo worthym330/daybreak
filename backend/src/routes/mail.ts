@@ -276,11 +276,13 @@ export const sendCredentials = async (data: any) => {
           border-radius: 10px;
         }
         .header {
-          background-color: #B5813F;
-          padding: 10px;
-          text-align: center;
-          border-bottom: 1px solid #ccc;
-        }
+                  text-align: center;
+                  padding: 10px;
+              }
+              .header img {
+                  max-width: 120px;
+                  height: auto;
+              }
         .content {
           margin-top: 20px;
         }
@@ -294,7 +296,8 @@ export const sendCredentials = async (data: any) => {
     <body>
       <div class="container">
         <div class="header">
-          <h1>Welcome to DayBreakPass</h1>
+            <img src="https://www.daybreakpass.com/daybreaklogo.png" alt="DayBreakPass Logo">
+            <h1>Unlock luxury experiences</h1>
         </div>
         <div class="content">
           <p>Hello ${name},</p>
@@ -339,11 +342,13 @@ export const resetPass = async (data: any) => {
           border-radius: 10px;
         }
         .header {
-          background-color: #B5813F;
-          padding: 10px;
-          text-align: center;
-          border-bottom: 1px solid #ccc;
-        }
+                  text-align: center;
+                  padding: 10px;
+              }
+              .header img {
+                  max-width: 120px;
+                  height: auto;
+              }
         .content {
           margin-top: 20px;
         }
@@ -356,9 +361,10 @@ export const resetPass = async (data: any) => {
     </head>
     <body>
       <div class="container">
-        <div class="header">
+      <div class="header">
+          <img src="https://www.daybreakpass.com/daybreaklogo.png" alt="DayBreakPass Logo">
           <h1>Welcome to DayBreakPass</h1>
-        </div>
+      </div>
         <div class="content">
           <p>Dear ${name},</p>
           <p>We received a request to reset your password. Click the link below to reset it:</p>
@@ -403,11 +409,13 @@ export const incompeleteBooking = async (data: any) => {
           border-radius: 10px;
         }
         .header {
-          background-color: #B5813F;
-          padding: 10px;
-          text-align: center;
-          border-bottom: 1px solid #ccc;
-        }
+                  text-align: center;
+                  padding: 10px;
+              }
+              .header img {
+                  max-width: 120px;
+                  height: auto;
+              }
         .content {
           margin-top: 20px;
         }
@@ -420,7 +428,8 @@ export const incompeleteBooking = async (data: any) => {
     </head>
     <body>
       <div class="container">
-        <div class="header">
+         <div class="header">
+          <img src="https://www.daybreakpass.com/daybreaklogo.png" alt="DayBreakPass Logo">
           <h1>Welcome to DayBreakPass</h1>
         </div>
         <div class="content">
@@ -577,11 +586,13 @@ export const PaymentFailed = async (data: any) => {
           border-radius: 10px;
         }
         .header {
-          background-color: #B5813F;
-          padding: 10px;
-          text-align: center;
-          border-bottom: 1px solid #ccc;
-        }
+                  text-align: center;
+                  padding: 10px;
+              }
+              .header img {
+                  max-width: 120px;
+                  height: auto;
+              }
         .content {
           margin-top: 20px;
         }
@@ -594,7 +605,8 @@ export const PaymentFailed = async (data: any) => {
     </head>
     <body>
       <div class="container">
-        <div class="header">
+         <div class="header">
+          <img src="https://www.daybreakpass.com/daybreaklogo.png" alt="DayBreakPass Logo">
           <h1>Welcome to DayBreakPass</h1>
         </div>
         <div class="content">
@@ -644,11 +656,13 @@ export const BookingConfirmation = async (data: any) => {
           border-radius: 10px;
         }
         .header {
-          background-color: #B5813F;
-          padding: 10px;
-          text-align: center;
-          border-bottom: 1px solid #ccc;
-        }
+                  text-align: center;
+                  padding: 10px;
+              }
+              .header img {
+                  max-width: 120px;
+                  height: auto;
+              }
         .content {
           margin-top: 20px;
         }
@@ -661,9 +675,10 @@ export const BookingConfirmation = async (data: any) => {
     </head>
     <body>
       <div class="container">
-        <div class="header">
+         <div class="header">
+          <img src="https://www.daybreakpass.com/daybreaklogo.png" alt="DayBreakPass Logo">
           <h1>Welcome to DayBreakPass</h1>
-        </div>
+      </div>
         <div class="content">
           <p>Hello ${name},</p>
           <p>Your booking at ${hotelName} is confirmed!</p>
