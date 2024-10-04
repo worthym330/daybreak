@@ -1351,7 +1351,7 @@ export const sendVoucherToHotel = async (leadData: any) => {
 
     const mailOptions = {
       from: process.env.SMTP_USER,
-      to: email,
+      to: "basant@daybreakpass.com",
       cc: process.env.SMTP_USER,
       subject: `Hotel Booking Voucher - DayBreakPass`,
       html: `
