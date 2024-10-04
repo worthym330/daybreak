@@ -12,14 +12,15 @@ import {
 import Button from "./Button";
 import { PiCampfire } from "react-icons/pi";
 import { FiSun } from "react-icons/fi";
-import { MdOutlineWater } from "react-icons/md";
+import { MdFreeBreakfast, MdOutlineWater } from "react-icons/md";
 import { GiWaterSplash } from "react-icons/gi";
+import { FaUtensils } from "react-icons/fa6";
 
 interface ProductCardProps {
   product: any;
   hotel: any;
   setCart?: any;
-  titles?:any
+  titles?: any;
 }
 
 export type TitleKey =
@@ -36,24 +37,46 @@ export type TitleKey =
   | "FAMILY PASS"
   | "BRUNCH"
   | "DAYBED PASS"
-  | "COUPLE PASS";
+  | "COUPLE PASS"
+  | "SWIMMING POOL"
+  | "BREAKFAST"
+  | "BRUNCH WITH SWIMMING POOL"
+  | "BUFFET LUNCH"
+  | "BUFFET LUNCH WITH SWIMMING POOL"
+  | "HI-TEA"
+  | "HI-TEA WITH SWIMMING POOL"
+  | "BUFFET DINNER"
+  | "BUFFET DINNER WITH SWIMMING POOL"
+  | "BUFFET DINNER + SWIMMING POOL";
 
-  export const titleIcons = {
-    "SPA PASS": <FaSpa />,
-    "DAY PASS": <FiSun />,
-    "POOL PASS": <FaSwimmingPool />,
-    "GYM PASS": <FaDumbbell />,
-    CABANA: <FaUmbrellaBeach />,
-    "LAZY RIVER": <GiWaterSplash />,
-    "WATER SLIDE": <MdOutlineWater />,
-    "BEACH ACCESS": <FaUmbrellaBeach />,
-    BORNFIRE: <PiCampfire />,
-    "CONFERENCE HALL": <FaUsers />,
-    "FAMILY PASS": <FaUsers />,
-    BRUNCH: <FiSun />,
-    "DAYBED PASS": <FaUmbrellaBeach />,
-    "COUPLE PASS": <FaUsers />,
-  };
+export const titleIcons = {
+  "SPA PASS": <FaSpa />,
+  "DAY PASS": <FiSun />,
+  "POOL PASS": <FaSwimmingPool />,
+  "GYM PASS": <FaDumbbell />,
+  CABANA: <FaUmbrellaBeach />,
+  "LAZY RIVER": <GiWaterSplash />,
+  "WATER SLIDE": <MdOutlineWater />,
+  "BEACH ACCESS": <FaUmbrellaBeach />,
+  BORNFIRE: <PiCampfire />,
+  "CONFERENCE HALL": <FaUsers />,
+  "FAMILY PASS": <FaUsers />,
+  BRUNCH: <FiSun />,
+  "DAYBED PASS": <FaUmbrellaBeach />,
+  "COUPLE PASS": <FaUsers />,
+  // Additional titles with icons
+  // Additional titles with icons
+  "SWIMMING POOL": <FaSwimmingPool />,
+  BREAKFAST: <MdFreeBreakfast />, // Breakfast icon
+  "BRUNCH WITH SWIMMING POOL": <FaUtensils />, // Brunch with a pool icon
+  "BUFFET LUNCH" : <FaUtensils />, // Buffet icon
+  "BUFFET LUNCH WITH SWIMMING POOL": <FaUtensils />, // Buffet with a pool
+  "HI-TEA": <FaUtensils />, // Hi-tea icon (using utensils as a general icon)
+  "HI-TEA WITH SWIMMING POOL": <FaUtensils />, // Hi-tea with pool
+  "BUFFET DINNER": <FaUtensils />, // Dinner icon
+  "BUFFET DINNER WITH SWIMMING POOL": <FaUtensils />, // Dinner with a pool
+  "BUFFET DINNER + SWIMMING POOL": <FaUtensils />, // Combined dinner and pool
+};
 
 const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -77,7 +100,7 @@ const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
           <div className="pl-4 ml-4">
             <Button
               className="bg-goldColor text-white px-4 py-2 rounded-lg w-24 flex items-center justify-center"
-              onClick={()=>setIsModalOpen(true)}
+              onClick={() => setIsModalOpen(true)}
             >
               <span>Select</span>
               <span className="font-thin">
@@ -156,7 +179,7 @@ const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
             <div className="mt-2">
               <Button
                 className="bg-goldColor text-white px-4 py-2 rounded-lg w-full flex items-center justify-center"
-                onClick={()=>setIsModalOpen(true)}
+                onClick={() => setIsModalOpen(true)}
               >
                 <span>Select</span>
                 <span className="font-thin">
