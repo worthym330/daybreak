@@ -134,11 +134,11 @@ const MyBookings = ({ tab }: any) => {
       const responseData = await response.json();
       console.log(response, responseData);
       if (!response.ok) {
-        throw new Error(`Failed to download invoice: ${response.statusText}`);
+        throw new Error(`Failed to download invoice: ${response.statusText}`);  
       }
       // Convert the response to a blob (binary data)
       const a = document.createElement("a");
-      a.href = responseData.pdfUrl; // Directly use the URL string
+      a.href = responseData.path; // Directly use the URL string
       a.download = `invoice_${id}.pdf`;
       a.target = "_blank";
       document.body.appendChild(a);
@@ -159,7 +159,7 @@ const MyBookings = ({ tab }: any) => {
         confirmationButtonText="Mark as Cancel"
       />
       <div className="">
-        <div className="max-w-6xl w-full">
+        <div className="lg:max-w-6xl w-full">
           {/* <div className="text-goldColor font-medium text-3xl leading-30px tracking-extraTight mb-2">
             {personalInfo.name}
           </div> */}
@@ -179,7 +179,7 @@ const MyBookings = ({ tab }: any) => {
           <section className="py-3">
             {/* Content Shown when clicked on Bookings*/}
             {tab === "bookings" && (
-              <div className="mx-20 my-4">
+              <div className="mx-4 lg:mx-20 my-4">
                 <div className="space-y-10">
                   {bookingData && bookingData.length > 0 ? (
                     bookingData.map((booking: any) => (
@@ -196,28 +196,34 @@ const MyBookings = ({ tab }: any) => {
                                   : "grayscale-0"
                               }`}
                             />
-                            <p
-                              className={`flex items-center text-sm font-semibold mb-2 absolute right-0 top-0 ${
-                                booking.paymentStatus === "refunded"
-                                  ? "text-red-500 opacity-95"
-                                  : "text-white"
-                              }`}
-                            >
-                              {booking.paymentStatus === "refunded"
-                                ? "Cancelled"
-                                : "Booked"}
-                            </p>
                           </div>
 
                           {/* Right Section (Details) */}
-                          <div className="w-full md:w-2/3 p-6 flex flex-col border-black border-r-2 border-y-2 border-dashed justify-between">
-                            <div>
-                              <h3 className="text-2xl font-bold text-[#02596c]">
-                                {booking.hotelId.name}
-                              </h3>
-                              <p className="">
-                                {booking.hotelId.city}, {booking.hotelId.state}
-                              </p>
+                          <div className="w-full md:w-2/3 p-6 flex flex-col border-black border-x-2 md:border-x-0 md:border-r-2 border-y-2 border-dashed justify-between">
+                            <div className="flex justify-between">
+                              <div>
+                                <h3 className="text-2xl font-bold text-[#02596c]">
+                                  {booking.hotelId.name}
+                                </h3>
+                                <p className="">
+                                  {booking.hotelId.city},{" "}
+                                  {booking.hotelId.state}
+                                </p>
+                              </div>
+                              <div>
+                                {" "}
+                                <p
+                                  className={`flex items-center text-sm font-semibold mb-2 ${
+                                    booking.paymentStatus === "refunded"
+                                      ? "text-red-500 opacity-95"
+                                      : "text-[#02596c]"
+                                  }`}
+                                >
+                                  {booking.paymentStatus === "refunded"
+                                    ? "Cancelled"
+                                    : "Booked"}
+                                </p>
+                              </div>
                             </div>
 
                             <div className="mt-5 flex flex-col gap-2">
@@ -225,9 +231,11 @@ const MyBookings = ({ tab }: any) => {
                                 <span className="text-[#02596c] font-semibold">
                                   Dates:
                                 </span>
-                                <span className="font-medium text-base flex justify-between gap-4">
-                                  <span>{new Date(booking.date).toDateString()}</span><span>{booking.slot}</span>
-                                  
+                                <span className="font-medium text-base flex flex-col md:flex-row justify-between gap-2">
+                                  <span>
+                                    {new Date(booking.date).toDateString()}
+                                  </span>
+                                  <span>{booking.slot}</span>
                                 </span>
                               </p>
                               {/* Modify the guests section according to the data structure */}

@@ -1223,7 +1223,7 @@ const generateInvoiceId = async () => {
   return formattedInvoiceId;
 };
 
-const createInvoice = async (invoiceData: any): Promise<any> => {
+export const createInvoice = async (invoiceData: any): Promise<any> => {
   // Path to the template
   const htmlTemplate = fs.readFileSync(
     path.join(__dirname, "../invoicetemplates/customerInvoice.html"),
@@ -1236,20 +1236,20 @@ const createInvoice = async (invoiceData: any): Promise<any> => {
 
   // Inject the data into the HTML template
   const htmlToRender = template({
-    bookingId: invoiceData.bookingId,
-    invoiceNo: invoiceData.invoiceNo,
-    date: invoiceData.date,
-    placeOfSupply: invoiceData.placeOfSupply,
-    hotelName: invoiceData.hotelName,
-    hotelCity: invoiceData.hotelCity,
-    passDate: invoiceData.passDate,
-    checkOut: invoiceData.slotTime,
-    companyLegalName: invoiceData.companyLegalName,
-    customerName: invoiceData.customerName,
-    customerGSTIN: invoiceData.customerGSTIN,
-    customerAddress: invoiceData.customerAddress,
-    lineItems: invoiceData.lineItems,
-    grandTotal: invoiceData.lineItems
+    bookingId: invoiceData?.bookingId,
+    invoiceNo: invoiceData?.invoiceNo,
+    date: invoiceData?.date,
+    placeOfSupply: invoiceData?.placeOfSupply,
+    hotelName: invoiceData?.hotelName,
+    hotelCity: invoiceData?.hotelCity,
+    passDate: invoiceData?.passDate,
+    checkOut: invoiceData?.slotTime,
+    companyLegalName: invoiceData?.companyLegalName,
+    customerName: invoiceData?.customerName,
+    customerGSTIN: invoiceData?.customerGSTIN,
+    customerAddress: invoiceData?.customerAddress,
+    lineItems: invoiceData?.lineItems,
+    grandTotal: invoiceData?.lineItems
       .reduce((total: number, item: any) => total + parseFloat(item.amount), 0)
       .toFixed(2),
   });
@@ -1278,4 +1278,43 @@ const createInvoice = async (invoiceData: any): Promise<any> => {
     console.error("Error creating PDF:", error);
   }
 };
+
+router.get("/voucher/html", async(req, res) =>{
+  const html = fs.readFileSync('voucher.html', 'utf8');
+
+// Options for PDF creation
+const options = {
+    format: 'A4',
+    orientation: 'portrait',
+    border: '10mm',
+};
+
+// Data for the voucher (can be dynamic)
+const document = {
+    html: html,
+    data: {
+        bookingId: "EMT139772685",
+        hotelName: "Grace Residency",
+        guestName: "Satish Patil",
+        checkIn: "21 Sep 2024 12:00 PM",
+        checkOut: "22 Sep 2024 11:00 AM",
+        roomType: "Standard Double Room",
+        totalPayable: "3374.26",
+        gstNumber: "27AAACE7066P1Z3",
+        clientName: "Endurance Technologies Ltd",
+        clientAddress: "K226/1 MIDC Waluj Aurangabad"
+    },
+    path: `./uploads/invoices/Grace Residency.pdf`,
+    type: "", // "buffer" for raw PDF data
+};
+
+// Create PDF
+try {
+  const res = await pdf.create(document, options);
+  console.log(`Invoice created at: ${res.filename}`);
+  return res;
+} catch (error) {
+  console.error("Error creating PDF:", error);
+}
+})
 export default router;

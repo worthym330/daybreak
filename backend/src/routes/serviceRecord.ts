@@ -2,11 +2,10 @@ import express, { Request, Response } from "express";
 import ServiceRecord from "../models/invoice";
 import verifyToken from "../middleware/auth";
 import Hotel from "../models/hotel";
-import axios from "axios";
 import Razorpay from "razorpay";
 import { BookingCancellation } from "./mail";
 import User from "../models/user";
-import mongoose from "mongoose";
+import { createInvoice } from "./hotels";
 
 const razorpayInstance = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID as string,
@@ -289,7 +288,7 @@ router.post(
   verifyToken,
   async (req: Request, res: Response) => {
     const { id } = req.params;
-    const userId = req.userId;
+    // const userId = req.userId;
     try {
       // Fetch the service record and populate bookings
       const serviceRecord = await ServiceRecord.findById(id)
@@ -299,43 +298,36 @@ router.post(
         })
         .populate({
           path: "hotelId",
-          select: "bookings",
+          select: "name city bookings",
         });
 
+      // console.log(serviceRecord);
       if (!serviceRecord) {
         return res.status(404).json({ message: "Service record not found" });
       }
-      if (serviceRecord.invoiceUrl) {
-        res.send({ pdfUrl: serviceRecord.invoiceUrl });
-      } else {
-        const data = JSON.stringify(serviceRecord);
-        const parsedData = JSON.parse(data);
 
-        // Filter the bookings for the user and include relevant service record data
-        const userBookings = parsedData.hotelId.bookings.filter(
-          (booking: any) => booking.userId.toString() === userId.toString()
-        );
-        // Generate line items based on the user's bookings
-        const lineItems = await generateLineItems(userBookings);
+      const populatedUser = serviceRecord.userId as any; // Explicitly assert that userId is a populated User
+    const populatedHotel = serviceRecord.hotelId as any; // Explicitly assert that hotelId is a populated Hotel
 
-        // Create an invoice using Razorpay API
-        const invoice = await createAndMarkInvoiceAsPaid(
-          serviceRecord,
-          lineItems
-        );
-        // Assume Razorpay returns a short_url for the invoice PDF
-        const pdfUrl = invoice.short_url;
-        if (!pdfUrl) {
-          return res
-            .status(500)
-            .json({ message: "Failed to retrieve invoice PDF URL" });
-        }
+    // Prepare the payload
+    const payload = {
+      bookingId: serviceRecord.bookingId,
+      invoiceNo: serviceRecord.invoiceId,
+      date: serviceRecord.date,
+      hotelName: populatedHotel.name, // Now TypeScript knows it's a Hotel document
+      hotelCity: populatedHotel.city,
+      passDate: serviceRecord.date,
+      slotTime: serviceRecord.slot,
+      customerName: `${populatedUser.firstName} ${populatedUser.lastName}`, // Now TypeScript knows it's a User document
+      lineItems: serviceRecord.lineItems,
+      grandTotal: serviceRecord.lineItems
+        .reduce((total: number, item: any) => total + parseFloat(item.amount), 0)
+        .toFixed(2),
+    };
 
-        (serviceRecord.invoiceId = invoice.id),
-          (serviceRecord.invoiceUrl = pdfUrl);
-        await serviceRecord.save();
-        res.send({ pdfUrl });
-      }
+    const invoice = await createInvoice(payload)
+const path = `${process.env.BACKEND_URL}/uploads/invoices/${invoice.filename.split("\\").pop()}`
+      res.status(200).json({ message: "Found Data", path, payload, serviceRecord });
     } catch (error) {
       console.error("Invoice creation or sending error:", error);
       res.status(500).json({ message: "Failed to create or send invoice" });
