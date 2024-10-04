@@ -172,7 +172,7 @@ const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
         </div>
       </div>
       <button
-        className="text-goldColor mt-2"
+        className="text-goldColor mt-2 hidden md:block"
         onClick={() => setShowLess(!showLess)}
       >
         {showLess ? (
