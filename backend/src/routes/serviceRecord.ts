@@ -307,27 +307,34 @@ router.post(
       }
 
       const populatedUser = serviceRecord.userId as any; // Explicitly assert that userId is a populated User
-    const populatedHotel = serviceRecord.hotelId as any; // Explicitly assert that hotelId is a populated Hotel
+      const populatedHotel = serviceRecord.hotelId as any; // Explicitly assert that hotelId is a populated Hotel
 
-    // Prepare the payload
-    const payload = {
-      bookingId: serviceRecord.bookingId,
-      invoiceNo: serviceRecord.invoiceId,
-      date: serviceRecord.date,
-      hotelName: populatedHotel.name, // Now TypeScript knows it's a Hotel document
-      hotelCity: populatedHotel.city,
-      passDate: serviceRecord.date,
-      slotTime: serviceRecord.slot,
-      customerName: `${populatedUser.firstName} ${populatedUser.lastName}`, // Now TypeScript knows it's a User document
-      lineItems: serviceRecord.lineItems,
-      grandTotal: serviceRecord.lineItems
-        .reduce((total: number, item: any) => total + parseFloat(item.amount), 0)
-        .toFixed(2),
-    };
+      // Prepare the payload
+      const payload = {
+        bookingId: serviceRecord.bookingId,
+        invoiceNo: serviceRecord.invoiceId,
+        date: serviceRecord.date,
+        hotelName: populatedHotel.name, // Now TypeScript knows it's a Hotel document
+        hotelCity: populatedHotel.city,
+        passDate: serviceRecord.date,
+        slotTime: serviceRecord.slot,
+        customerName: `${populatedUser.firstName} ${populatedUser.lastName}`, // Now TypeScript knows it's a User document
+        lineItems: serviceRecord.lineItems,
+        grandTotal: serviceRecord.lineItems
+          .reduce(
+            (total: number, item: any) => total + parseFloat(item.amount),
+            0
+          )
+          .toFixed(2),
+      };
 
-    const invoice = await createInvoice(payload)
-const path = `${process.env.BACKEND_URL}/uploads/invoices/${invoice.filename.split("\\").pop()}`
-      res.status(200).json({ message: "Found Data", path, payload, serviceRecord });
+      const invoice = await createInvoice(payload);
+      const path = `${
+        process.env.BACKEND_URL
+      }/uploads/invoices/${invoice.filename.split("/").pop()}`;
+      res
+        .status(200)
+        .json({ message: "Found Data", path, payload, serviceRecord });
     } catch (error) {
       console.error("Invoice creation or sending error:", error);
       res.status(500).json({ message: "Failed to create or send invoice" });
