@@ -224,7 +224,7 @@ router.post(
 
         mailPayload = {
           email: user.email,
-          name: `${user.firstName} ${user.lastName}`,
+          name: `${user.firstName}`,
           hotelName: hotel?.name,
           date: cart[0].date,
           amount: payment.amount,
@@ -239,7 +239,7 @@ router.post(
           console.log("User already exists with this email");
           mailPayload = {
             email: user.email,
-            name: `${user.firstName} ${user.lastName}`,
+            name: `${user.firstName}`,
             hotelName: hotel?.name,
             date: cart[0].date,
             amount: payment.amount,
@@ -285,14 +285,14 @@ router.post(
           // Prepare mail payload
           mailPayload = {
             email: email,
-            name: `${user.firstName} ${user.lastName}`,
+            name: `${user.firstName}`,
             hotelName: hotel?.name,
             date: cart[0].date,
             amount: payment.amount,
             password: password ? password : "N/A", // Include password if exists, otherwise show "N/A"
           };
           const mailCredentialData = {
-            name: `${user.firstName} ${user.lastName}`,
+            name: `${user.firstName}`,
             email: email,
             password,
           };
@@ -384,7 +384,7 @@ router.post(
         invoiceNo: newInvoiceId,
         date: new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
         // companyLegalName: "Your Company Name",
-        customerName: `${user.firstName} ${user.lastName}`,
+        customerName: `${user.firstName}`,
         // customerGSTIN:
         // customerAddress: "Customer Address Here",
         hotelName: hotel?.name,
@@ -414,7 +414,7 @@ router.post(
       const hotelUser = await User.findById(hotel.userId);
       const hotelMailPayload = {
         email: hotelUser?.email,
-        customerName: `${user.firstName} ${user.lastName}`,
+        customerName: `${user.firstName}`,
         bookingId: serviceRecord.bookingId,
         hotelName: hotel?.name,
         checkIn: cart[0].date,
@@ -439,7 +439,7 @@ router.post(
       res.status(200).json({
         data: {
           id: user?._id || "",
-          name: `${user.firstName} ${user.lastName}`,
+          name: `${user.firstName}`,
           email: user?.email || "",
           token: token,
           role: user?.role || "customer",

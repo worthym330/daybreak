@@ -165,7 +165,7 @@ router.put(
         : null;
       const mailPayload = {
         email: user?.email,
-        name: `${user?.firstName} ${user?.lastName}`, // Fixed potential typo (firstName used twice)
+        name: `${user?.firstName}`, // Fixed potential typo (firstName used twice)
         hotelName: hotelInfo?.name,
         date: booking?.cart?.[0]?.date, // Use optional chaining here
         amount: payment.amount,

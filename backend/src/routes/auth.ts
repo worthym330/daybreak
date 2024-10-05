@@ -184,7 +184,7 @@ router.post("/forgot", async (req, res) => {
     console.log(existingUser)
     const mailData = {
       email:existingUser.email,
-      name:`${existingUser.firstName} ${existingUser.lastName}`,
+      name:`${existingUser.firstName}`,
       token:resetToken
     }
     await resetPass(mailData)
