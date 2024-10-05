@@ -150,6 +150,7 @@ const BookingForm = ({ paymentIntent, cartItems }: Props) => {
     }
   }, [currentUser, search.checkIn, hotelId, paymentIntent, reset]);
 
+  console.log(currentUser)
   const onSubmit = async (formData: BookingFormData) => {
     formData.checkIn = search.checkIn.toISOString();
     formData.hotelId = hotelId;
@@ -220,7 +221,7 @@ const BookingForm = ({ paymentIntent, cartItems }: Props) => {
 
   const handleCouponApply = () => {
     if (couponCode !== "") {
-      const discount = total * 0.15;
+      const discount = total * 0.05;
       dispatch(setDiscountValue(discount));
       setTotal(total - discount);
       dispatch(setAppliedCoupon(couponCode));

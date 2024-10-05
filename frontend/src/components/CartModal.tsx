@@ -4,6 +4,7 @@ import moment from "moment";
 import { addToCart } from "../store/cartSlice";
 import { useDispatch } from "react-redux";
 import { FaCalendar } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
   const [adultCount, setAdultCount] = useState(0);
@@ -33,6 +34,7 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
         setTotal(savedProduct.total);
         if (savedProduct.date) {
           setDate(savedProduct.date);
+          setSlot(savedProduct.slot)
         }
       }
     }
@@ -49,59 +51,67 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
   }, [adultCount, childCount, product.adultPrice, product.childPrice]);
 
   const handleAddToCart = () => {
-    if (adultCount > 0 || childCount > 0) {
-      let cart: any[] = [];
-      const savedCart = localStorage.getItem("cart");
-      if (savedCart) {
-        cart = JSON.parse(savedCart) as any[];
-      }
-
-      // Check if there are products with different hotelId
-      const differentHotelId = cart.some(
-        (item) => item.hotel._id !== hotel._id
-      );
-
-      // if (differentHotelId) {
-      //   toast.warning(
-      //     "Please select the same hotel or remove the current selection from your cart before booking a new hotel."
-      //   );
-      //   return;
-      // }
-
-      const existingProductIndex = cart.findIndex(
-        (item) =>
-          item.product.title === product.title && item.hotel._id === hotel._id
-      );
-
-      const cartItem = {
-        product,
-        hotel,
-        adultCount,
-        childCount,
-        total,
-        date,
-        slot
-      };
-
-      if (differentHotelId) {
-        cart = [];
-        cart.push(cartItem);
-      } else {
-        if (existingProductIndex !== -1) {
-          cart[existingProductIndex] = cartItem;
-        } else {
-          cart.push(cartItem);
+    if(!date){
+      toast.warning("Please select the date")
+    }else if(!slot){
+      toast.warning("Please select the slot")
+    }else{
+      if (adultCount > 0 || childCount > 0 ) {
+        let cart: any[] = [];
+        const savedCart = localStorage.getItem("cart");
+        if (savedCart) {
+          cart = JSON.parse(savedCart) as any[];
         }
-      }
-
-      try {
-        localStorage.setItem("cart", JSON.stringify(cart));
-        setCart(cart);
-        // dispatch(setCart(cart));
-        dispatch(addToCart(cartItem));
-        onClose();
-      } catch (error) {
-        console.error("Error setting local storage: ", error);
+  
+        // Check if there are products with different hotelId
+        const differentHotelId = cart.some(
+          (item) => item.hotel._id !== hotel._id
+        );
+  
+        // if (differentHotelId) {
+        //   toast.warning(
+        //     "Please select the same hotel or remove the current selection from your cart before booking a new hotel."
+        //   );
+        //   return;
+        // }
+  
+        const existingProductIndex = cart.findIndex(
+          (item) =>
+            item.product.title === product.title && item.hotel._id === hotel._id
+        );
+  
+        const cartItem = {
+          product,
+          hotel,
+          adultCount,
+          childCount,
+          total,
+          date,
+          slot
+        };
+  
+        if (differentHotelId) {
+          cart = [];
+          cart.push(cartItem);
+        } else {
+          if (existingProductIndex !== -1) {
+            cart[existingProductIndex] = cartItem;
+          } else {
+            cart.push(cartItem);
+          }
+        }
+  
+        try {
+          localStorage.setItem("cart", JSON.stringify(cart));
+          setCart(cart);
+          // dispatch(setCart(cart));
+          dispatch(addToCart(cartItem));
+          onClose();
+        } catch (error) {
+          console.error("Error setting local storage: ", error);
+        }
+      }else{
+        toast.warning("Please select the number of Adults or Childrens")
       }
     }
   };
@@ -170,7 +180,7 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
                 className="w-full px-4 py-2 border rounded-md"
               >
                 <option value="">Select a slot</option>
-                {availableSlots.filter((e:any)=> e.status).map((slot: any, index) => (
+                {availableSlots.filter((e:any)=> e.status && moment(e.startTime).isAfter(moment())).map((slot: any, index) => (
                   <option key={index} value={`${moment(slot.startTime).format('LT')} - ${moment(slot.endTime).format('LT')}` }>
                     {`${moment(slot.startTime).format('LT')} - ${moment(slot.endTime).format('LT')}` }
                   </option>
@@ -230,7 +240,7 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
             <Button
               className="bg-goldColor text-white px-4 py-2 rounded-lg"
               onClick={handleAddToCart}
-              disabled={!date}
+              // disabled={!date}
             >
               Add to Cart
             </Button>
@@ -286,7 +296,7 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
                 className="w-full px-4 py-2 border rounded-md"
               >
                 <option value="">Select a slot</option>
-                {availableSlots.filter((e:any)=> e.status).map((slot: any, index) => (
+                {availableSlots.filter((e:any)=> e.status && moment(e.startTime).isAfter(moment())).map((slot: any, index) => (
                   <option key={index} value={`${slot.startTime} - ${slot.endTime}` }>
                     {`${moment(slot.startTime).format('LT')} - ${moment(slot.endTime).format('LT')}` }
                   </option>
@@ -377,7 +387,7 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
             <Button
               className="bg-goldColor text-white py-3 rounded-lg w-[160px]"
               onClick={handleAddToCart}
-              disabled={!date}
+              // disabled={!date}
             >
               Add to Cart
             </Button>
