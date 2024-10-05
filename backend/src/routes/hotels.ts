@@ -398,7 +398,7 @@ router.post(
             amount: item.total,
           })),
           {
-            description: "IGST @18%",
+            description: "Taxes @18%",
             amount: igstAmount,
           },
           // {

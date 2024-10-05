@@ -38,7 +38,7 @@ export type TitleKey =
   | "BRUNCH"
   | "DAYBED PASS"
   | "COUPLE PASS"
-  | "SWIMMING POOL"
+  | "SWIMMING POOL PASS"
   | "BREAKFAST"
   | "BRUNCH WITH SWIMMING POOL"
   | "BUFFET LUNCH"
@@ -66,7 +66,7 @@ export const titleIcons = {
   "COUPLE PASS": <FaUsers />,
   // Additional titles with icons
   // Additional titles with icons
-  "SWIMMING POOL": <FaSwimmingPool />,
+  "SWIMMING POOL PASS": <FaSwimmingPool />,
   BREAKFAST: <MdFreeBreakfast />, // Breakfast icon
   "BRUNCH WITH SWIMMING POOL": <FaUtensils />, // Brunch with a pool icon
   "BUFFET LUNCH" : <FaUtensils />, // Buffet icon
