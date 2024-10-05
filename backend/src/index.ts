@@ -12,7 +12,8 @@ import hotelRoutes from "./routes/hotels";
 import bookingRoutes from "./routes/my-bookings";
 import waitlistRoutes from "./routes/waitlist";
 import contactRoutes from "./routes/contactus";
-import invoiceRoutes from "./routes/serviceRecord"
+import invoiceRoutes from "./routes/serviceRecord";
+import discountRoutes from "./routes/discount";
 import axios from "axios";
 const url = require("url");
 
@@ -23,14 +24,18 @@ cloudinary.config({
 });
 
 // mongoose.connect(process.env.MONGODB_CONNECTION_STRING as string);
-const options: mongoose.ConnectOptions & { useNewUrlParser: boolean; useUnifiedTopology: boolean } = {
+const options: mongoose.ConnectOptions & {
+  useNewUrlParser: boolean;
+  useUnifiedTopology: boolean;
+} = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   serverSelectionTimeoutMS: 5000,
 };
-mongoose.connect(process.env.MONGODB_CONNECTION_STRING as string,options)
-.then(() => console.log('Database connected successfully'))
-.catch(err => console.error('Database connection error:', err));
+mongoose
+  .connect(process.env.MONGODB_CONNECTION_STRING as string, options)
+  .then(() => console.log("Database connected successfully"))
+  .catch((err) => console.error("Database connection error:", err));
 
 const app = express();
 app.use(cookieParser());
@@ -53,6 +58,7 @@ app.use("/api/my-bookings", bookingRoutes);
 app.use("/api/waitlist/", waitlistRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/invoice", invoiceRoutes);
+app.use("/api/discount", discountRoutes);
 
 app.get("/expand-url", async (req: Request, res: Response) => {
   const { url } = req.query;

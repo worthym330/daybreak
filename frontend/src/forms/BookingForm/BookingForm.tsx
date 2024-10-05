@@ -21,12 +21,19 @@ import { FaXmark } from "react-icons/fa6";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { loginSuccess } from "../../store/authSlice";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 type Props = {
   paymentIntent: PaymentIntentResponse;
   cartItems: any;
   setModal: any;
 };
+
+interface Coupon {
+  code: string;
+  percentage: number;
+  expiration_date: string;
+}
 
 export type BookingFormData = {
   firstName: string;
@@ -77,7 +84,6 @@ const BookingForm = ({ paymentIntent, cartItems }: Props) => {
   const [total, setTotal] = useState(0);
   const [subtotal, setSubtotal] = useState(0);
   const [gst, setGst] = useState(0);
-  const [couponCode, setCouponCode] = useState("");
   const dispatch = useDispatch();
   const appliedCoupon = useSelector(
     (state: RootState) => state.cart.appliedCoupon
@@ -87,6 +93,8 @@ const BookingForm = ({ paymentIntent, cartItems }: Props) => {
   const parsedCart = cart ? JSON.parse(cart) : [];
   const hotelId = parsedCart[0]?.hotel?._id;
   const auth = useSelector((state: RootState) => state.auth);
+  const [couponCodes, setCouponCodes] = useState<Coupon[]>([]);
+  const [couponCode, setCouponCode] = useState("");
   const { data: currentUser } = useQuery("fetchCurrentUser", () =>
     apiClient.fetchCurrentUser()
   );
@@ -121,7 +129,6 @@ const BookingForm = ({ paymentIntent, cartItems }: Props) => {
     }
   );
 
-
   const {
     handleSubmit,
     register,
@@ -150,7 +157,6 @@ const BookingForm = ({ paymentIntent, cartItems }: Props) => {
     }
   }, [currentUser, search.checkIn, hotelId, paymentIntent, reset]);
 
-  console.log(currentUser)
   const onSubmit = async (formData: BookingFormData) => {
     formData.checkIn = search.checkIn.toISOString();
     formData.hotelId = hotelId;
@@ -199,35 +205,79 @@ const BookingForm = ({ paymentIntent, cartItems }: Props) => {
   };
 
   useEffect(() => {
-    const calculateSubtotal = (items: any) => {
-      return items.reduce((total: number, item: any) => {
-        const adultTotal =
-          item.adultCount > 0 ? item.adultCount * item.product.adultPrice : 0;
-        const childTotal =
-          item.childCount > 0 ? item.childCount * item.product.childPrice : 0;
-        return total + adultTotal + childTotal;
-      }, 0);
-    };
+    console.log("called", subtotal);
+    if (cartItems) {
+      const calculateSubtotal = (items: any) => {
+        return items.reduce((total: number, item: any) => {
+          const adultTotal =
+            item.adultCount > 0 ? item.adultCount * item.product.adultPrice : 0;
+          const childTotal =
+            item.childCount > 0 ? item.childCount * item.product.childPrice : 0;
+          return total + adultTotal + childTotal;
+        }, 0);
+      };
 
-    const calculatedSubtotal = calculateSubtotal(cartItems);
-    const calculatedGst = calculatedSubtotal * 0.18;
-    const calculatedTotal =
-      calculatedSubtotal - (discountValue ?? 0) + calculatedGst;
+      const calculatedSubtotal = calculateSubtotal(cartItems);
 
-    setSubtotal(calculatedSubtotal);
-    setGst(calculatedGst);
-    setTotal(calculatedTotal);
-  }, [cartItems]);
+      setSubtotal(calculatedSubtotal);
+    }
+  }, []);
 
-  const handleCouponApply = () => {
-    if (couponCode !== "") {
-      const discount = total * 0.05;
-      dispatch(setDiscountValue(discount));
-      setTotal(total - discount);
-      dispatch(setAppliedCoupon(couponCode));
-      setCouponCode("");
+  const getCoupons = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/discount`, {
+        method: "GET",
+      });
+      const data = await response.json();
+      setCouponCodes(data);
+    } catch (error) {
+      console.error("Error expanding URL:", error);
     }
   };
+
+  useEffect(() => {
+    getCoupons();
+  }, []);
+
+  const handleCouponApply = () => {
+    let coupon: any = couponCodes.find(
+      (e: any) => e.code.toUpperCase() === couponCode.toUpperCase()
+    );
+    if (coupon) {
+      const discount = subtotal * (coupon?.percentage / 100);
+      if (discount >= coupon.amount) {
+        dispatch(setDiscountValue(200));
+        setSubtotal(subtotal - 200);
+        dispatch(setAppliedCoupon(couponCode));
+        setCouponCode("");
+      } else {
+        dispatch(setDiscountValue(discount));
+        setSubtotal(subtotal - discount);
+        dispatch(setAppliedCoupon(couponCode));
+        setCouponCode("");
+      }
+    } else {
+      toast.error("Invalid Coupon");
+    }
+  };
+
+  useEffect(() => {
+    console.log(subtotal);
+    const calculatedGst = subtotal * 0.18;
+    const calculatedTotal = subtotal + calculatedGst;
+    setGst(calculatedGst);
+    setTotal(calculatedTotal);
+  }, [subtotal]);
+
+  // const couponOptions = couponCodes.map((coupon: any) => ({
+  //   // label: `${coupon.code} - ${coupon.percentage}% off (Expires: ${new Date(coupon.expirationDate).toLocaleDateString()})`,
+  //   label: `${coupon.code} - ${coupon.percentage}%`,
+  //   value: coupon.code,
+  //   code: coupon.code,
+  //   percentage: coupon.percentage,
+  //   amount: coupon.amount,
+  //   expirationDate: coupon.expirationDate,
+  // }));
 
   const handleCouponRemove = () => {
     setTotal(total + (discountValue ?? 0));
@@ -324,16 +374,6 @@ const BookingForm = ({ paymentIntent, cartItems }: Props) => {
             </span>
           </div>
         ))}
-        <div className="flex justify-between py-2">
-          <span>Subtotal:</span>
-          <span>₹ {subtotal.toFixed(2)}</span>
-        </div>
-        {(discountValue ?? 0) > 0 && (
-          <div className="flex justify-between py-2">
-            <span>Discount:</span>
-            <span>₹ {(discountValue ?? 0).toFixed(2)}</span>
-          </div>
-        )}
         {(discountValue ?? 0) > 0 && (
           <div className="flex justify-between py-2">
             <span>Coupon Code:</span>
@@ -346,8 +386,18 @@ const BookingForm = ({ paymentIntent, cartItems }: Props) => {
             </span>
           </div>
         )}
+        {(discountValue ?? 0) > 0 && (
+          <div className="flex justify-between py-2">
+            <span>Discount:</span>
+            <span>₹ {(discountValue ?? 0).toFixed(2)}</span>
+          </div>
+        )}
         <div className="flex justify-between py-2">
-          <span>GST:</span>
+          <span>Subtotal:</span>
+          <span>₹ {subtotal.toFixed(2)}</span>
+        </div>
+        <div className="flex justify-between py-2">
+          <span>Taxes:</span>
           <span>₹ {gst.toFixed(2)}</span>
         </div>
         <div className="flex justify-between py-2 font-semibold">
@@ -355,28 +405,29 @@ const BookingForm = ({ paymentIntent, cartItems }: Props) => {
           <span>₹ {total.toFixed(2)}</span>
         </div>
       </div>
-      {appliedCoupon ==="" &&
-      <div className="mb-4">
-        <label className="block text-gray-700">Coupon Code</label>
-        <div className="flex flex-col md:flex-row gap-2">
-          <input
-            type="text"
-            className="flex-1 px-3 py-2 border rounded-md"
-            placeholder="Enter Coupon Code"
-            value={couponCode}
-            onChange={(e) => {
-              setCouponCode(e.target.value);
-            }}
-          />
-          <button
-            type="button"
-            className="px-4 py-2 bg-teal-600 text-white rounded-md"
-            onClick={() => handleCouponApply()}
-          >
-            Apply
-          </button>
+      {appliedCoupon === "" && (
+        <div className="mb-4">
+          <label className="block text-gray-700">Coupon Code</label>
+          <div className="flex flex-col md:flex-row gap-2">
+            <input
+              type="text"
+              className="flex-1 px-3 py-2 border rounded-md"
+              placeholder="Enter Coupon Code"
+              value={couponCode}
+              onChange={(e) => {
+                setCouponCode(e.target.value);
+              }}
+            />
+            <button
+              type="button"
+              className="px-4 py-2 bg-teal-600 text-white rounded-md"
+              onClick={() => handleCouponApply()}
+            >
+              Apply
+            </button>
+          </div>
         </div>
-      </div>}
+      )}
       <Button disabled={isLoading} type="submit">
         {isLoading ? "Saving..." : "Confirm Booking"}
       </Button>
