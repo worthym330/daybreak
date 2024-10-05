@@ -305,6 +305,7 @@ export const sendCredentials = async (data: any) => {
           <p><strong>Email Id:</strong> ${email}</p>
           <p><strong>Password:</strong> ${password}</p>
           <p>Please keep this information safe and do not share it with anyone.</p>
+          <p>You can visit <a href="${process.env.FRONTEND_URL}" target="_blank">DayBreakPass</a> for more details.</p>
         </div>
         <div class="footer">
           <p>&copy; 2024 DayBreakPass. All rights reserved.</p>
