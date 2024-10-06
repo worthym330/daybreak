@@ -251,7 +251,7 @@ const BookingForm = ({ paymentIntent, cartItems }: Props) => {
       const discount = subtotal * (coupon?.percentage / 100);
       if (discount >= coupon.amount) {
         dispatch(setDiscountValue(coupon.amount));
-        setSubtotal(coupon.amount);
+        setSubtotal(subtotal - coupon.amount);
         dispatch(setSubtotalAmount(subtotal - coupon.amount))
         dispatch(setAppliedCoupon(couponCode));
         setCouponCode("");
