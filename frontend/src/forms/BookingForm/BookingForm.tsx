@@ -15,6 +15,8 @@ import {
   setAppliedCoupon,
   setDiscountValue,
   removeDiscount,
+  setSubtotalAmount,
+  setTotalAmount,
 } from "../../store/cartSlice";
 import { RootState } from "../../store/store";
 import { FaXmark } from "react-icons/fa6";
@@ -81,7 +83,6 @@ const BookingForm = ({ paymentIntent, cartItems }: Props) => {
   const search = useSearchContext();
   const { razorpayOptions } = useAppContext();
   const navigate = useNavigate();
-  const [total, setTotal] = useState(0);
   const [subtotal, setSubtotal] = useState(0);
   const [gst, setGst] = useState(0);
   const dispatch = useDispatch();
@@ -89,6 +90,8 @@ const BookingForm = ({ paymentIntent, cartItems }: Props) => {
     (state: RootState) => state.cart.appliedCoupon
   );
   const discountValue = useSelector((state: RootState) => state.cart.discount);
+  const totalValue = useSelector((state: RootState) => state.cart.total)
+  const subTotalValue = useSelector((state: RootState) => state.cart.subtotal)
   const cart = localStorage.getItem("cart");
   const parsedCart = cart ? JSON.parse(cart) : [];
   const hotelId = parsedCart[0]?.hotel?._id;
@@ -203,7 +206,7 @@ const BookingForm = ({ paymentIntent, cartItems }: Props) => {
       alert("Failed to initiate payment. Please try again.");
     }
   };
-
+  
   useEffect(() => {
     console.log("called", subtotal);
     if (cartItems) {
@@ -220,6 +223,7 @@ const BookingForm = ({ paymentIntent, cartItems }: Props) => {
       const calculatedSubtotal = calculateSubtotal(cartItems);
 
       setSubtotal(calculatedSubtotal);
+      dispatch(setSubtotalAmount(calculatedSubtotal))
     }
   }, []);
 
@@ -246,13 +250,15 @@ const BookingForm = ({ paymentIntent, cartItems }: Props) => {
     if (coupon) {
       const discount = subtotal * (coupon?.percentage / 100);
       if (discount >= coupon.amount) {
-        dispatch(setDiscountValue(200));
-        setSubtotal(subtotal - 200);
+        dispatch(setDiscountValue(coupon.amount));
+        setSubtotal(coupon.amount);
+        dispatch(setSubtotalAmount(subtotal - coupon.amount))
         dispatch(setAppliedCoupon(couponCode));
         setCouponCode("");
       } else {
         dispatch(setDiscountValue(discount));
         setSubtotal(subtotal - discount);
+        dispatch(setSubtotalAmount(subtotal - discount))
         dispatch(setAppliedCoupon(couponCode));
         setCouponCode("");
       }
@@ -266,8 +272,13 @@ const BookingForm = ({ paymentIntent, cartItems }: Props) => {
     const calculatedGst = subtotal * 0.18;
     const calculatedTotal = subtotal + calculatedGst;
     setGst(calculatedGst);
-    setTotal(calculatedTotal);
+    dispatch(setTotalAmount(calculatedTotal))
   }, [subtotal]);
+
+  useEffect(()=>{
+    dispatch(removeDiscount());
+    dispatch(removeCoupon());
+  },[])
 
   // const couponOptions = couponCodes.map((coupon: any) => ({
   //   // label: `${coupon.code} - ${coupon.percentage}% off (Expires: ${new Date(coupon.expirationDate).toLocaleDateString()})`,
@@ -280,9 +291,10 @@ const BookingForm = ({ paymentIntent, cartItems }: Props) => {
   // }));
 
   const handleCouponRemove = () => {
-    setTotal(total + (discountValue ?? 0));
     dispatch(removeDiscount());
     dispatch(removeCoupon());
+    setSubtotal(subtotal + (discountValue ?? 0));
+    dispatch(setSubtotalAmount(subtotal + (discountValue ?? 0)))
   };
 
   return (
@@ -394,7 +406,7 @@ const BookingForm = ({ paymentIntent, cartItems }: Props) => {
         )}
         <div className="flex justify-between py-2">
           <span>Subtotal:</span>
-          <span>₹ {subtotal.toFixed(2)}</span>
+          <span>₹ {subTotalValue.toFixed(2)}</span>
         </div>
         <div className="flex justify-between py-2">
           <span>Taxes:</span>
@@ -402,7 +414,7 @@ const BookingForm = ({ paymentIntent, cartItems }: Props) => {
         </div>
         <div className="flex justify-between py-2 font-semibold">
           <span>Total:</span>
-          <span>₹ {total.toFixed(2)}</span>
+          <span>₹ {totalValue.toFixed(2)}</span>
         </div>
       </div>
       {appliedCoupon === "" && (

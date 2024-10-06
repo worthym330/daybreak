@@ -6,6 +6,8 @@ interface CartState {
   date?: any;
   appliedCoupon?: string;
   discount?: number;
+  total: number;
+  subtotal: number;
 }
 
 const initialState: CartState = {
@@ -14,6 +16,8 @@ const initialState: CartState = {
   date: null,
   appliedCoupon: "",
   discount: 0,
+  total: 0,
+  subtotal: 0,
 };
 
 const cartSlice = createSlice({
@@ -61,6 +65,18 @@ const cartSlice = createSlice({
     removeDiscount: (state) => {
       state.discount = 0; // Remove the applied coupon
     },
+    setTotalAmount: (state, action: PayloadAction<any>) => {
+      state.total = action.payload;
+    },
+    RemoveTotalAmount: (state) => {
+      state.total = 0;
+    },
+    setSubtotalAmount: (state, action: PayloadAction<any>) => {
+      state.subtotal = action.payload;
+    },
+    RemoveSubTotalAmount: (state) => {
+      state.subtotal = 0;
+    },
   },
 });
 
@@ -74,6 +90,10 @@ export const {
   removeCoupon,
   setDiscountValue,
   removeDiscount,
+  setSubtotalAmount,
+  setTotalAmount,
+  RemoveSubTotalAmount,
+  RemoveTotalAmount,
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

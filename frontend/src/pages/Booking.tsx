@@ -37,7 +37,7 @@ const Booking = () => {
   const [modal, setModal] = useState(initialModalState);
   const [resetModal, setResetModal] = useState(initialResetModal);
   const [signupModal, setSignupModal] = useState(initialSignupModalState);
-  const discount = useSelector((state: RootState) => state.cart.discount);
+  const discount = useSelector((state: RootState) => state.cart.total);
   const [confirmationDialog, setConfirmationDialog] = useState(false);
   const [carts, setCarts] = useState(cartItems);
   const dispatch = useDispatch();

@@ -153,16 +153,8 @@ router.post(
       if (!hotel) {
         return res.status(400).json({ message: "Hotel not found" });
       }
+      const amountPayable = discount * 100;
 
-      // Calculate the total amount from cartItems
-      const totalAmount = cartItems.reduce((sum: number, item: any) => {
-        const itemTotal = item.total * 100;
-        return sum + itemTotal;
-      }, 0);
-
-      const gstAmount = totalAmount * (1 + gst);
-      // Convert to the smallest currency unit (paise)
-      const amountPayable = gstAmount - discount * 100;
       const receipt = `rcpt_${hotelId}_${req.userId}`.slice(0, 40);
       const options = {
         amount: Math.round(amountPayable), // amount in the smallest currency unit
