@@ -400,7 +400,7 @@ router.post(
         ],
       };
       data.lineItems = invoiceData.lineItems;
-      console.log("invoiceData", invoiceData, cart)
+      console.log("invoiceData", invoiceData, cart);
       await data.save();
       await createInvoiceandSendCustomer(invoiceData);
       const hotelUser = await User.findById(hotel.userId);
@@ -911,7 +911,7 @@ router.post("/hotel-details", async (req: Request, res: Response) => {
   }
 });
 
-const getDatesInRange = (startDate: Date, endDate: Date) => {
+const getDatesInRange = (startDate: any, endDate: any) => {
   const dateArray = [];
   let currentDate = new Date(startDate);
   const end = new Date(endDate);
@@ -935,14 +935,18 @@ router.post("/hotel-details/bulk-creations", async (req, res) => {
       startTime,
       endTime,
     } = req.body;
-    const start = new Date(startTime).toISOString().split("T")[1].split(".")[0];
-    const end = new Date(endTime).toISOString().split("T")[1].split(".")[0];
+
+    const start = moment(startTime).format("HH:mm"); // Formatting correctly
+    const end = moment(endTime).format("HH:mm");
+
     const hotel = await Hotel.findById(hotelId);
     if (!hotel) {
       return res.status(404).json({ message: "Hotel not found" });
     }
+
     hotel.titlesId = hotel.titlesId || [];
     const dateRange = getDatesInRange(startDate, endDate);
+
     for (const currentDate of dateRange) {
       for (const selectedTitle of title) {
         const productTitle = hotel.productTitle.find(
@@ -951,32 +955,30 @@ router.post("/hotel-details/bulk-creations", async (req, res) => {
         if (!productTitle) {
           continue;
         }
+
         const slots = createSlots(start, end, productTitle.slotTime);
 
-        console.log(
-          "productTitle.startTime,productTitle.endTime,",
-          start,
-          end,
-          productTitle.startTime,
-          productTitle.endTime
-        );
         const peoplePerSlot = Math.round(
           productTitle.maxGuestsperDay / slots.length
         );
+
         const startDateTime = moment(
           `${currentDate.toISOString().split("T")[0]} ${start}`,
-          "YYYY-MM-DD HH:mm:ss"
+          "YYYY-MM-DD HH:mm"
         ).toDate();
+
         const endDateTime = moment(
           `${currentDate.toISOString().split("T")[0]} ${end}`,
-          "YYYY-MM-DD HH:mm:ss"
+          "YYYY-MM-DD HH:mm"
         ).toDate();
+
         const {
           adultWeekdayPrice,
           adultWeekendPrice,
           childWeekdayPrice,
           childWeekendPrice,
         } = pricingFields[selectedTitle] || {};
+
         const hotelDetailDoc = new HotelDetails({
           title: selectedTitle,
           date: currentDate,
@@ -997,17 +999,21 @@ router.post("/hotel-details/bulk-creations", async (req, res) => {
               ? childWeekendPrice
               : undefined,
         });
+
         const savedHotelDetail = await hotelDetailDoc.save();
+
         for (const slot of slots) {
           const [slotStartTime, slotEndTime] = slot.split(" - ");
           const startSlotDateTime = moment(
             `${currentDate.toISOString().split("T")[0]} ${slotStartTime}`,
-            "YYYY-MM-DD hh:mm a"
+            "YYYY-MM-DD HH:mm"
           ).toDate();
+
           const endSlotDateTime = moment(
             `${currentDate.toISOString().split("T")[0]} ${slotEndTime}`,
-            "YYYY-MM-DD hh:mm a"
+            "YYYY-MM-DD HH:mm"
           ).toDate();
+
           const slotDoc = new Slot({
             hotelId,
             hotelProductId: savedHotelDetail._id,
@@ -1016,16 +1022,17 @@ router.post("/hotel-details/bulk-creations", async (req, res) => {
             endTime: endSlotDateTime,
             peoplePerSlot,
           });
+
           const savedSlot = await slotDoc.save();
           hotelDetailDoc.slots.push(savedSlot._id);
         }
+
         await hotelDetailDoc.save();
         hotel.titlesId.push(savedHotelDetail._id);
       }
     }
 
     await hotel.save();
-
     res.status(201).json({
       message: "Passes, hotel details, and slots added successfully",
       hotel,
@@ -1036,31 +1043,22 @@ router.post("/hotel-details/bulk-creations", async (req, res) => {
   }
 });
 
-const createSlots = (startTime: any, endTime: any, slotTime: string) => {
+const createSlots = (startTime: any, endTime: any, slotTime: any) => {
   const slots = [];
-  let start = new Date(`1970-01-01T${startTime}`);
-  let end = new Date(`1970-01-01T${endTime}`);
-  let slotDuration = parseInt(slotTime, 10) * 60 * 60 * 1000;
-  const breakTime = 0;
-  console.log("slots", startTime, endTime, start, end);
-  while (start < end) {
-    let slotEnd = new Date(start.getTime() + slotDuration);
-    if (slotEnd > end) break;
-    const formattedStart = start.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-    const formattedEnd = slotEnd.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-    console.log(`${formattedStart} - ${formattedEnd}`);
-    slots.push(`${formattedStart} - ${formattedEnd}`);
-    start = new Date(slotEnd.getTime() + breakTime);
+  const start = moment(startTime, "HH:mm");
+  const end = moment(endTime, "HH:mm");
+  const slotDuration = parseInt(slotTime, 10); // Assuming slotTime is in hours
+
+  while (start.isBefore(end)) {
+    const slotEnd = moment(start).add(slotDuration, "hours");
+    if (slotEnd.isAfter(end)) break;
+
+    slots.push(`${start.format("HH:mm")} - ${slotEnd.format("HH:mm")}`);
+    start.add(slotDuration, "hours"); // Move to next slot
   }
+
   return slots;
 };
-
 router.put("/hotel-details/slots/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -1271,42 +1269,42 @@ export const createInvoice = async (invoiceData: any): Promise<any> => {
   }
 };
 
-router.get("/voucher/html", async(req, res) =>{
-  const html = fs.readFileSync('voucher.html', 'utf8');
+router.get("/voucher/html", async (req, res) => {
+  const html = fs.readFileSync("voucher.html", "utf8");
 
-// Options for PDF creation
-const options = {
-    format: 'A4',
-    orientation: 'portrait',
-    border: '10mm',
-};
+  // Options for PDF creation
+  const options = {
+    format: "A4",
+    orientation: "portrait",
+    border: "10mm",
+  };
 
-// Data for the voucher (can be dynamic)
-const document = {
+  // Data for the voucher (can be dynamic)
+  const document = {
     html: html,
     data: {
-        bookingId: "EMT139772685",
-        hotelName: "Grace Residency",
-        guestName: "Satish Patil",
-        checkIn: "21 Sep 2024 12:00 PM",
-        checkOut: "22 Sep 2024 11:00 AM",
-        roomType: "Standard Double Room",
-        totalPayable: "3374.26",
-        gstNumber: "27AAACE7066P1Z3",
-        clientName: "Endurance Technologies Ltd",
-        clientAddress: "K226/1 MIDC Waluj Aurangabad"
+      bookingId: "EMT139772685",
+      hotelName: "Grace Residency",
+      guestName: "Satish Patil",
+      checkIn: "21 Sep 2024 12:00 PM",
+      checkOut: "22 Sep 2024 11:00 AM",
+      roomType: "Standard Double Room",
+      totalPayable: "3374.26",
+      gstNumber: "27AAACE7066P1Z3",
+      clientName: "Endurance Technologies Ltd",
+      clientAddress: "K226/1 MIDC Waluj Aurangabad",
     },
     path: `./uploads/invoices/Grace Residency.pdf`,
     type: "", // "buffer" for raw PDF data
-};
+  };
 
-// Create PDF
-try {
-  const res = await pdf.create(document, options);
-  console.log(`Invoice created at: ${res.filename}`);
-  return res;
-} catch (error) {
-  console.error("Error creating PDF:", error);
-}
-})
+  // Create PDF
+  try {
+    const res = await pdf.create(document, options);
+    console.log(`Invoice created at: ${res.filename}`);
+    return res;
+  } catch (error) {
+    console.error("Error creating PDF:", error);
+  }
+});
 export default router;
