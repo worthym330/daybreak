@@ -32,6 +32,7 @@ export interface HotelType {
   mapurl: string;
   status: boolean;
   titlesId?: string[];
+  addOns?: string[];
 }
 
 export type BookingType = {

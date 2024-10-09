@@ -14,6 +14,7 @@ import waitlistRoutes from "./routes/waitlist";
 import contactRoutes from "./routes/contactus";
 import invoiceRoutes from "./routes/serviceRecord";
 import discountRoutes from "./routes/discount";
+import addOnRoutes from "./routes/addOn";
 import axios from "axios";
 const url = require("url");
 
@@ -59,6 +60,7 @@ app.use("/api/waitlist/", waitlistRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/invoice", invoiceRoutes);
 app.use("/api/discount", discountRoutes);
+app.use("/api/add-ons", addOnRoutes);
 
 app.get("/expand-url", async (req: Request, res: Response) => {
   const { url } = req.query;

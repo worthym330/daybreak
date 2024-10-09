@@ -9,6 +9,7 @@ import axios from "axios";
 const passport = require("passport");
 import { OAuth2Client } from "google-auth-library";
 import { resetPass } from "./mail";
+import Hotel from "../models/hotel";
 const crypto = require("crypto");
 
 const router = express.Router();
@@ -330,12 +331,15 @@ router.post(
         }
       );
 
+      const hotel = await Hotel.findOne({userId:user._id})
+
       const userPayload = {
         token: token,
         name: `${user.firstName} ${user.lastName}`,
         email: user.email,
-        id: user.id,
+        id: user._id,
         role: user.role,
+        hotelId:user.role !== "admin" ? hotel?._id : null
       };
 
       res.cookie("auth_token", token, {
