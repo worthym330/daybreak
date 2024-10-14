@@ -1050,11 +1050,11 @@ const createSlots = (startTime: any, endTime: any, slotTime: any) => {
   const slotDuration = parseInt(slotTime, 10); // Assuming slotTime is in hours
 
   while (start.isBefore(end)) {
-    const slotEnd = moment(start).add(slotDuration, "hours");
+    const slotEnd = moment(start).add(slotDuration, "minutes");
     if (slotEnd.isAfter(end)) break;
 
     slots.push(`${start.format("HH:mm")} - ${slotEnd.format("HH:mm")}`);
-    start.add(slotDuration, "hours"); // Move to next slot
+    start.add(slotDuration, "minutes"); // Move to next slot
   }
 
   return slots;
