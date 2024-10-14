@@ -297,7 +297,7 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
               >
                 <option value="">Select a slot</option>
                 {availableSlots.filter((e:any)=> e.status && moment(e.startTime).isAfter(moment())).map((slot: any, index) => (
-                  <option key={index} value={`${slot.startTime} - ${slot.endTime}` }>
+                  <option key={index} value={`${moment(slot.startTime).format('LT')} - ${moment(slot.endTime).format('LT')}` }>
                     {`${moment(slot.startTime).format('LT')} - ${moment(slot.endTime).format('LT')}` }
                   </option>
                 ))}
