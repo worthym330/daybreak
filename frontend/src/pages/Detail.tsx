@@ -26,12 +26,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import { FaLocationDot } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
-import {
-  clearCart,
-  removeFromCart,
-  setDate,
-  setError,
-} from "../store/cartSlice";
+import { removeFromCart, setDate, setError } from "../store/cartSlice";
 import { toast } from "react-toastify";
 import {
   initialModalState,
@@ -336,11 +331,11 @@ const Detail = () => {
     setCartItems(cart);
   }
 
-  function clearAllCart() {
-    localStorage.removeItem("cart");
-    dispatch(clearCart());
-    setCartItems([]);
-  }
+  // function clearAllCart() {
+  //   localStorage.removeItem("cart");
+  //   dispatch(clearCart());
+  //   setCartItems([]);
+  // }
 
   // const handleDateChange = (event: any) => {
   //   const dateString = event.target.value;
@@ -786,12 +781,14 @@ const Detail = () => {
             </div>
           </div>
           {cartItems.length > 0 && (
-            <div className="fixed bottom-2 left-0 w-full bg-white shadow-lg border-t p-2 z-10 md:hidden border border-goldColor rounded-md">
+            <div className="fixed bottom-0 pb-4 left-0 w-full bg-white shadow-lg border-t p-2 z-10 md:hidden">
               <div className="flex justify-between items-center">
                 {/* Display amount */}
                 <div className="flex flex-col text-[#02596C] gap-2">
-                  <span className="text-sm">Subtotal</span>
-                  <span className="text-base font-bold">₹{subtotal.toFixed(2)}</span>
+                  <span className="text-sm">Subtotal:</span>
+                  <span className="text-base font-bold">
+                    ₹{subtotal.toFixed(2)}
+                  </span>
                 </div>
 
                 <div className="flex gap-2">
@@ -802,12 +799,12 @@ const Detail = () => {
                   >
                     Book Now
                   </Button>
-                  <button
+                  {/* <button
                     className="text-gray-500"
                     onClick={() => clearAllCart()}
                   >
                     ×
-                  </button>
+                  </button> */}
                 </div>
               </div>
             </div>

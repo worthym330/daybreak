@@ -30,7 +30,7 @@ console.log(cartItems)
   },[location])
 
   return (
-    <div className={`bg-[#02596c] mt-8 font-poppins ${isDetail && cartItems.length >0 ? "mb-16":""}`} >
+    <div className={`bg-[#02596c] mt-8 font-poppins ${isDetail && cartItems.length >0 ? "mb-20":""}`} >
       <RenderLoginModal
         modal={modal}
         setModal={setModal}
