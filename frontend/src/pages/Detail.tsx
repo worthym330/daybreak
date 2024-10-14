@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import * as apiClient from "./../api-client";
 import { AiFillStar } from "react-icons/ai";
 import {
-  FaCalendar,
+  // FaCalendar,
   FaDumbbell,
   FaHeart,
   FaParking,
@@ -26,7 +26,12 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import { FaLocationDot } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
-import { removeFromCart, setDate, setError } from "../store/cartSlice";
+import {
+  clearCart,
+  removeFromCart,
+  setDate,
+  setError,
+} from "../store/cartSlice";
 import { toast } from "react-toastify";
 import {
   initialModalState,
@@ -97,13 +102,13 @@ const Detail = () => {
   const [cartItems, setCartItems] = useState<any[]>([]);
   const auth_token = Cookies.get("authentication") || "null";
   const userLogined = JSON.parse(auth_token);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [address, setAddress] = useState("");
   const [coordinates, setCoordinates] = useState({ lat: 0, lng: 0 });
   const mapContainerRef = useRef(null);
   const dispatch = useDispatch();
   const error = useSelector((state: RootState) => state.cart.error);
-  const date = useSelector((state: RootState) => state.cart.date);
+  // const date = useSelector((state: RootState) => state.cart.date);
   const [modal, setModal] = useState(initialModalState);
   const [resetModal, setResetModal] = useState(initialResetModal);
   const [signupModal, setSignupModal] = useState(initialSignupModalState);
@@ -267,11 +272,11 @@ const Detail = () => {
   });
 
   const handleToggleFavourite = () => {
-    if(auth.isAuthenticated){
+    if (auth.isAuthenticated) {
       toggleFavouriteMutation.mutate();
-    }else{
-      dispatch(addHotel(hotel))
-      setModal((prev: any) => ({ ...prev, state: true,hotel }));
+    } else {
+      dispatch(addHotel(hotel));
+      setModal((prev: any) => ({ ...prev, state: true, hotel }));
     }
   };
 
@@ -331,26 +336,32 @@ const Detail = () => {
     setCartItems(cart);
   }
 
-  const handleDateChange = (event: any) => {
-    const dateString = event.target.value;
-    const selectedDate = new Date(dateString);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+  function clearAllCart() {
+    localStorage.removeItem("cart");
+    dispatch(clearCart());
+    setCartItems([]);
+  }
 
-    if (!isNaN(selectedDate.getTime())) {
-      if (selectedDate < today) {
-        console.error("Selected date cannot be earlier than today.");
-        setError(true);
-      } else {
-        dispatch(setError(false));
-        dispatch(setDate(selectedDate.toISOString()));
-        Cookies.set("date", dateString, { expires: 1 });
-      }
-    } else {
-      dispatch(setDate(null));
-      Cookies.remove("date");
-    }
-  };
+  // const handleDateChange = (event: any) => {
+  //   const dateString = event.target.value;
+  //   const selectedDate = new Date(dateString);
+  //   const today = new Date();
+  //   today.setHours(0, 0, 0, 0);
+
+  //   if (!isNaN(selectedDate.getTime())) {
+  //     if (selectedDate < today) {
+  //       console.error("Selected date cannot be earlier than today.");
+  //       setError(true);
+  //     } else {
+  //       dispatch(setError(false));
+  //       dispatch(setDate(selectedDate.toISOString()));
+  //       Cookies.set("date", dateString, { expires: 1 });
+  //     }
+  //   } else {
+  //     dispatch(setDate(null));
+  //     Cookies.remove("date");
+  //   }
+  // };
 
   return (
     <div className="space-y-6">
@@ -492,7 +503,7 @@ const Detail = () => {
 
             <div className="w-full break-words mb-5">{hotel.description}</div>
 
-            <span className="text-lg font-medium mb-3">
+            {/* <span className="text-lg font-medium mb-3">
               Book your Daycation
             </span>
             <div className="flex items-center gap-2">
@@ -526,7 +537,7 @@ const Detail = () => {
                   Invalid date. Please select a valid date.
                 </p>
               )}
-            </div>
+            </div> */}
             <hr className="border-gray-200 mb-3 w-full" />
             <span className="text-lg font-medium">Select a product</span>
             <div className="mt-5">
@@ -635,7 +646,7 @@ const Detail = () => {
 
           {/* Cart Section */}
           <div className="w-full lg:w-1/3">
-            {cartItems.length > 0 && (
+            {/* {cartItems.length > 0 && (
               <div className="h-fit sticky top-4 lg:hidden">
                 <div className="p-4 bg-white rounded-lg shadow-md border-2 border-[#00C0CB]">
                   <div className="flex items-center justify-between mb-4">
@@ -652,9 +663,6 @@ const Detail = () => {
                         <h3 className="text-md font-semibold">
                           {cartItems[0].hotel.name}
                         </h3>
-                        <p className="text-sm text-gray-500">
-                          {/* {moment(selectedDate).format('DD/MM/YYYY')} */}
-                        </p>
                       </div>
                     </div>
 
@@ -685,10 +693,6 @@ const Detail = () => {
                         <span>Subtotal:</span>
                         <span>₹{subtotal.toFixed(2)}</span>
                       </div>
-                      {/* <div className="flex justify-between text-gray-700 mb-2">
-                        <span>GST:</span>
-                        <span>₹{(subtotal * 0.18).toFixed(2)}</span>
-                      </div> */}
                       <div className="flex justify-between text-gray-700 mb-2">
                         <span>Total:</span>
                         <span>₹{subtotal.toFixed(2)}</span>
@@ -703,7 +707,7 @@ const Detail = () => {
                   </div>
                 </div>
               </div>
-            )}
+            )} */}
             <div className="h-fit sticky top-4 hidden lg:block">
               <div className="p-4 bg-white rounded-lg shadow-md border-2 border-[#00C0CB]">
                 <div className="flex items-center justify-between mb-4">
@@ -736,9 +740,6 @@ const Detail = () => {
                           <h3 className="text-md font-semibold">
                             {cartItems[0].hotel.name}
                           </h3>
-                          <p className="text-sm text-gray-500">
-                            {/* {moment(selectedDate).format('DD/MM/YYYY')} */}
-                          </p>
                         </div>
                       </div>
 
@@ -767,11 +768,6 @@ const Detail = () => {
                           </div>
                         ))}
                       <div className="mt-4 border-t pt-4">
-                        {/* <di. */}
-                        {/* <div className="flex justify-between text-gray-700 mb-2">
-                          <span>GST:</span>
-                          <span>₹{(subtotal * 0.18).toFixed(2)}</span>
-                        </div> */}
                         <div className="flex justify-between text-gray-700 mb-2">
                           <span>Total:</span>
                           <span>₹{subtotal.toFixed(2)}</span>
@@ -789,6 +785,33 @@ const Detail = () => {
               </div>
             </div>
           </div>
+          {cartItems.length > 0 && (
+            <div className="fixed bottom-0 left-0 w-full bg-white shadow-lg border-t p-2 z-10 md:hidden border border-goldColor rounded-md">
+              <div className="flex justify-between items-center">
+                {/* Display amount */}
+                <div className="flex flex-col text-[#02596C] gap-2">
+                  <span className="text-sm">Subtotal</span>
+                  <span className="text-base font-bold">₹{subtotal.toFixed(2)}</span>
+                </div>
+
+                <div className="flex gap-2">
+                  {/* Book Now Button */}
+                  <Button
+                    onClick={() => navigate(`/checkout`)}
+                    className="bg-[#02596C] text-white px-6 py-3 rounded-full text-lg"
+                  >
+                    Book Now
+                  </Button>
+                  <button
+                    className="text-gray-500"
+                    onClick={() => clearAllCart()}
+                  >
+                    ×
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
           {/* Cart Section */}
         </div>
       </div>

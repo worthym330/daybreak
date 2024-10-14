@@ -280,7 +280,7 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
                   setDate(date.target.value);
                 }}
                 min={new Date().toISOString().split("T")[0]}
-                className="pl-10 w-full"
+                className="pl-10 w-full px-4 py-2 border rounded-md"
               />
             </div>
           </div>
@@ -351,7 +351,7 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
                 {moment(product.endTime, "HH:mm").format("hh:mm A")}
               </span>
             </div>
-            <div className="text-sm text-gray-600 mt-2 space-y-1">
+            <div className="text-sm text-gray-600 my-2 space-y-1">
               {/* {product.features.map((feature:any, index:number) => (
                 <li key={index}>{feature}</li>
               ))} */}

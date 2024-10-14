@@ -1,5 +1,5 @@
 import { FaFacebook, FaInstagram, FaLinkedinIn } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   initialModalState,
   initialResetModal,
@@ -8,8 +8,10 @@ import {
   RenderSignUpModal,
   ResetPassRequest,
 } from "./Header";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ListmyHotelRender } from "../pages/ListmyHotel";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
 
 const Footer = () => {
   const [modal, setModal] = useState(initialModalState);
@@ -18,8 +20,17 @@ const Footer = () => {
   const [HotelRegisterModal, setHotelRegisterModal] =
     useState(initialModalState);
 
+  const location = useLocation()
+  const [isDetail, setIsDetail] = useState(false)
+  const cartItems = useSelector((state: RootState) => state.cart.items);
+console.log(cartItems)
+  useEffect(()=>{
+    const loc = location.pathname.startsWith('/hotel-detail/')
+    setIsDetail(loc)
+  },[location])
+
   return (
-    <div className="bg-[#02596c] mt-8 font-poppins">
+    <div className={`bg-[#02596c] mt-8 font-poppins ${isDetail && cartItems.length >0 ? "mb-16":""}`} >
       <RenderLoginModal
         modal={modal}
         setModal={setModal}

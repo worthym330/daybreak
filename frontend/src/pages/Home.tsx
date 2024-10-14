@@ -116,7 +116,7 @@ const Home = () => {
           <img
             src={"/3.jpg"}
             alt="Welcome"
-            className={`absolute inset-0 w-full h-[95%] object-cover ${
+            className={`absolute inset-0 w-full h-[90%] object-cover ${
               isLoaded ? "hidden" : "block"
             } `}
           />
@@ -128,7 +128,7 @@ const Home = () => {
           autoPlay
           loop
           muted
-          className={`absolute inset-0 w-full h-[95%] object-cover ${
+          className={`absolute inset-0 w-full h-[90%] object-cover ${
             isLoaded ? "block" : "hidden"
           }`}
           onLoadedData={() => setIsLoaded(true)}
@@ -147,44 +147,46 @@ const Home = () => {
 
           <div className="w-full md:w-2/3 lg:w-1/2">
             <form
-              className="flex items-center md:p-2 bg-white rounded-full shadow-md w-full"
+              className="flex items-center  p-4 md:p-2 bg-white rounded-full shadow-md w-full"
               onSubmit={handleSubmit}
             >
-              <div className="flex items-center flex-1 px-2">
-                <div className="flex items-center md:space-x-2">
-                  <span className="text-xl">
-                    <FaLocationDot className="w-6 h-6 text-[#02596c]" />
-                  </span>
-                  <input
-                    type="text"
-                    placeholder="Location"
-                    className="outline-none bg-transparent placeholder-[#02596c] text-[#02596c] p-1 md:p-2 w-full"
-                    value={destination}
-                    onChange={(event) => setDestination(event.target.value)}
-                  />
+              <div className="flex flex-col md:flex-row w-5/6 gap-2">
+                <div className="flex items-center flex-1 px-2">
+                  <div className="flex items-center md:space-x-2">
+                    <span className="text-xl">
+                      <FaLocationDot className="w-6 h-6 text-[#02596c]" />
+                    </span>
+                    <input
+                      type="text"
+                      placeholder="Location"
+                      className="outline-none bg-transparent placeholder-[#02596c] text-[#02596c] p-1 md:p-2 w-full"
+                      value={destination}
+                      onChange={(event) => setDestination(event.target.value)}
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="h-8 border border-gray-300"></div>
-              <div className="flex items-center flex-1 px-2">
-                <div className="flex items-center md:space-x-2">
-                  <span className="text-xl text-[#02596c]">
-                    <FaCalendar className="w-6 h-6" />
-                  </span>
-                  <DatePicker
-                    selected={checkIn}
-                    onChange={(date) => setCheckIn(date as Date)}
-                    selectsStart
-                    startDate={checkIn}
-                    minDate={minDate}
-                    // isClearable={true}
-                    maxDate={maxDate}
-                    placeholderText="Check-In Date"
-                    className="outline-none bg-transparent placeholder-[#02596c] text-[#02596c] p-1 md:p-2 w-full"
-                  />
+                <div className="h-8 border border-gray-300 hidden md:block"></div>
+                <div className="flex items-center flex-1 px-2">
+                  <div className="flex items-center md:space-x-2">
+                    <span className="text-xl text-[#02596c]">
+                      <FaCalendar className="w-6 h-6" />
+                    </span>
+                    <DatePicker
+                      selected={checkIn}
+                      onChange={(date) => setCheckIn(date as Date)}
+                      selectsStart
+                      startDate={checkIn}
+                      minDate={minDate}
+                      // isClearable={true}
+                      maxDate={maxDate}
+                      placeholderText="Check-In Date"
+                      className="outline-none bg-transparent placeholder-[#02596c] text-[#02596c] p-1 md:p-2 w-full"
+                    />
+                  </div>
                 </div>
               </div>
               <button
-                className="flex items-center justify-center px-6 py-2 ml-2 text-white bg-orange-500 rounded-full"
+                className="flex items-center justify-center px-6 py-2 ml-2 text-white bg-orange-500 rounded-full w-1/6"
                 type="submit"
               >
                 <span className="text-lg">
@@ -210,14 +212,11 @@ const Home = () => {
           Most recent destinations added by our hosts
         </p>
         <div className="grid gap-4 lg:gap-2 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 px-4 lg:px-0 pt-10">
-          {latestDestHotels
-            .slice(0, 6)
-            .reverse()
-            .map((hotel: any) => (
-              // <Link to={`/hotel-detail/${hotel._id}`}>
-              <LatestDestinationCard key={hotel.id} hotel={hotel} />
-              // </Link>
-            ))}
+          {latestDestHotels.slice(0, 6).map((hotel: any) => (
+            // <Link to={`/hotel-detail/${hotel._id}`}>
+            <LatestDestinationCard key={hotel.id} hotel={hotel} />
+            // </Link>
+          ))}
         </div>
       </section>
 
