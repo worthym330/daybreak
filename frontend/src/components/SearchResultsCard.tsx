@@ -44,7 +44,7 @@ const SearchResultsCard = ({ hotel }: Props) => {
   const isFavourite = favorites.some((fav: any) => fav._id === hotel._id);
 
   const handleButtonClick = (id: string) => {
-      navigate(`/hotel-detail/${id}`);
+    navigate(`/hotel-detail/${id}`);
   };
 
   const handleToggleFavourite = async () => {
@@ -83,8 +83,8 @@ const SearchResultsCard = ({ hotel }: Props) => {
         console.error("An error occurred while toggling favorite");
       }
     } else {
-      dispatch(addHotel(hotel))
-      setModal((prev: any) => ({ ...prev, state: true,hotel }));
+      dispatch(addHotel(hotel));
+      setModal((prev: any) => ({ ...prev, state: true, hotel }));
     }
   };
 
@@ -223,26 +223,8 @@ const SearchResultsCard = ({ hotel }: Props) => {
             </div>
           </div>
 
-          {/* <div className="flex flex-col gap-1 text-white">
-            <span className="text-sm text-black font-bold">Products </span>
-            <span className="flex flex-wrap">
-              {hotel.productTitle.slice(0, 3).map((facility, index) => (
-                <span
-                  key={index}
-                  className="bg-goldColor p-2 rounded-md text-xs"
-                >
-                  {facility.title}
-                </span>
-              ))}
-            </span>
-            <span className="text-sm text-black">
-              {hotel.productTitle.length > 3 &&
-                `+${hotel.productTitle.length - 3} more`}
-            </span>
-          </div> */}
-
           {/* Passes Price Details Start */}
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col lg:flex-row justify-between items-center">
             <div className="flex flex-wrap gap-2 mt-3">
               {hotel.productTitle.slice(0, 3).map((facility, index) => (
                 <div
@@ -268,7 +250,7 @@ const SearchResultsCard = ({ hotel }: Props) => {
                 </span>
               </div>
             </div>
-            <div className="">
+            <div className="mt-3 lg:mt-0">
               <Button
                 className="text-sm text-nowrap"
                 onClick={() => handleButtonClick(hotel._id)}
@@ -280,18 +262,6 @@ const SearchResultsCard = ({ hotel }: Props) => {
           {/* Passes Price Details Start */}
         </div>
         {/* Content Section End */}
-      </div>
-      <div className="grid gap-2 content-end">
-        {/* <span className="text-btnColor font-bold text-nowrap">
-          <span className="text-gray-700 font-medium">Starting from</span> ₹{" "}
-          {hotel?.productTitle[0]?.adultPrice}
-        </span> */}
-        {/* <Button
-          className="text-sm text-nowrap"
-          onClick={() => handleButtonClick(hotel._id)}
-        >
-          Book Now
-        </Button> */}
       </div>
     </div>
   );
