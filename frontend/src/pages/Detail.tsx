@@ -786,7 +786,7 @@ const Detail = () => {
             </div>
           </div>
           {cartItems.length > 0 && (
-            <div className="fixed bottom-0 left-0 w-full bg-white shadow-lg border-t p-2 z-10 md:hidden border border-goldColor rounded-md">
+            <div className="fixed bottom-2 left-0 w-full bg-white shadow-lg border-t p-2 z-10 md:hidden border border-goldColor rounded-md">
               <div className="flex justify-between items-center">
                 {/* Display amount */}
                 <div className="flex flex-col text-[#02596C] gap-2">
