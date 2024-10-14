@@ -69,7 +69,7 @@ export const titleIcons = {
   "SWIMMING POOL PASS": <FaSwimmingPool />,
   BREAKFAST: <MdFreeBreakfast />, // Breakfast icon
   "BRUNCH WITH SWIMMING POOL": <FaUtensils />, // Brunch with a pool icon
-  "BUFFET LUNCH" : <FaUtensils />, // Buffet icon
+  "BUFFET LUNCH": <FaUtensils />, // Buffet icon
   "BUFFET LUNCH WITH SWIMMING POOL": <FaUtensils />, // Buffet with a pool
   "HI-TEA": <FaUtensils />, // Hi-tea icon (using utensils as a general icon)
   "HI-TEA WITH SWIMMING POOL": <FaUtensils />, // Hi-tea with pool
@@ -117,14 +117,22 @@ const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
           {/* Left Box */}
           <div className="w-2/3 pr-4">
             <h2 className="text-xl flex">
-              <span className="text-white bg-[#00C0CB] text-center content-center border border-[#00C0CB] p-2 rounded-l-md">
-                {titleIcons[product.title.toUpperCase() as TitleKey] && (
-                  <span>
-                    {titleIcons[product.title.toUpperCase() as TitleKey]}
-                  </span>
-                )}
-              </span>
-              <span className="font-semibold text-[#00C0CB] border border-[#00C0CB] rounded-r-md p-2">
+              {titleIcons[product.title.toUpperCase() as TitleKey] && (
+                <span className="text-white bg-[#00C0CB] text-center content-center border border-[#00C0CB] p-2 rounded-l-md">
+                  {titleIcons[product.title.toUpperCase() as TitleKey] && (
+                    <span>
+                      {titleIcons[product.title.toUpperCase() as TitleKey]}
+                    </span>
+                  )}
+                </span>
+              )}
+              <span
+                className={`font-semibold text-[#00C0CB] border border-[#00C0CB] p-2 ${
+                  titleIcons[product.title.toUpperCase() as TitleKey]
+                    ? "rounded-r-md"
+                    : "rounded-md"
+                }`}
+              >
                 {product.title}
               </span>
             </h2>

@@ -193,8 +193,8 @@ const Search = () => {
                   isSearchable
                   options={cityOptions}
                   value={selectedCities}
-                  onChange={(option:any) => {
-                    setSelectedCities(option.map((e:any) => e));
+                  onChange={(option: any) => {
+                    setSelectedCities(option.map((e: any) => e));
                   }}
                   placeholder="Select Cities"
                   className="mt-4"
@@ -273,7 +273,7 @@ const Search = () => {
           Showing {hotelData?.pagination.total} Hotels
           {search.destination ? ` in ${search.destination}` : ""}
         </span>
-        {hotelData?.data?.map((hotel: any) => (
+        {hotelData?.data?.reverse().map((hotel: any) => (
           <SearchResultsCard key={hotel.id} hotel={hotel} />
         ))}
         <div>
