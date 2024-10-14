@@ -129,12 +129,12 @@ const Booking = () => {
       {cartItems.length > 0 ? (
         <div className="flex flex-col md:flex-row gap-4">
           <div className="w-full md:w-1/3">
-            <div className="p-4 space-y-4 w-full rounded-xl shadow-md border border-gray-400">
+            <div className="p-2 md:p-4 space-y-4 w-full rounded-xl shadow-md border border-gray-400">
               <h2 className="text-xl font-bold px-4">Your Booking Details</h2>
               <div className="space-y-4 p-4">
                 {carts.slice(0, 1).map((item: any, index: any) => (
                   <div
-                    className="flex items-center space-x-4 bg-red-100"
+                    className="flex items-center space-x-4"
                     key={index}
                   >
                     <img
