@@ -33,6 +33,7 @@ export interface HotelType {
   status: boolean;
   titlesId?: string[];
   addOns?: string[];
+  createdAt? : Date
 }
 
 export type BookingType = {
@@ -93,4 +94,5 @@ export interface ProductType {
   isChildPrice: boolean;
   maxGuestsperDay: number;
   breakTime: string;
+  addOns?:any
 }

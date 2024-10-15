@@ -1,7 +1,7 @@
 import * as apiClient from "../api-client";
 import BookingForm from "../forms/BookingForm/BookingForm";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "../components/Button";
 import {
   initialModalState,
@@ -133,10 +133,7 @@ const Booking = () => {
               <h2 className="text-xl font-bold px-4">Your Booking Details</h2>
               <div className="space-y-4 p-4">
                 {carts.slice(0, 1).map((item: any, index: any) => (
-                  <div
-                    className="flex items-center space-x-4"
-                    key={index}
-                  >
+                  <div className="flex items-center space-x-4" key={index}>
                     <img
                       src={item.hotel.imageUrls[0]}
                       alt={item.hotel.name}
@@ -159,8 +156,6 @@ const Booking = () => {
                     key={index}
                   >
                     <div className="flex items-center space-x-2">
-                      {/* <div className="bg-teal-500 p-2 rounded-full">
-                      </div> */}
                       <span className="flex flex-col">
                         <span>{item.product.title}</span>
                         {item.adultCount > 0 && (
@@ -195,6 +190,44 @@ const Booking = () => {
                     </div>
                   </div>
                 ))}
+                {carts.map((item: any, index: any) => {
+                  const addOnTotal = item.selectedAddOns
+                    ? item.selectedAddOns.reduce(
+                        (total: number, addOn: any) =>
+                          total + addOn.price * addOn.quantity,
+                        0
+                      )
+                    : 0;
+
+                  return (
+                    <React.Fragment key={index}>
+                      {" "}
+                      {/* Use React.Fragment and pass key here */}
+                      {addOnTotal > 0 &&
+                        item.selectedAddOns &&
+                        item.selectedAddOns.length > 0 && ( // Check if addOnTotal > 0
+                          <div className="flex justify-between items-center gap-4 py-2 text-xs text-gray-600">
+                            <div>
+                              <h4 className="font-semibold">Add-Ons:</h4>
+                              {item.selectedAddOns.map(
+                                (addOn: any, addOnIndex: number) => (
+                                  <div
+                                    key={addOnIndex}
+                                    className="flex justify-between"
+                                  >
+                                    <span>
+                                      {addOn.name} ({addOn.quantity})
+                                    </span>
+                                  </div>
+                                )
+                              )}
+                            </div>
+                            <span>₹ {addOnTotal.toFixed(2)}</span>
+                          </div>
+                        )}
+                    </React.Fragment>
+                  );
+                })}
               </div>
             </div>
           </div>

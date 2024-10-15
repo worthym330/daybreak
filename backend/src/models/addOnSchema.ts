@@ -7,6 +7,7 @@ const addOnSchema = new mongoose.Schema(
       ref: "Hotel",
       required: true,
     },
+    productId:{type: String},
     name: { type: String, required: true },
     description: { type: String },
     price: { type: Number, required: true },

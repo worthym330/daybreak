@@ -86,7 +86,7 @@ router.get("/search", async (req: Request, res: Response) => {
 
 router.get("/", async (req: Request, res: Response) => {
   try {
-    const hotels = await Hotel.find().sort("-lastUpdated");
+    const hotels = await Hotel.find().sort({ createdTime: -1 });
     res.json(hotels);
   } catch (error) {
     console.log("error", error);
@@ -106,10 +106,15 @@ router.get(
     const id = req.params.id.toString();
 
     try {
-      const hotel = await Hotel.findById(id).populate({
-        path: "titlesId",
-        populate: { path: "slots" },
-      });
+      const hotel = await Hotel.findById(id)
+        .populate({
+          path: "titlesId",
+          populate: { path: "slots" },
+        })
+        .populate({
+          path: "productTitle.addOns",
+          model: "AddOn",
+        });
       res.json(hotel);
     } catch (error) {
       console.log(error);
@@ -202,7 +207,7 @@ router.post(
         firstName,
         lastName,
       } = req.body;
-      console.log(email, req.userId);
+      console.log("email, req.userId", cart);
       let user, mailPayload, token, password;
       // Verify the payment signature
       const payment = await razorpayInstance.payments.fetch(paymentIntentId);

@@ -302,18 +302,29 @@ const Detail = () => {
   }
 
   const calculateSubtotal = (items: any) => {
+    // Define the GST rate if needed
     // const GST_RATE = 0.18;
+
     return items.reduce((total: number, item: any) => {
+      // Calculate totals for adults and children
       const adultTotal =
         item.adultCount > 0 ? item.adultCount * item.product.adultPrice : 0;
       const childTotal =
         item.childCount > 0 ? item.childCount * item.product.childPrice : 0;
 
-      // Calculate GST for adult and child totals
-      // const adultGST = adultTotal * (1 + GST_RATE);
-      // const childGST = childTotal * (1 + GST_RATE);
+      // Initialize the subtotal for the current item
+      let itemSubtotal = adultTotal + childTotal;
 
-      return total + adultTotal + childTotal;
+      // Calculate totals for selected add-ons
+      if (item.selectedAddOns && item.selectedAddOns.length > 0) {
+        item.selectedAddOns.forEach((addOn: any) => {
+          // Multiply add-on price by quantity to get the total for this add-on
+          itemSubtotal += addOn.price * addOn.quantity;
+        });
+      }
+
+      // Add item subtotal to the overall total
+      return total + itemSubtotal;
     }, 0);
   };
 
@@ -740,26 +751,50 @@ const Detail = () => {
 
                       {cartItems.length > 0 &&
                         cartItems.map((item: any, index: any) => (
-                          <div
-                            key={index}
-                            className="flex justify-between items-center mb-4"
-                          >
-                            <div>
-                              <h3 className="text-sm">
-                                {item.product.title} Adult ({item.adultCount}){" "}
-                                {item.childCount > 0 && (
-                                  <p>Child ({item.childCount})</p>
-                                )}
-                              </h3>
+                          <div key={index} className="mb-4">
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <h3 className="text-sm">
+                                  {item.product.title} Adult ({item.adultCount}){" "}
+                                  {item.childCount > 0 && (
+                                    <span>Child ({item.childCount})</span>
+                                  )}
+                                </h3>
+                              </div>
+                              <button
+                                className="text-gray-500"
+                                onClick={() =>
+                                  handleRemoveItem(item.product.title)
+                                }
+                              >
+                                ×
+                              </button>
                             </div>
-                            <button
-                              className="text-gray-500"
-                              onClick={() =>
-                                handleRemoveItem(item.product.title)
-                              }
-                            >
-                              ×
-                            </button>
+                            {/* Display selected add-ons */}
+                            {item.selectedAddOns &&
+                              item.selectedAddOns.length > 0 && (
+                                <div className="mt-2 text-xs text-gray-600">
+                                  <h4 className="font-semibold">Add-Ons:</h4>
+                                  {item.selectedAddOns.map(
+                                    (addOn: any, addOnIndex: number) => (
+                                      <div
+                                        key={addOnIndex}
+                                        className="flex justify-between"
+                                      >
+                                        <span>
+                                          {addOn.name} ({addOn.quantity})
+                                        </span>
+                                        <span>
+                                          ₹
+                                          {(
+                                            addOn.price * addOn.quantity
+                                          ).toFixed(2)}
+                                        </span>
+                                      </div>
+                                    )
+                                  )}
+                                </div>
+                              )}
                           </div>
                         ))}
                       <div className="mt-4 border-t pt-4">
