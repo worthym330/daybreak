@@ -3,7 +3,7 @@ import Button from "./Button";
 import moment from "moment";
 import { addToCart } from "../store/cartSlice";
 import { useDispatch } from "react-redux";
-import { FaCalendar } from "react-icons/fa";
+import { FaCalendar, FaMinusCircle, FaPlusCircle } from "react-icons/fa";
 import { toast } from "react-toastify";
 
 const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
@@ -135,6 +135,12 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
     }
   }, [slotValues, date]);
 
+  useEffect(() => {
+    if (childCount === 0 && adultCount === 0) {
+      setSelectedAddOns([]);
+    }
+  }, [childCount, adultCount]);
+
   return (
     <div
       className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50"
@@ -211,24 +217,25 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
             <span>Adult (over 13)</span>
             <div className="flex items-center">
               <button
-                className="px-2 py-1 text-gray-600"
+                className="px-2 py-1 text-red-600 disabled:cursor-not-allowed"
+                disabled={!date}
                 onClick={() => {
                   setAdultCount(Math.max(0, adultCount - 1));
                   setTotal(total - product.adultPrice);
                 }}
               >
-                −
+                <FaMinusCircle className="w-4 h-4" />
               </button>
               <span className="mx-2">{adultCount}</span>
               <button
-                className="px-2 py-1 text-gray-600"
+                className="px-2 py-1 text-green-600 disabled:cursor-not-allowed"
                 disabled={!date}
                 onClick={() => {
                   setAdultCount(adultCount + 1);
                   setTotal(total + product.adultPrice);
                 }}
               >
-                +
+                <FaPlusCircle className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -239,24 +246,26 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
               <span>Children (age 3 to 12)</span>
               <div className="flex items-center">
                 <button
-                  className="px-2 py-1 text-gray-600"
+                  className="px-2 py-1 text-red-600 disabled:cursor-not-allowed"
                   onClick={() => {
                     setChildCount(Math.max(0, childCount - 1));
                     setTotal(total - product.childPrice);
                   }}
+                  disabled={!date}
                 >
-                  −
+                  <FaMinusCircle className="w-4 h-4" />
                 </button>
                 <span className="mx-2">{childCount}</span>
                 <button
-                  className="px-2 py-1 text-gray-600"
+                  className="px-2 py-1 text-green-600 disabled:cursor-not-allowed"
                   onClick={() => {
                     setChildCount(childCount + 1);
                     setTotal(total + product.childPrice);
                   }}
                   disabled={!date}
                 >
-                  +
+                  {" "}
+                  <FaPlusCircle className="w-4 h-4" />
                 </button>
               </div>
             </div>
@@ -264,6 +273,8 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
 
           {product?.addOns?.length > 0 && (
             <div>
+              <hr className="mb-2" />
+              <h3 className="font-semibold text-lg mb-1">Add-ons</h3>
               {product.addOns.map((addOn: any, index: number) => (
                 <div
                   className="flex justify-between items-center px-2 py-2"
@@ -274,28 +285,6 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
                   </span>
                   <div className="flex items-center">
                     {/* Checkbox to select the addon */}
-                    <input
-                      type="checkbox"
-                      className="ml-2"
-                      checked={selectedAddOns.some(
-                        (item: any) => item.name === addOn.name
-                      )}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          const newAddOn = {
-                            name: addOn.name,
-                            price: addOn.price,
-                            quantity: 1,
-                          };
-                          setSelectedAddOns((prev) => [...prev, newAddOn]);
-                        } else {
-                          const updatedAddOns = selectedAddOns.filter(
-                            (item: any) => item.name !== addOn.name
-                          );
-                          setSelectedAddOns(updatedAddOns);
-                        }
-                      }}
-                    />
                     {selectedAddOns.some(
                       (item: any) => item.name === addOn.name
                     ) && (
@@ -338,6 +327,29 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
                         ))}
                       </select>
                     )}
+                    <input
+                      type="checkbox"
+                      className="ml-2 disabled:cursor-not-allowed"
+                      checked={selectedAddOns.some(
+                        (item: any) => item.name === addOn.name
+                      )}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          const newAddOn = {
+                            name: addOn.name,
+                            price: addOn.price,
+                            quantity: 1,
+                          };
+                          setSelectedAddOns((prev) => [...prev, newAddOn]);
+                        } else {
+                          const updatedAddOns = selectedAddOns.filter(
+                            (item: any) => item.name !== addOn.name
+                          );
+                          setSelectedAddOns(updatedAddOns);
+                        }
+                      }}
+                      disabled={childCount === 0 && adultCount === 0}
+                    />
                   </div>
                 </div>
               ))}
@@ -410,7 +422,7 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
               onChange={(e) => setSlot(e.target.value)}
               className="w-full px-4 py-2 border rounded-md"
             >
-              <option value="">Select a slot</option>
+              <option value="">Select a date first</option>
               {availableSlots
                 .filter(
                   (e: any) => e.status && moment(e.startTime).isAfter(moment())
@@ -433,18 +445,19 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
             <span>Adult (over 13)</span>
             <div className="flex items-center">
               <button
-                className="px-2 py-1 text-gray-600"
+                className="px-2 py-1 text-red-600 disabled:cursor-not-allowed"
                 onClick={() => setAdultCount(Math.max(0, adultCount - 1))}
+                disabled={!date}
               >
-                −
+                <FaMinusCircle className="w-4 h-4" />
               </button>
               <span className="mx-2">{adultCount}</span>
               <button
-                className="px-2 py-1 text-gray-600"
+                className="px-2 py-1 text-green-600 disabled:cursor-not-allowed"
                 onClick={() => setAdultCount(adultCount + 1)}
                 disabled={!date}
               >
-                +
+                <FaPlusCircle className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -453,18 +466,20 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
               <span>Children (age 3 to 12)</span>
               <div className="flex items-center">
                 <button
-                  className="px-2 py-1 text-gray-600"
+                  className="px-2 py-1 text-red-600 disabled:cursor-not-allowed"
                   onClick={() => setChildCount(Math.max(0, childCount - 1))}
+                  disabled={!date}
                 >
-                  −
+                  <FaMinusCircle className="w-4 h-4" />
                 </button>
                 <span className="mx-2">{childCount}</span>
                 <button
-                  className="px-2 py-1 text-gray-600"
+                  className="px-2 py-1 text-green-600 disabled:cursor-not-allowed"
                   onClick={() => setChildCount(childCount + 1)}
                   disabled={!date}
                 >
-                  +
+                  {" "}
+                  <FaPlusCircle className="w-4 h-4" />
                 </button>
               </div>
             </div>
@@ -472,6 +487,8 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
 
           {product?.addOns?.length > 0 && (
             <div>
+              <hr className="mb-2" />
+              <h3 className="font-semibold text-lg mb-1">Add-ons</h3>
               {product.addOns.map((addOn: any, index: number) => (
                 <div
                   className="flex justify-between items-center px-2 py-2"
@@ -482,28 +499,6 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
                   </span>
                   <div className="flex items-center">
                     {/* Checkbox to select the addon */}
-                    <input
-                      type="checkbox"
-                      className="ml-2"
-                      checked={selectedAddOns.some(
-                        (item: any) => item.name === addOn.name
-                      )}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          const newAddOn = {
-                            name: addOn.name,
-                            price: addOn.price,
-                            quantity: 1,
-                          };
-                          setSelectedAddOns((prev) => [...prev, newAddOn]);
-                        } else {
-                          const updatedAddOns = selectedAddOns.filter(
-                            (item: any) => item.name !== addOn.name
-                          );
-                          setSelectedAddOns(updatedAddOns);
-                        }
-                      }}
-                    />
                     {selectedAddOns.some(
                       (item: any) => item.name === addOn.name
                     ) && (
@@ -546,6 +541,29 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
                         ))}
                       </select>
                     )}
+                    <input
+                      type="checkbox"
+                      className="ml-2 disabled:cursor-not-allowed"
+                      checked={selectedAddOns.some(
+                        (item: any) => item.name === addOn.name
+                      )}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          const newAddOn = {
+                            name: addOn.name,
+                            price: addOn.price,
+                            quantity: 1,
+                          };
+                          setSelectedAddOns((prev) => [...prev, newAddOn]);
+                        } else {
+                          const updatedAddOns = selectedAddOns.filter(
+                            (item: any) => item.name !== addOn.name
+                          );
+                          setSelectedAddOns(updatedAddOns);
+                        }
+                      }}
+                      disabled={childCount === 0 && adultCount === 0}
+                    />
                   </div>
                 </div>
               ))}

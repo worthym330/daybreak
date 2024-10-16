@@ -390,10 +390,22 @@ router.post(
         slotTime: cart[0].slot,
         customerEmail: user.email,
         lineItems: [
-          ...cart.map((item: any) => ({
-            description: item.product.title,
-            amount: item.total,
-          })),
+          ...cart.map((item: any) => {
+            // Calculate total without add-ons
+            const baseTotal = (item.adultCount * item.product.adultPrice) + 
+                              (item.childCount * item.product.childPrice);
+      
+            return [
+              {
+                description: item.product.title,
+                amount: baseTotal,
+              },
+              ...item.selectedAddOns.map((addon: any) => ({
+                description: `Add-on: ${addon.name}`,
+                amount: addon.price * addon.quantity,
+              })),
+            ];
+          }).flat(),
           {
             description: "Taxes @18%",
             amount: igstAmount,
