@@ -104,15 +104,58 @@ router.get(
     }
 
     const id = req.params.id.toString();
+    const currentDate = new Date().toISOString().split('T')[0]; // Convert to date string in 'YYYY-MM-DD' format
 
     try {
-      const hotel = await Hotel.findById(id).populate({
-        path: "titlesId",
-        populate: { path: "slots" },
+      const hotel = await Hotel.findById(id)
+        .populate({
+          path: "titlesId",
+          populate: { path: "slots" },
+          match: { date: { $gte: currentDate } },
+        })
+        .populate({
+          path: "productTitle.addOns",
+          model: "AddOn",
+        });
+
+      if (!hotel) {
+        return res.status(404).json({ message: "Hotel not found" });
+      }
+
+      hotel.productTitle.forEach((product) => {
+        // Calculate total number of bookings for the product on the current date
+        const totalBookings = hotel.bookings
+          .filter((booking) => {
+            return (
+              booking.cart &&
+              booking.cart.some(
+                (cartItem) =>
+                  cartItem.product._id.toString() === product._id.toString() &&
+                  cartItem.date === currentDate
+              )
+            );
+          })
+          .reduce((count, booking) => {
+            if (!booking.cart) return count;
+            const matchingCartItems = booking.cart.filter(
+              (cartItem) =>
+                cartItem.product._id.toString() === product._id.toString()
+            );
+            matchingCartItems.forEach((item) => {
+              count += item.adultCount + item.childCount;
+            });
+            return count;
+          }, 0);
+
+        // Calculate remaining guests and update the product field
+        product.remainingGuests = product.maxGuestsperDay - totalBookings;
       });
+
+      // Save updated hotel details
+      await hotel.save();
       res.json(hotel);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       res.status(500).json({ message: "Error fetching hotel" });
     }
   }
@@ -385,10 +428,25 @@ router.post(
         slotTime: cart[0].slot,
         customerEmail: user.email,
         lineItems: [
-          ...cart.map((item: any) => ({
-            description: item.product.title,
-            amount: item.total,
-          })),
+          ...cart
+            .map((item: any) => {
+              // Calculate total without add-ons
+              const baseTotal =
+                item.adultCount * item.product.adultPrice +
+                item.childCount * item.product.childPrice;
+
+              return [
+                {
+                  description: item.product.title,
+                  amount: baseTotal,
+                },
+                ...item.selectedAddOns.map((addon: any) => ({
+                  description: `Add-on: ${addon.name}`,
+                  amount: addon.price * addon.quantity,
+                })),
+              ];
+            })
+            .flat(),
           {
             description: "Taxes @18%",
             amount: igstAmount,
