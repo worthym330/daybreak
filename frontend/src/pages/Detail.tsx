@@ -109,6 +109,8 @@ const Detail = () => {
   const [signupModal, setSignupModal] = useState(initialSignupModalState);
   const dateRef = useRef<HTMLInputElement>(null);
   const auth = useSelector((state: RootState) => state.auth);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const toggleExpand = () => setIsExpanded(!isExpanded);
 
   const hotelQuery = useQuery(
     ["fetchHotelById", hotelId],
@@ -507,7 +509,18 @@ const Detail = () => {
             </div>
             {/* Facilities Section */}
 
-            <div className="w-full break-words mb-5">{hotel.description}</div>
+            <div className="w-full break-words mb-5 lg:hidden">
+              <p>
+                {isExpanded
+                  ? hotel.description
+                  : `${hotel.description.substring(0, 100)}...`}
+              </p>
+              <button onClick={toggleExpand} className="text-[#00C0CB] mt-2">
+                {isExpanded ? "Read Less" : "Read More"}
+              </button>
+            </div>
+
+            <div className="w-full break-words mb-5 hidden lg:block">{hotel.description}</div>
 
             {/* <span className="text-lg font-medium mb-3">
               Book your Daycation
