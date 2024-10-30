@@ -990,11 +990,11 @@ router.post("/hotel-details/bulk-creations", async (req, res) => {
 
         // Calculate start and end times for hotel details
         const startDateTime = moment(
-          `${formattedDate} ${start.format("HH:mm")}`,
+          `${formattedDate} ${start}`,
           "YYYY-MM-DD HH:mm"
         ).toDate();
         const endDateTime = moment(
-          `${formattedDate} ${end.format("HH:mm")}`,
+          `${formattedDate} ${end}`,
           "YYYY-MM-DD HH:mm"
         ).toDate();
 
