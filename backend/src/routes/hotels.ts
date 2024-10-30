@@ -390,22 +390,25 @@ router.post(
         slotTime: cart[0].slot,
         customerEmail: user.email,
         lineItems: [
-          ...cart.map((item: any) => {
-            // Calculate total without add-ons
-            const baseTotal = (item.adultCount * item.product.adultPrice) + 
-                              (item.childCount * item.product.childPrice);
-      
-            return [
-              {
-                description: item.product.title,
-                amount: baseTotal,
-              },
-              ...item.selectedAddOns.map((addon: any) => ({
-                description: `Add-on: ${addon.name}`,
-                amount: addon.price * addon.quantity,
-              })),
-            ];
-          }).flat(),
+          ...cart
+            .map((item: any) => {
+              // Calculate total without add-ons
+              const baseTotal =
+                item.adultCount * item.product.adultPrice +
+                item.childCount * item.product.childPrice;
+
+              return [
+                {
+                  description: item.product.title,
+                  amount: baseTotal,
+                },
+                ...item.selectedAddOns.map((addon: any) => ({
+                  description: `Add-on: ${addon.name}`,
+                  amount: addon.price * addon.quantity,
+                })),
+              ];
+            })
+            .flat(),
           {
             description: "Taxes @18%",
             amount: igstAmount,
@@ -964,29 +967,28 @@ router.post("/hotel-details/bulk-creations", async (req, res) => {
 
     hotel.titlesId = hotel.titlesId || [];
     const dateRange = getDatesInRange(startDate, endDate);
+    const hotelDetailsDocs = [];
 
     for (const currentDate of dateRange) {
+      const formattedDate = currentDate.toISOString().split("T")[0];
+
       for (const selectedTitle of title) {
         const productTitle = hotel.productTitle.find(
           (pt) => pt.title === selectedTitle
         );
-        if (!productTitle) {
-          continue;
-        }
+        if (!productTitle) continue;
 
         const slots = createSlots(start, end, productTitle.slotTime);
-
         const peoplePerSlot = Math.round(
           productTitle.maxGuestsperDay / slots.length
         );
 
         const startDateTime = moment(
-          `${currentDate.toISOString().split("T")[0]} ${start}`,
+          `${formattedDate} ${start}`,
           "YYYY-MM-DD HH:mm"
         ).toDate();
-
         const endDateTime = moment(
-          `${currentDate.toISOString().split("T")[0]} ${end}`,
+          `${formattedDate} ${end}`,
           "YYYY-MM-DD HH:mm"
         ).toDate();
 
@@ -997,7 +999,7 @@ router.post("/hotel-details/bulk-creations", async (req, res) => {
           childWeekendPrice,
         } = pricingFields[selectedTitle] || {};
 
-        const hotelDetailDoc = new HotelDetails({
+        const hotelDetailDoc = {
           title: selectedTitle,
           date: currentDate,
           slotTime: `${startDateTime} - ${endDateTime}`,
@@ -1016,41 +1018,41 @@ router.post("/hotel-details/bulk-creations", async (req, res) => {
             pricingFields[selectedTitle]?.includeWeekendPrice
               ? childWeekendPrice
               : undefined,
-        });
+          slots: [],
+        };
 
-        const savedHotelDetail = await hotelDetailDoc.save();
-
-        for (const slot of slots) {
+        const slotsDocs = slots.map((slot) => {
           const [slotStartTime, slotEndTime] = slot.split(" - ");
           const startSlotDateTime = moment(
-            `${currentDate.toISOString().split("T")[0]} ${slotStartTime}`,
+            `${formattedDate} ${slotStartTime}`,
             "YYYY-MM-DD HH:mm"
           ).toDate();
-
           const endSlotDateTime = moment(
-            `${currentDate.toISOString().split("T")[0]} ${slotEndTime}`,
+            `${formattedDate} ${slotEndTime}`,
             "YYYY-MM-DD HH:mm"
           ).toDate();
 
-          const slotDoc = new Slot({
+          return new Slot({
             hotelId,
-            hotelProductId: savedHotelDetail._id,
             slotTime: `${slotStartTime} - ${slotEndTime}`,
             startTime: startSlotDateTime,
             endTime: endSlotDateTime,
             peoplePerSlot,
           });
+        });
 
-          const savedSlot = await slotDoc.save();
-          hotelDetailDoc.slots.push(savedSlot._id);
-        }
-
-        await hotelDetailDoc.save();
-        hotel.titlesId.push(savedHotelDetail._id);
+        const savedSlots = await Slot.insertMany(slotsDocs);
+        hotelDetailDoc.slots = savedSlots.map((slot: { _id: any; }) => slot._id);
+        hotelDetailsDocs.push(hotelDetailDoc);
       }
     }
 
+    const savedHotelDetails = await HotelDetails.insertMany(hotelDetailsDocs);
+
+    // Update hotel's titlesId
+    hotel.titlesId.push(...savedHotelDetails.map((detail: { _id: any; }) => detail._id));
     await hotel.save();
+
     res.status(201).json({
       message: "Passes, hotel details, and slots added successfully",
       hotel,
@@ -1077,6 +1079,7 @@ const createSlots = (startTime: any, endTime: any, slotTime: any) => {
 
   return slots;
 };
+
 router.put("/hotel-details/slots/:id", async (req, res) => {
   try {
     const { id } = req.params;
