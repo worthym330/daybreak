@@ -964,7 +964,7 @@ router.post("/hotel-details/bulk-creations", async (req, res) => {
     const dateRange = getDatesInRange(startDate, endDate);
 
     const bulkHotelDetailsOps = [];
-    const bulkSlotOps: any[] = [];
+    const bulkSlotOps:any[] = [];
 
     const batchSize = 10; // Adjusted for larger batch size
     for (let i = 0; i < dateRange.length; i += batchSize) {
@@ -976,7 +976,7 @@ router.post("/hotel-details/bulk-creations", async (req, res) => {
             (pt) => pt.title === selectedTitle
           );
           if (!productTitle) continue;
-          let slots: any[] = [];
+          let slots = [];
           if (productTitle.slotTime) {
             slots = createSlots(start, end, productTitle.slotTime);
 
@@ -1002,7 +1002,39 @@ router.post("/hotel-details/bulk-creations", async (req, res) => {
             } = pricingFields[selectedTitle] || {};
 
             const tempId = new mongoose.Types.ObjectId();
+            let slotIds:string[] = []; // Array to store slot IDs
 
+            // Create bulk operations for slots
+            slots.forEach((slot) => {
+              const [slotStartTime, slotEndTime] = slot.split(" - ");
+              const startSlotDateTime = moment(
+                `${currentDate.toISOString().split("T")[0]} ${slotStartTime}`,
+                "YYYY-MM-DD HH:mm"
+              ).toDate();
+              const endSlotDateTime = moment(
+                `${currentDate.toISOString().split("T")[0]} ${slotEndTime}`,
+                "YYYY-MM-DD HH:mm"
+              ).toDate();
+
+              const slotId = new mongoose.Types.ObjectId(); // Create new slot ID
+              slotIds.push(slotId.toString()); // Store slot ID
+
+              bulkSlotOps.push({
+                insertOne: {
+                  document: {
+                    _id: slotId, // Assign slot ID here
+                    hotelId,
+                    hotelProductId: tempId,
+                    slotTime: `${slotStartTime} - ${slotEndTime}`,
+                    startTime: startSlotDateTime,
+                    endTime: endSlotDateTime,
+                    peoplePerSlot,
+                  },
+                },
+              });
+            });
+
+            // Create bulk operation for hotel details
             bulkHotelDetailsOps.push({
               insertOne: {
                 document: {
@@ -1027,32 +1059,9 @@ router.post("/hotel-details/bulk-creations", async (req, res) => {
                     pricingFields[selectedTitle]?.includeWeekendPrice
                       ? childWeekendPrice
                       : undefined,
+                  slots: slotIds,
                 },
               },
-            });
-
-            slots.forEach((slot) => {
-              const [slotStartTime, slotEndTime] = slot.split(" - ");
-              const startSlotDateTime = moment(
-                `${currentDate.toISOString().split("T")[0]} ${slotStartTime}`,
-                "YYYY-MM-DD HH:mm"
-              ).toDate();
-              const endSlotDateTime = moment(
-                `${currentDate.toISOString().split("T")[0]} ${slotEndTime}`,
-                "YYYY-MM-DD HH:mm"
-              ).toDate();
-              bulkSlotOps.push({
-                insertOne: {
-                  document: {
-                    hotelId,
-                    hotelProductId: tempId,
-                    slotTime: `${slotStartTime} - ${slotEndTime}`,
-                    startTime: startSlotDateTime,
-                    endTime: endSlotDateTime,
-                    peoplePerSlot,
-                  },
-                },
-              });
             });
           }
         }
@@ -1062,10 +1071,12 @@ router.post("/hotel-details/bulk-creations", async (req, res) => {
     // Execute bulk operations
     const hotelDetail = await HotelDetails.bulkWrite(bulkHotelDetailsOps);
     const slotsAdded = await Slot.bulkWrite(bulkSlotOps);
+
     hotel.titlesId = hotel.titlesId || [];
     bulkHotelDetailsOps.map((e:any) => hotel?.titlesId?.push(e.insertOne.document._id.toString()))
 
     await hotel.save();
+
     res.status(201).json({
       message: "Passes, hotel details, and slots added successfully",
       hotel,
