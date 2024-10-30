@@ -1071,7 +1071,8 @@ router.post("/hotel-details/bulk-creations", async (req, res) => {
     // Update the hotel document with saved hotel detail IDs
     hotel.titlesId.push(...savedHotelIds);
     await hotel.save();
-
+    console.log("hotel", hotel, insertedHotelDetails, slotsBulk);
+    console.timeLog();
     res.status(201).json({
       message: "Passes, hotel details, and slots added successfully",
       hotel,
