@@ -953,6 +953,7 @@ router.post("/hotel-details/bulk-creations", async (req, res) => {
       endTime,
     } = req.body;
 
+    console.log("called", req.body)
     const start = moment(startTime).format("HH:mm"); // Formatting correctly
     const end = moment(endTime).format("HH:mm");
 
