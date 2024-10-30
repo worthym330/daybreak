@@ -938,7 +938,7 @@ const getDatesInRange = (startDate: any, endDate: any) => {
 
   while (currentDate <= end) {
     dateArray.push(new Date(currentDate));
-    currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
+    currentDate.setDate(currentDate.getDate() + 1);
   }
 
   return dateArray;
@@ -956,39 +956,45 @@ router.post("/hotel-details/bulk-creations", async (req, res) => {
       endTime,
     } = req.body;
 
-    console.log("called", req.body)
+    console.log("called", req.body);
     const start = moment(startTime).format("HH:mm"); // Formatting correctly
     const end = moment(endTime).format("HH:mm");
 
+    // Fetch the hotel details once
     const hotel = await Hotel.findById(hotelId);
-    if (!hotel) {
-      return res.status(404).json({ message: "Hotel not found" });
-    }
+    if (!hotel) return res.status(404).json({ message: "Hotel not found" });
 
-    hotel.titlesId = hotel.titlesId || [];
+    // Prepare date ranges once
     const dateRange = getDatesInRange(startDate, endDate);
-    const hotelDetailsDocs = [];
+    hotel.titlesId = hotel.titlesId || [];
 
-    for (const currentDate of dateRange) {
+    // Prepare bulk insertions
+    let hotelDetailsBulk: any[] = [];
+    let slotsBulk: any[] = [];
+    let savedHotelIds: any[] = [];
+
+    dateRange.forEach((currentDate) => {
       const formattedDate = currentDate.toISOString().split("T")[0];
 
-      for (const selectedTitle of title) {
+      title.forEach((selectedTitle: any) => {
         const productTitle = hotel.productTitle.find(
           (pt) => pt.title === selectedTitle
         );
-        if (!productTitle) continue;
-
+        if (!productTitle) return; // Skip if no matching title
+        const tempId = new mongoose.Types.ObjectId();
+        // Generate slots
         const slots = createSlots(start, end, productTitle.slotTime);
         const peoplePerSlot = Math.round(
           productTitle.maxGuestsperDay / slots.length
         );
 
+        // Calculate start and end times for hotel details
         const startDateTime = moment(
-          `${formattedDate} ${start}`,
+          `${formattedDate} ${start.format("HH:mm")}`,
           "YYYY-MM-DD HH:mm"
         ).toDate();
         const endDateTime = moment(
-          `${formattedDate} ${end}`,
+          `${formattedDate} ${end.format("HH:mm")}`,
           "YYYY-MM-DD HH:mm"
         ).toDate();
 
@@ -999,7 +1005,9 @@ router.post("/hotel-details/bulk-creations", async (req, res) => {
           childWeekendPrice,
         } = pricingFields[selectedTitle] || {};
 
+        // Create a hotel detail document in bulk
         const hotelDetailDoc = {
+          _id: tempId,
           title: selectedTitle,
           date: currentDate,
           slotTime: `${startDateTime} - ${endDateTime}`,
@@ -1021,7 +1029,9 @@ router.post("/hotel-details/bulk-creations", async (req, res) => {
           slots: [],
         };
 
-        const slotsDocs = slots.map((slot) => {
+        hotelDetailsBulk.push(hotelDetailDoc);
+
+        slots.forEach((slot) => {
           const [slotStartTime, slotEndTime] = slot.split(" - ");
           const startSlotDateTime = moment(
             `${formattedDate} ${slotStartTime}`,
@@ -1032,25 +1042,34 @@ router.post("/hotel-details/bulk-creations", async (req, res) => {
             "YYYY-MM-DD HH:mm"
           ).toDate();
 
-          return new Slot({
+          // Create a slot document in bulk
+          slotsBulk.push({
             hotelId,
+            hotelProductId: hotelDetailDoc._id,
             slotTime: `${slotStartTime} - ${slotEndTime}`,
             startTime: startSlotDateTime,
             endTime: endSlotDateTime,
             peoplePerSlot,
           });
         });
+      });
+    });
 
-        const savedSlots = await Slot.insertMany(slotsDocs);
-        hotelDetailDoc.slots = savedSlots.map((slot: { _id: any; }) => slot._id);
-        hotelDetailsDocs.push(hotelDetailDoc);
-      }
-    }
+    // Insert hotel details and slots in bulk
+    const insertedHotelDetails = await HotelDetails.insertMany(
+      hotelDetailsBulk
+    );
+    insertedHotelDetails.forEach((detail: any, index: any) => {
+      savedHotelIds.push(detail._id);
+      detail.slots = slotsBulk
+        .filter((slot) => slot.hotelProductId === detail._id)
+        .map((slot) => slot._id);
+    });
 
-    const savedHotelDetails = await HotelDetails.insertMany(hotelDetailsDocs);
+    await Slot.insertMany(slotsBulk);
 
-    // Update hotel's titlesId
-    hotel.titlesId.push(...savedHotelDetails.map((detail: { _id: any; }) => detail._id));
+    // Update the hotel document with saved hotel detail IDs
+    hotel.titlesId.push(...savedHotelIds);
     await hotel.save();
 
     res.status(201).json({
@@ -1067,14 +1086,14 @@ const createSlots = (startTime: any, endTime: any, slotTime: any) => {
   const slots = [];
   const start = moment(startTime, "HH:mm");
   const end = moment(endTime, "HH:mm");
-  const slotDuration = parseInt(slotTime, 10); // Assuming slotTime is in hours
+  const slotDuration = parseInt(slotTime, 10);
 
   while (start.isBefore(end)) {
     const slotEnd = moment(start).add(slotDuration, "minutes");
     if (slotEnd.isAfter(end)) break;
 
     slots.push(`${start.format("HH:mm")} - ${slotEnd.format("HH:mm")}`);
-    start.add(slotDuration, "minutes"); // Move to next slot
+    start.add(slotDuration, "minutes");
   }
 
   return slots;
