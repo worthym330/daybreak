@@ -34,7 +34,6 @@ const slotSchema = new mongoose.Schema(
     hotelProductId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "HotelDetails",
-      required: true,
     },
     slotTime: { type: String, required: true },
     startTime: { type: Date, required: true },

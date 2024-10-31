@@ -33,6 +33,7 @@ export interface HotelType {
   status: boolean;
   titlesId?: string[];
   addOns?: string[];
+  createdAt? : Date
 }
 
 export type BookingType = {

@@ -8,7 +8,7 @@ import { useAppContext } from "../../contexts/AppContext";
 import Cookies from "js-cookie";
 import Button from "../../components/Button";
 import { toast } from "react-toastify";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   removeCoupon,
@@ -90,8 +90,8 @@ const BookingForm = ({ paymentIntent, cartItems }: Props) => {
     (state: RootState) => state.cart.appliedCoupon
   );
   const discountValue = useSelector((state: RootState) => state.cart.discount);
-  const totalValue = useSelector((state: RootState) => state.cart.total)
-  const subTotalValue = useSelector((state: RootState) => state.cart.subtotal)
+  const totalValue = useSelector((state: RootState) => state.cart.total);
+  const subTotalValue = useSelector((state: RootState) => state.cart.subtotal);
   const cart = localStorage.getItem("cart");
   const parsedCart = cart ? JSON.parse(cart) : [];
   const hotelId = parsedCart[0]?.hotel?._id;
@@ -206,7 +206,7 @@ const BookingForm = ({ paymentIntent, cartItems }: Props) => {
       alert("Failed to initiate payment. Please try again.");
     }
   };
-  
+
   useEffect(() => {
     console.log("called", subtotal);
     if (cartItems) {
@@ -216,16 +216,34 @@ const BookingForm = ({ paymentIntent, cartItems }: Props) => {
             item.adultCount > 0 ? item.adultCount * item.product.adultPrice : 0;
           const childTotal =
             item.childCount > 0 ? item.childCount * item.product.childPrice : 0;
-          return total + adultTotal + childTotal;
+
+          // Calculate total for selected add-ons
+          const addOnTotal = item.selectedAddOns
+            ? item.selectedAddOns.reduce(
+                (addOnTotal: number, addOn: any) =>
+                  addOnTotal + addOn.price * addOn.quantity,
+                0
+              )
+            : 0;
+
+          return total + adultTotal + childTotal + addOnTotal; // Include add-on total
         }, 0);
       };
 
       const calculatedSubtotal = calculateSubtotal(cartItems);
 
       setSubtotal(calculatedSubtotal);
-      dispatch(setSubtotalAmount(calculatedSubtotal))
+      dispatch(setSubtotalAmount(calculatedSubtotal));
     }
   }, []);
+
+  useEffect(() => {
+    console.log(subtotal);
+    const calculatedGst = subtotal * 0.18;
+    const calculatedTotal = subtotal + calculatedGst;
+    setGst(calculatedGst);
+    dispatch(setTotalAmount(calculatedTotal));
+  }, [subtotal]);
 
   const getCoupons = async () => {
     try {
@@ -252,13 +270,13 @@ const BookingForm = ({ paymentIntent, cartItems }: Props) => {
       if (discount >= coupon.amount) {
         dispatch(setDiscountValue(coupon.amount));
         setSubtotal(subtotal - coupon.amount);
-        dispatch(setSubtotalAmount(subtotal - coupon.amount))
+        dispatch(setSubtotalAmount(subtotal - coupon.amount));
         dispatch(setAppliedCoupon(couponCode));
         setCouponCode("");
       } else {
         dispatch(setDiscountValue(discount));
         setSubtotal(subtotal - discount);
-        dispatch(setSubtotalAmount(subtotal - discount))
+        dispatch(setSubtotalAmount(subtotal - discount));
         dispatch(setAppliedCoupon(couponCode));
         setCouponCode("");
       }
@@ -268,17 +286,9 @@ const BookingForm = ({ paymentIntent, cartItems }: Props) => {
   };
 
   useEffect(() => {
-    console.log(subtotal);
-    const calculatedGst = subtotal * 0.18;
-    const calculatedTotal = subtotal + calculatedGst;
-    setGst(calculatedGst);
-    dispatch(setTotalAmount(calculatedTotal))
-  }, [subtotal]);
-
-  useEffect(()=>{
     dispatch(removeDiscount());
     dispatch(removeCoupon());
-  },[])
+  }, []);
 
   // const couponOptions = couponCodes.map((coupon: any) => ({
   //   // label: `${coupon.code} - ${coupon.percentage}% off (Expires: ${new Date(coupon.expirationDate).toLocaleDateString()})`,
@@ -294,7 +304,7 @@ const BookingForm = ({ paymentIntent, cartItems }: Props) => {
     dispatch(removeDiscount());
     dispatch(removeCoupon());
     setSubtotal(subtotal + (discountValue ?? 0));
-    dispatch(setSubtotalAmount(subtotal + (discountValue ?? 0)))
+    dispatch(setSubtotalAmount(subtotal + (discountValue ?? 0)));
   };
 
   return (
@@ -360,32 +370,69 @@ const BookingForm = ({ paymentIntent, cartItems }: Props) => {
         <h3 className="text-lg font-medium text-[#02596C]">
           Your Price Summary
         </h3>
-        {cartItems.map((item: any, index: any) => (
-          <div
-            className="flex justify-between items-center gap-4 py-2"
-            key={index}
-          >
-            <span>
-              {item.product.title} - ₹{item.product.adultPrice} x{" "}
-              {item.adultCount} Adult{" "}
-              {item.childCount > 0 && (
-                <>
-                  + ₹{item.product.childPrice} x {item.childCount} Child
-                </>
-              )}
-            </span>
-            <span className="">
-              ₹{" "}
-              {(item.adultCount > 0 && item.childCount > 0
-                ? item.product.adultPrice * item.adultCount +
-                  item.product.childPrice * item.childCount
-                : item.adultCount > 0
-                ? item.product.adultPrice * item.adultCount
-                : item.product.childPrice * item.childCount
-              ).toFixed(2)}
-            </span>
-          </div>
-        ))}
+        {cartItems.map((item: any, index: any) => {
+          // Calculate totals for adults, children, and add-ons
+          const adultTotal = item.product.adultPrice * item.adultCount;
+          const childTotal = item.product.childPrice * item.childCount;
+          const itemTotal = adultTotal + childTotal ;
+
+          return (
+            <div
+              className="flex justify-between items-center gap-4 py-2"
+              key={index}
+            >
+              <span>
+                {item.product.title} - ₹{item.product.adultPrice} x{" "}
+                {item.adultCount} Adult{" "}
+                {item.childCount > 0 && (
+                  <>
+                    + ₹{item.product.childPrice} x {item.childCount} Child
+                  </>
+                )}
+              </span>
+              <span className="">₹ {itemTotal.toFixed(2)}</span>
+            </div>
+          );
+        })}
+        {cartItems.map((item: any, index: any) => {
+          const addOnTotal = item.selectedAddOns
+            ? item.selectedAddOns.reduce(
+                (total: number, addOn: any) =>
+                  total + addOn.price * addOn.quantity,
+                0
+              )
+            : 0;
+
+          return (
+            <React.Fragment key={index}>
+              {" "}
+              {/* Use React.Fragment and pass key here */}
+              {addOnTotal > 0 &&
+                item.selectedAddOns &&
+                item.selectedAddOns.length > 0 && ( // Check if addOnTotal > 0
+                  <div className="flex justify-between items-center gap-4 py-2 text-xs text-gray-600">
+                    <div>
+                      <h4 className="font-semibold">Add-Ons:</h4>
+                      {item.selectedAddOns.map(
+                        (addOn: any, addOnIndex: number) => (
+                          <div
+                            key={addOnIndex}
+                            className="flex justify-between"
+                          >
+                            <span>
+                              {addOn.name} ({addOn.quantity})
+                            </span>
+                          </div>
+                        )
+                      )}
+                    </div>
+                    <span>₹ {addOnTotal.toFixed(2)}</span>
+                  </div>
+                )}
+            </React.Fragment>
+          );
+        })}
+
         {(discountValue ?? 0) > 0 && (
           <div className="flex justify-between py-2">
             <span>Coupon Code:</span>

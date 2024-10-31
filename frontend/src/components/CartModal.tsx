@@ -3,7 +3,7 @@ import Button from "./Button";
 import moment from "moment";
 import { addToCart } from "../store/cartSlice";
 import { useDispatch } from "react-redux";
-import { FaCalendar } from "react-icons/fa";
+import { FaCalendar, FaMinusCircle, FaPlusCircle } from "react-icons/fa";
 import { toast } from "react-toastify";
 
 const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
@@ -19,6 +19,7 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
     setIsVisible(false);
     setTimeout(onClose, 300);
   };
+  const [selectedAddOns, setSelectedAddOns] = useState<any[]>([]);
 
   useEffect(() => {
     const savedCart = localStorage.getItem("cart");
@@ -32,9 +33,10 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
         setAdultCount(savedProduct.adultCount);
         setChildCount(savedProduct.childCount);
         setTotal(savedProduct.total);
+        setSelectedAddOns(savedProduct.selectedAddOns || []);
         if (savedProduct.date) {
           setDate(savedProduct.date);
-          setSlot(savedProduct.slot)
+          setSlot(savedProduct.slot);
         }
       }
     }
@@ -47,39 +49,41 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
       product.childPrice > 0
         ? calculateGST(childCount * product.childPrice)
         : 0;
-    setTotal(adultTotal + childTotal);
-  }, [adultCount, childCount, product.adultPrice, product.childPrice]);
+    const addOnsTotal = selectedAddOns.reduce(
+      (acc, addOn) => acc + addOn.quantity * addOn.price,
+      0
+    );
+    setTotal(adultTotal + childTotal + addOnsTotal);
+  }, [
+    adultCount,
+    childCount,
+    product.adultPrice,
+    product.childPrice,
+    selectedAddOns,
+  ]);
 
   const handleAddToCart = () => {
-    if(!date){
-      toast.warning("Please select the date")
-    }else if(!slot){
-      toast.warning("Please select the slot")
-    }else{
-      if (adultCount > 0 || childCount > 0 ) {
+    if (!date) {
+      toast.warning("Please select the date");
+    } else if (!slot) {
+      toast.warning("Please select the slot");
+    } else {
+      if (adultCount > 0 || childCount > 0) {
         let cart: any[] = [];
         const savedCart = localStorage.getItem("cart");
         if (savedCart) {
           cart = JSON.parse(savedCart) as any[];
         }
-  
-        // Check if there are products with different hotelId
+
         const differentHotelId = cart.some(
           (item) => item.hotel._id !== hotel._id
         );
-  
-        // if (differentHotelId) {
-        //   toast.warning(
-        //     "Please select the same hotel or remove the current selection from your cart before booking a new hotel."
-        //   );
-        //   return;
-        // }
-  
+
         const existingProductIndex = cart.findIndex(
           (item) =>
             item.product.title === product.title && item.hotel._id === hotel._id
         );
-  
+
         const cartItem = {
           product,
           hotel,
@@ -87,9 +91,10 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
           childCount,
           total,
           date,
-          slot
+          slot,
+          selectedAddOns, // Include add-ons in cart item
         };
-  
+
         if (differentHotelId) {
           cart = [];
           cart.push(cartItem);
@@ -100,33 +105,41 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
             cart.push(cartItem);
           }
         }
-  
+
         try {
           localStorage.setItem("cart", JSON.stringify(cart));
           setCart(cart);
-          // dispatch(setCart(cart));
           dispatch(addToCart(cartItem));
           onClose();
         } catch (error) {
           console.error("Error setting local storage: ", error);
         }
-      }else{
-        toast.warning("Please select the number of Adults or Childrens")
+      } else {
+        toast.warning("Please select the number of Adults or Childrens");
       }
     }
   };
 
   useEffect(() => {
     if (slotValues && date) {
-      // Filter slots based on the selected date
       const availableSlots = slotValues
-        .filter((slot: any) => moment(slot.startTime).isSame(date, "day") && slot?.title === product?.title)
+        .filter(
+          (slot: any) =>
+            moment(slot.startTime).isSame(date, "day") &&
+            slot?.title === product?.title
+        )
         .map((e: any) => e.slots)
         .flat();
 
       setAvailableSlots(availableSlots);
     }
   }, [slotValues, date]);
+
+  useEffect(() => {
+    if (childCount === 0 && adultCount === 0) {
+      setSelectedAddOns([]);
+    }
+  }, [childCount, adultCount]);
 
   return (
     <div
@@ -168,64 +181,178 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
             </div>
           </div>
 
-            <div>
-              <label htmlFor="slot" className="block text-sm font-medium">
-                Select Time Slot
-              </label>
-              <select
-                id="slot"
-                name="slot"
-                value={slot}
-                onChange={(e) => setSlot(e.target.value)}
-                className="w-full px-4 py-2 border rounded-md"
-              >
-                <option value="">Select a slot</option>
-                {availableSlots.filter((e:any)=> e.status && moment(e.startTime).isAfter(moment())).map((slot: any, index) => (
-                  <option key={index} value={`${moment(slot.startTime).format('LT')} - ${moment(slot.endTime).format('LT')}` }>
-                    {`${moment(slot.startTime).format('LT')} - ${moment(slot.endTime).format('LT')}` }
+          <div>
+            <label htmlFor="slot" className="block text-sm font-medium">
+              Select Time Slot
+            </label>
+            <select
+              id="slot"
+              name="slot"
+              value={slot}
+              onChange={(e) => setSlot(e.target.value)}
+              className="w-full px-4 py-2 border rounded-md"
+            >
+              <option value="">Select a date first</option>
+              {availableSlots
+                .filter(
+                  (e: any) => e.status && moment(e.startTime).isAfter(moment())
+                )
+                .map((slot: any, index) => (
+                  <option
+                    key={index}
+                    value={`${moment(slot.startTime).format("LT")} - ${moment(
+                      slot.endTime
+                    ).format("LT")}`}
+                  >
+                    {`${moment(slot.startTime).format("LT")} - ${moment(
+                      slot.endTime
+                    ).format("LT")}`}
                   </option>
                 ))}
-              </select>
-            </div>
+            </select>
+          </div>
 
+          {/* Adult Count */}
           <div className="flex justify-between items-center px-2 py-2">
             <span>Adult (over 13)</span>
             <div className="flex items-center">
               <button
-                className="px-2 py-1 text-gray-600"
-                onClick={() => setAdultCount(Math.max(0, adultCount - 1))}
+                className="px-2 py-1 text-red-600 disabled:cursor-not-allowed"
+                disabled={!date}
+                onClick={() => {
+                  setAdultCount(Math.max(0, adultCount - 1));
+                  setTotal(total - product.adultPrice);
+                }}
               >
-                −
+                <FaMinusCircle className="w-4 h-4" />
               </button>
               <span className="mx-2">{adultCount}</span>
               <button
-                className="px-2 py-1 text-gray-600"
+                className="px-2 py-1 text-green-600 disabled:cursor-not-allowed"
                 disabled={!date}
-                onClick={() => setAdultCount(adultCount + 1)}
+                onClick={() => {
+                  setAdultCount(adultCount + 1);
+                  setTotal(total + product.adultPrice);
+                }}
               >
-                +
+                <FaPlusCircle className="w-4 h-4" />
               </button>
             </div>
           </div>
+
+          {/* Child Count */}
           {product.childPrice > 0 && (
             <div className="flex justify-between items-center px-2 py-2">
               <span>Children (age 3 to 12)</span>
               <div className="flex items-center">
                 <button
-                  className="px-2 py-1 text-gray-600"
-                  onClick={() => setChildCount(Math.max(0, childCount - 1))}
+                  className="px-2 py-1 text-red-600 disabled:cursor-not-allowed"
+                  onClick={() => {
+                    setChildCount(Math.max(0, childCount - 1));
+                    setTotal(total - product.childPrice);
+                  }}
+                  disabled={!date}
                 >
-                  −
+                  <FaMinusCircle className="w-4 h-4" />
                 </button>
                 <span className="mx-2">{childCount}</span>
                 <button
-                  className="px-2 py-1 text-gray-600"
-                  onClick={() => setChildCount(childCount + 1)}
+                  className="px-2 py-1 text-green-600 disabled:cursor-not-allowed"
+                  onClick={() => {
+                    setChildCount(childCount + 1);
+                    setTotal(total + product.childPrice);
+                  }}
                   disabled={!date}
                 >
-                  +
+                  {" "}
+                  <FaPlusCircle className="w-4 h-4" />
                 </button>
               </div>
+            </div>
+          )}
+
+          {product?.addOns?.length > 0 && (
+            <div>
+              <hr className="mb-2" />
+              <h3 className="font-semibold text-lg mb-1">Add-ons</h3>
+              {product.addOns.map((addOn: any, index: number) => (
+                <div
+                  className="flex justify-between items-center px-2 py-2"
+                  key={index}
+                >
+                  <span>
+                    {addOn.name} (₹{addOn.price})
+                  </span>
+                  <div className="flex items-center">
+                    {/* Checkbox to select the addon */}
+                    {selectedAddOns.some(
+                      (item: any) => item.name === addOn.name
+                    ) && (
+                      <select
+                        value={
+                          selectedAddOns.find(
+                            (item: any) => item.name === addOn.name
+                          )?.quantity || 1
+                        }
+                        className="ml-2 w-16"
+                        onChange={(e) => {
+                          const quantity = Number(e.target.value);
+                          const currentAddOn = selectedAddOns.find(
+                            (item: any) => item.name === addOn.name
+                          );
+
+                          if (currentAddOn) {
+                            const difference = quantity - currentAddOn.quantity;
+                            setTotal(
+                              (prevTotal) =>
+                                prevTotal + difference * addOn.price
+                            );
+
+                            const updatedAddOns = selectedAddOns.map(
+                              (item: any) => {
+                                if (item.name === addOn.name) {
+                                  return { ...item, quantity };
+                                }
+                                return item;
+                              }
+                            );
+                            setSelectedAddOns(updatedAddOns);
+                          }
+                        }}
+                      >
+                        {[...Array(10).keys()].map((i) => (
+                          <option key={i + 1} value={i + 1}>
+                            {i + 1}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                    <input
+                      type="checkbox"
+                      className="ml-2 disabled:cursor-not-allowed"
+                      checked={selectedAddOns.some(
+                        (item: any) => item.name === addOn.name
+                      )}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          const newAddOn = {
+                            name: addOn.name,
+                            price: addOn.price,
+                            quantity: 1,
+                          };
+                          setSelectedAddOns((prev) => [...prev, newAddOn]);
+                        } else {
+                          const updatedAddOns = selectedAddOns.filter(
+                            (item: any) => item.name !== addOn.name
+                          );
+                          setSelectedAddOns(updatedAddOns);
+                        }
+                      }}
+                      disabled={childCount === 0 && adultCount === 0}
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
           )}
           <hr />
@@ -264,7 +391,7 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
         <div className="flex flex-col space-y-4 mt-4 pb-20">
           <div>
             <label htmlFor="date" className="block text-sm font-medium ">
-            Please Select Date
+              Please Select Date
             </label>
             <div className="relative rounded-md w-full">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -285,40 +412,52 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
             </div>
           </div>
           <div>
-              <label htmlFor="slot" className="block text-sm font-medium">
-                Select Time Slot
-              </label>
-              <select
-                id="slot"
-                name="slot"
-                value={slot}
-                onChange={(e) => setSlot(e.target.value)}
-                className="w-full px-4 py-2 border rounded-md"
-              >
-                <option value="">Select a slot</option>
-                {availableSlots.filter((e:any)=> e.status && moment(e.startTime).isAfter(moment())).map((slot: any, index) => (
-                  <option key={index} value={`${moment(slot.startTime).format('LT')} - ${moment(slot.endTime).format('LT')}` }>
-                    {`${moment(slot.startTime).format('LT')} - ${moment(slot.endTime).format('LT')}` }
+            <label htmlFor="slot" className="block text-sm font-medium">
+              Select Time Slot
+            </label>
+            <select
+              id="slot"
+              name="slot"
+              value={slot}
+              onChange={(e) => setSlot(e.target.value)}
+              className="w-full px-4 py-2 border rounded-md"
+            >
+              <option value="">Select a date first</option>
+              {availableSlots
+                .filter(
+                  (e: any) => e.status && moment(e.startTime).isAfter(moment())
+                )
+                .map((slot: any, index) => (
+                  <option
+                    key={index}
+                    value={`${moment(slot.startTime).format("LT")} - ${moment(
+                      slot.endTime
+                    ).format("LT")}`}
+                  >
+                    {`${moment(slot.startTime).format("LT")} - ${moment(
+                      slot.endTime
+                    ).format("LT")}`}
                   </option>
                 ))}
-              </select>
-            </div>
+            </select>
+          </div>
           <div className="flex justify-between items-center">
             <span>Adult (over 13)</span>
             <div className="flex items-center">
               <button
-                className="px-2 py-1 text-gray-600"
+                className="px-2 py-1 text-red-600 disabled:cursor-not-allowed"
                 onClick={() => setAdultCount(Math.max(0, adultCount - 1))}
+                disabled={!date}
               >
-                −
+                <FaMinusCircle className="w-4 h-4" />
               </button>
               <span className="mx-2">{adultCount}</span>
               <button
-                className="px-2 py-1 text-gray-600"
+                className="px-2 py-1 text-green-600 disabled:cursor-not-allowed"
                 onClick={() => setAdultCount(adultCount + 1)}
                 disabled={!date}
               >
-                +
+                <FaPlusCircle className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -327,20 +466,107 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
               <span>Children (age 3 to 12)</span>
               <div className="flex items-center">
                 <button
-                  className="px-2 py-1 text-gray-600"
+                  className="px-2 py-1 text-red-600 disabled:cursor-not-allowed"
                   onClick={() => setChildCount(Math.max(0, childCount - 1))}
+                  disabled={!date}
                 >
-                  −
+                  <FaMinusCircle className="w-4 h-4" />
                 </button>
                 <span className="mx-2">{childCount}</span>
                 <button
-                  className="px-2 py-1 text-gray-600"
+                  className="px-2 py-1 text-green-600 disabled:cursor-not-allowed"
                   onClick={() => setChildCount(childCount + 1)}
                   disabled={!date}
                 >
-                  +
+                  {" "}
+                  <FaPlusCircle className="w-4 h-4" />
                 </button>
               </div>
+            </div>
+          )}
+
+          {product?.addOns?.length > 0 && (
+            <div>
+              <hr className="mb-2" />
+              <h3 className="font-semibold text-lg mb-1">Add-ons</h3>
+              {product.addOns.map((addOn: any, index: number) => (
+                <div
+                  className="flex justify-between items-center px-2 py-2"
+                  key={index}
+                >
+                  <span>
+                    {addOn.name} (₹{addOn.price})
+                  </span>
+                  <div className="flex items-center">
+                    {/* Checkbox to select the addon */}
+                    {selectedAddOns.some(
+                      (item: any) => item.name === addOn.name
+                    ) && (
+                      <select
+                        value={
+                          selectedAddOns.find(
+                            (item: any) => item.name === addOn.name
+                          )?.quantity || 1
+                        }
+                        className="ml-2 w-16"
+                        onChange={(e) => {
+                          const quantity = Number(e.target.value);
+                          const currentAddOn = selectedAddOns.find(
+                            (item: any) => item.name === addOn.name
+                          );
+
+                          if (currentAddOn) {
+                            const difference = quantity - currentAddOn.quantity;
+                            setTotal(
+                              (prevTotal) =>
+                                prevTotal + difference * addOn.price
+                            );
+
+                            const updatedAddOns = selectedAddOns.map(
+                              (item: any) => {
+                                if (item.name === addOn.name) {
+                                  return { ...item, quantity };
+                                }
+                                return item;
+                              }
+                            );
+                            setSelectedAddOns(updatedAddOns);
+                          }
+                        }}
+                      >
+                        {[...Array(10).keys()].map((i) => (
+                          <option key={i + 1} value={i + 1}>
+                            {i + 1}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                    <input
+                      type="checkbox"
+                      className="ml-2 disabled:cursor-not-allowed"
+                      checked={selectedAddOns.some(
+                        (item: any) => item.name === addOn.name
+                      )}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          const newAddOn = {
+                            name: addOn.name,
+                            price: addOn.price,
+                            quantity: 1,
+                          };
+                          setSelectedAddOns((prev) => [...prev, newAddOn]);
+                        } else {
+                          const updatedAddOns = selectedAddOns.filter(
+                            (item: any) => item.name !== addOn.name
+                          );
+                          setSelectedAddOns(updatedAddOns);
+                        }
+                      }}
+                      disabled={childCount === 0 && adultCount === 0}
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
           )}
           <div className="overflow-y-auto max-h-[24rem] pb-5">
