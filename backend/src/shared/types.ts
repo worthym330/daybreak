@@ -94,5 +94,5 @@ export interface ProductType {
   isChildPrice: boolean;
   maxGuestsperDay: number;
   breakTime: string;
-  addOns: string[];
+  addOns?: string[];
 }
