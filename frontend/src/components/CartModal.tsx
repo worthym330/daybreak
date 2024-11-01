@@ -272,7 +272,7 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
           )}
 
           {product?.addOns?.length > 0 && (
-            <div>
+            <div className="h-40 overflow-y-auto">
               <hr className="mb-2" />
               <h3 className="font-semibold text-lg mb-1">Add-ons</h3>
               {product.addOns.map((addOn: any, index: number) => (
@@ -295,6 +295,7 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
                           )?.quantity || 1
                         }
                         className="ml-2 w-16"
+                        disabled={true}
                         onChange={(e) => {
                           const quantity = Number(e.target.value);
                           const currentAddOn = selectedAddOns.find(
@@ -377,7 +378,7 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
 
       {/* Small Screen Modal */}
       <div
-        className={`bg-white p-6 rounded-t-lg rounded-b-none shadow-lg fixed bottom-0 left-0 right-0 w-full h-[35rem] lg:hidden ${
+        className={`bg-white p-6 rounded-t-lg rounded-b-none shadow-lg fixed bottom-0 left-0 right-0 w-full h-[35rem] z-10 overflow-y-auto lg:hidden ${
           isVisible ? "animate-slide-up" : "animate-slide-down"
         }`}
         onClick={(e) => e.stopPropagation()}
@@ -486,7 +487,7 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
           )}
 
           {product?.addOns?.length > 0 && (
-            <div>
+            <div className="h-40 overflow-y-auto">
               <hr className="mb-2" />
               <h3 className="font-semibold text-lg mb-1">Add-ons</h3>
               {product.addOns.map((addOn: any, index: number) => (
@@ -509,6 +510,7 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
                           )?.quantity || 1
                         }
                         className="ml-2 w-16"
+                        disabled={true}
                         onChange={(e) => {
                           const quantity = Number(e.target.value);
                           const currentAddOn = selectedAddOns.find(
