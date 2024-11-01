@@ -98,19 +98,29 @@ const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
             </h2>
           </div>
           <div className="pl-4 ml-4">
-            <Button
-              className="bg-goldColor text-white px-4 py-2 rounded-lg w-24 flex items-center justify-center"
-              onClick={() => setIsModalOpen(true)}
-            >
-              <span>Select</span>
-              <span className="font-thin">
-                {isModalOpen ? (
-                  <FaChevronUp className="w-5 h-5 text-sm" />
-                ) : (
-                  <FaChevronDown className="w-5 h-5 text-sm" />
-                )}
-              </span>
-            </Button>
+            {product.maxGuestsperDay !== 0 ? (
+              <Button
+                className="bg-goldColor text-white px-4 py-2 rounded-lg w-24 flex items-center justify-center"
+                onClick={() => setIsModalOpen(true)}
+              >
+                <span>Select</span>
+                <span className="font-thin">
+                  {isModalOpen ? (
+                    <FaChevronUp className="w-5 h-5 text-sm" />
+                  ) : (
+                    <FaChevronDown className="w-5 h-5 text-sm" />
+                  )}
+                </span>
+              </Button>
+            ) : (
+              <Button
+                className="bg-goldColor text-white px-4 py-2 rounded-lg w-24 flex items-center justify-center dis"
+                // onClick={() => setIsModalOpen(true)}
+                disabled={true}
+              >
+                <span>Sold Out</span>
+              </Button>
+            )}
           </div>
         </div>
         <div className="md:flex justify-between hidden">
@@ -185,8 +195,9 @@ const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
               )}
             </div>
             <div className="mt-2">
-              <Button
-                className="bg-goldColor text-white px-4 py-2 rounded-lg w-full flex items-center justify-center"
+            {product.maxGuestsperDay !== 0 ? (
+            <Button
+                className="bg-goldColor text-white px-4 py-2 rounded-lg w-24 flex items-center justify-center"
                 onClick={() => setIsModalOpen(true)}
               >
                 <span>Select</span>
@@ -198,6 +209,15 @@ const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
                   )}
                 </span>
               </Button>
+            ) : (
+              <Button
+                className="bg-goldColor text-white px-4 py-2 rounded-lg flex items-center justify-center disabled:cursor-not-allowed w-full"
+                // onClick={() => setIsModalOpen(true)}
+                disabled={true}
+              >
+                <span>Sold Out</span>
+              </Button>
+            )}
             </div>
           </div>
         </div>
