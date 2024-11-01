@@ -255,7 +255,7 @@ const SearchResultsCard = ({ hotel }: Props) => {
                 </span>
               </div>
             </div>
-            <div className="grid grid-col-1 gap-2">
+            <div className="md:hidden grid grid-col-1 gap-2">
               {hotel.productTitle.slice(0, 3).map((facility, index) => (
                 <div
                   className="flex flex-col md:border-r pr-5 items-center border-black"
