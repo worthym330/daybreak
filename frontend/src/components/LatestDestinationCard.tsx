@@ -30,12 +30,19 @@ const LatestDestinationCard = ({ hotel }: any) => {
           <img
             src={hotel.imageUrls[0]}
             alt="Hotel Image"
-            className="w-full h-48 object-cover"
+            className={`w-full h-48 object-cover ${
+              !hotel.status && "grayscale"
+            }`}
           />
           <p className="flex items-center text-sm font-semibold mb-2 absolute bottom-0 px-4">
             <FaMapMarkerAlt className="font-bold mr-1" />
             {hotel.city}, {hotel.state}
           </p>
+          {!hotel.status && (
+            <p className="flex items-center text-sm font-semibold mb-2 absolute top-0 right-0 px-4 bg-red-500 uppercase rounded-t-md">
+              sold out
+            </p>
+          )}
         </div>
         <div className="px-6 pt-4">
           <div className="font-bold text-xl mb-2 truncate">{hotel.name}</div>
@@ -55,7 +62,10 @@ const LatestDestinationCard = ({ hotel }: any) => {
               {hotel?.productTitle
                 ?.slice(0, 3)
                 ?.map((facility: any, index: number) => (
-                  <span key={index} className="pr-2 rounded-md text-sm text-nowrap">
+                  <span
+                    key={index}
+                    className="pr-2 rounded-md text-sm text-nowrap"
+                  >
                     {facility.title}
                   </span>
                 ))}
