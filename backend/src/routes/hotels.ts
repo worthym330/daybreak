@@ -42,17 +42,20 @@ router.get("/search", async (req: Request, res: Response) => {
   try {
     const query = constructSearchQuery(req.query);
 
-    let sortOptions = {};
-    switch (req.query.sortOption) {
-      case "starRating":
-        sortOptions = { starRating: -1 };
-        break;
-      case "pricePerNightAsc":
-        sortOptions = { "productTitle.adultPrice": 1 };
-        break;
-      case "pricePerNightDesc":
-        sortOptions = { "productTitle.adultPrice": -1 };
-        break;
+    let sortOptions: any = { createdAt: -1 };
+
+    if (req.query.sortOption) {
+      switch (req.query.sortOption) {
+        case "starRating":
+          sortOptions = { starRating: -1, createdAt: -1 };
+          break;
+        case "pricePerNightAsc":
+          sortOptions = { "productTitle.adultPrice": 1, createdAt: -1 };
+          break;
+        case "pricePerNightDesc":
+          sortOptions = { "productTitle.adultPrice": -1, createdAt: -1 };
+          break;
+      }
     }
 
     const pageSize = 10;
@@ -964,7 +967,7 @@ router.post("/hotel-details/bulk-creations", async (req, res) => {
     const dateRange = getDatesInRange(startDate, endDate);
 
     const bulkHotelDetailsOps = [];
-    const bulkSlotOps:any[] = [];
+    const bulkSlotOps: any[] = [];
 
     const batchSize = 10; // Adjusted for larger batch size
     for (let i = 0; i < dateRange.length; i += batchSize) {
@@ -1002,7 +1005,7 @@ router.post("/hotel-details/bulk-creations", async (req, res) => {
             } = pricingFields[selectedTitle] || {};
 
             const tempId = new mongoose.Types.ObjectId();
-            let slotIds:string[] = []; // Array to store slot IDs
+            let slotIds: string[] = []; // Array to store slot IDs
 
             // Create bulk operations for slots
             slots.forEach((slot) => {
@@ -1073,7 +1076,9 @@ router.post("/hotel-details/bulk-creations", async (req, res) => {
     const slotsAdded = await Slot.bulkWrite(bulkSlotOps);
 
     hotel.titlesId = hotel.titlesId || [];
-    bulkHotelDetailsOps.map((e:any) => hotel?.titlesId?.push(e.insertOne.document._id.toString()))
+    bulkHotelDetailsOps.map((e: any) =>
+      hotel?.titlesId?.push(e.insertOne.document._id.toString())
+    );
 
     await hotel.save();
 

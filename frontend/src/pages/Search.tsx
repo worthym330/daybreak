@@ -273,7 +273,7 @@ const Search = () => {
           Showing {hotelData?.pagination.total} Hotels
           {search.destination ? ` in ${search.destination}` : ""}
         </span>
-        {hotelData?.data?.reverse().map((hotel: any) => (
+        {hotelData?.data?.map((hotel: any) => (
           <SearchResultsCard key={hotel.id} hotel={hotel} />
         ))}
         <div>
