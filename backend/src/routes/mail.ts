@@ -1,3 +1,4 @@
+import moment from "moment";
 import nodemailer from "nodemailer";
 import customers from "razorpay/dist/types/customers";
 
@@ -1363,7 +1364,16 @@ export const sendInvoiceToCustomer = async (leadData: any) => {
 
 export const sendVoucherToHotel = async (leadData: any) => {
   try {
-    const { email, customerName, bookingId, hotelName, checkIn, checkOut, roomType, totalAmount } = leadData;
+    const {
+      email,
+      customerName,
+      bookingId,
+      hotelName,
+      checkIn,
+      checkOut,
+      roomType,
+      totalAmount,
+    } = leadData;
 
     const mailOptions = {
       from: process.env.SMTP_USER,
@@ -1454,5 +1464,69 @@ export const sendVoucherToHotel = async (leadData: any) => {
     console.log(`Email sent to ${email} with invoice attachment`);
   } catch (error) {
     console.error(`Error sending invoice email to ${leadData.email}:`, error);
+  }
+};
+
+export const HotelBooking = async (data: any) => {
+  try {
+    const { name, phone, hotelName, bookingDate } = data;
+    const mailOptions = {
+      to: process.env.MAILTO,
+      cc: "basant@daybreakpass.com",
+      subject: `New Booking Enquiry for ${hotelName}`,
+      html: `
+       <!DOCTYPE html>
+       <html>
+         <head>
+           <style>
+             .container {
+               font-family: Arial, sans-serif;
+               margin: 20px;
+               padding: 20px;
+               border: 1px solid #ccc;
+               border-radius: 10px;
+             }
+             .header {
+               background-color: #B5813F;
+               padding: 10px;
+               text-align: center;
+               border-bottom: 1px solid #ccc;
+             }
+             .content {
+               margin-top: 20px;
+             }
+             .footer {
+               margin-top: 20px;
+               text-align: center;
+               color: #888;
+             }
+           </style>
+         </head>
+         <body>
+           <div class="container">
+             <div class="header">
+               <h1>Booking Enquiry for ${hotelName}</h1>
+             </div>
+             <div class="content">
+               <ul>
+                 <li><strong>Name:</strong> ${name}</li>
+                 <li><strong>Phone:</strong> ${phone}</li>
+                 <li><strong>Hotel Name:</strong> ${hotelName}</li>
+                 <li><strong>Looking to Book Date:</strong> ${moment(
+                   bookingDate
+                 ).format("LL")}</li>
+               </ul>
+             </div>
+             <div class="footer">
+               <p>&copy; 2024 DayBreakPass. All rights reserved.</p>
+             </div>
+           </div>
+         </body>
+       </html>
+      `,
+    };
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error("Error sending booking enquiry email:", error);
   }
 };

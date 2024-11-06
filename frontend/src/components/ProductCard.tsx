@@ -15,6 +15,7 @@ import { FiSun } from "react-icons/fi";
 import { MdFreeBreakfast, MdOutlineWater } from "react-icons/md";
 import { GiWaterSplash } from "react-icons/gi";
 import { FaUtensils } from "react-icons/fa6";
+import { EnquiryForm } from "./Enquiry-form";
 
 interface ProductCardProps {
   product: any;
@@ -78,9 +79,23 @@ export const titleIcons = {
   "BUFFET DINNER + SWIMMING POOL": <FaUtensils />, // Combined dinner and pool
 };
 
+const enquiryModal = {
+  type: "add",
+  state: false,
+  index: null,
+  loading: false,
+  data: {
+    name: "",
+    phone: "",
+    adults: 0,
+    children: 0,
+  },
+};
+
 const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showLess, setShowLess] = useState(false);
+  const [modal, setModal] = useState(enquiryModal);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -89,6 +104,7 @@ const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
     <div
       className={`bg-white rounded-lg lg:shadow-xl p-4 lg:p-8 mb-4 border-2 hover:border-[#00C0CB]`}
     >
+      <EnquiryForm modal={modal} setModal={setModal} hotelName={hotel.name} />
       {/* Conditionally render based on screen size */}
       <div className={` ${showLess ? "h-36 overflow-hidden" : "h-fit"}`}>
         <div className="flex justify-between items-center md:hidden">
@@ -98,7 +114,8 @@ const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
             </h2>
           </div>
           <div className="pl-4 ml-4">
-            {product.maxGuestsperDay !== 0 ? (
+            {product.maxGuestsperDay !== 0 &&
+            hotel._id !== "672a13784afc77fe6c4fc0ef" ? (
               <Button
                 className="bg-goldColor text-white px-4 py-2 rounded-lg w-24 flex items-center justify-center"
                 onClick={() => setIsModalOpen(true)}
@@ -111,6 +128,14 @@ const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
                     <FaChevronDown className="w-5 h-5 text-sm" />
                   )}
                 </span>
+              </Button>
+            ) : hotel._id === "672a13784afc77fe6c4fc0ef" ? (
+              <Button
+                className="bg-goldColor text-white px-4 py-2 rounded-lg w-full flex items-center justify-center dis"
+                // onClick={() => setIsModalOpen(true)}
+                // disabled={true}
+              >
+                <span>Enquire now</span>
               </Button>
             ) : (
               <Button
@@ -195,29 +220,40 @@ const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
               )}
             </div>
             <div className="mt-2">
-            {product.maxGuestsperDay !== 0 ? (
-            <Button
-                className="bg-goldColor text-white px-4 py-2 rounded-lg w-24 flex items-center justify-center"
-                onClick={() => setIsModalOpen(true)}
-              >
-                <span>Select</span>
-                <span className="font-thin">
-                  {isModalOpen ? (
-                    <FaChevronUp className="w-5 h-5 text-sm" />
-                  ) : (
-                    <FaChevronDown className="w-5 h-5 text-sm" />
-                  )}
-                </span>
-              </Button>
-            ) : (
-              <Button
-                className="bg-goldColor text-white px-4 py-2 rounded-lg flex items-center justify-center disabled:cursor-not-allowed w-full"
-                // onClick={() => setIsModalOpen(true)}
-                disabled={true}
-              >
-                <span>Sold Out</span>
-              </Button>
-            )}
+              {product.maxGuestsperDay !== 0 &&
+              hotel._id !== "672a13784afc77fe6c4fc0ef" ? (
+                <Button
+                  className="bg-goldColor text-white px-4 py-2 rounded-lg w-full flex items-center justify-center"
+                  onClick={() => setIsModalOpen(true)}
+                >
+                  <span>Select</span>
+                  <span className="font-thin">
+                    {isModalOpen ? (
+                      <FaChevronUp className="w-5 h-5 text-sm" />
+                    ) : (
+                      <FaChevronDown className="w-5 h-5 text-sm" />
+                    )}
+                  </span>
+                </Button>
+              ) : hotel._id === "672a13784afc77fe6c4fc0ef" ? (
+                <Button
+                  className="bg-goldColor text-white px-4 py-2 rounded-lg  flex items-center justify-center w-full"
+                  onClick={() =>
+                    setModal((prev: any) => ({ ...prev, state: true }))
+                  }
+                  // disabled={true}
+                >
+                  <span>Enquire now</span>
+                </Button>
+              ) : (
+                <Button
+                  className="bg-goldColor text-white px-4 py-2 rounded-lg w-24 flex items-center justify-center dis"
+                  // onClick={() => setIsModalOpen(true)}
+                  disabled={true}
+                >
+                  <span>Sold Out</span>
+                </Button>
+              )}
             </div>
           </div>
         </div>
