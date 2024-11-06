@@ -132,7 +132,9 @@ const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
             ) : hotel._id === "672a13784afc77fe6c4fc0ef" ? (
               <Button
                 className="bg-goldColor text-white px-4 py-2 rounded-lg w-full flex items-center justify-center dis"
-                // onClick={() => setIsModalOpen(true)}
+                onClick={() =>
+                  setModal((prev: any) => ({ ...prev, state: true }))
+                }
                 // disabled={true}
               >
                 <span>Enquire now</span>
