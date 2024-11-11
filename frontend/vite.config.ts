@@ -8,9 +8,9 @@ export default defineConfig({
   plugins: [
     react(),
     viteCompression({
-      algorithm: 'brotliCompress',
+      algorithm: 'gzip',
       threshold: 10240,
-    }),  
+    }),
     viteImagemin({
       gifsicle: {
         optimizationLevel: 7,
@@ -31,6 +31,7 @@ export default defineConfig({
         quality: 80,
       },
     }),
+    visualizer(),
   ],
   resolve: {
     alias: {
@@ -39,6 +40,7 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ['redux-thunk', 'react', 'react-dom'],
+    exclude: ['some-heavy-package'],
   },
   build: {
     minify: 'terser',
