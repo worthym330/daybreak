@@ -41,6 +41,8 @@
     "redux-persist": "^6.0.0",
     "redux-thunk": "^3.1.0",
     "swiper": "^11.1.9",
+    "vite-plugin-imagemin": "^0.6.1",
+    "vite-plugin-pwa": "^0.20.5",
     "yup": "^1.4.0"
   },
   "devDependencies": {
