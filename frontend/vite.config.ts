@@ -2,34 +2,33 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import viteCompression from 'vite-plugin-compression';
 import { visualizer } from 'rollup-plugin-visualizer';
-import viteImagemin from 'vite-plugin-imagemin'; // Import the image optimization plugin
+import viteImagemin from 'vite-plugin-imagemin';
 
 export default defineConfig({
   plugins: [
     react(),
     viteCompression({
-      algorithm: 'brotliCompress', // Use Brotli compression for smaller sizes
-      threshold: 10240, // Compress assets larger than 10 KB
-    }),
-    visualizer({ filename: './dist/stats.html', open: true }), // Generates a bundle analysis file
+      algorithm: 'brotliCompress',
+      threshold: 10240,
+    }),  
     viteImagemin({
       gifsicle: {
-        optimizationLevel: 7, // Optimize GIFs
+        optimizationLevel: 7,
       },
       optipng: {
-        optimizationLevel: 7, // Optimize PNGs
+        optimizationLevel: 7,
       },
       mozjpeg: {
-        quality: 80, // Compress JPEGs with 80% quality
+        quality: 80,
       },
       svgo: {
         plugins: [
-          { name: 'removeViewBox', active: false }, // Keep viewBox attribute
-          { name: 'removeEmptyAttrs', active: true }, // Remove unnecessary SVG attributes
+          { name: 'removeViewBox', active: false },
+          { name: 'removeEmptyAttrs', active: true },
         ],
       },
       webp: {
-        quality: 80, // Convert images to WebP for smaller sizes
+        quality: 80,
       },
     }),
   ],
