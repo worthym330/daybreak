@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import viteCompression from 'vite-plugin-compression';
 import { visualizer } from 'rollup-plugin-visualizer';
-import viteImagemin from 'vite-plugin-imagemin';
+// import viteImagemin from 'vite-plugin-imagemin';
 
 export default defineConfig({
   plugins: [
@@ -11,26 +11,26 @@ export default defineConfig({
       algorithm: 'gzip',
       threshold: 10240,
     }),
-    viteImagemin({
-      gifsicle: {
-        optimizationLevel: 7,
-      },
-      optipng: {
-        optimizationLevel: 7,
-      },
-      mozjpeg: {
-        quality: 80,
-      },
-      svgo: {
-        plugins: [
-          { name: 'removeViewBox', active: false },
-          { name: 'removeEmptyAttrs', active: true },
-        ],
-      },
-      webp: {
-        quality: 80,
-      },
-    }),
+    // viteImagemin({
+    //   gifsicle: {
+    //     optimizationLevel: 7,
+    //   },
+    //   optipng: {
+    //     optimizationLevel: 7,
+    //   },
+    //   mozjpeg: {
+    //     quality: 80,
+    //   },
+    //   svgo: {
+    //     plugins: [
+    //       { name: 'removeViewBox', active: false },
+    //       { name: 'removeEmptyAttrs', active: true },
+    //     ],
+    //   },
+    //   webp: {
+    //     quality: 80,
+    //   },
+    // }),
     visualizer(),
   ],
   resolve: {
