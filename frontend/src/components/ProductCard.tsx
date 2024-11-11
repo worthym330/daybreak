@@ -146,7 +146,7 @@ const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
               </Button>
             ) : (
               <Button
-                className="bg-goldColor text-white px-4 py-2 rounded-lg w-24 flex items-center justify-center dis"
+                className="bg-goldColor text-white px-4 py-2 rounded-lg w-full flex items-center justify-center dis"
                 // onClick={() => setIsModalOpen(true)}
                 disabled={true}
               >
@@ -259,7 +259,7 @@ const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
                 </Button>
               ) : (
                 <Button
-                  className="bg-goldColor text-white px-4 py-2 rounded-lg w-24 flex items-center justify-center dis"
+                  className="bg-goldColor text-white px-4 py-2 rounded-lg w-full flex items-center justify-center dis"
                   // onClick={() => setIsModalOpen(true)}
                   disabled={true}
                 >
