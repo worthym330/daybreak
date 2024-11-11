@@ -121,14 +121,14 @@ const SearchResultsCard = ({ hotel }: Props) => {
       />
       <div className="flex flex-col md:flex-row gap-7">
         {/* Images Section */}
-        <div className="w-full mb-[5px] md:w-[239px]">
-          <div className="mb-2">
+        <div className={`w-full mb-[5px] md:w-[239px] relative`}>
+          <div className={`mb-2 ${!hotel.status && "grayscale"}`}>
             <img
               src={mainImage}
               className="w-full md:w-[243px] h-[200px] object-cover object-center rounded-lg"
             />
           </div>
-          <div className="grid gap-1.5 grid-cols-4 w-full md:w-[239px] cursor-pointer">
+          <div className={`grid gap-1.5 grid-cols-4 w-full md:w-[239px] cursor-pointer ${!hotel.status && "grayscale"}`}>
             {hotel.imageUrls.slice(0, 4).map((image, index) => (
               <span
                 key={index}
@@ -144,6 +144,11 @@ const SearchResultsCard = ({ hotel }: Props) => {
               </span>
             ))}
           </div>
+          {!hotel.status && (
+            <p className="flex items-center text-sm font-semibold mb-2 absolute top-0 right-0 px-4 bg-red-500 uppercase rounded-t-md">
+              sold out
+            </p>
+          )}
         </div>
         {/* Images Section Ends */}
 
@@ -225,10 +230,10 @@ const SearchResultsCard = ({ hotel }: Props) => {
 
           {/* Passes Price Details Start */}
           <div className="flex flex-col lg:flex-row justify-between items-center">
-            <div className="flex flex-wrap gap-2 mt-3">
+            <div className="hidden md:flex flex-wrap gap-2 mt-3">
               {hotel.productTitle.slice(0, 3).map((facility, index) => (
                 <div
-                  className="flex flex-col border-r pr-5 items-center border-black"
+                  className="flex flex-col md:border-r pr-5 items-center border-black"
                   key={index}
                 >
                   <span className="text-black font-sans font-bold text-sm">
@@ -244,6 +249,31 @@ const SearchResultsCard = ({ hotel }: Props) => {
                 </div>
               ))}
               <div className="flex items-center">
+                <span className="text-sm text-black">
+                  {hotel.productTitle.length > 3 &&
+                    `+${hotel.productTitle.length - 3} more`}
+                </span>
+              </div>
+            </div>
+            <div className="md:hidden grid grid-col-1 gap-2">
+              {hotel.productTitle.slice(0, 3).map((facility, index) => (
+                <div
+                  className="flex flex-col md:border-r pr-5 items-center border-black"
+                  key={index}
+                >
+                  <span className="text-black font-sans font-bold text-sm">
+                    {facility.title}
+                  </span>
+                  <span className="text-lg text-goldColor font-semi-bold">
+                    ₹{" "}
+                    {facility.childPrice > facility.adultPrice
+                      ? facility.childPrice
+                      : facility.adultPrice}
+                  </span>
+                  {/* <span className="text-sm">Only 5 left</span> */}
+                </div>
+              ))}
+              <div className="flex justify-center">
                 <span className="text-sm text-black">
                   {hotel.productTitle.length > 3 &&
                     `+${hotel.productTitle.length - 3} more`}

@@ -229,7 +229,6 @@ const Detail = () => {
   }, [error]);
 
   const toggleFavourite = async () => {
-    console.log(userLogined);
     if (userLogined !== null) {
       const user: FavouriteList = {
         userId: userLogined.id,
