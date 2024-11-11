@@ -29,7 +29,7 @@ router.post("/", async (req: Request, res: Response) => {
         .status(404)
         .send({ message: "Product not found in the hotel" });
     }
-    hotel.productTitle[productIndex].addOns.push(add._id);
+    hotel?.productTitle[productIndex]?.addOns?.push(add?._id.toString());
     if (!hotel.addOns) {
       hotel.addOns = [];
     }
@@ -60,7 +60,7 @@ router.get("/", async (req, res) => {
       const formattedData = hotel.productTitle
         .filter((product) => product.addOns && product.addOns.length > 0)
         .flatMap((product) =>
-          product.addOns.map((addon: any) => ({
+          product?.addOns?.map((addon: any) => ({
             id: addon._id,
             productId: addon.productId, // Assuming each product has an ID
             name: addon.name,
@@ -85,7 +85,7 @@ router.get("/", async (req, res) => {
         return hotel.productTitle
           .filter((product) => product.addOns && product.addOns.length > 0)
           .flatMap((product) =>
-            product.addOns.map((addon: any) => ({
+            product.addOns?.map((addon: any) => ({
               id: addon._id,
               hotelId: hotel.name, // Hotel ID
               productId: addon.productId, // Product ID
@@ -133,7 +133,7 @@ router.put("/:id", async (req, res) => {
       if (oldProductIndex !== -1) {
         hotel.productTitle[oldProductIndex].addOns = hotel.productTitle[
           oldProductIndex
-        ].addOns.filter((addOn: any) => addOn.toString() !== id);
+        ]?.addOns?.filter((addOn: any) => addOn.toString() !== id);
       }
     }
 
@@ -159,7 +159,7 @@ router.put("/:id", async (req, res) => {
     }
 
     // Ensure the new product has an addOns array and add the updated AddOn reference
-    hotel.productTitle[newProductIndex].addOns.push(id);
+    hotel.productTitle[newProductIndex]?.addOns?.push(id);
 
     // Save the updated hotel
     await hotel.save();
@@ -208,7 +208,7 @@ router.delete("/:id", async (req: Request, res: Response) => {
 
     // Remove the AddOn from each relevant product's addOns array
     hotel.productTitle.forEach((product) => {
-      product.addOns = product.addOns.filter(
+      product.addOns = product?.addOns?.filter(
         (addOnIdInProduct: any) => addOnIdInProduct.toString() !== id
       );
     });

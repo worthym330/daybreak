@@ -87,8 +87,13 @@ const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
   };
   return (
     <div
-      className={`bg-white rounded-lg lg:shadow-xl p-4 lg:p-8 mb-4 border-2 hover:border-[#00C0CB]`}
+      className={`relative bg-white rounded-lg lg:shadow-xl p-4 lg:p-8 mb-4 border-2 hover:border-[#00C0CB]`}
     >
+      {product.remainingGuests < 5 && (
+        <span className="absolute -top-4 right-2 text-[#ebac00] text-sm p-1 bg-[#fff7e0] rounded-full uppercase md:hidden">
+          Only {product.remainingGuests} left
+        </span>
+      )}
       {/* Conditionally render based on screen size */}
       <div className={` ${showLess ? "h-36 overflow-hidden" : "h-fit"}`}>
         <div className="flex justify-between items-center md:hidden">
@@ -98,19 +103,29 @@ const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
             </h2>
           </div>
           <div className="pl-4 ml-4">
-            <Button
-              className="bg-goldColor text-white px-4 py-2 rounded-lg w-24 flex items-center justify-center"
-              onClick={() => setIsModalOpen(true)}
-            >
-              <span>Select</span>
-              <span className="font-thin">
-                {isModalOpen ? (
-                  <FaChevronUp className="w-5 h-5 text-sm" />
-                ) : (
-                  <FaChevronDown className="w-5 h-5 text-sm" />
-                )}
-              </span>
-            </Button>
+            {product.maxGuestsperDay !== 0 ? (
+              <Button
+                className="bg-goldColor text-white px-4 py-2 rounded-lg w-24 flex items-center justify-center"
+                onClick={() => setIsModalOpen(true)}
+              >
+                <span>Select</span>
+                <span className="font-thin">
+                  {isModalOpen ? (
+                    <FaChevronUp className="w-5 h-5 text-sm" />
+                  ) : (
+                    <FaChevronDown className="w-5 h-5 text-sm" />
+                  )}
+                </span>
+              </Button>
+            ) : (
+              <Button
+                className="bg-goldColor text-white px-4 py-2 rounded-lg w-24 flex items-center justify-center dis"
+                // onClick={() => setIsModalOpen(true)}
+                disabled={true}
+              >
+                <span>Sold Out</span>
+              </Button>
+            )}
           </div>
         </div>
         <div className="md:flex justify-between hidden">
@@ -158,7 +173,12 @@ const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
           {/* Right Box */}
           <div className="border-l-2 border-gray-200 h-auto"></div>
           <div className="w-1/3 pl-4 ml-4">
-            <div className="flex justify-between items gap-2 text-gray-500 text-sm">
+            {product.remainingGuests < 5 && (
+              <span className="text-[#00C0CB] text-sm p-2 bg-gray-100 rounded-full uppercase font-semibold">
+                only {product.remainingGuests} left
+              </span>
+            )}
+            <div className="flex justify-between items gap-2 text-gray-500 text-sm mt-2">
               {product.adultPrice > 0 && (
                 <div className="flex flex-col gap-2 text-center">
                   <span className="text-center">Adults</span>
@@ -185,8 +205,9 @@ const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
               )}
             </div>
             <div className="mt-2">
-              <Button
-                className="bg-goldColor text-white px-4 py-2 rounded-lg w-full flex items-center justify-center"
+            {product.maxGuestsperDay !== 0 ? (
+            <Button
+                className="bg-goldColor text-white px-4 py-2 rounded-lg w-24 flex items-center justify-center"
                 onClick={() => setIsModalOpen(true)}
               >
                 <span>Select</span>
@@ -198,6 +219,15 @@ const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
                   )}
                 </span>
               </Button>
+            ) : (
+              <Button
+                className="bg-goldColor text-white px-4 py-2 rounded-lg flex items-center justify-center disabled:cursor-not-allowed w-full"
+                // onClick={() => setIsModalOpen(true)}
+                disabled={true}
+              >
+                <span>Sold Out</span>
+              </Button>
+            )}
             </div>
           </div>
         </div>
