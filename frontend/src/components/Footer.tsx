@@ -20,17 +20,20 @@ const Footer = () => {
   const [HotelRegisterModal, setHotelRegisterModal] =
     useState(initialModalState);
 
-  const location = useLocation()
-  const [isDetail, setIsDetail] = useState(false)
+  const location = useLocation();
+  const [isDetail, setIsDetail] = useState(false);
   const cartItems = useSelector((state: RootState) => state.cart.items);
-console.log(cartItems)
-  useEffect(()=>{
-    const loc = location.pathname.startsWith('/hotel-detail/')
-    setIsDetail(loc)
-  },[location])
+  useEffect(() => {
+    const loc = location.pathname.startsWith("/hotel-detail/");
+    setIsDetail(loc);
+  }, [location]);
 
   return (
-    <div className={`bg-[#02596c] mt-8 font-poppins ${isDetail && cartItems.length >0 ? "mb-20 md:mb-0":""}`} >
+    <div
+      className={`bg-[#02596c] mt-8 font-poppins ${
+        isDetail && cartItems.length > 0 ? "mb-20 md:mb-0" : ""
+      }`}
+    >
       <RenderLoginModal
         modal={modal}
         setModal={setModal}

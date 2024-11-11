@@ -6,10 +6,8 @@ import {
   useLocation,
 } from "react-router-dom";
 import Layout from "./layouts/Layout";
-// import SignIn from "./pages/SignIn";
 import Cookies from "js-cookie";
 import { lazy, Suspense, useEffect } from "react";
-// import Login from "./pages/LoginandSignup";
 import { Bounce, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "react-datepicker/dist/react-datepicker.css";
@@ -20,7 +18,7 @@ const AccessControl = ({ children, requiredRoles }: any) => {
   const auth_token = Cookies.get("authentication") || "null";
   const user = JSON.parse(auth_token);
   const navigate = useNavigate();
-  // const [unauthenticated, setUnauthenticated] = useState(false);
+
   useEffect(() => {
     if (user === null) {
       navigate(-1);
@@ -32,19 +30,6 @@ const AccessControl = ({ children, requiredRoles }: any) => {
   return <>{children}</>;
 };
 
-// const AuthRedirect = ({ children }: any) => {
-//   const auth_token = Cookies.get("authentication");
-//   const navigate = useNavigate();
-
-//   useEffect(() => {
-//     if (auth_token) {
-//       navigate("/"); // Redirect to home or any other page
-//     }
-//   }, [auth_token]);
-
-//   return auth_token ? null : children;
-// };
-
 const ScrollToTop = () => {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -53,6 +38,7 @@ const ScrollToTop = () => {
   return null;
 };
 
+// Lazy-loaded components
 const Home = lazy(() => import("./pages/Home"));
 const MyHotels = lazy(() => import("./pages/MyHotels"));
 const Search = lazy(() => import("./pages/Search"));
@@ -69,7 +55,6 @@ const ListMyPage = lazy(() => import("./pages/ListmyHotel"));
 const CancellationPolicy = lazy(() => import("./pages/CancellationPolicy"));
 const ResetPass = lazy(() => import("./pages/ResetPassword"));
 const Contact = lazy(() => import("./pages/ContactUs"));
-// const NotFound = lazy(() => import("./pages/NotFound"));
 
 const App = () => {
   return (
@@ -80,157 +65,206 @@ const App = () => {
         autoClose={1000}
         transition={Bounce}
       />
-      <Suspense fallback={<SplashScreen />}>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <Layout>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Layout>
+              <Suspense fallback={<SplashScreen />}>
                 <Home />
-              </Layout>
-            }
-          />
-          <Route
-            path="/listings"
-            element={
-              <Layout>
+              </Suspense>
+            </Layout>
+          }
+        />
+        <Route
+          path="/listings"
+          element={
+            <Layout>
+              <Suspense fallback={<SplashScreen />}>
                 <Search />
-              </Layout>
-            }
-          />
-          <Route
-            path="/hotel-detail/:hotelId"
-            element={
-              <Layout>
+              </Suspense>
+            </Layout>
+          }
+        />
+        <Route
+          path="/hotel-detail/:hotelId"
+          element={
+            <Layout>
+              <Suspense fallback={<SplashScreen />}>
                 <Detail />
-              </Layout>
-            }
-          />
-          <Route
-            path="/hotel-detail/name/:name"
-            element={
-              <Layout>
+              </Suspense>
+            </Layout>
+          }
+        />
+        <Route
+          path="/hotel-detail/name/:name"
+          element={
+            <Layout>
+              <Suspense fallback={<SplashScreen />}>
                 <Detail />
-              </Layout>
-            }
-          />
-          <Route
-            path="/terms-and-condition"
-            element={
-              <Layout>
+              </Suspense>
+            </Layout>
+          }
+        />
+        <Route
+          path="/terms-and-condition"
+          element={
+            <Layout>
+              <Suspense fallback={<SplashScreen />}>
                 <TermsAndConditions />
-              </Layout>
-            }
-          />
-          <Route
-            path="/privacy-and-policy"
-            element={
-              <Layout>
+              </Suspense>
+            </Layout>
+          }
+        />
+        <Route
+          path="/privacy-and-policy"
+          element={
+            <Layout>
+              <Suspense fallback={<SplashScreen />}>
                 <PrivacyPolicy />
-              </Layout>
-            }
-          />
-          <Route
-            path="/support"
-            element={
-              <Layout>
+              </Suspense>
+            </Layout>
+          }
+        />
+        <Route
+          path="/support"
+          element={
+            <Layout>
+              <Suspense fallback={<SplashScreen />}>
                 <Support />
-              </Layout>
-            }
-          />
-          <Route
-            path="/cookie-policy"
-            element={
-              <Layout>
+              </Suspense>
+            </Layout>
+          }
+        />
+        <Route
+          path="/cookie-policy"
+          element={
+            <Layout>
+              <Suspense fallback={<SplashScreen />}>
                 <CookiePolicy />
-              </Layout>
-            }
-          />
-          <Route
-            path="/cancellation-policy"
-            element={
-              <Layout>
+              </Suspense>
+            </Layout>
+          }
+        />
+        <Route
+          path="/cancellation-policy"
+          element={
+            <Layout>
+              <Suspense fallback={<SplashScreen />}>
                 <CancellationPolicy />
-              </Layout>
-            }
-          />
-          <Route
-            path="/list-my-hotel"
-            element={
-              // <Layout>
+              </Suspense>
+            </Layout>
+          }
+        />
+        <Route
+          path="/list-my-hotel"
+          element={
+            <Suspense fallback={<SplashScreen />}>
               <ListMyPage />
-              // </Layout>
-            }
-          />
-          <Route path="/about-us" element={<AboutUs />} />
-          <Route
-            path="/contact-us"
-            element={
-              <Layout>
+            </Suspense>
+          }
+        />
+        <Route
+          path="/about-us"
+          element={
+            <Suspense fallback={<SplashScreen />}>
+              <AboutUs />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/contact-us"
+          element={
+            <Layout>
+              <Suspense fallback={<SplashScreen />}>
                 <Contact />
-              </Layout>
-            }
-          />
-          <Route path="/waitlist" element={<WaitList />} />
-          <Route
-            path="/checkout"
-            element={
-              // <AccessControl requiredRoles={["customer"]}>
-              <Layout>
+              </Suspense>
+            </Layout>
+          }
+        />
+        <Route
+          path="/waitlist"
+          element={
+            <Suspense fallback={<SplashScreen />}>
+              <WaitList />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/checkout"
+          element={
+            <Layout>
+              <Suspense fallback={<SplashScreen />}>
                 <Booking />
-              </Layout>
-              // </AccessControl>
-            }
-          />
-          <Route
-            path="/my-hotels"
-            element={
-              <AccessControl requiredRoles={["partner"]}>
-                <Layout>
+              </Suspense>
+            </Layout>
+          }
+        />
+        <Route
+          path="/my-hotels"
+          element={
+            <AccessControl requiredRoles={["partner"]}>
+              <Layout>
+                <Suspense fallback={<SplashScreen />}>
                   <MyHotels />
-                </Layout>
-              </AccessControl>
-            }
-          />
-          <Route
-            path="/my-bookings"
-            element={
-              <AccessControl requiredRoles={["customer"]}>
-                <Layout>
+                </Suspense>
+              </Layout>
+            </AccessControl>
+          }
+        />
+        <Route
+          path="/my-bookings"
+          element={
+            <AccessControl requiredRoles={["customer"]}>
+              <Layout>
+                <Suspense fallback={<SplashScreen />}>
                   <MyBookings tab="bookings" />
-                </Layout>
-              </AccessControl>
-            }
-          />
-          <Route
-            path="/my-favourites"
-            element={
-              <AccessControl requiredRoles={["customer"]}>
-                <Layout>
+                </Suspense>
+              </Layout>
+            </AccessControl>
+          }
+        />
+        <Route
+          path="/my-favourites"
+          element={
+            <AccessControl requiredRoles={["customer"]}>
+              <Layout>
+                <Suspense fallback={<SplashScreen />}>
                   <MyBookings tab="favourites" />
-                </Layout>
-              </AccessControl>
-            }
-          />
-          <Route path="*" element={<NotFound />} />
-          <Route
-            path="/reset-password/:token"
-            element={
-              <Layout>
-                <ResetPass />
+                </Suspense>
               </Layout>
-            }
-          />
-          <Route
-            path="/review/:hotelId"
-            element={
-              <Layout>
+            </AccessControl>
+          }
+        />
+        <Route
+          path="*"
+          element={
+            <Suspense fallback={<SplashScreen />}>
+              <NotFound />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/reset-password/:token"
+          element={
+            <Layout>
+              <Suspense fallback={<SplashScreen />}>
                 <ResetPass />
-              </Layout>
-            }
-          />
-        </Routes>
-      </Suspense>
+              </Suspense>
+            </Layout>
+          }
+        />
+        <Route
+          path="/review/:hotelId"
+          element={
+            <Layout>
+              <Suspense fallback={<SplashScreen />}>
+                <ResetPass />
+              </Suspense>
+            </Layout>
+          }
+        />
+      </Routes>
     </Router>
   );
 };

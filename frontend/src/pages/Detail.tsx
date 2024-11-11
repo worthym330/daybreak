@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import * as apiClient from "./../api-client";
@@ -43,6 +43,7 @@ import "swiper/css/pagination";
 import { Navigation } from "swiper/modules";
 import ConfirmationModal from "../components/AlertModal";
 import { addHotel } from "../store/favSlice";
+import SplashScreen from "../components/SplashScreen";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAP_GL_TOKEN;
 
@@ -88,6 +89,48 @@ export const Tooltip = ({ children, text }: any) => {
   );
 };
 
+const useHotelData = (hotelId: any, name: any) => {
+  const hotelQuery = useQuery(
+    ["fetchHotelById", hotelId],
+    () => apiClient.fetchHotelById(hotelId || ""),
+    { enabled: !!hotelId }
+  );
+
+  const hotelByNameQuery = useQuery(
+    ["fetchHotelByName", name],
+    () => apiClient.fetchHotelByName(name || ""),
+    { enabled: !hotelId && !!name }
+  );
+
+  // Combined loading state
+  const isLoading = useMemo(
+    () => hotelQuery.isFetching || hotelByNameQuery.isFetching,
+    [hotelQuery.isFetching, hotelByNameQuery.isFetching]
+  );
+
+  // Combined error
+  const error = useMemo(
+    () => hotelQuery.error || hotelByNameQuery.error,
+    [hotelQuery.error, hotelByNameQuery.error]
+  );
+
+  // Combined data
+  const hotel = useMemo(
+    () => hotelQuery.data || hotelByNameQuery.data,
+    [hotelQuery.data, hotelByNameQuery.data]
+  );
+
+  // Callback to handle fetching status
+  const handleFetchStatus = useCallback(() => {
+    if (isLoading) return "Loading...";
+    if (error) return `Error: ${error}`;
+    if (hotel) return "Hotel data fetched successfully!";
+    return "No data available.";
+  }, [isLoading, error, hotel]);
+
+  return { hotel, isLoading, error, handleFetchStatus };
+};
+
 const Detail = () => {
   const { hotelId, name } = useParams();
   const queryClient = useQueryClient();
@@ -112,24 +155,8 @@ const Detail = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const toggleExpand = () => setIsExpanded(!isExpanded);
 
-  const hotelQuery = useQuery(
-    ["fetchHotelById", hotelId],
-    () => apiClient.fetchHotelById(hotelId || ""),
-    {
-      enabled: !!hotelId,
-    }
-  );
-
-  const hotelByNameQuery = useQuery(
-    ["fetchHotelByName", name],
-    () => apiClient.fetchHotelByName(name || ""),
-    {
-      enabled: !hotelId && !!name,
-    }
-  );
-
-  const hotel = hotelQuery.data || hotelByNameQuery.data;
-
+  const { hotel, isLoading } = useHotelData(hotelId, name);
+  
   useEffect(() => {
     const getAddressFromUrl = async () => {
       const response = hotel?.mapurl && (await expandUrl(hotel.mapurl as any));
@@ -372,156 +399,169 @@ const Detail = () => {
 
   return (
     <div className="space-y-6">
-      <RenderLoginModal
-        modal={modal}
-        setModal={setModal}
-        setResetModal={setResetModal}
-        setSignupModal={setSignupModal}
-        isHeader={false}
-        isBooking={false}
-        isFavourite={true}
-      />
-      <RenderSignUpModal
-        modal={signupModal}
-        setModal={setSignupModal}
-        initialModalState={initialSignupModalState}
-        setLoginModal={setModal}
-        isHeader={false}
-      />
-      <ResetPassRequest modal={resetModal} setModal={setResetModal} />
-      <ConfirmationModal
-        setOpen={setConfirmationDialog}
-        open={confirmationDialog}
-        onDelete={() => navigate("/my-favourites")}
-        title={isFavourite ? "Added to favorites" : "Removed from favorites"}
-        confirmationButtonText="View Favourites"
-        description={
-          isFavourite
-            ? "This hotel has been successfully added to your favorites list. You can view it anytime in your favorites."
-            : "This hotel has been removed from your favorites list. You can view your updated favorites anytime."
-        }
-      />
-      {/* Image Slider Starts */}
-      <div className="relative">
-        <Swiper
-          spaceBetween={10}
-          slidesPerView={1}
-          loop={true}
-          breakpoints={{
-            1024: {
-              slidesPerView: 3,
-            },
-          }}
-          navigation={{
-            nextEl: ".swiper-button-next",
-            prevEl: ".swiper-button-prev",
-          }}
-          modules={[Navigation]}
-        >
-          {hotel.imageUrls.concat(hotel.imageUrls).map((image, index) => (
-            <SwiperSlide key={index}>
-              <div className="h-[300px] relative">
-                <img
-                  src={image}
-                  alt={hotel.name}
-                  className="rounded-md w-full h-full object-cover object-center border"
-                />
-                {/* Favourite Button for Mobile and Tablet */}
-                <div className="absolute top-2 right-2 lg:hidden">
-                  <button onClick={handleToggleFavourite}>
-                    {isFavourite ? (
-                      <FaHeart className="w-6 h-6 text-red-500 fill-current" />
-                    ) : (
-                      <FaHeart className="w-6 h-6 text-gray-300 fill-current" />
-                    )}
-                  </button>
-                </div>
-              </div>
-            </SwiperSlide>
-          ))}
-          {/* Custom navigation buttons */}
-          <div className="swiper-button-prev swiper-button-custom w-8 h-8 rounded-full flex items-center justify-center text-white hidden md:block"></div>
-          <div className="swiper-button-next swiper-button-custom w-8 h-8 rounded-full flex items-center justify-center text-white hidden md:block"></div>
-        </Swiper>
-      </div>
-      {/* Image Slider Ends */}
+      {isLoading ? (
+        <SplashScreen />
+      ) : (
+        <>
+          <RenderLoginModal
+            modal={modal}
+            setModal={setModal}
+            setResetModal={setResetModal}
+            setSignupModal={setSignupModal}
+            isHeader={false}
+            isBooking={false}
+            isFavourite={true}
+          />
+          <RenderSignUpModal
+            modal={signupModal}
+            setModal={setSignupModal}
+            initialModalState={initialSignupModalState}
+            setLoginModal={setModal}
+            isHeader={false}
+          />
+          <ResetPassRequest modal={resetModal} setModal={setResetModal} />
+          <ConfirmationModal
+            setOpen={setConfirmationDialog}
+            open={confirmationDialog}
+            onDelete={() => navigate("/my-favourites")}
+            title={
+              isFavourite ? "Added to favorites" : "Removed from favorites"
+            }
+            confirmationButtonText="View Favourites"
+            description={
+              isFavourite
+                ? "This hotel has been successfully added to your favorites list. You can view it anytime in your favorites."
+                : "This hotel has been removed from your favorites list. You can view your updated favorites anytime."
+            }
+          />
+          {/* Image Slider Starts */}
+          <div className="relative">
+            <Swiper
+              spaceBetween={10}
+              slidesPerView={1}
+              loop={true}
+              breakpoints={{
+                1024: {
+                  slidesPerView: 3,
+                },
+              }}
+              navigation={{
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+              }}
+              modules={[Navigation]}
+            >
+              {hotel.imageUrls.concat(hotel.imageUrls).map((image, index) => (
+                <SwiperSlide key={index}>
+                  <div className="h-[300px] relative">
+                    <img
+                      src={image}
+                      alt={hotel.name}
+                      className="rounded-md w-full h-full object-cover object-center border"
+                    />
+                    {/* Favourite Button for Mobile and Tablet */}
+                    <div className="absolute top-2 right-2 lg:hidden">
+                      <button onClick={handleToggleFavourite}>
+                        {isFavourite ? (
+                          <FaHeart className="w-6 h-6 text-red-500 fill-current" />
+                        ) : (
+                          <FaHeart className="w-6 h-6 text-gray-300 fill-current" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </SwiperSlide>
+              ))}
+              {/* Custom navigation buttons */}
+              <div className="swiper-button-prev swiper-button-custom w-8 h-8 rounded-full flex items-center justify-center text-white hidden md:block"></div>
+              <div className="swiper-button-next swiper-button-custom w-8 h-8 rounded-full flex items-center justify-center text-white hidden md:block"></div>
+            </Swiper>
+          </div>
+          {/* Image Slider Ends */}
 
-      {/* Hotel Details Start */}
-      <div className="w-full lg:container px-8 pt-10 lg:mx-auto space-y-2">
-        <div className="flex lg:flex-row flex-col gap-10 space-y-2 justify-between">
-          <div className="flex flex-col gap-2 w-full lg:w-2/3">
-            <div className="flex justify-between flex-col md:flex-row">
-              <div className="flex flex-col gap-2">
-                <span className="text-3xl font-semibold font-LuxuryF1 text-[#02596C] break-normal">
-                  {hotel.name}, {hotel.city}
-                </span>
-              </div>
-            </div>
-            <div className="text-goldColor flex gap-4 items-center">
-              <div className="flex">
-                {[...Array(hotel.star)].map((_, i) => (
-                  <AiFillStar key={i} className="w-5 h-5" />
-                ))}
-                {[...Array(5 - hotel.star)].map((_, i) => (
-                  <AiFillStar key={i} className="w-5 h-5 text-gray-300" />
-                ))}
-              </div>
-              <div>
-                <span className="text-xl ">{hotel.star.toFixed(1)}</span>
-              </div>
-              {/* <div>
+          {/* Hotel Details Start */}
+          <div className="w-full lg:container px-8 pt-10 lg:mx-auto space-y-2">
+            <div className="flex lg:flex-row flex-col gap-10 space-y-2 justify-between">
+              <div className="flex flex-col gap-2 w-full lg:w-2/3">
+                <div className="flex justify-between flex-col md:flex-row">
+                  <div className="flex flex-col gap-2">
+                    <span className="text-3xl font-semibold font-LuxuryF1 text-[#02596C] break-normal">
+                      {hotel.name}, {hotel.city}
+                    </span>
+                  </div>
+                </div>
+                <div className="text-goldColor flex gap-4 items-center">
+                  <div className="flex">
+                    {[...Array(hotel.star)].map((_, i) => (
+                      <AiFillStar key={i} className="w-5 h-5" />
+                    ))}
+                    {[...Array(5 - hotel.star)].map((_, i) => (
+                      <AiFillStar key={i} className="w-5 h-5 text-gray-300" />
+                    ))}
+                  </div>
+                  <div>
+                    <span className="text-xl ">{hotel.star.toFixed(1)}</span>
+                  </div>
+                  {/* <div>
                 <span className="text-xl text-black"> | </span>
               </div>
               <div>
                 <span className="text-lg content-center "> {hotel.reviews} Reviews</span>
               </div> */}
-            </div>
-            {/* Facilities Section */}
-            <div className="flex justify-between mt-3">
-              <div className="flex gap-2 flex-wrap">
-                {hotel.facilities.map((facility, index) => (
-                  <Tooltip key={index} text={facility}>
-                    <div className="rounded-md p-2 flex items-center space-x-2 cursor-pointer text-goldColor text-xl border hover:border-[#00C0CB]">
-                      {AmenitiesIcons[facility as FacilityKey] && (
-                        <span>{AmenitiesIcons[facility as FacilityKey]}</span>
+                </div>
+                {/* Facilities Section */}
+                <div className="flex justify-between mt-3">
+                  <div className="flex gap-2 flex-wrap">
+                    {hotel.facilities.map((facility, index) => (
+                      <Tooltip key={index} text={facility}>
+                        <div className="rounded-md p-2 flex items-center space-x-2 cursor-pointer text-goldColor text-xl border hover:border-[#00C0CB]">
+                          {AmenitiesIcons[facility as FacilityKey] && (
+                            <span>
+                              {AmenitiesIcons[facility as FacilityKey]}
+                            </span>
+                          )}
+                        </div>
+                      </Tooltip>
+                    ))}
+                  </div>
+                  {/* Favorite Hotel Button for Desktop */}
+                  <div className="hidden lg:flex gap-2 flex-wrap border border-[#02596C] px-4 py-2 rounded-full">
+                    <button onClick={handleToggleFavourite}>
+                      {isFavourite ? (
+                        <span className="flex gap-2">
+                          <FaHeart className="w-6 h-6 text-red-500 fill-current " />
+                          <span className="text-[#02596C]">Saved</span>
+                        </span>
+                      ) : (
+                        <span className="flex gap-2">
+                          <FaHeart className="w-6 h-6 text-gray-300 fill-current " />
+                          <span className="text-[#02596C]">Save</span>
+                        </span>
                       )}
-                    </div>
-                  </Tooltip>
-                ))}
-              </div>
-              {/* Favorite Hotel Button for Desktop */}
-              <div className="hidden lg:flex gap-2 flex-wrap border border-[#02596C] px-4 py-2 rounded-full">
-                <button onClick={handleToggleFavourite}>
-                  {isFavourite ? (
-                    <span className="flex gap-2">
-                      <FaHeart className="w-6 h-6 text-red-500 fill-current " />
-                      <span className="text-[#02596C]">Saved</span>
-                    </span>
-                  ) : (
-                    <span className="flex gap-2">
-                      <FaHeart className="w-6 h-6 text-gray-300 fill-current " />
-                      <span className="text-[#02596C]">Save</span>
-                    </span>
-                  )}
-                </button>
-              </div>
-            </div>
-            {/* Facilities Section */}
+                    </button>
+                  </div>
+                </div>
+                {/* Facilities Section */}
 
-            <div className="w-full break-words mb-5 lg:hidden">
-              <p>
-                {isExpanded
-                  ? hotel.description
-                  : `${hotel.description.substring(0, 100)}...`}
-              </p>
-              <button onClick={toggleExpand} className="text-[#00C0CB] mt-2">
-                {isExpanded ? "Read Less" : "Read More"}
-              </button>
-            </div>
+                <div className="w-full break-words mb-5 lg:hidden">
+                  <p>
+                    {isExpanded
+                      ? hotel.description
+                      : `${hotel.description.substring(0, 100)}...`}
+                  </p>
+                  <button
+                    onClick={toggleExpand}
+                    className="text-[#00C0CB] mt-2"
+                  >
+                    {isExpanded ? "Read Less" : "Read More"}
+                  </button>
+                </div>
 
-            <div className="w-full break-words mb-5 hidden lg:block">{hotel.description}</div>
+                <div className="w-full break-words mb-5 hidden lg:block">
+                  {hotel.description}
+                </div>
 
-            {/* <span className="text-lg font-medium mb-3">
+                {/* <span className="text-lg font-medium mb-3">
               Book your Daycation
             </span>
             <div className="flex items-center gap-2">
@@ -556,96 +596,99 @@ const Detail = () => {
                 </p>
               )}
             </div> */}
-            <hr className="border-gray-200 mb-3 w-full" />
-            <span className="text-lg font-medium">Select a product</span>
-            <div className="mt-5">
-              {hotel.productTitle.map((product, index) => (
-                <ProductCard
-                  key={index}
-                  product={product}
-                  hotel={hotel}
-                  titles={hotel.titlesId}
-                  setCart={setCart}
-                />
-              ))}
-            </div>
-            {/* Hours Div */}
-            <div className="mb-8 p-4">
-              <h1 className="text-lg font-medium mb-4">Hours</h1>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {hotel?.productTitle.map((product: any, index: number) => (
-                  <div key={index}>
-                    <p>{product.title}</p>
-                    <p className="text-sm text-gray-400">
-                      {moment(product.startTime, "HH:mm").format("hh:mm A")} -{" "}
-                      {moment(product.endTime, "HH:mm").format("hh:mm A")}
-                    </p>
+                <hr className="border-gray-200 mb-3 w-full" />
+                <span className="text-lg font-medium">Select a product</span>
+                <div className="mt-5">
+                  {hotel.productTitle.map((product, index) => (
+                    <ProductCard
+                      key={index}
+                      product={product}
+                      hotel={hotel}
+                      titles={hotel.titlesId}
+                      setCart={setCart}
+                    />
+                  ))}
+                </div>
+                {/* Hours Div */}
+                <div className="mb-8 p-4">
+                  <h1 className="text-lg font-medium mb-4">Hours</h1>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    {hotel?.productTitle.map((product: any, index: number) => (
+                      <div key={index}>
+                        <p>{product.title}</p>
+                        <p className="text-sm text-gray-400">
+                          {moment(product.startTime, "HH:mm").format("hh:mm A")}{" "}
+                          - {moment(product.endTime, "HH:mm").format("hh:mm A")}
+                        </p>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </div>
+                </div>
 
-            <div className="bg-gray-100 p-4 rounded-lg shadow-md mb-8">
-              <h2 className="text-lg font-medium mb-4">How it works</h2>
-              <ol className="list-decimal list-inside">
-                <li>
-                  Select an available day in the calendar, the number of guests,
-                  and complete booking
-                </li>
-                <li>
-                  Receive booking confirmation with details and instructions
-                </li>
-                <li>Bring valid photo ID and check-in at the front desk</li>
-                <li>Enjoy your daycation!</li>
-              </ol>
-            </div>
-            {/* Hours Div */}
-            <div className="w-full mx-auto p-4 text-justify bg-gray-100 rounded-lg shadow-md">
-              <h2 className="text-lg font-medium mb-4">Cancellation Policy</h2>
-              {/* <span className="mb-4 block">
+                <div className="bg-gray-100 p-4 rounded-lg shadow-md mb-8">
+                  <h2 className="text-lg font-medium mb-4">How it works</h2>
+                  <ol className="list-decimal list-inside">
+                    <li>
+                      Select an available day in the calendar, the number of
+                      guests, and complete booking
+                    </li>
+                    <li>
+                      Receive booking confirmation with details and instructions
+                    </li>
+                    <li>Bring valid photo ID and check-in at the front desk</li>
+                    <li>Enjoy your daycation!</li>
+                  </ol>
+                </div>
+                {/* Hours Div */}
+                <div className="w-full mx-auto p-4 text-justify bg-gray-100 rounded-lg shadow-md">
+                  <h2 className="text-lg font-medium mb-4">
+                    Cancellation Policy
+                  </h2>
+                  {/* <span className="mb-4 block">
                 Read our full <Link to= '' className="text-blue-500 underline">cancellation policy </Link>
               </span> */}
-              <h3 className="text-lg font-medium mb-2">Cancel Online</h3>
-              <p className="mb-4">
-                You can cancel your booking online for a full refund back to
-                your original payment method or for DayBreakPass Credit to use
-                another time. Bookings can be cancelled online up until the
-                following times:
-              </p>
-              <ul className="list-disc list-inside space-y-2 mb-8">
-                {hotel?.cancellationPolicy
-                  ?.split(".")
-                  .map(
-                    (e: any, index) =>
-                      e !== "" && e.trim() !== "" && <li key={index}>{e}.</li>
-                  )}
-              </ul>
-            </div>
-            <div className="w-full mx-auto px-4">
-              <h3 className="text-lg font-medium mb-2">Location</h3>
-              <p className="mb-4 flex justify-between items-center">
-                <span>{address}</span>
-                <a
-                  href={hotel.mapurl}
-                  target="_blank"
-                  className="flex gap-2 items-center"
-                >
-                  <FaLocationDot className="text-[#02596c] w-6 h-6" />
-                  <span className="text-[#02596c] hover:text-[#02596c]">
-                    Preview
-                  </span>
-                </a>
-              </p>
-              <div className="rounded-lg overflow-hidden">
-                <div className="rounded-lg overflow-hidden">
-                  {coordinates && (
-                    <div
-                      id="map"
-                      ref={mapContainerRef}
-                      style={{ width: "100%", height: "400px" }}
-                    ></div>
-                  )}
-                  {/* {coordinates && (
+                  <h3 className="text-lg font-medium mb-2">Cancel Online</h3>
+                  <p className="mb-4">
+                    You can cancel your booking online for a full refund back to
+                    your original payment method or for DayBreakPass Credit to
+                    use another time. Bookings can be cancelled online up until
+                    the following times:
+                  </p>
+                  <ul className="list-disc list-inside space-y-2 mb-8">
+                    {hotel?.cancellationPolicy
+                      ?.split(".")
+                      .map(
+                        (e: any, index) =>
+                          e !== "" &&
+                          e.trim() !== "" && <li key={index}>{e}.</li>
+                      )}
+                  </ul>
+                </div>
+                <div className="w-full mx-auto px-4">
+                  <h3 className="text-lg font-medium mb-2">Location</h3>
+                  <p className="mb-4 flex justify-between items-center">
+                    <span>{address}</span>
+                    <a
+                      href={hotel.mapurl}
+                      target="_blank"
+                      className="flex gap-2 items-center"
+                    >
+                      <FaLocationDot className="text-[#02596c] w-6 h-6" />
+                      <span className="text-[#02596c] hover:text-[#02596c]">
+                        Preview
+                      </span>
+                    </a>
+                  </p>
+                  <div className="rounded-lg overflow-hidden">
+                    <div className="rounded-lg overflow-hidden">
+                      {coordinates && (
+                        <div
+                          id="map"
+                          ref={mapContainerRef}
+                          style={{ width: "100%", height: "400px" }}
+                        ></div>
+                      )}
+                      {/* {coordinates && (
                     <LoadScript googleMapsApiKey="YOUR_GOOGLE_MAPS_API_KEY">
                       <GoogleMap
                         mapContainerStyle={mapContainerStyle}
@@ -656,15 +699,15 @@ const Detail = () => {
                       </GoogleMap>
                     </LoadScript>
                   )} */}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-          {/* Hotel Details Start */}
+              {/* Hotel Details Start */}
 
-          {/* Cart Section */}
-          <div className="w-full lg:w-1/3">
-            {/* {cartItems.length > 0 && (
+              {/* Cart Section */}
+              <div className="w-full lg:w-1/3">
+                {/* {cartItems.length > 0 && (
               <div className="h-fit sticky top-4 lg:hidden">
                 <div className="p-4 bg-white rounded-lg shadow-md border-2 border-[#00C0CB]">
                   <div className="flex items-center justify-between mb-4">
@@ -726,139 +769,146 @@ const Detail = () => {
                 </div>
               </div>
             )} */}
-            <div className="h-fit sticky top-4 hidden lg:block">
-              <div className="p-4 bg-white rounded-lg shadow-md border-2 border-[#00C0CB]">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-bold">Your Cart</h2>
-                </div>
-                <div className="border-t pt-4">
-                  {cartItems.length === 0 ? (
-                    <div className="flex items-center space-x-4">
-                      <img
-                        src={hotel.imageUrls[0]}
-                        alt={hotel.name}
-                        className="w-16 h-16 rounded-lg"
-                      />
-                      <div>
-                        <h3 className="text-md font-semibold">{hotel.name}</h3>
-                        <p className="text-sm text-gray-500">
-                          Please select a product to continue
-                        </p>
-                      </div>
+                <div className="h-fit sticky top-4 hidden lg:block">
+                  <div className="p-4 bg-white rounded-lg shadow-md border-2 border-[#00C0CB]">
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-lg font-bold">Your Cart</h2>
                     </div>
-                  ) : (
-                    <div>
-                      <div className="flex items-center space-x-4 mb-4">
-                        <img
-                          src={cartItems[0].hotel.imageUrls[0]}
-                          alt={cartItems[0].hotel.name}
-                          className="w-16 h-16 rounded-lg"
-                        />
-                        <div>
-                          <h3 className="text-md font-semibold">
-                            {cartItems[0].hotel.name}
-                          </h3>
-                        </div>
-                      </div>
-
-                      {cartItems.length > 0 &&
-                        cartItems.map((item: any, index: any) => (
-                          <div key={index} className="mb-4">
-                            <div className="flex justify-between items-center">
-                              <div>
-                                <h3 className="text-sm">
-                                  {item.product.title} Adult ({item.adultCount}){" "}
-                                  {item.childCount > 0 && (
-                                    <span>Child ({item.childCount})</span>
-                                  )}
-                                </h3>
-                              </div>
-                              <button
-                                className="text-gray-500"
-                                onClick={() =>
-                                  handleRemoveItem(item.product.title)
-                                }
-                              >
-                                ×
-                              </button>
-                            </div>
-                            {/* Display selected add-ons */}
-                            {item.selectedAddOns &&
-                              item.selectedAddOns.length > 0 && (
-                                <div className="mt-2 text-xs text-gray-600">
-                                  <h4 className="font-semibold">Add-Ons:</h4>
-                                  {item.selectedAddOns.map(
-                                    (addOn: any, addOnIndex: number) => (
-                                      <div
-                                        key={addOnIndex}
-                                        className="flex justify-between"
-                                      >
-                                        <span>
-                                          {addOn.name} ({addOn.quantity})
-                                        </span>
-                                        <span>
-                                          ₹
-                                          {(
-                                            addOn.price * addOn.quantity
-                                          ).toFixed(2)}
-                                        </span>
-                                      </div>
-                                    )
-                                  )}
-                                </div>
-                              )}
+                    <div className="border-t pt-4">
+                      {cartItems.length === 0 ? (
+                        <div className="flex items-center space-x-4">
+                          <img
+                            src={hotel.imageUrls[0]}
+                            alt={hotel.name}
+                            className="w-16 h-16 rounded-lg"
+                          />
+                          <div>
+                            <h3 className="text-md font-semibold">
+                              {hotel.name}
+                            </h3>
+                            <p className="text-sm text-gray-500">
+                              Please select a product to continue
+                            </p>
                           </div>
-                        ))}
-                      <div className="mt-4 border-t pt-4">
-                        <div className="flex justify-between text-gray-700 mb-2">
-                          <span>Total:</span>
-                          <span>₹{subtotal.toFixed(2)}</span>
                         </div>
-                        <Button
-                          className="w-full bg-goldColor text-white py-2 rounded-lg"
-                          onClick={() => navigate(`/checkout`)}
-                        >
-                          Book Now
-                        </Button>
-                      </div>
+                      ) : (
+                        <div>
+                          <div className="flex items-center space-x-4 mb-4">
+                            <img
+                              src={cartItems[0].hotel.imageUrls[0]}
+                              alt={cartItems[0].hotel.name}
+                              className="w-16 h-16 rounded-lg"
+                            />
+                            <div>
+                              <h3 className="text-md font-semibold">
+                                {cartItems[0].hotel.name}
+                              </h3>
+                            </div>
+                          </div>
+
+                          {cartItems.length > 0 &&
+                            cartItems.map((item: any, index: any) => (
+                              <div key={index} className="mb-4">
+                                <div className="flex justify-between items-center">
+                                  <div>
+                                    <h3 className="text-sm">
+                                      {item.product.title} Adult (
+                                      {item.adultCount}){" "}
+                                      {item.childCount > 0 && (
+                                        <span>Child ({item.childCount})</span>
+                                      )}
+                                    </h3>
+                                  </div>
+                                  <button
+                                    className="text-gray-500"
+                                    onClick={() =>
+                                      handleRemoveItem(item.product.title)
+                                    }
+                                  >
+                                    ×
+                                  </button>
+                                </div>
+                                {/* Display selected add-ons */}
+                                {item.selectedAddOns &&
+                                  item.selectedAddOns.length > 0 && (
+                                    <div className="mt-2 text-xs text-gray-600">
+                                      <h4 className="font-semibold">
+                                        Add-Ons:
+                                      </h4>
+                                      {item.selectedAddOns.map(
+                                        (addOn: any, addOnIndex: number) => (
+                                          <div
+                                            key={addOnIndex}
+                                            className="flex justify-between"
+                                          >
+                                            <span>
+                                              {addOn.name} ({addOn.quantity})
+                                            </span>
+                                            <span>
+                                              ₹
+                                              {(
+                                                addOn.price * addOn.quantity
+                                              ).toFixed(2)}
+                                            </span>
+                                          </div>
+                                        )
+                                      )}
+                                    </div>
+                                  )}
+                              </div>
+                            ))}
+                          <div className="mt-4 border-t pt-4">
+                            <div className="flex justify-between text-gray-700 mb-2">
+                              <span>Total:</span>
+                              <span>₹{subtotal.toFixed(2)}</span>
+                            </div>
+                            <Button
+                              className="w-full bg-goldColor text-white py-2 rounded-lg"
+                              onClick={() => navigate(`/checkout`)}
+                            >
+                              Book Now
+                            </Button>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  )}
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-          {cartItems.length > 0 && (
-            <div className="fixed bottom-0 pb-4 left-0 w-full bg-white shadow-lg border-t p-2 z-10 md:hidden">
-              <div className="flex justify-between items-center">
-                {/* Display amount */}
-                <div className="flex flex-col text-[#02596C] gap-2">
-                  <span className="text-sm">Subtotal:</span>
-                  <span className="text-base font-bold">
-                    ₹{subtotal.toFixed(2)}
-                  </span>
-                </div>
+              {cartItems.length > 0 && (
+                <div className="fixed bottom-0 pb-4 left-0 w-full bg-white shadow-lg border-t p-2 z-10 md:hidden">
+                  <div className="flex justify-between items-center">
+                    {/* Display amount */}
+                    <div className="flex flex-col text-[#02596C] gap-2">
+                      <span className="text-sm">Subtotal:</span>
+                      <span className="text-base font-bold">
+                        ₹{subtotal.toFixed(2)}
+                      </span>
+                    </div>
 
-                <div className="flex gap-2">
-                  {/* Book Now Button */}
-                  <Button
-                    onClick={() => navigate(`/checkout`)}
-                    className="bg-[#02596C] text-white px-6 py-3 rounded-full text-lg"
-                  >
-                    Book Now
-                  </Button>
-                  {/* <button
+                    <div className="flex gap-2">
+                      {/* Book Now Button */}
+                      <Button
+                        onClick={() => navigate(`/checkout`)}
+                        className="bg-[#02596C] text-white px-6 py-3 rounded-full text-lg"
+                      >
+                        Book Now
+                      </Button>
+                      {/* <button
                     className="text-gray-500"
                     onClick={() => clearAllCart()}
                   >
                     ×
                   </button> */}
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
+              {/* Cart Section */}
             </div>
-          )}
-          {/* Cart Section */}
-        </div>
-      </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

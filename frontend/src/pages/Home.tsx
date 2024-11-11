@@ -112,28 +112,27 @@ const Home = () => {
     <div className="space-y-10">
       <ListmyHotelRender modal={modal} setModal={setModal} />
       <section className="relative w-full h-screen overflow-hidden -mt-10">
-        {isLoaded ? (
-          <video
-            ref={videoRef}
-            src={"/Daybreakpassslideslowerversion.mp4"}
-            playsInline
-            autoPlay
-            loop
-            muted
-            className={`absolute inset-0 w-full h-[90%] md:h-[95%] object-cover ${
-              isLoaded ? "block" : "hidden"
-            }`}
-            onLoadedData={() => setIsLoaded(true)}
-          ></video>
-        ) : (
+        {!isLoaded && (
           <img
             src={"/3.jpg"}
             alt="Welcome"
-            className={`absolute inset-0 w-full h-[90%] object-cover ${
+            className={`absolute inset-0 w-full h-[90%] md:h-[95%] object-cover ${
               isLoaded ? "hidden" : "block"
             } `}
           />
         )}
+        <video
+          ref={videoRef}
+          src={"/Daybreakpassslideslowerversion.mp4"}
+          playsInline
+          autoPlay
+          loop
+          muted
+          className={`absolute inset-0 w-full h-[90%] md:h-[95%] object-cover ${
+            isLoaded ? "block" : "hidden"
+          }`}
+          onLoadedData={() => setIsLoaded(true)}
+        ></video>
 
         <div className="absolute bottom-0 w-full flex flex-col justify-center items-center bg-transparent text-center p-4">
           <div className="max-w-screen-lg mb-16">
