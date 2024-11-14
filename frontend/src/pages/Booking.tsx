@@ -10,7 +10,7 @@ import {
   RenderLoginModal,
   RenderSignUpModal,
   ResetPassRequest,
-} from "../components/Header";
+} from "../components/Auth";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import ConfirmationModal from "../components/AlertModal";
@@ -130,7 +130,7 @@ const Booking = () => {
         <div className="flex flex-col md:flex-row gap-4">
           <div className="w-full md:w-1/3">
             <div className="p-2 md:p-4 space-y-4 w-full rounded-xl shadow-md border border-gray-400">
-              <h2 className="text-xl font-bold px-4">Your Booking Details</h2>
+              <h2 className="text-base md:text-xl font-bold px-4">Your Booking Details</h2>
               <div className="space-y-4 p-4">
                 {carts.slice(0, 1).map((item: any, index: any) => (
                   <div className="flex items-center space-x-4" key={index}>
@@ -140,10 +140,10 @@ const Booking = () => {
                       className="w-20 h-20 rounded-lg"
                     />
                     <div>
-                      <h3 className="text-lg font-semibold text-[#02596C]">
+                      <h3 className="text-sm md:text-lg font-semibold text-[#02596C]">
                         {item.hotel.name}
                       </h3>
-                      <p className="flex flex-col md:flex-row justify-between text-gray-500 gap-2">
+                      <p className="flex flex-col md:flex-row justify-between text-gray-500 gap-2 text-xs md:text-base">
                         <span>{moment(item.date).format("Do MMMM YYYY")}</span>
                         <span>{item.slot}</span>
                       </p>
@@ -152,7 +152,7 @@ const Booking = () => {
                 ))}
                 {carts.map((item: any, index: any) => (
                   <div
-                    className="flex justify-between items-center mt-4 gap-4 font-semibold"
+                    className="flex justify-between items-center mt-4 gap-4 font-semibold text-base md:text-xl"
                     key={index}
                   >
                     <div className="flex items-center space-x-2">

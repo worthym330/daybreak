@@ -171,15 +171,14 @@ const MyBookings = ({ tab }: any) => {
       {/* User Header Ends */}
 
       <div className="w-full">
-        <h1 className="text-2xl text-center text-black font-medium my-5 pl-0 lg:pl-5">
+        <h1 className="text-2xl text-center text-black font-medium my-5 ">
           MY {tab.toUpperCase()}
         </h1>
         {/* Tabs */}
         <div className="">
           <section className="py-3">
-            {/* Content Shown when clicked on Bookings*/}
             {tab === "bookings" && (
-              <div className="mx-4 lg:mx-20 my-4">
+              <div className="lg:mx-20 my-4">
                 <div className="space-y-10">
                   {bookingData && bookingData.length > 0 ? (
                     bookingData.map((booking: any) => (
@@ -320,15 +319,13 @@ const MyBookings = ({ tab }: any) => {
                 </div>
               </div>
             )}
-            {/* Content Shown when clicked on Bookings End*/}
 
-            {/* Content Shown when clicked on Favourites*/}
             {tab === "favourites" && (
-              <div className="mx-20 my-4">
-                <div className="grid gap-4 lg:gap-2 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 px-4 lg:px-0">
+              <div className="lg:mx-20 my-4">
+                <div className="grid gap-4 lg:gap-2 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 lg:px-4 lg:px-0">
                   {favourites && favourites.length > 0 ? (
-                    favourites.map((hotel: any) => (
-                      <LatestDestinationCard key={hotel.id} hotel={hotel} />
+                    favourites.map((hotel: any,idx:any) => (
+                      <LatestDestinationCard key={idx} hotel={hotel} />
                     ))
                   ) : (
                     <div className="capitalize font-regular px-4 py-[22px] text-sm">

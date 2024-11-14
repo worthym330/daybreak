@@ -489,7 +489,7 @@ const CartModal = ({ product, hotel, onClose, setCart, slotValues }: any) => {
           {product?.addOns?.length > 0 && (
             <div className="h-40 overflow-y-auto">
               <hr className="mb-2" />
-              <h3 className="font-semibold text-lg mb-1">Add-ons</h3>
+              <h3 className="font-semibold text-base md:text-lg mb-1">Add-ons</h3>
               {product.addOns.map((addOn: any, index: number) => (
                 <div
                   className="flex justify-between items-center px-2 py-2"

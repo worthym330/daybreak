@@ -114,7 +114,7 @@ const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
       <div className={` ${showLess ? "h-36 overflow-hidden" : "h-fit"}`}>
         <div className="flex justify-between items-center md:hidden">
           <div className="w-2/3 pr-4">
-            <h2 className="text-lg lg:text-xl font-semibold text-[#00C0CB]">
+            <h2 className="text-base lg:text-xl font-semibold text-[#00C0CB]">
               {product.title}
             </h2>
           </div>
@@ -136,7 +136,7 @@ const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
               </Button>
             ) : hotel._id === "672a13784afc77fe6c4fc0ef" ? (
               <Button
-                className="bg-goldColor text-white px-4 py-2 rounded-lg w-full flex items-center justify-center dis"
+                className="bg-goldColor text-white px-4 py-2 rounded-lg w-full flex items-center justify-center"
                 onClick={() =>
                   setModal((prev: any) => ({ ...prev, state: true }))
                 }
@@ -146,7 +146,7 @@ const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
               </Button>
             ) : (
               <Button
-                className="bg-goldColor text-white px-4 py-2 rounded-lg w-full flex items-center justify-center dis"
+                className="bg-goldColor text-white px-4 py-2 rounded-lg w-full flex items-center justify-center"
                 // onClick={() => setIsModalOpen(true)}
                 disabled={true}
               >
@@ -158,7 +158,7 @@ const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
         <div className="md:flex justify-between hidden">
           {/* Left Box */}
           <div className="w-2/3 pr-4">
-            <h2 className="text-xl flex">
+            <h2 className="text-lg md:text-xl flex">
               {titleIcons[product.title.toUpperCase() as TitleKey] && (
                 <span className="text-white bg-[#00C0CB] text-center content-center border border-[#00C0CB] p-2 rounded-l-md">
                   {titleIcons[product.title.toUpperCase() as TitleKey] && (
@@ -259,7 +259,7 @@ const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
                 </Button>
               ) : (
                 <Button
-                  className="bg-goldColor text-white px-4 py-2 rounded-lg w-full flex items-center justify-center dis"
+                  className="bg-goldColor text-white px-4 py-2 rounded-lg w-full flex items-center justify-center"
                   // onClick={() => setIsModalOpen(true)}
                   disabled={true}
                 >
@@ -271,7 +271,7 @@ const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
         </div>
       </div>
       <button
-        className="text-goldColor mt-2 hidden md:block"
+        className="text-goldColor mt-2 hidden md:block text-sm"
         onClick={() => setShowLess(!showLess)}
       >
         {showLess ? (

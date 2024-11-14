@@ -9,8 +9,8 @@ const HotelTypesFilter = ({ selectedHotelTypes, onChange }: Props) => {
   return (
     <div className="border-b pb-5 font-inter">
       <h4 className="text-lg mb-2">Vibes</h4>
-      {hotelTypes.map((hotelType) => (
-        <label className="flex justify-between items-center space-x-2 leading-loose text-[#4A4A4A]">
+      {hotelTypes.map((hotelType, idx) => (
+        <label className="flex justify-between items-center space-x-2 leading-loose text-[#4A4A4A]" key={idx}>
           <span className="text-black">{hotelType}</span>
           <input
             type="checkbox"

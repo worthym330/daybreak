@@ -1,7 +1,7 @@
 import { useQuery } from "react-query";
 import { useSearchContext } from "../contexts/SearchContext";
 import * as apiClient from "../api-client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import SearchResultsCard from "../components/SearchResultsCard";
 import Pagination from "../components/Pagination";
 import StarRatingFilter from "../components/StarRatingFilter";
@@ -12,6 +12,7 @@ import { useLocation } from "react-router-dom";
 import GuestRatingFilter from "../components/GuestRatingFilter";
 import PassesFilter from "../components/PassesFilter";
 import Select from "react-select";
+import SplashScreen from "../components/SplashScreen";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 const useQueryParams = () => {
@@ -40,30 +41,40 @@ const Search = () => {
   const [cityOptions, setCityOptions] = useState<CityOption[]>([]);
   const [selectedCities, setSelectedCities] = useState<any[]>([]);
 
-  const searchParams = {
-    destination: city ? city : "",
-    checkIn: search.checkIn.toISOString(),
-    // checkOut: search.checkOut.toISOString(),
-    // adultCount: search.adultCount.toString(),
-    // childCount: search.childCount.toString(),
-    page: page.toString(),
-    stars: selectedStars,
-    types: selectedHotelTypes,
-    facilities: selectedFacilities,
-    passes: selectedPassesTypes,
-    // maxPrice: selectedPrice?.toString(),
-    // sortOption,
-    isAvailable,
-    guestStars,
-    cities: selectedCities,
-  };
+  const searchParams = useMemo(
+    () => ({
+      destination: city || "",
+      checkIn: search.checkIn.toISOString(),
+      page: page.toString(),
+      stars: selectedStars,
+      types: selectedHotelTypes,
+      facilities: selectedFacilities,
+      passes: selectedPassesTypes,
+      isAvailable,
+      guestStars,
+      cities: selectedCities.map((city) => city.value),
+    }),
+    [
+      city,
+      page,
+      selectedStars,
+      selectedHotelTypes,
+      selectedFacilities,
+      selectedPassesTypes,
+      isAvailable,
+      guestStars,
+      selectedCities,
+      search.checkIn,
+    ]
+  );
 
   if (queryParams.size === 0) {
     search.saveSearchValues("", search.checkIn);
   }
 
-  const { data: hotelData } = useQuery(["searchHotels", searchParams], () =>
-    apiClient.searchHotels(searchParams)
+  const { data: hotelData, isLoading } = useQuery(
+    ["searchHotels", searchParams],
+    () => apiClient.searchHotels(searchParams)
   );
 
   const getHotelData = async () => {
@@ -248,16 +259,19 @@ const Search = () => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col gap-5">
-        <div className="flex justify-between items-center mx-auto md:mx-0">
-          <div className="flex items-center gap-2">
-            <button
-              className="lg:hidden bg-goldColor text-white py-2 px-4 rounded-md"
-              onClick={() => setIsSidebarOpen(true)}
-            >
-              Filters
-            </button>
-            {/* <select
+      {isLoading ? (
+        <SplashScreen />
+      ) : (
+        <div className="flex flex-col gap-5">
+          <div className="flex justify-between items-center mx-auto md:mx-0">
+            <div className="flex items-center gap-2">
+              <button
+                className="lg:hidden bg-goldColor text-white py-2 px-4 rounded-md"
+                onClick={() => setIsSidebarOpen(true)}
+              >
+                Filters
+              </button>
+              {/* <select
               value={sortOption}
               onChange={(event) => setSortOption(event.target.value)}
               className="px-4 py-3 border rounded-md bg-transparent"
@@ -267,23 +281,24 @@ const Search = () => {
               <option value="pricePerNightAsc">Price (low to high)</option>
               <option value="pricePerNightDesc">Price (high to low)</option>
             </select> */}
+            </div>
+          </div>
+          <span className="text-sm font-semi-bold text-center lg:text-left font-poppins">
+            Showing {hotelData?.pagination.total} Hotels
+            {search.destination ? ` in ${search.destination}` : ""}
+          </span>
+          {hotelData?.data?.map((hotel: any, idx: any) => (
+            <SearchResultsCard key={idx} hotel={hotel} />
+          ))}
+          <div>
+            <Pagination
+              page={hotelData?.pagination.page || 1}
+              pages={hotelData?.pagination.pages || 1}
+              onPageChange={(page) => setPage(page)}
+            />
           </div>
         </div>
-        <span className="text-sm font-semi-bold text-center lg:text-left font-poppins">
-          Showing {hotelData?.pagination.total} Hotels
-          {search.destination ? ` in ${search.destination}` : ""}
-        </span>
-        {hotelData?.data?.map((hotel: any) => (
-          <SearchResultsCard key={hotel.id} hotel={hotel} />
-        ))}
-        <div>
-          <Pagination
-            page={hotelData?.pagination.page || 1}
-            pages={hotelData?.pagination.pages || 1}
-            onPageChange={(page) => setPage(page)}
-          />
-        </div>
-      </div>
+      )}
     </div>
   );
 };

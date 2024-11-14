@@ -11,7 +11,7 @@ import {
   RenderLoginModal,
   RenderSignUpModal,
   ResetPassRequest,
-} from "./Header";
+} from "./Auth";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { FaHeart } from "react-icons/fa";

@@ -312,11 +312,37 @@ const BookingForm = ({ paymentIntent, cartItems }: Props) => {
       onSubmit={handleSubmit(onSubmit)}
       className="grid grid-cols-1 gap-5 rounded-lg border border-gray-400 p-5 font-poppins"
     >
-      <span className="text-3xl font-bold text-[#02596C]">
+      <span className="text-xl md:text-3xl font-bold text-[#02596C]">
         Confirm Your Details
       </span>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <label className="text-gray-700 text-base flex-1">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-6 text-sm md:text-base">
+        <div className="flex gap-2 md:hidden">
+          <label className="text-gray-700 flex-1">
+            First Name
+            <input
+              className="mt-1 border rounded w-full py-2 px-3 text-gray-700 font-normal"
+              type="text"
+              {...register("firstName")}
+              placeholder="Enter First Name"
+            />
+            {errors.firstName && (
+              <p className="text-red-500">{errors.firstName.message}</p>
+            )}
+          </label>
+          <label className="text-gray-700 flex-1">
+            Last Name
+            <input
+              className="mt-1 border rounded w-full py-2 px-3 text-gray-700 font-normal"
+              type="text"
+              {...register("lastName")}
+              placeholder="Enter Last Name"
+            />
+            {errors.lastName && (
+              <p className="text-red-500">{errors.lastName.message}</p>
+            )}
+          </label>
+        </div>
+        <label className="text-gray-700 flex-1 hidden md:block">
           First Name
           <input
             className="mt-1 border rounded w-full py-2 px-3 text-gray-700 font-normal"
@@ -328,7 +354,7 @@ const BookingForm = ({ paymentIntent, cartItems }: Props) => {
             <p className="text-red-500">{errors.firstName.message}</p>
           )}
         </label>
-        <label className="text-gray-700 text-base flex-1">
+        <label className="text-gray-700 flex-1 hidden md:block">
           Last Name
           <input
             className="mt-1 border rounded w-full py-2 px-3 text-gray-700 font-normal"
@@ -340,7 +366,7 @@ const BookingForm = ({ paymentIntent, cartItems }: Props) => {
             <p className="text-red-500">{errors.lastName.message}</p>
           )}
         </label>
-        <label className="text-gray-700 text-base flex-1">
+        <label className="text-gray-700 flex-1">
           Email
           <input
             className="mt-1 border rounded w-full py-2 px-3 text-gray-700 font-normal"
@@ -352,7 +378,7 @@ const BookingForm = ({ paymentIntent, cartItems }: Props) => {
             <p className="text-red-500">{errors.email.message}</p>
           )}
         </label>
-        <label className="text-gray-700 text-base flex-1">
+        <label className="text-gray-700 flex-1">
           Mobile Number
           <input
             className="mt-1 border rounded w-full py-2 px-3 text-gray-700 font-normal"
@@ -366,19 +392,19 @@ const BookingForm = ({ paymentIntent, cartItems }: Props) => {
         </label>
       </div>
 
-      <div className="mb-4">
-        <h3 className="text-lg font-medium text-[#02596C]">
+      <div className="mb-2 md:mb-4 text-sm md:text-base">
+        <h3 className="text-base md:text-lg font-medium text-[#02596C]">
           Your Price Summary
         </h3>
         {cartItems.map((item: any, index: any) => {
           // Calculate totals for adults, children, and add-ons
           const adultTotal = item.product.adultPrice * item.adultCount;
           const childTotal = item.product.childPrice * item.childCount;
-          const itemTotal = adultTotal + childTotal ;
+          const itemTotal = adultTotal + childTotal;
 
           return (
             <div
-              className="flex justify-between items-center gap-4 py-2"
+              className="flex justify-between items-center gap-4 py-2 "
               key={index}
             >
               <span>
@@ -465,7 +491,7 @@ const BookingForm = ({ paymentIntent, cartItems }: Props) => {
         </div>
       </div>
       {appliedCoupon === "" && (
-        <div className="mb-4">
+        <div className="mb-2 md:mb-4">
           <label className="block text-gray-700">Coupon Code</label>
           <div className="flex flex-col md:flex-row gap-2">
             <input

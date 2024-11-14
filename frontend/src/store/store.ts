@@ -16,6 +16,7 @@ const authPersistConfig = {
   key: "auth",
   storage,
 };
+
 const favPersistConfig = {
   key: "favourites",
   storage,
@@ -32,6 +33,13 @@ const store = configureStore({
     auth: persistedAuthReducer,
     fav: persistedFavReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        // Ignore these redux-persist actions to prevent non-serializable warnings
+        ignoredActions: ["persist/PERSIST", "persist/REHYDRATE"],
+      },
+    }),
 });
 
 export const persistor = persistStore(store); // Create the persistor object
