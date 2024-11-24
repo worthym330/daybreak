@@ -6,36 +6,19 @@ import {
   useLocation,
 } from "react-router-dom";
 import Layout from "./layouts/Layout";
-// import SignIn from "./pages/SignIn";
-import MyHotels from "./pages/MyHotels";
-import Search from "./pages/Search";
-import Detail from "./pages/Detail";
-import Booking from "./pages/Booking";
-import MyBookings from "./pages/MyBookings";
-import Home from "./pages/Home";
-import { NotFound } from "./pages/NotFound";
 import Cookies from "js-cookie";
-import { useEffect } from "react";
-import WaitList from "./pages/WaitList";
-import AboutUs from "./pages/AboutUs";
-import TermsAndConditions from "./pages/TermAndCondition";
-import PrivacyPolicy from "./pages/PrivacyandPolicy";
-import Support from "./pages/Support";
-import CookiePolicy from "./pages/CookiePolicy";
-// import Login from "./pages/LoginandSignup";
+import { lazy, Suspense, useEffect } from "react";
 import { Bounce, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import CancellationPolicy from "./pages/CancellationPolicy";
-import ResetPass from "./pages/ResetPassword";
-import Contact from "./pages/ContactUs";
-import ListMyPage from "./pages/ListmyHotel";
 import "react-datepicker/dist/react-datepicker.css";
+import { NotFound } from "./pages/NotFound";
+import SplashScreen from "./components/SplashScreen";
 
 const AccessControl = ({ children, requiredRoles }: any) => {
   const auth_token = Cookies.get("authentication") || "null";
   const user = JSON.parse(auth_token);
   const navigate = useNavigate();
-  // const [unauthenticated, setUnauthenticated] = useState(false);
+
   useEffect(() => {
     if (user === null) {
       navigate(-1);
@@ -47,19 +30,6 @@ const AccessControl = ({ children, requiredRoles }: any) => {
   return <>{children}</>;
 };
 
-// const AuthRedirect = ({ children }: any) => {
-//   const auth_token = Cookies.get("authentication");
-//   const navigate = useNavigate();
-
-//   useEffect(() => {
-//     if (auth_token) {
-//       navigate("/"); // Redirect to home or any other page
-//     }
-//   }, [auth_token]);
-
-//   return auth_token ? null : children;
-// };
-
 const ScrollToTop = () => {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -67,6 +37,24 @@ const ScrollToTop = () => {
   }, [pathname]);
   return null;
 };
+
+// Lazy-loaded components
+const Home = lazy(() => import("./pages/Home"));
+const MyHotels = lazy(() => import("./pages/MyHotels"));
+const Search = lazy(() => import("./pages/Search"));
+const Detail = lazy(() => import("./pages/Detail"));
+const Booking = lazy(() => import("./pages/Booking"));
+const MyBookings = lazy(() => import("./pages/MyBookings"));
+const WaitList = lazy(() => import("./pages/WaitList"));
+const AboutUs = lazy(() => import("./pages/AboutUs"));
+const TermsAndConditions = lazy(() => import("./pages/TermAndCondition"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyandPolicy"));
+const Support = lazy(() => import("./pages/Support"));
+const CookiePolicy = lazy(() => import("./pages/CookiePolicy"));
+const ListMyPage = lazy(() => import("./pages/ListmyHotel"));
+const CancellationPolicy = lazy(() => import("./pages/CancellationPolicy"));
+const ResetPass = lazy(() => import("./pages/ResetPassword"));
+const Contact = lazy(() => import("./pages/ContactUs"));
 
 const App = () => {
   return (
@@ -82,7 +70,9 @@ const App = () => {
           path="/"
           element={
             <Layout>
-              <Home />
+              <Suspense fallback={<SplashScreen />}>
+                <Home />
+              </Suspense>
             </Layout>
           }
         />
@@ -90,7 +80,9 @@ const App = () => {
           path="/listings"
           element={
             <Layout>
-              <Search />
+              <Suspense fallback={<SplashScreen />}>
+                <Search />
+              </Suspense>
             </Layout>
           }
         />
@@ -98,7 +90,9 @@ const App = () => {
           path="/hotel-detail/:hotelId"
           element={
             <Layout>
-              <Detail />
+              <Suspense fallback={<SplashScreen />}>
+                <Detail />
+              </Suspense>
             </Layout>
           }
         />
@@ -106,7 +100,9 @@ const App = () => {
           path="/hotel-detail/name/:name"
           element={
             <Layout>
-              <Detail />
+              <Suspense fallback={<SplashScreen />}>
+                <Detail />
+              </Suspense>
             </Layout>
           }
         />
@@ -114,7 +110,9 @@ const App = () => {
           path="/terms-and-condition"
           element={
             <Layout>
-              <TermsAndConditions />
+              <Suspense fallback={<SplashScreen />}>
+                <TermsAndConditions />
+              </Suspense>
             </Layout>
           }
         />
@@ -122,7 +120,9 @@ const App = () => {
           path="/privacy-and-policy"
           element={
             <Layout>
-              <PrivacyPolicy />
+              <Suspense fallback={<SplashScreen />}>
+                <PrivacyPolicy />
+              </Suspense>
             </Layout>
           }
         />
@@ -130,7 +130,9 @@ const App = () => {
           path="/support"
           element={
             <Layout>
-              <Support />
+              <Suspense fallback={<SplashScreen />}>
+                <Support />
+              </Suspense>
             </Layout>
           }
         />
@@ -138,7 +140,9 @@ const App = () => {
           path="/cookie-policy"
           element={
             <Layout>
-              <CookiePolicy />
+              <Suspense fallback={<SplashScreen />}>
+                <CookiePolicy />
+              </Suspense>
             </Layout>
           }
         />
@@ -146,36 +150,54 @@ const App = () => {
           path="/cancellation-policy"
           element={
             <Layout>
-              <CancellationPolicy />
+              <Suspense fallback={<SplashScreen />}>
+                <CancellationPolicy />
+              </Suspense>
             </Layout>
           }
         />
         <Route
           path="/list-my-hotel"
           element={
-            // <Layout>
+            <Suspense fallback={<SplashScreen />}>
               <ListMyPage />
-            // </Layout>
+            </Suspense>
           }
         />
-        <Route path="/about-us" element={<AboutUs />} />
+        <Route
+          path="/about-us"
+          element={
+            <Suspense fallback={<SplashScreen />}>
+              <AboutUs />
+            </Suspense>
+          }
+        />
         <Route
           path="/contact-us"
           element={
             <Layout>
-              <Contact />
+              <Suspense fallback={<SplashScreen />}>
+                <Contact />
+              </Suspense>
             </Layout>
           }
         />
-        <Route path="/waitlist" element={<WaitList />} />
+        <Route
+          path="/waitlist"
+          element={
+            <Suspense fallback={<SplashScreen />}>
+              <WaitList />
+            </Suspense>
+          }
+        />
         <Route
           path="/checkout"
           element={
-            // <AccessControl requiredRoles={["customer"]}>
             <Layout>
-              <Booking />
+              <Suspense fallback={<SplashScreen />}>
+                <Booking />
+              </Suspense>
             </Layout>
-            // </AccessControl>
           }
         />
         <Route
@@ -183,7 +205,9 @@ const App = () => {
           element={
             <AccessControl requiredRoles={["partner"]}>
               <Layout>
-                <MyHotels />
+                <Suspense fallback={<SplashScreen />}>
+                  <MyHotels />
+                </Suspense>
               </Layout>
             </AccessControl>
           }
@@ -193,27 +217,40 @@ const App = () => {
           element={
             <AccessControl requiredRoles={["customer"]}>
               <Layout>
-                <MyBookings tab="bookings" />
+                <Suspense fallback={<SplashScreen />}>
+                  <MyBookings tab="bookings" />
+                </Suspense>
               </Layout>
             </AccessControl>
           }
         />
-         <Route
+        <Route
           path="/my-favourites"
           element={
             <AccessControl requiredRoles={["customer"]}>
               <Layout>
-                <MyBookings tab="favourites" />
+                <Suspense fallback={<SplashScreen />}>
+                  <MyBookings tab="favourites" />
+                </Suspense>
               </Layout>
             </AccessControl>
           }
         />
-        <Route path="*" element={<NotFound />} />
+        <Route
+          path="*"
+          element={
+            <Suspense fallback={<SplashScreen />}>
+              <NotFound />
+            </Suspense>
+          }
+        />
         <Route
           path="/reset-password/:token"
           element={
             <Layout>
-              <ResetPass />
+              <Suspense fallback={<SplashScreen />}>
+                <ResetPass />
+              </Suspense>
             </Layout>
           }
         />
@@ -221,7 +258,9 @@ const App = () => {
           path="/review/:hotelId"
           element={
             <Layout>
-              <ResetPass />
+              <Suspense fallback={<SplashScreen />}>
+                <ResetPass />
+              </Suspense>
             </Layout>
           }
         />

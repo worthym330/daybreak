@@ -116,7 +116,7 @@ const Home = () => {
           <img
             src={"/3.jpg"}
             alt="Welcome"
-            className={`absolute inset-0 w-full h-[90%] object-cover ${
+            className={`absolute inset-0 w-full h-[95%] object-cover ${
               isLoaded ? "hidden" : "block"
             } `}
           />
@@ -128,18 +128,18 @@ const Home = () => {
           autoPlay
           loop
           muted
-          className={`absolute inset-0 w-full h-[90%] object-cover ${
+          className={`absolute inset-0 w-full h-[95%] object-cover ${
             isLoaded ? "block" : "hidden"
           }`}
           onLoadedData={() => setIsLoaded(true)}
         ></video>
 
         <div className="absolute bottom-0 w-full flex flex-col justify-center items-center bg-transparent text-center p-4">
-          <div className="max-w-screen-lg mb-16">
-            <h1 className="text-4xl md:text-6xl text-white font-normal font-LuzuryF2 tracking-wider mb-6 leading-10">
+          <div className="max-w-screen-lg mb-8">
+            <h1 className="text-2xl md:text-6xl text-white font-normal font-LuzuryF2 tracking-wider mb-6 leading-10">
               FIND YOUR NEXT DAYCATION
             </h1>
-            <p className="text-lg md:text-2xl text-white mb-4 font-poppins">
+            <p className="text-base md:text-2xl text-white mb-4 font-poppins">
               Discover luxury by the day: Book Day Passes, Daybeds, Cabanas &
               Experiences at premier hotels in your city.
             </p>
@@ -147,13 +147,13 @@ const Home = () => {
 
           <div className="w-full md:w-2/3 lg:w-1/2">
             <form
-              className="flex items-center  p-4 md:p-2 bg-white rounded-full shadow-md w-full"
+              className="flex items-center p-2 bg-white rounded-full shadow-md w-full"
               onSubmit={handleSubmit}
             >
-              <div className="flex flex-col md:flex-row w-5/6 gap-2">
+              <div className="flex flex-row w-5/6 gap-2">
                 <div className="flex items-center flex-1 px-2">
                   <div className="flex items-center md:space-x-2">
-                    <span className="text-xl">
+                    <span className="text-xs md:text-xl">
                       <FaLocationDot className="w-6 h-6 text-[#02596c]" />
                     </span>
                     <input
@@ -199,12 +199,12 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="container mx-auto pt-10">
+      <section className="container mx-auto md:pt-10">
         <InfoSection />
       </section>
 
       {/* Latest Destinations */}
-      <section className="lg:container lg:mx-auto pt-10">
+      <section className="lg:container lg:mx-auto md:pt-10">
         <h2 className="text-center text-goldColor text-2xl md:text-3xl mb-3 font-LuzuryF2 uppercase">
           <span className="font-bold">Popular</span> <span>Destinations</span>
         </h2>
@@ -212,9 +212,9 @@ const Home = () => {
           Most recent destinations added by our hosts
         </p>
         <div className="grid gap-4 lg:gap-2 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 px-4 lg:px-0 pt-10">
-          {latestDestHotels.slice(0, 6).map((hotel: any) => (
+          {latestDestHotels.slice(0, 6).map((hotel: any, idx:any) => (
             // <Link to={`/hotel-detail/${hotel._id}`}>
-            <LatestDestinationCard key={hotel.id} hotel={hotel} />
+            <LatestDestinationCard key={idx} hotel={hotel} />
             // </Link>
           ))}
         </div>
@@ -222,7 +222,7 @@ const Home = () => {
 
       {/* Latest Destinations End */}
 
-      <div className="relative py-6 rounded-lg my-8 pt-10">
+      <div className="relative md:py-6 rounded-lg md:my-8 md:pt-10">
         <div className="flex flex-col md:flex-row items-center bg-gradient-to-r from-[#018292] to-[#00bdc8]">
           <div className="lg:w-1/3 w-full">
             <img
@@ -232,14 +232,14 @@ const Home = () => {
             />
           </div>
           <div className="w-full lg:w-2/3 lg:pl-20 text-white py-4 px-2 lg:px-0">
-            <h2 className="text-3xl font-bold mb-4">
+            <h2 className="text-xl md:text-3xl font-bold mb-4">
               Weekday specials: enjoy unbeatable rates!
             </h2>
-            <p className="mb-6">
+            <p className="mb-6 text-sm md:text-base">
               Enjoy a mid-week escape and rediscover your summer.
             </p>
             <button
-              className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-lg"
+              className="bg-orange-500 hover:bg-white text-white hover:text-orange-500 hover:border hover:border-orange-500 font-bold py-2 px-4 rounded-lg"
               onClick={() => navigate("/listings")}
             >
               Search Now
@@ -248,7 +248,7 @@ const Home = () => {
         </div>
       </div>
       {/* Top Destinations */}
-      <section className="container mx-auto pt-10">
+      <section className="container mx-auto md:pt-10">
         <div className="flex flex-col">
           <h2 className="text-center text-goldColor text-2xl md:text-3xl mb-3 font-LuzuryF2 uppercase">
             <span className="font-bold">Explore</span> <span>Destinations</span>
@@ -257,16 +257,16 @@ const Home = () => {
           Most recent desinations added by our hosts
         </p> */}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mt-10">
-            {topDestinations.map((hotel: any) => {
-              return <TopDestinationCard hotel={hotel} key={hotel._id} />;
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2 md:gap-4 md:mt-10">
+            {topDestinations.map((hotel: any, idx:any) => {
+              return <TopDestinationCard hotel={hotel} key={idx} />;
             })}
           </div>
         </div>
       </section>
       {/* Top Destinations End */}
       <section className="container mx-auto">
-        <div className="py-14 px-4 mt-10">
+        <div className="md:py-14 px-4 md:mt-10">
           <h2 className="text-2xl font-bold text-left text-goldColor mb-10">
             HOW IT WORKS
           </h2>
@@ -322,7 +322,7 @@ const Home = () => {
       {/* Become Hotelier Section */}
       <div className="bg-[#fff6da]">
         <section className="container mx-auto">
-          <div className="flex flex-col p-8 md:p-16 mx-8 md:mx-0 rounded-3xl gap-4">
+          <div className="flex flex-col p-4 md:p-16 mx-8 md:mx-0 rounded-3xl gap-4">
             <div className="flex flex-col">
               <span className="flex text-2xl md:text-4xl mb-4 text-goldColor font-bold font-LuzuryF1 uppercase text-center justify-center">
                 Are You A Hotelier?
@@ -362,7 +362,7 @@ const Home = () => {
             />
           </div>
         </div> */}
-            <div className="flex justify-center mt-8">
+            <div className="flex justify-center md:mt-8">
               <Button
                 className="font-inter w-80 py-4 rounded-xl font-xl"
                 type="button"

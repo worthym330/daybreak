@@ -1,59 +1,35 @@
 import { FaFacebook, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 import { Link, useLocation } from "react-router-dom";
-import {
-  initialModalState,
-  initialResetModal,
-  initialSignupModalState,
-  RenderLoginModal,
-  RenderSignUpModal,
-  ResetPassRequest,
-} from "./Header";
 import { useEffect, useState } from "react";
-import { ListmyHotelRender } from "../pages/ListmyHotel";
+import { initialModalState, ListmyHotelRender } from "../pages/ListmyHotel";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
 
 const Footer = () => {
-  const [modal, setModal] = useState(initialModalState);
-  const [resetModal, setResetModal] = useState(initialResetModal);
-  const [signupModal, setSignupModal] = useState(initialSignupModalState);
   const [HotelRegisterModal, setHotelRegisterModal] =
     useState(initialModalState);
 
-  const location = useLocation()
-  const [isDetail, setIsDetail] = useState(false)
+  const location = useLocation();
+  const [isDetail, setIsDetail] = useState(false);
   const cartItems = useSelector((state: RootState) => state.cart.items);
-console.log(cartItems)
-  useEffect(()=>{
-    const loc = location.pathname.startsWith('/hotel-detail/')
-    setIsDetail(loc)
-  },[location])
+  useEffect(() => {
+    const loc = location.pathname.startsWith("/hotel-detail/");
+    setIsDetail(loc);
+  }, [location]);
 
   return (
-    <div className={`bg-[#02596c] mt-8 font-poppins ${isDetail && cartItems.length >0 ? "mb-20 md:mb-0":""}`} >
-      <RenderLoginModal
-        modal={modal}
-        setModal={setModal}
-        setResetModal={setResetModal}
-        setSignupModal={setSignupModal}
-        isHeader={false}
-        isBooking={false}
-      />
-      <RenderSignUpModal
-        modal={signupModal}
-        setModal={setSignupModal}
-        initialModalState={initialSignupModalState}
-        setLoginModal={setModal}
-        isHeader={false}
-      />
-      <ResetPassRequest modal={resetModal} setModal={setResetModal} />
+    <div
+      className={`bg-[#02596c] mt-8 font-poppins ${
+        isDetail && cartItems.length > 0 ? "mb-20 md:mb-0" : ""
+      }`}
+    >
       <ListmyHotelRender
         modal={HotelRegisterModal}
         setModal={setHotelRegisterModal}
       />
       <div className="container mx-auto px-4 pt-10 flex flex-col items-center">
         <div className="flex flex-col md:flex-row justify-center items-center gap-10 md:gap-6 w-full">
-          <div className="flex flex-col items-center md:w-1/3 text-center">
+          <div className="flex flex-col items-center md:w-1/2 text-center">
             <span className="text-3xl text-[#e1cf79] font-bold tracking-tight mb-4">
               DayBreakPass
             </span>
@@ -99,8 +75,8 @@ console.log(cartItems)
               </div>
             </div>
           </div>
-          <div className="flex flex-col md:flex-row justify-between w-full md:w-2/3 gap-6 text-center md:text-left">
-            <div className="flex flex-col w-full md:w-1/3">
+          <div className="flex flex-col md:flex-row justify-between w-full md:w-1/2 gap-6 text-center md:text-left">
+            <div className="flex flex-col w-full md:w-1/2">
               <span className="text-[#e1cf79] font-bold text-lg mb-2">
                 COMPANY
               </span>
@@ -123,32 +99,7 @@ console.log(cartItems)
                 <Link to="/contact-us">Contact Us</Link>
               </span>
             </div>
-            <div className="flex flex-col w-full md:w-1/3">
-              <span className="text-[#e1cf79] font-bold text-lg mb-2">
-                GUESTS
-              </span>
-              <span className="text-white font-medium mb-1 cursor-pointer">
-                <span
-                  onClick={() =>
-                    setModal((prev: any) => ({ ...prev, state: true }))
-                  }
-                >
-                  Sign in
-                </span>
-              </span>
-              <span className="text-white font-medium mb-1 cursor-pointer">
-                <span
-                  onClick={() =>
-                    setSignupModal((prev: any) => ({ ...prev, state: true }))
-                  }
-                >
-                  Sign up
-                </span>
-              </span>
-              {/* <Link to='waitlist' className="text-white font-medium mb-1">Join Waitlist</Link> */}
-              <span className="text-white font-medium mb-1">Help</span>
-            </div>
-            <div className="flex flex-col w-full md:w-1/3">
+            <div className="flex flex-col w-full md:w-1/2">
               <span className="text-[#e1cf79] font-bold text-lg mb-2">
                 HOTELS
               </span>

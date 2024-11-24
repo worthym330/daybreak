@@ -48,9 +48,8 @@ const productSchema = new mongoose.Schema<ProductType>(
     isChildPrice: { type: Boolean },
     maxGuestsperDay: { type: Number },
     breakTime: { type: String },
-    addOns: [
-      { type: mongoose.Schema.Types.ObjectId, ref: "AddOn"},
-    ],
+    addOns: [{ type: mongoose.Schema.Types.ObjectId, ref: "AddOn" }],
+    remainingGuests: { type: Number },
   },
   { _id: true }
 );

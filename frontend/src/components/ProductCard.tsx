@@ -102,14 +102,19 @@ const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
   };
   return (
     <div
-      className={`bg-white rounded-lg lg:shadow-xl p-4 lg:p-8 mb-4 border-2 hover:border-[#00C0CB]`}
+      className={`relative bg-white rounded-lg lg:shadow-xl p-4 lg:p-8 mb-4 border-2 hover:border-[#00C0CB]`}
     >
+      {product.remainingGuests < 5 && (
+        <span className="absolute -top-4 right-2 text-[#ebac00] text-sm p-1 bg-[#fff7e0] rounded-full uppercase md:hidden">
+          Only {product.remainingGuests} left
+        </span>
+      )}
       <EnquiryForm modal={modal} setModal={setModal} hotelName={hotel.name} />
       {/* Conditionally render based on screen size */}
       <div className={` ${showLess ? "h-36 overflow-hidden" : "h-fit"}`}>
         <div className="flex justify-between items-center md:hidden">
           <div className="w-2/3 pr-4">
-            <h2 className="text-lg lg:text-xl font-semibold text-[#00C0CB]">
+            <h2 className="text-base lg:text-xl font-semibold text-[#00C0CB]">
               {product.title}
             </h2>
           </div>
@@ -131,7 +136,7 @@ const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
               </Button>
             ) : hotel._id === "672a13784afc77fe6c4fc0ef" ? (
               <Button
-                className="bg-goldColor text-white px-4 py-2 rounded-lg w-full flex items-center justify-center dis"
+                className="bg-goldColor text-white px-4 py-2 rounded-lg w-full flex items-center justify-center"
                 onClick={() =>
                   setModal((prev: any) => ({ ...prev, state: true }))
                 }
@@ -141,7 +146,7 @@ const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
               </Button>
             ) : (
               <Button
-                className="bg-goldColor text-white px-4 py-2 rounded-lg w-24 flex items-center justify-center dis"
+                className="bg-goldColor text-white px-4 py-2 rounded-lg w-full flex items-center justify-center"
                 // onClick={() => setIsModalOpen(true)}
                 disabled={true}
               >
@@ -153,7 +158,7 @@ const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
         <div className="md:flex justify-between hidden">
           {/* Left Box */}
           <div className="w-2/3 pr-4">
-            <h2 className="text-xl flex">
+            <h2 className="text-lg md:text-xl flex">
               {titleIcons[product.title.toUpperCase() as TitleKey] && (
                 <span className="text-white bg-[#00C0CB] text-center content-center border border-[#00C0CB] p-2 rounded-l-md">
                   {titleIcons[product.title.toUpperCase() as TitleKey] && (
@@ -195,7 +200,12 @@ const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
           {/* Right Box */}
           <div className="border-l-2 border-gray-200 h-auto"></div>
           <div className="w-1/3 pl-4 ml-4">
-            <div className="flex justify-between items gap-2 text-gray-500 text-sm">
+            {product.remainingGuests < 5 && (
+              <span className="text-[#00C0CB] text-sm p-2 bg-gray-100 rounded-full uppercase font-semibold">
+                only {product.remainingGuests} left
+              </span>
+            )}
+            <div className="flex justify-between items gap-2 text-gray-500 text-sm mt-2">
               {product.adultPrice > 0 && (
                 <div className="flex flex-col gap-2 text-center">
                   <span className="text-center">Adults</span>
@@ -249,7 +259,7 @@ const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
                 </Button>
               ) : (
                 <Button
-                  className="bg-goldColor text-white px-4 py-2 rounded-lg w-24 flex items-center justify-center dis"
+                  className="bg-goldColor text-white px-4 py-2 rounded-lg w-full flex items-center justify-center"
                   // onClick={() => setIsModalOpen(true)}
                   disabled={true}
                 >
@@ -261,7 +271,7 @@ const ProductCard = ({ product, hotel, setCart, titles }: ProductCardProps) => {
         </div>
       </div>
       <button
-        className="text-goldColor mt-2 hidden md:block"
+        className="text-goldColor mt-2 hidden md:block text-sm"
         onClick={() => setShowLess(!showLess)}
       >
         {showLess ? (

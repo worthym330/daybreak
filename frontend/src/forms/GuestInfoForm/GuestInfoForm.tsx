@@ -7,7 +7,7 @@ import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { Formik } from "formik";
 import Modal from "../../components/modal";
 import { useState } from "react";
-import { CustomJwtPayload, login, loginSchema } from "../../components/Header";
+import { CustomJwtPayload, login, loginSchema } from "../../components/Auth";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 import Button from "../../components/Button";

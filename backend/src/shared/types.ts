@@ -79,6 +79,7 @@ export type PaymentIntentResponse = {
 };
 
 export interface ProductType {
+  remainingGuests?: number;
   _id?: any;
   title: string;
   description: string[];
@@ -94,5 +95,5 @@ export interface ProductType {
   isChildPrice: boolean;
   maxGuestsperDay: number;
   breakTime: string;
-  addOns?:any
+  addOns?: string[];
 }

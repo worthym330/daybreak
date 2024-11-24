@@ -70,7 +70,7 @@ app.get("/expand-url", async (req: Request, res: Response) => {
   }
 
   try {
-    console.log("called", req.query);
+    // console.log("called", req.query);
     const response = await axios.get(
       `https://unshorten.me/s/${encodeURIComponent(url)}`
     );
@@ -87,7 +87,7 @@ app.get("/expand-url", async (req: Request, res: Response) => {
     const parsedUrl = new URL(expandedUrl);
     parsedUrl.searchParams.set("hl", "en");
     expandedUrl = parsedUrl.toString();
-    console.log(expandedUrl);
+    // console.log(expandedUrl);
 
     res.json({ expandedUrl });
   } catch (error) {

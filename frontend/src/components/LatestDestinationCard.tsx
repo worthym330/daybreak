@@ -34,18 +34,18 @@ const LatestDestinationCard = ({ hotel }: any) => {
               !hotel.status && "grayscale"
             }`}
           />
-          <p className="flex items-center text-sm font-semibold mb-2 absolute bottom-0 px-4">
+          <p className="flex items-center text-xs md:text-sm font-semibold mb-2 absolute bottom-0 px-4">
             <FaMapMarkerAlt className="font-bold mr-1" />
             {hotel.city}, {hotel.state}
           </p>
           {!hotel.status && (
-            <p className="flex items-center text-sm font-semibold mb-2 absolute top-0 right-0 px-4 bg-red-500 uppercase rounded-t-md">
+            <p className="flex items-center text-xs md:text-sm font-semibold mb-2 absolute top-0 right-0 px-4 bg-red-500 uppercase rounded-t-md">
               sold out
             </p>
           )}
         </div>
         <div className="px-6 pt-4">
-          <div className="font-bold text-xl mb-2 truncate">{hotel.name}</div>
+          <div className="font-bold text-base md:text-xl mb-2 truncate">{hotel.name}</div>
           <div className="flex items-center mb-2">
             <div className="text-yellow-500 flex">
               {[...Array(hotel.star)].map((_, i) => (
@@ -55,9 +55,9 @@ const LatestDestinationCard = ({ hotel }: any) => {
                 <AiFillStar key={i} className="w-5 h-5 text-gray-300" />
               ))}
             </div>
-            <span className="ml-2">{hotel.star}.0</span>
+            <span className="ml-2 text-sm md:text-base">{hotel.star}.0</span>
           </div>
-          <div className="flex flex-wrap gap-1 text-white items-center">
+          <div className="flex flex-wrap gap-1 text-white items-center truncate ellipse">
             <span>
               {hotel?.productTitle
                 ?.slice(0, 3)
@@ -75,17 +75,17 @@ const LatestDestinationCard = ({ hotel }: any) => {
               `+${hotel?.productTitle?.length - 3} more`}
           </span> */}
           </div>
-          <p className="text-base font-bold">
+          <p className="text-sm md:text-base font-bold">
             Starting at ₹ {hotel?.productTitle[0]?.adultPrice || 2999}
           </p>
         </div>
       </Link>
-      <div className="flex justify-between py-4 px-6 items-center">
+      <div className="flex justify-between py-2 md:py-4 px-6 items-center">
         <div
-          className="flex gap-2 items-center cursor-pointer"
+          className="flex gap-2 items-center cursor-pointer text-sm md:text-lg"
           onClick={() => handleShare()}
         >
-          <span className="text-lg underline">Share</span>
+          <span className="underline">Share</span>
           <FaShare />
         </div>
         <Button

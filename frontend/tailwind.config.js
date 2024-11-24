@@ -29,11 +29,16 @@ export default {
       animation: {
         'fade-right': 'fadeRight 0.5s ease-in-out',
         'twice': 'fadeRight 0.5s ease-in-out 0s 1 normal forwards',
+        fadeIn: 'fadeIn 1.5s ease-in-out',
       },
       keyframes: {
         fadeRight: {
           '0%': { opacity: '0', transform: 'translateX(-20px)' },
           '100%': { opacity: '1', transform: 'translateX(0)' },
+        },
+        fadeIn: {
+          from: { opacity: 0 },
+          to: { opacity: 1 },
         },
       },
     },

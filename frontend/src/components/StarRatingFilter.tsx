@@ -13,9 +13,9 @@ const StarRatingFilter = ({ selectedStars, onChange }: Props) => {
           { label: "5 Star Hotels", value: "5 Star" },
           { label: "4 Star+ Hotels", value: "4+ Star" },
           { label: "3 Star+ Hotels", value: "3+ Star" },
-        ].map((star) => (
+        ].map((star, idx) => (
           <label
-            key={star.value}
+            key={idx}
             className={`flex text-sm items-center justify-center p-2 rounded-xl cursor-pointer border ${
               selectedStars.includes(star.value)
                 ? "bg-black text-white border-black"
