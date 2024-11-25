@@ -76,6 +76,9 @@ const hotelSchema = new mongoose.Schema<HotelType>(
     titlesId: [{ type: String, ref: "HotelDetails" }],
     addOns: [{ type: String, ref: "AddOn" }],
     status: { type: Boolean },
+    reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }],
+    ispopular: { type: Boolean, default: false },
+    ranking: { type: Number },
   },
   { timestamps: true }
 );

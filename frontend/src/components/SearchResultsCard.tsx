@@ -90,35 +90,43 @@ const SearchResultsCard = ({ hotel }: Props) => {
 
   return (
     <div className="border-2 hover:border-[#00C0CB] shadow-md rounded-md p-4 lg:mx-0 justify-between bg-[#ECFDFF]">
-      <RenderLoginModal
-        modal={modal}
-        setModal={setModal}
-        setResetModal={setResetModal}
-        setSignupModal={setSignupModal}
-        isHeader={false}
-        isBooking={false}
-        isFavourite={true}
-      />
-      <RenderSignUpModal
-        modal={signupModal}
-        setModal={setSignupModal}
-        initialModalState={initialSignupModalState}
-        setLoginModal={setModal}
-        isHeader={false}
-      />
-      <ResetPassRequest modal={resetModal} setModal={setResetModal} />
-      <ConfirmationModal
-        setOpen={setConfirmationDialog}
-        open={confirmationDialog}
-        onDelete={() => navigate("/my-favourites")}
-        title={isFavourite ? "Added to favorites" : "Removed from favorites"}
-        confirmationButtonText="View Favourites"
-        description={
-          isFavourite
-            ? "This hotel has been successfully added to your favorites list. You can view it anytime in your favorites."
-            : "This hotel has been removed from your favorites list. You can view your updated favorites anytime."
-        }
-      />
+      {modal.state && (
+        <RenderLoginModal
+          modal={modal}
+          setModal={setModal}
+          setResetModal={setResetModal}
+          setSignupModal={setSignupModal}
+          isHeader={false}
+          isBooking={false}
+          isFavourite={true}
+        />
+      )}
+      {signupModal.state && (
+        <RenderSignUpModal
+          modal={signupModal}
+          setModal={setSignupModal}
+          initialModalState={initialSignupModalState}
+          setLoginModal={setModal}
+          isHeader={false}
+        />
+      )}
+      {resetModal.state && (
+        <ResetPassRequest modal={resetModal} setModal={setResetModal} />
+      )}
+      {confirmationDialog && (
+        <ConfirmationModal
+          setOpen={setConfirmationDialog}
+          open={confirmationDialog}
+          onDelete={() => navigate("/my-favourites")}
+          title={isFavourite ? "Added to favorites" : "Removed from favorites"}
+          confirmationButtonText="View Favourites"
+          description={
+            isFavourite
+              ? "This hotel has been successfully added to your favorites list. You can view it anytime in your favorites."
+              : "This hotel has been removed from your favorites list. You can view your updated favorites anytime."
+          }
+        />
+      )}
       <div className="flex flex-col md:flex-row gap-7">
         {/* Images Section */}
         <div className={`w-full mb-[5px] md:w-[239px] relative`}>
@@ -128,7 +136,11 @@ const SearchResultsCard = ({ hotel }: Props) => {
               className="w-full md:w-[243px] h-[200px] object-cover object-center rounded-lg"
             />
           </div>
-          <div className={`grid gap-1.5 grid-cols-4 w-full md:w-[239px] cursor-pointer ${!hotel.status && "grayscale"}`}>
+          <div
+            className={`grid gap-1.5 grid-cols-4 w-full md:w-[239px] cursor-pointer ${
+              !hotel.status && "grayscale"
+            }`}
+          >
             {hotel.imageUrls.slice(0, 4).map((image, index) => (
               <span
                 key={index}

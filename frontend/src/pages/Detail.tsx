@@ -1,4 +1,10 @@
-import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+} from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import * as apiClient from "./../api-client";
@@ -11,6 +17,7 @@ import {
   FaShuttleVan,
   FaSpa,
   FaSwimmingPool,
+  FaUserCircle,
   FaWifi,
 } from "react-icons/fa";
 import { MdFamilyRestroom, MdSmokeFree } from "react-icons/md";
@@ -40,10 +47,14 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { Navigation } from "swiper/modules";
+import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import ConfirmationModal from "../components/AlertModal";
 import { addHotel } from "../store/favSlice";
 import SplashScreen from "../components/SplashScreen";
+import {
+  initialReviewState,
+  RenderReviewModal,
+} from "../components/ReviewModal";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAP_GL_TOKEN;
 
@@ -154,8 +165,12 @@ const Detail = () => {
   const auth = useSelector((state: RootState) => state.auth);
   const [isExpanded, setIsExpanded] = useState(false);
   const toggleExpand = () => setIsExpanded(!isExpanded);
-
+  const [reviews, setReviews] = useState({
+    loading: true,
+    data: [],
+  });
   const { hotel, isLoading } = useHotelData(hotelId, name);
+  const [reviewModal, setReviewModal] = useState(initialReviewState);
 
   useEffect(() => {
     const getAddressFromUrl = async () => {
@@ -307,6 +322,39 @@ const Detail = () => {
     (fav: FavouriteList) => fav?.userId === userLogined?.id
   );
 
+  const fetchReviews = async () => {
+    setReviews((prevState) => ({
+      ...prevState,
+      loading: true,
+    }));
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/reviews/${hotelId}/detail`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch reviews");
+      }
+      const data = await response.json();
+      setReviews({
+        loading: false,
+        data: data,
+      });
+    } catch (err) {}
+  };
+
+  useEffect(() => {
+    fetchReviews();
+  }, [hotelId]);
+
+  const handleReviewModal = () => {
+    if (auth.isAuthenticated) {
+      setReviewModal((prev: any) => ({ ...prev, state: true }));
+    } else {
+      setModal((prev: any) => ({ ...prev, state: true }));
+    }
+  };
+
   useEffect(() => {
     const cart = localStorage.getItem("cart");
     const parsedCart = cart ? JSON.parse(cart) : [];
@@ -330,28 +378,17 @@ const Detail = () => {
   }
 
   const calculateSubtotal = (items: any) => {
-    // Define the GST rate if needed
-    // const GST_RATE = 0.18;
-
     return items.reduce((total: number, item: any) => {
-      // Calculate totals for adults and children
       const adultTotal =
         item.adultCount > 0 ? item.adultCount * item.product.adultPrice : 0;
       const childTotal =
         item.childCount > 0 ? item.childCount * item.product.childPrice : 0;
-
-      // Initialize the subtotal for the current item
       let itemSubtotal = adultTotal + childTotal;
-
-      // Calculate totals for selected add-ons
       if (item.selectedAddOns && item.selectedAddOns.length > 0) {
         item.selectedAddOns.forEach((addOn: any) => {
-          // Multiply add-on price by quantity to get the total for this add-on
           itemSubtotal += addOn.price * addOn.quantity;
         });
       }
-
-      // Add item subtotal to the overall total
       return total + itemSubtotal;
     }, 0);
   };
@@ -370,56 +407,44 @@ const Detail = () => {
     setCartItems(cart);
   }
 
-  // function clearAllCart() {
-  //   localStorage.removeItem("cart");
-  //   dispatch(clearCart());
-  //   setCartItems([]);
-  // }
-
-  // const handleDateChange = (event: any) => {
-  //   const dateString = event.target.value;
-  //   const selectedDate = new Date(dateString);
-  //   const today = new Date();
-  //   today.setHours(0, 0, 0, 0);
-
-  //   if (!isNaN(selectedDate.getTime())) {
-  //     if (selectedDate < today) {
-  //       console.error("Selected date cannot be earlier than today.");
-  //       setError(true);
-  //     } else {
-  //       dispatch(setError(false));
-  //       dispatch(setDate(selectedDate.toISOString()));
-  //       Cookies.set("date", dateString, { expires: 1 });
-  //     }
-  //   } else {
-  //     dispatch(setDate(null));
-  //     Cookies.remove("date");
-  //   }
-  // };
-
   return (
     <div className="space-y-6">
       {isLoading ? (
         <SplashScreen />
       ) : (
         <>
-          <RenderLoginModal
-            modal={modal}
-            setModal={setModal}
-            setResetModal={setResetModal}
-            setSignupModal={setSignupModal}
-            isHeader={false}
-            isBooking={false}
-            isFavourite={true}
-          />
-          <RenderSignUpModal
-            modal={signupModal}
-            setModal={setSignupModal}
-            initialModalState={initialSignupModalState}
-            setLoginModal={setModal}
-            isHeader={false}
-          />
-          <ResetPassRequest modal={resetModal} setModal={setResetModal} />
+          {modal.state && (
+            <RenderLoginModal
+              modal={modal}
+              setModal={setModal}
+              setResetModal={setResetModal}
+              setSignupModal={setSignupModal}
+              isHeader={false}
+              isBooking={false}
+              isFavourite={true}
+            />
+          )}
+          {signupModal.state && (
+            <RenderSignUpModal
+              modal={signupModal}
+              setModal={setSignupModal}
+              initialModalState={initialSignupModalState}
+              setLoginModal={setModal}
+              isHeader={false}
+            />
+          )}
+          {resetModal && (
+            <ResetPassRequest modal={resetModal} setModal={setResetModal} />
+          )}
+          {reviewModal.state && (
+            <RenderReviewModal
+              modal={reviewModal}
+              setModal={setReviewModal}
+              hotelId={hotel._id}
+              userId={auth.user.id}
+              callback={fetchReviews}
+            />
+          )}
           <ConfirmationModal
             setOpen={setConfirmationDialog}
             open={confirmationDialog}
@@ -504,12 +529,6 @@ const Detail = () => {
                       {hotel.star.toFixed(1)}
                     </span>
                   </div>
-                  {/* <div>
-                <span className="text-xl text-black"> | </span>
-              </div>
-              <div>
-                <span className="text-lg content-center "> {hotel.reviews} Reviews</span>
-              </div> */}
                 </div>
                 {/* Facilities Section */}
                 <div className="flex justify-between mt-3">
@@ -562,42 +581,6 @@ const Detail = () => {
                 <div className="w-full break-words mb-5 hidden lg:block">
                   {hotel.description}
                 </div>
-
-                {/* <span className="text-lg font-medium mb-3">
-              Book your Daycation
-            </span>
-            <div className="flex items-center gap-2">
-              <div className="relative mt-2 rounded-md shadow-sm">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                  <FaCalendar
-                    aria-hidden="true"
-                    className="h-5 w-5 text-[#02596c]"
-                  />
-                </div>
-                <input
-                  id="date"
-                  name="date"
-                  type="date"
-                  ref={dateRef}
-                  placeholder="dd-mm-yyyy"
-                  value={date ? date.split("T")[0] : ""}
-                  onChange={handleDateChange}
-                  min={new Date().toISOString().split("T")[0]}
-                  className={`pl-10 px-4 py-2 text-[#02596c] placeholder:text-[#02596c] border rounded ${
-                    error
-                      ? "border-red-500"
-                      : "border-[#00C0CB] focus:border-[#00C0CB]"
-                  } focus:outline-none focus:ring-0`}
-                />
-              </div>
-            </div>
-            <div className="">
-              {error && (
-                <p className="text-red-500 errorMessage">
-                  Invalid date. Please select a valid date.
-                </p>
-              )}
-            </div> */}
                 <hr className="border-gray-200 mb-3 w-full" />
                 <span className="text-base md:text-lg font-medium">
                   Select a product
@@ -714,73 +697,144 @@ const Detail = () => {
                     </div>
                   </div>
                 </div>
-              </div>
-              {/* Hotel Details Start */}
+                <div className="w-full mx-auto space-y-4">
+                  <div className="max-w-4xl mx-auto p-6 bg-white">
+                    <h2 className="text-2xl font-bold mb-4">Reviews</h2>
 
-              {/* Cart Section */}
-              <div className="w-full lg:w-1/3">
-                {/* {cartItems.length > 0 && (
-              <div className="h-fit sticky top-4 lg:hidden">
-                <div className="p-4 bg-white rounded-lg shadow-md border-2 border-[#00C0CB]">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-bold">Your Cart</h2>
-                  </div>
-                  <div className="border-t pt-4">
-                    <div className="flex items-center space-x-4 mb-4">
-                      <img
-                        src={cartItems[0].hotel.imageUrls[0]}
-                        alt={cartItems[0].hotel.name}
-                        className="w-16 h-16 rounded-lg"
-                      />
-                      <div>
-                        <h3 className="text-md font-semibold">
-                          {cartItems[0].hotel.name}
-                        </h3>
+                    {/* Average Rating Inline Calculation */}
+                    <div className="flex items-center mb-4">
+                      <div className="flex items-center space-x-1 text-yellow-500 text-lg">
+                        {[
+                          ...Array(
+                            reviews?.data?.length > 0
+                              ? Math.round(
+                                  reviews.data.reduce(
+                                    (sum: any, review: any) =>
+                                      sum + review?.rating,
+                                    0
+                                  ) / reviews.data.length
+                                )
+                              : 0
+                          ),
+                        ].map((_, index) => (
+                          <span key={index}>★</span>
+                        ))}
+                        <span className="text-gray-400">
+                          {[
+                            ...Array(
+                              5 -
+                                (reviews?.data?.length > 0
+                                  ? Math.round(
+                                      reviews.data.reduce(
+                                        (sum: any, review: any) =>
+                                          sum + review?.rating,
+                                        0
+                                      ) / reviews.data.length
+                                    )
+                                  : 0)
+                            ),
+                          ].map((_, index) => (
+                            <span key={index}>☆</span>
+                          ))}
+                        </span>
                       </div>
+                      <span className="ml-2 text-gray-700 text-lg">
+                        Based on {reviews?.data?.length || 0} reviews
+                      </span>
                     </div>
 
-                    {cartItems.map((item: any, index: any) => (
-                      <div
-                        key={index}
-                        className="flex justify-between items-center mb-4"
-                      >
-                        <div>
-                          <h3 className="text-sm">
-                            {item.product.title} Adult ({item.adultCount}){" "}
-                            {item.childCount > 0 && (
-                              <p>Child ({item.childCount})</p>
-                            )}
-                          </h3>
-                        </div>
-                        <button
-                          className="text-gray-500"
-                          onClick={() => handleRemoveItem(item.product.title)}
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
+                    {/* Rating Distribution */}
+                    <div className="space-y-1">
+                      {[5, 4, 3, 2, 1].map((star) => {
+                        const count = reviews?.data?.filter(
+                          (review: any) => review.rating === star
+                        ).length;
+                        const percentage =
+                          reviews?.data?.length > 0
+                            ? (count / reviews.data.length) * 100
+                            : 0;
+                        return (
+                          <div className="flex items-center" key={star}>
+                            <span className="w-8 text-gray-700">{star}</span>
+                            <div className="flex-1 h-2 bg-gray-200 rounded-full mx-2">
+                              <div
+                                className="h-2 bg-yellow-500 rounded-full"
+                                style={{ width: `${percentage}%` }}
+                              ></div>
+                            </div>
+                            <span className="w-8 text-gray-700">
+                              {Math.round(percentage)}%
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
 
-                    <div className="mt-4 border-t pt-4">
-                      <div className="flex justify-between text-gray-700 mb-2">
-                        <span>Subtotal:</span>
-                        <span>₹{subtotal.toFixed(2)}</span>
-                      </div>
-                      <div className="flex justify-between text-gray-700 mb-2">
-                        <span>Total:</span>
-                        <span>₹{subtotal.toFixed(2)}</span>
-                      </div>
-                      <Button
-                        className="w-full bg-goldColor text-white py-2 rounded-lg"
-                        onClick={() => navigate(`/checkout`)}
+                    {/* Review Submission */}
+                    <div className="mt-6">
+                      <h3 className="text-lg font-semibold mb-4">
+                        Share your thoughts
+                      </h3>
+                      <button
+                        className="bg-[#02596C] text-white px-4 py-2 rounded-md shadow hover:bg-[#02596C]"
+                        type="button"
+                        onClick={handleReviewModal}
                       >
-                        Book Now
-                      </Button>
+                        Write a review
+                      </button>
+                    </div>
+
+                    {/* Individual Reviews */}
+                    <div className="mt-6">
+                      <Swiper
+                        spaceBetween={20}
+                        slidesPerView={1}
+                        grabCursor={true}
+                        autoplay={{
+                          delay: 5000,
+                          disableOnInteraction: false,
+                        }}
+                        pagination={{ clickable: true }}
+                        navigation={true}
+                        modules={[Pagination, Navigation, Autoplay]}
+                        className="mySwiper"
+                        style={{ paddingBottom: "40px" }}
+                      >
+                        {reviews?.data?.map((review: any, idx) => (
+                          <SwiperSlide key={idx}>
+                            <div className="p-4 bg-gray-50 rounded-lg shadow flex items-center space-x-4">
+                              <FaUserCircle className="w-12 h-12 text-[#00C0CB]" />
+                              <div>
+                                <h4 className="font-bold text-gray-800">{`${review.userId.firstName} ${review.userId.lastName}`}</h4>
+                                <div className="flex space-x-1 text-yellow-500">
+                                  {[...Array(review.rating)].map((_, index) => (
+                                    <span key={index}>★</span>
+                                  ))}
+                                  {[...Array(5 - review.rating)].map(
+                                    (_, index) => (
+                                      <span
+                                        key={index}
+                                        className="text-gray-300"
+                                      >
+                                        ☆
+                                      </span>
+                                    )
+                                  )}
+                                </div>
+                                <p className="text-gray-700 mt-2">
+                                  {review.comment}
+                                </p>
+                              </div>
+                            </div>
+                          </SwiperSlide>
+                        ))}
+                      </Swiper>
                     </div>
                   </div>
                 </div>
               </div>
-            )} */}
+              {/* Hotel Details Start */}
+              <div className="w-full lg:w-1/3">
                 <div className="h-fit sticky top-4 hidden lg:block">
                   <div className="p-4 bg-white rounded-lg shadow-md border-2 border-[#00C0CB]">
                     <div className="flex items-center justify-between mb-4">
@@ -921,8 +975,23 @@ const Detail = () => {
           </div>
         </>
       )}
+      <style>{`
+        .swiper-pagination {
+          bottom: -20px;
+        }
+        .swiper-button-next,
+        .swiper-button-prev {
+          width: 25px;
+          height: 25px;
+          color: #02596c;
+        }
+        .swiper-button-next::after,
+        .swiper-button-prev::after {
+          font-size: 2rem;
+        }
+      `}</style>
     </div>
   );
 };
 
-export default Detail;
+export default React.memo(Detail);

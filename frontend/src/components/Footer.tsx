@@ -1,6 +1,6 @@
 import { FaFacebook, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 import { Link, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { initialModalState, ListmyHotelRender } from "../pages/ListmyHotel";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
@@ -11,7 +11,15 @@ const Footer = () => {
 
   const location = useLocation();
   const [isDetail, setIsDetail] = useState(false);
-  const cartItems = useSelector((state: RootState) => state.cart.items);
+  const cart = useSelector((state: RootState) => state.cart.items);
+  const [cartItems, setCartItems] = useState<any[]>([]);
+
+  useEffect(() => {
+    const cart = localStorage.getItem("cart");
+    const parsedCart = cart ? JSON.parse(cart) : [];
+    setCartItems(parsedCart);
+  }, [cart]);
+
   useEffect(() => {
     const loc = location.pathname.startsWith("/hotel-detail/");
     setIsDetail(loc);
@@ -129,4 +137,4 @@ const Footer = () => {
   );
 };
 
-export default Footer;
+export default React.memo(Footer);

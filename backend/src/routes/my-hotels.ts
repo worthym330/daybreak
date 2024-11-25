@@ -151,13 +151,13 @@ router.get("/:id", verifyToken, async (req: Request, res: Response) => {
 
 router.put(
   "/:hotelId",
-  verifyToken,
+  // verifyToken,
   upload.array("imageFiles"),
   async (req: Request, res: Response) => {
     try {
       const { hotelId } = req.params;
       const imageFiles = req.files as Express.Multer.File[];
-      const { productTitle, facilities, hotelType, ...hotelData } = req.body;
+      const { productTitle, facilities, hotelType, ispopular, ...hotelData } = req.body;
       // Find the existing hotel by ID
       const existingHotel = await Hotel.findById(hotelId);
       if (!existingHotel) {
@@ -191,6 +191,7 @@ router.put(
         lastUpdated: new Date(),
         userId: req.userId,
         productTitle: parsedProductTitle,
+        ispopular
       };
 
       console.log(updatedHotel);
@@ -791,5 +792,45 @@ router.put(
     }
   }
 );
+
+interface UpdateHotelBody {
+  ispopular?: boolean;
+  ranking?: number;
+}
+
+router.put("/popularity/:hotelId", async (req:Request, res:Response) => {
+  try {
+    const { hotelId } = req.params;
+    const { ispopular, ranking } = req.body;
+
+    // Validate request body
+    if (ispopular === undefined && ranking === undefined) {
+      return res.status(400).json({ message: "No valid fields to update." });
+    }
+
+    const updateData: Partial<UpdateHotelBody> = {};
+      if (ispopular !== undefined) updateData.ispopular = ispopular;
+      if (ranking !== undefined) updateData.ranking = ranking;
+
+    // Find hotel by ID and update
+    const updatedHotel = await Hotel.findByIdAndUpdate(
+      hotelId,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedHotel) {
+      return res.status(404).json({ message: "Hotel not found." });
+    }
+
+    res.status(200).json({
+      message: "Hotel updated successfully.",
+      data: updatedHotel,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+});
 
 export default router;

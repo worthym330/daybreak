@@ -94,28 +94,36 @@ const Booking = () => {
 
   return (
     <div className="font-poppins sm:mx-4 lg:mx-20">
-      <RenderLoginModal
-        modal={modal}
-        setModal={setModal}
-        setResetModal={setResetModal}
-        setSignupModal={setSignupModal}
-        isHeader={false}
-        isBooking={true}
-        paymentIntent={fetchPaymentIntentData}
-      />
-      <RenderSignUpModal
-        modal={signupModal}
-        setModal={setSignupModal}
-        initialModalState={initialSignupModalState}
-        setLoginModal={setModal}
-        isHeader={false}
-      />
-      <ConfirmationModal
-        setOpen={setConfirmationDialog}
-        open={confirmationDialog}
-        onDelete={removeCart}
-      />
-      <ResetPassRequest modal={resetModal} setModal={setResetModal} />
+      {modal.state && (
+        <RenderLoginModal
+          modal={modal}
+          setModal={setModal}
+          setResetModal={setResetModal}
+          setSignupModal={setSignupModal}
+          isHeader={false}
+          isBooking={true}
+          paymentIntent={fetchPaymentIntentData}
+        />
+      )}
+      {signupModal.state && (
+        <RenderSignUpModal
+          modal={signupModal}
+          setModal={setSignupModal}
+          initialModalState={initialSignupModalState}
+          setLoginModal={setModal}
+          isHeader={false}
+        />
+      )}
+      {confirmationDialog && (
+        <ConfirmationModal
+          setOpen={setConfirmationDialog}
+          open={confirmationDialog}
+          onDelete={removeCart}
+        />
+      )}
+      {resetModal.state && (
+        <ResetPassRequest modal={resetModal} setModal={setResetModal} />
+      )}
       <span className="my-2 flex">
         {" "}
         <span
@@ -130,7 +138,9 @@ const Booking = () => {
         <div className="flex flex-col md:flex-row gap-4">
           <div className="w-full md:w-1/3">
             <div className="p-2 md:p-4 space-y-4 w-full rounded-xl shadow-md border border-gray-400">
-              <h2 className="text-base md:text-xl font-bold px-4">Your Booking Details</h2>
+              <h2 className="text-base md:text-xl font-bold px-4">
+                Your Booking Details
+              </h2>
               <div className="space-y-4 p-4">
                 {carts.slice(0, 1).map((item: any, index: any) => (
                   <div className="flex items-center space-x-4" key={index}>

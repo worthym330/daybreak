@@ -9,7 +9,7 @@ import InfoSection from "../components/InfoSection";
 import image from "../assets/images/image.png";
 import { FaLocationDot } from "react-icons/fa6";
 import { useSearchContext } from "../contexts/SearchContext";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import React, { FormEvent, useEffect, useRef, useState } from "react";
 import DatePicker from "react-datepicker";
 import { FaCalendar, FaSearch } from "react-icons/fa";
 import { initialModalState, ListmyHotelRender } from "./ListmyHotel";
@@ -73,27 +73,31 @@ const Home = () => {
     navigate(`/listings?city=${destination}`);
   };
 
-  const videoRef = useRef(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
+    const videoElement = videoRef.current;
+
+    if (!videoElement) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
-          setIsLoaded(true);
+          const videoSrc = videoElement.getAttribute("data-src");
+          if (videoSrc) {
+            videoElement.setAttribute("src", videoSrc);
+            videoElement.load();
+          }
           observer.disconnect();
         }
       },
       { threshold: 0.1 }
     );
 
-    if (videoRef.current) {
-      observer.observe(videoRef.current);
-    }
+    observer.observe(videoElement);
 
     return () => {
-      if (videoRef.current) {
-        observer.unobserve(videoRef.current);
-      }
+      observer.disconnect();
     };
   }, []);
 
@@ -110,7 +114,7 @@ const Home = () => {
 
   return (
     <div className="space-y-10">
-      <ListmyHotelRender modal={modal} setModal={setModal} />
+      {modal.state && <ListmyHotelRender modal={modal} setModal={setModal} />}
       <section className="relative w-full h-screen overflow-hidden -mt-10">
         {!isLoaded && (
           <img
@@ -123,16 +127,19 @@ const Home = () => {
         )}
         <video
           ref={videoRef}
-          src={"/Daybreakpassslideslowerversion.mp4"}
           playsInline
           autoPlay
           loop
           muted
+          preload="none"
+          data-src="/Daybreakpassslideslowerversion.mp4"
           className={`absolute inset-0 w-full h-[95%] object-cover ${
             isLoaded ? "block" : "hidden"
           }`}
           onLoadedData={() => setIsLoaded(true)}
-        ></video>
+        >
+          <source src="/Daybreakpassslideslowerversion.mp4" type="video/mp4" />
+        </video>
 
         <div className="absolute bottom-0 w-full flex flex-col justify-center items-center bg-transparent text-center p-4">
           <div className="max-w-screen-lg mb-8">
@@ -258,7 +265,7 @@ const Home = () => {
         </p> */}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2 md:gap-4 md:mt-10">
-            {topDestinations.map((hotel: any, idx:any) => {
+            {topDestinations.map((hotel: any, idx: any) => {
               return <TopDestinationCard hotel={hotel} key={idx} />;
             })}
           </div>
@@ -382,4 +389,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default React.memo(Home);

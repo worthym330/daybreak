@@ -1,4 +1,4 @@
-import React, {  useEffect,  useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useMutation } from "react-query";
 import * as apiClient from "../api-client";
@@ -6,12 +6,19 @@ import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
-import {  FaUserCircle } from "react-icons/fa";
+import { FaUserCircle } from "react-icons/fa";
 import { BsSuitcase } from "react-icons/bs";
-import {  logout } from "../store/authSlice";
-import { initialModalState, initialResetModal, initialSignupModalState, RenderLoginModal, RenderSignUpModal, ResetPassRequest } from "./Auth";
+import { logout } from "../store/authSlice";
+import {
+  initialModalState,
+  initialResetModal,
+  initialSignupModalState,
+  RenderLoginModal,
+  RenderSignUpModal,
+  ResetPassRequest,
+} from "./Auth";
 
-const Header:React.FC = () => {
+const Header: React.FC = () => {
   // const { showToast } = useAppContext();
   const [modal, setModal] = useState(initialModalState);
   const [signupModal, setSignupModal] = useState(initialSignupModalState);
@@ -71,24 +78,30 @@ const Header:React.FC = () => {
 
   return (
     <div className="">
-      <RenderLoginModal
-        modal={modal}
-        setModal={setModal}
-        setShowDropdown={setIsDropdownOpen}
-        setResetModal={setResetModal}
-        setSignupModal={setSignupModal}
-        isHeader={true}
-        isBooking={false}
-      />
-      <RenderSignUpModal
-        modal={signupModal}
-        setModal={setSignupModal}
-        setShowDropdown={setIsDropdownOpen}
-        initialModalState={initialSignupModalState}
-        setLoginModal={setModal}
-        isHeader={true}
-      />
-      <ResetPassRequest modal={resetModal} setModal={setResetModal} />
+      {modal.state && (
+        <RenderLoginModal
+          modal={modal}
+          setModal={setModal}
+          setShowDropdown={setIsDropdownOpen}
+          setResetModal={setResetModal}
+          setSignupModal={setSignupModal}
+          isHeader={true}
+          isBooking={false}
+        />
+      )}
+      {signupModal.state && (
+        <RenderSignUpModal
+          modal={signupModal}
+          setModal={setSignupModal}
+          setShowDropdown={setIsDropdownOpen}
+          initialModalState={initialSignupModalState}
+          setLoginModal={setModal}
+          isHeader={true}
+        />
+      )}
+      {resetModal.state && (
+        <ResetPassRequest modal={resetModal} setModal={setResetModal} />
+      )}
       <div
         className={`w-full ${
           location.pathname === "/"
@@ -106,9 +119,12 @@ const Header:React.FC = () => {
           </Link>
           <span className="text-xl md:text-3xl font-bold tracking-tight flex gap-2">
             <Link to="/">
-            {/* <img src={location.pathname === "/" ?"/whitelogo.png":"/logo.png"} alt="Logo" className="h-16 -py-2" /> */}
-            <img src={"/daybreaklogo.png"} alt="Logo" className="h-16 -py-2" />
-
+              {/* <img src={location.pathname === "/" ?"/whitelogo.png":"/logo.png"} alt="Logo" className="h-16 -py-2" /> */}
+              <img
+                src={"/daybreaklogo.png"}
+                alt="Logo"
+                className="h-16 -py-2"
+              />
             </Link>
           </span>
           <span className="flex space-x-4">
@@ -131,7 +147,7 @@ const Header:React.FC = () => {
                   onClick={toggleDropdown}
                 >
                   <span className="sr-only">Open user menu</span>
-                  <FaUserCircle className="w-10 h-10 rounded-full text-[#00C0CB]" /> 
+                  <FaUserCircle className="w-10 h-10 rounded-full text-[#00C0CB]" />
                   <span className="hidden md:block text-sm">
                     Hii, {auth?.user?.name}
                   </span>

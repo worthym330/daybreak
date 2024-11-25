@@ -15,6 +15,7 @@ import contactRoutes from "./routes/contactus";
 import invoiceRoutes from "./routes/serviceRecord";
 import discountRoutes from "./routes/discount";
 import addOnRoutes from "./routes/addOn";
+import reviewRoutes from "./routes/review";
 import axios from "axios";
 const url = require("url");
 
@@ -61,6 +62,7 @@ app.use("/api/contact", contactRoutes);
 app.use("/api/invoice", invoiceRoutes);
 app.use("/api/discount", discountRoutes);
 app.use("/api/add-ons", addOnRoutes);
+app.use("/api/reviews", reviewRoutes);
 
 app.get("/expand-url", async (req: Request, res: Response) => {
   const { url } = req.query;
@@ -74,7 +76,7 @@ app.get("/expand-url", async (req: Request, res: Response) => {
     const response = await axios.get(
       `https://unshorten.me/s/${encodeURIComponent(url)}`
     );
-    console.log(response.request.res);
+    // console.log(response.request.res);
     let expandedUrl = response.data;
 
     const consentPrefix = "https://consent.google.com/m?continue=";
@@ -91,7 +93,7 @@ app.get("/expand-url", async (req: Request, res: Response) => {
 
     res.json({ expandedUrl });
   } catch (error) {
-    console.error("Error expanding URL:", error);
+    // console.error("Error expanding URL:", error);
     res.status(500).json({ error: "Failed to expand URL" });
   }
 });

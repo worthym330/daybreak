@@ -4,7 +4,6 @@ import User from "../models/user";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import verifyToken from "../middleware/auth";
-import { env } from "process";
 import axios from "axios";
 const passport = require("passport");
 import { OAuth2Client } from "google-auth-library";
