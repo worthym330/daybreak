@@ -35,10 +35,12 @@ const store = configureStore({
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: {
-        // Ignore these redux-persist actions to prevent non-serializable warnings
-        ignoredActions: ["persist/PERSIST", "persist/REHYDRATE"],
-      },
+      immutableCheck: false,
+      serializableCheck: false,
+      // serializableCheck: {
+      //   // Ignore these redux-persist actions to prevent non-serializable warnings
+      //   ignoredActions: ["persist/PERSIST", "persist/REHYDRATE"],
+      // },
     }),
 });
 

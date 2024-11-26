@@ -148,4 +148,97 @@ router.get("/:hotelId/detail", async (req: Request, res: Response) => {
     res.status(500).json({ error: error });
   }
 });
+
+async function getPlaceId(shortUrl: string | undefined) {
+  try {
+    if (shortUrl) {
+      const response = await axios.get(shortUrl);
+      const resolvedUrl = response.request.res.responseUrl;
+      const placeIdMatch = resolvedUrl.match(/place\/(?:[^/]+\/)?([^/?]+)/);
+      if (placeIdMatch) {
+        return placeIdMatch[1];
+      } else {
+        throw new Error("Place ID not found in the resolved URL.");
+      }
+      // return response.data
+    }
+  } catch (error) {}
+}
+
+async function reverseGeocode(lat: any, lng: any) {
+  if (!lat || !lng) {
+    throw new Error("Latitude and Longitude are required.");
+  }
+
+  const apiKey = process.env.GOOGLE_API_KEY;
+  const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`;
+
+  try {
+    // Perform the reverse geocoding request
+    const response = await axios.get(url);
+
+    // Check the API response status
+    if (response.data.status === "OK" && response.data.results.length > 0) {
+      const result = response.data.results[0];
+
+      return {
+        formatted_address: result.formatted_address,
+        place_id: result.place_id,
+        location: {
+          lat,
+          lng,
+        },
+        full_response: result, // Optional: Include the full response if needed
+      };
+    } else {
+      throw new Error("No results found for the given coordinates.");
+    }
+  } catch (error) {
+    console.error("Geocoding API error:", error);
+    throw new Error("Failed to fetch geocoding information.");
+  }
+}
+
+// Helper function to fetch reviews using Place ID
+async function fetchReviews(placeId: string) {
+  const apiKey = process.env.GOOGLE_API_KEY;
+  const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=reviews&key=${apiKey}`;
+  try {
+    const response = await axios.get(url);
+    return response.data;
+  } catch (error) {
+    throw new Error("Error fetching reviews from Places API.");
+  }
+}
+
+// API endpoint to get reviews
+router.get("/google/:hotelId", async (req, res) => {
+  const { hotelId } = req.params;
+  const hotel = await Hotel.findById(hotelId);
+
+  try {
+    const placeId = await getPlaceId(hotel?.mapurl);
+    const match = placeId.match(
+      /@([-+]?[0-9]*\.?[0-9]+),([-+]?[0-9]*\.?[0-9]+)/
+    );
+
+    if (match) {
+      const lat = parseFloat(match[1]);
+      const lng = parseFloat(match[2]);
+
+      const latlng = { lat, lng };
+      const reverseData = await reverseGeocode(lat, lng);
+
+      const reviews = await fetchReviews(reverseData.place_id);
+      res.json({
+        reverseData,
+        reviews,
+        url: `https://maps.googleapis.com/maps/api/place/details/json?place_id=${reverseData.place_id}&key=${process.env.GOOGLE_API_KEY}`,
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error });
+  }
+});
 export default router;
