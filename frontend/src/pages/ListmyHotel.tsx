@@ -1,5 +1,5 @@
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+// import Header from "../components/Header";
+// import Footer from "../components/Footer";
 import { Formik } from "formik";
 import { useQueryClient } from "react-query";
 import { toast } from "react-toastify";
@@ -205,7 +205,7 @@ const ListMyPage = () => {
 
   return (
     <div className="font-poppins">
-      <Header />
+      {/* <Header /> */}
       <ListmyHotelRender modal={modal} setModal={setModal} />
 
       {/* Hero Section */}
@@ -493,7 +493,7 @@ const ListMyPage = () => {
         </div>
       </section>
 
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

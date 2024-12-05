@@ -1,6 +1,4 @@
 import { Link } from "react-router-dom";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 import aboutImage from "../assets/images/about.jpg";
 import founderImg from "../assets/images/vitthal-kushe.jpeg";
 import { FaLinkedinIn } from "react-icons/fa";
@@ -8,7 +6,7 @@ import { FaLinkedinIn } from "react-icons/fa";
 const About = () => {
   return (
     <div className="">
-      <Header />
+      {/* <Header /> */}
       {/* Welcome Section */}
       <div className="bg-center bg-cover mt-16">
         <div className="container mx-auto mt-2 px-8 sm:px-6 md:px-8">
@@ -209,7 +207,7 @@ const About = () => {
         </div>
       </div>
       {/* Footer */}
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };
