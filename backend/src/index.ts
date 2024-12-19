@@ -17,6 +17,7 @@ import discountRoutes from "./routes/discount";
 import addOnRoutes from "./routes/addOn";
 import reviewRoutes from "./routes/review";
 import axios from "axios";
+import landingRoutes from "./routes/landingroutes"
 const url = require("url");
 
 cloudinary.config({
@@ -63,6 +64,7 @@ app.use("/api/invoice", invoiceRoutes);
 app.use("/api/discount", discountRoutes);
 app.use("/api/add-ons", addOnRoutes);
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/landing",landingRoutes)
 
 app.get("/expand-url", async (req: Request, res: Response) => {
   const { url } = req.query;
