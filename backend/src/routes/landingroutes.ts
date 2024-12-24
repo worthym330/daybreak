@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import {
+  LandingBookingNonPartner,
   LandingCart,
   LandingInvoice,
   LandingOrder,
@@ -132,7 +133,7 @@ app.get("/order-details/:id", async (req, res) => {
         },
       })
       .populate("userId");
-      
+
     if (!invoices) {
       return res.status(404).json({ message: "Invoice not found" });
     }
@@ -155,7 +156,9 @@ app.get("/order-details/:id", async (req, res) => {
     const invoiceData = {
       bookingId: invoices.id,
       invoiceNo: invoices.invoiceNumber,
-      date: new Date(invoices.createdAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
+      date: new Date(invoices.createdAt).toLocaleString("en-IN", {
+        timeZone: "Asia/Kolkata",
+      }),
       placeOfSupply: "Maharashtra",
       customerName: user?.name,
       customerEmail: user?.email,
@@ -173,10 +176,30 @@ app.get("/order-details/:id", async (req, res) => {
     };
 
     const invoice = await createInvoice(invoiceData);
-    res.status(200).json({ invoiceData,invoice:`${process.env.BACKEND_URL}/uploads/invoices/${invoice.filename.split("/").pop()}` });
+    res
+      .status(200)
+      .json({
+        invoiceData,
+        invoice: `${process.env.BACKEND_URL}/uploads/invoices/${invoice.filename
+          .split("/")
+          .pop()}`,
+      });
   } catch (error) {
     console.error("Error fetching data:", error);
     res.status(500).json({ message: "Failed to fetch records" });
+  }
+});
+
+app.post("/non-partner", async (req, res) => {
+  // const { name, email, phone, items } = req.body;
+  try {
+    const order = new LandingBookingNonPartner(req.body);
+    await order.save();
+
+    res.status(200).send({ message: "Successfully Created order", order });
+  } catch (error) {
+    console.error("Error creating order:", error);
+    res.status(500).json({ message: "Failed to create order" });
   }
 });
 

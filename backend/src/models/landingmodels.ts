@@ -36,7 +36,7 @@ const OrderSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "LandingCart",
       required: true,
-      unique: true 
+      unique: true,
     },
     razorpayOrderId: { type: String, required: true },
     paymentId: { type: String },
@@ -61,7 +61,7 @@ const InvoiceSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "LandingOrder",
       required: true,
-      unique: true 
+      unique: true,
     },
     invoiceNumber: { type: String, required: true },
     amount: { type: Number, required: true },
@@ -76,7 +76,7 @@ export const LandingInvoice = mongoose.model("LandingInvoice", InvoiceSchema);
 
 const UserSchema = new mongoose.Schema(
   {
-    email: { type: String, required: true, unique: true },
+    email: { type: String },
     phone: { type: String, required: true, unique: true },
     name: { type: String, required: true },
     password: { type: String, required: true },
@@ -89,3 +89,26 @@ const UserSchema = new mongoose.Schema(
 
 export const LandingUser = mongoose.model("LandingUser", UserSchema);
 
+const LandingBookingNonPartnerSchema = new mongoose.Schema(
+  {
+    email: { type: String },
+    phone: { type: String, required: true, unique: true },
+    name: { type: String, required: true },
+    items: [
+      {
+        name: { type: String, required: true },
+        price: { type: Number, required: true },
+        quantity: { type: Number, required: true },
+        hotelName: { type: String },
+        hotelId: { type: String },
+        date: { type: String },
+      },
+    ],
+  },
+  { timestamps: true }
+);
+
+export const LandingBookingNonPartner = mongoose.model(
+  "LandingNonPartner",
+  LandingBookingNonPartnerSchema
+);
