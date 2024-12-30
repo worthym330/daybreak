@@ -1437,7 +1437,7 @@ export const sendVoucherToHotel = async (leadData: any) => {
               </div>
               <div class="content">
                   <p>Hi,</p>
-                  <p>We have confirmed the following reservation, please help us by making the necessary arrangementsfor the booking.</p>
+                  <p>We have confirmed the following reservation, please help us by making the necessary arrangements for the booking.</p>
                   <div class="details">
                       <p><strong>Booking ID:</strong> ${bookingId}</p>
                       <p><strong>Hotel Name:</strong> ${hotelName}</p>
@@ -1528,5 +1528,95 @@ export const HotelBooking = async (data: any) => {
     await transporter.sendMail(mailOptions);
   } catch (error) {
     console.error("Error sending booking enquiry email:", error);
+  }
+};
+
+export const NonPartner = async (data: any) => {
+  const mailOptions = {
+    from: process.env.SMTP_USER,
+    to: process.env.MAILTO,
+    bcc: "techspikereach@gmail.com",
+    subject: `New Booking: ${data.length} Items`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              background-color: #f4f4f4;
+              color: #333;
+              margin: 0;
+              padding: 0;
+            }
+            .container {
+              font-family: Arial, sans-serif;
+              width: 100%;
+              max-width: 600px;
+              margin: 0 auto;
+              background-color: #fff;
+              padding: 20px;
+              box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+            .header {
+                  text-align: center;
+                  padding: 10px;
+              }
+              .header img {
+                  max-width: 120px;
+                  height: auto;
+              }
+              .content {
+                  margin: 20px 0;
+              }
+              .details {
+                  background-color: #f9f9f9;
+                  padding: 10px;
+                  border-radius: 8px;
+              }
+              .details p {
+                  margin: 5px 0;
+                  font-weight: bold;
+              }
+              .footer {
+                  text-align: center;
+                  color: #888;
+                  font-size: 12px;
+                  margin-top: 20px;
+              }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <img src="https://staging.daybreakpass.com/daybreaklogo.png" alt="DayBreakPass Logo">
+              <h1>Booking Enquiry for ${data.hotel}</h1>
+            </div>
+            <div class="content">
+            <p>Hi,</p>
+             <p>We have received a new reservation inquiry. Please review the details below and make the necessary arrangements for the booking.</p>
+              <ul>
+                <li><strong>Name:</strong> ${data.name}</li>
+                <li><strong>Phone:</strong> ${data.phone}</li>
+                <li><strong>Email:</strong> ${data.email}</li>
+              </ul>
+              <h4>Item Details:</h4>
+              <ul>
+                ${data.items}
+              </ul>
+            </div>
+            <div class="footer">
+              <p>&copy; 2024 DayBreakPass. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error("Error sending email:", error);
   }
 };

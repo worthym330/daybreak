@@ -11,6 +11,7 @@ import {
   LandingUser,
 } from "../models/landingmodels";
 import { createInvoice } from "./hotels";
+import { NonPartner } from "./mail";
 
 dotenv.config();
 
@@ -192,9 +193,34 @@ app.get("/order-details/:id", async (req, res) => {
 
 app.post("/non-partner", async (req, res) => {
   // const { name, email, phone, items } = req.body;
+  console.log(req.body);
+  const data = req.body;
   try {
     const order = new LandingBookingNonPartner(req.body);
     await order.save();
+
+    const itemsHtml = data.items.map((item:any) => {
+      const formattedDate = new Date(item.date).toDateString();
+      return ` 
+      <div class="details">
+        <li><strong>Package Name:</strong> ${item.name}</li>
+        <li><strong>Price:</strong> ₹${item.price}</li>
+        <li><strong>No of Persion:</strong> ${item.quantity}</li>
+        <li><strong>Hotel Name:</strong> ${item.hotelName}</li>
+        <li><strong>Booking Date:</strong> ${formattedDate}</li>
+        <hr>
+        </div>
+      `;
+    }).join('');
+    let payload = {
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      hotel: data.items[0].hotelName,
+      length: data.items.length,
+      items: itemsHtml
+    }
+    NonPartner(payload);
 
     res.status(200).send({ message: "Successfully Created order", order });
   } catch (error) {

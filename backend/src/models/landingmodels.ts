@@ -92,7 +92,7 @@ export const LandingUser = mongoose.model("LandingUser", UserSchema);
 const LandingBookingNonPartnerSchema = new mongoose.Schema(
   {
     email: { type: String },
-    phone: { type: String, required: true, unique: true },
+    phone: { type: String, required: true},
     name: { type: String, required: true },
     items: [
       {
@@ -102,6 +102,7 @@ const LandingBookingNonPartnerSchema = new mongoose.Schema(
         hotelName: { type: String },
         hotelId: { type: String },
         date: { type: String },
+        hotelAddress: { type: String },
       },
     ],
   },
