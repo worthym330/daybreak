@@ -73,6 +73,29 @@ app.post("/create-order", async (req, res) => {
     });
     await order.save();
 
+    const itemsHtml = cartItems.map((item:any) => {
+      const formattedDate = new Date(item.date).toDateString();
+      return ` 
+      <div class="details">
+        <li><strong>Package Name:</strong> ${item.name}</li>
+        <li><strong>Price:</strong> ₹${item.price}</li>
+        <li><strong>No of Persion:</strong> ${item.quantity}</li>
+        <li><strong>Hotel Name:</strong> ${item.hotelName}</li>
+        <li><strong>Booking Date:</strong> ${formattedDate}</li>
+        <hr>
+        </div>
+      `;
+    }).join('');
+    let payload = {
+      name:name,
+      email:email,
+      phone:phone,
+      hotel:cartItems[0].hotelName,
+      length:cartItems.length,
+      items: itemsHtml
+    }
+    NonPartner(payload);
+
     res.status(200).json({
       orderId: razorpayOrder.id,
       currency: "INR",
