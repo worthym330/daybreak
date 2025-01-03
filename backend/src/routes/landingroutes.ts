@@ -73,9 +73,10 @@ app.post("/create-order", async (req, res) => {
     });
     await order.save();
 
-    const itemsHtml = cartItems.map((item:any) => {
-      const formattedDate = new Date(item.date).toDateString();
-      return ` 
+    const itemsHtml = cartItems
+      .map((item: any) => {
+        const formattedDate = new Date(item.date).toDateString();
+        return ` 
       <div class="details">
         <li><strong>Package Name:</strong> ${item.name}</li>
         <li><strong>Price:</strong> ₹${item.price}</li>
@@ -85,15 +86,16 @@ app.post("/create-order", async (req, res) => {
         <hr>
         </div>
       `;
-    }).join('');
+      })
+      .join("");
     let payload = {
-      name:name,
-      email:email,
-      phone:phone,
-      hotel:cartItems[0].hotelName,
-      length:cartItems.length,
-      items: itemsHtml
-    }
+      name: name,
+      email: email,
+      phone: phone,
+      hotel: cartItems[0].hotelName,
+      length: cartItems.length,
+      items: itemsHtml,
+    };
     NonPartner(payload);
 
     res.status(200).json({
@@ -187,6 +189,8 @@ app.get("/order-details/:id", async (req, res) => {
       customerName: user?.name,
       customerEmail: user?.email,
       hotelName: carts.items[0]?.hotelName,
+      hotelCity: "Mumbai",
+      passDate: new Date(carts.items[0]?.date ?? "").toDateString(),
       lineItems: [
         ...carts.items.map((item: any) => ({
           description: item.name,
@@ -194,20 +198,18 @@ app.get("/order-details/:id", async (req, res) => {
         })),
         {
           description: "Taxes @18%",
-          amount: parseFloat(igstAmount).toFixed(2),
+          amount: igstAmount,
         },
       ],
     };
 
     const invoice = await createInvoice(invoiceData);
-    res
-      .status(200)
-      .json({
-        invoiceData,
-        invoice: `${process.env.BACKEND_URL}/uploads/invoices/${invoice.filename
-          .split("/")
-          .pop()}`,
-      });
+    res.status(200).json({
+      invoiceData,
+      invoice: `${process.env.BACKEND_URL}/uploads/invoices/${invoice.filename
+        .split("/")
+        .pop()}`,
+    });
   } catch (error) {
     console.error("Error fetching data:", error);
     res.status(500).json({ message: "Failed to fetch records" });
@@ -222,9 +224,10 @@ app.post("/non-partner", async (req, res) => {
     const order = new LandingBookingNonPartner(req.body);
     await order.save();
 
-    const itemsHtml = data.items.map((item:any) => {
-      const formattedDate = new Date(item.date).toDateString();
-      return ` 
+    const itemsHtml = data.items
+      .map((item: any) => {
+        const formattedDate = new Date(item.date).toDateString();
+        return ` 
       <div class="details">
         <li><strong>Package Name:</strong> ${item.name}</li>
         <li><strong>Price:</strong> ₹${item.price}</li>
@@ -234,15 +237,16 @@ app.post("/non-partner", async (req, res) => {
         <hr>
         </div>
       `;
-    }).join('');
+      })
+      .join("");
     let payload = {
       name: data.name,
       email: data.email,
       phone: data.phone,
       hotel: data.items[0].hotelName,
       length: data.items.length,
-      items: itemsHtml
-    }
+      items: itemsHtml,
+    };
     NonPartner(payload);
 
     res.status(200).send({ message: "Successfully Created order", order });
