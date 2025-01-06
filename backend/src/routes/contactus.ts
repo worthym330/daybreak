@@ -19,11 +19,12 @@ router.post("/", async (req: Request, res: Response) => {
     });
 
     const data = await contact.save();
-    if(email){
-      sendContactNotification(contact)
-    }else{
-      HotelBooking(contact)
-    }
+    // if(email){
+    //   sendContactNotification(contact)
+    // }else{
+    //   HotelBooking(contact)
+    // }
+    sendContactNotification(contact)
     res.status(200).send(data);
   } catch (error) {
     console.log(error);
